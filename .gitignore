@@ -5,7 +5,6 @@
 *.pdf
 *.sas7bdat
 *.Rhistory
-*.html
 *.csv
 *.mp4
 *.Rproj
