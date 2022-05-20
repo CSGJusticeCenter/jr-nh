@@ -16,3 +16,6 @@ library(ggplot2)
 library(dplyr)
 library(kableExtra)
 library(stringr)
+
+# highchart
+library(highcharter)

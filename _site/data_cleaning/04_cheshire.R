@@ -65,13 +65,13 @@ cheshire_adm_charges <- cheshire_adm_all
 cheshire_adm <- cheshire_adm_all %>%
   dplyr::select(inmate_id, race, yob, age, sex,
                 housing, sentence_status,
-                booking_date, fy) %>%
+                booking_date, los, fy) %>%
   distinct()
 
 # remove charge codes and duplicates to get picture of cohort
 cheshire_booking_all <- cheshire_adm_all %>%
   dplyr::select(inmate_id, race, yob, age, sex,
-                housing, booking_date, booking_type, fy) %>%
+                housing, booking_date, booking_type, los, fy) %>%
   distinct()
 
 # sep by fiscal year
@@ -88,14 +88,14 @@ cheshire_booking_21 <- cheshire_booking_all %>% filter(fy == 2021)
 # Race
 ######
 
-# custom function to create race table
+# custom function to create table
 cheshire_race <- fnc_race_table(cheshire_adm_19, cheshire_adm_20, cheshire_adm_21)
 
 ######
 # Sex
 ######
 
-# custom function to create sex table
+# custom function to create table
 cheshire_sex <- fnc_sex_table(cheshire_adm_19, cheshire_adm_20, cheshire_adm_21)
 
 ######
@@ -119,15 +119,22 @@ cheshire_heatmap$month <- factor(cheshire_heatmap$month, levels=rev(levels(chesh
 # Booking Types
 ######
 
-# custom function to create booking type table
+# custom function to create table
 cheshire_booking <- fnc_booking_table(cheshire_booking_19, cheshire_booking_20, cheshire_booking_21)
 
 ######
 # Sentence Statuses
 ######
 
-# custom function to create sentence status table
+# custom function to create table
 cheshire_sentence <- fnc_sentence_table(cheshire_adm_19, cheshire_adm_20, cheshire_adm_21)
+
+######
+# Length of Stay
+######
+
+# custom function to create table
+cheshire_los <- fnc_los_table(cheshire_adm_19, cheshire_adm_20, cheshire_adm_21)
 
 ##############################################################################
 # High Utilizers - more than 2 bookings in a year?
@@ -151,6 +158,7 @@ cheshire_high_utilizers_booking_21 <- cheshire_high_utilizers_booking %>% filter
 # Demographics of High Utilizers
 ######
 
+# custom function to create table
 cheshire_hu_race <- fnc_race_table(cheshire_high_utilizers_booking_19, cheshire_high_utilizers_booking_20, cheshire_high_utilizers_booking_21)
 cheshire_hu_sex  <- fnc_sex_table(cheshire_high_utilizers_booking_19, cheshire_high_utilizers_booking_20, cheshire_high_utilizers_booking_21)
 
@@ -158,14 +166,14 @@ cheshire_hu_sex  <- fnc_sex_table(cheshire_high_utilizers_booking_19, cheshire_h
 # Booking Types for High Utilizers
 ######
 
-# custom function to create booking type table of high utilizers
+# custom function to create table
 cheshire_hu_booking <- fnc_booking_table(cheshire_high_utilizers_booking_19, cheshire_high_utilizers_booking_20, cheshire_high_utilizers_booking_21)
 
 ######
 # Sentence Statuses for High Utilizers
 ######
 
-# custom function to create sentence status table of high utilizers
+# custom function to create table
 cheshire_hu_sentence <- fnc_sentence_table(cheshire_high_utilizers_sentence_19, cheshire_high_utilizers_sentence_20, cheshire_high_utilizers_sentence_21)
 
 ######

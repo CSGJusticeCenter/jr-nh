@@ -36,13 +36,9 @@ theme_set(theme_minimal())
 
 ### Demographics
 
-#### Race/Ethnicity
-
 ```{r}
 fnc_freq_table(cheshire_race, "Race/Ethnicity") 
 ```
-
-#### Sex
 
 ```{r}
 fnc_freq_table(cheshire_sex, "Sex")
@@ -68,13 +64,9 @@ fnc_freq_table(cheshire_sentence, "Sentence Status")
 
 ### Demographics
 
-#### Race/Ethnicity
-
 ```{r}
 fnc_freq_table(cheshire_hu_race, "Race/Ethnicity") 
 ```
-
-#### Sex
 
 ```{r}
 fnc_freq_table(cheshire_hu_sex, "Sex")

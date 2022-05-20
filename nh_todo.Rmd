@@ -1,5 +1,5 @@
 ---
-title: "Jail Admissions Trends"
+title: "Mari/Sara To Do"
 output: 
   distill::distill_article:
     toc: true
@@ -8,27 +8,20 @@ output:
 ---
 
 ```{r include=FALSE}
-### call libraries
+# call libraries
 library(easypackages)
 libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales","raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","ezknitr")
 ```
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(
-  echo = TRUE,
-  dev = "ragg_png",
-  cache = FALSE
-  )
-```
+Questions:  
 
-```{r include=FALSE}
-### set theme
-theme_set(theme_minimal())
-```
+- Should LOS include PC holds? Weekends?  
 
-## Jail Admissions by County
+Charge Questions:  
 
-```{r}
+- Do we need to determine which charges are sex, violent, drug, offense?  
+- Interested in part 1 violent crimes? 
 
-```
+Cheshire Issues:  
 
+- Everyone has been indicated as "housed" which is likely a data entry or excel issue.  

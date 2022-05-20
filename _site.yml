@@ -28,8 +28,8 @@ navbar:
           href: nh_cheshire_county_analysis.html
     - text: "Research"
       menu:
-        - text: "Data Sources"
-          href: nh_data_sources.html
+        - text: "To Do and Questions"
+          href: nh_todo.html
         - text: "Data Dictionary"
           href: nh_data_dictionary.html
     - icon: fab fa-github

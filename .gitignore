@@ -18,10 +18,8 @@
 *.mp3
 *.m4a
 *.WMA
-*.png
 *.twb
 *.ai
-*.jpg
 *.emf
 *.xml
 *.thmx
@@ -35,7 +33,6 @@
 *.RData
 *.Rdata
 *.pptx
-*.jpeg
 *.csv
 *.rds
 *.dta
