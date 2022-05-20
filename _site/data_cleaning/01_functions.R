@@ -258,7 +258,7 @@ fnc_hu_setup <- function(df){
   # sep by fiscal year
   df_high_utilizers_19 <- df %>% filter(fy == 2019) %>%
     group_by(inmate_id, fy) %>%
-    dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 2)
+    dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 3)
   df_high_utilizers_20 <- df %>% filter(fy == 2020) %>%
     group_by(inmate_id, fy) %>%
     dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 3)

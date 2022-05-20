@@ -69,7 +69,7 @@ cheshire_adm <- cheshire_adm_all %>%
   distinct()
 
 # remove charge codes and duplicates to get picture of cohort
-cheshire_booking <- cheshire_adm_all %>%
+cheshire_booking_all <- cheshire_adm_all %>%
   dplyr::select(inmate_id, race, yob, age, sex,
                 housing, booking_date, booking_type, fy) %>%
   distinct()
@@ -80,9 +80,9 @@ cheshire_adm_20 <- cheshire_adm %>% filter(fy == 2020)
 cheshire_adm_21 <- cheshire_adm %>% filter(fy == 2021)
 
 # sep by fy year
-cheshire_booking_19 <- cheshire_booking %>% filter(fy == 2019)
-cheshire_booking_20 <- cheshire_booking %>% filter(fy == 2020)
-cheshire_booking_21 <- cheshire_booking %>% filter(fy == 2021)
+cheshire_booking_19 <- cheshire_booking_all %>% filter(fy == 2019)
+cheshire_booking_20 <- cheshire_booking_all %>% filter(fy == 2020)
+cheshire_booking_21 <- cheshire_booking_all %>% filter(fy == 2021)
 
 ######
 # Race
@@ -134,26 +134,39 @@ cheshire_sentence <- fnc_sentence_table(cheshire_adm_19, cheshire_adm_20, cheshi
 ##############################################################################
 
 # custom function to create high utilizers dataframe
-cheshire_high_utilizers <- fnc_hu_setup(cheshire_adm)
+cheshire_high_utilizers_sentence <- fnc_hu_setup(cheshire_adm)
+cheshire_high_utilizers_booking  <- fnc_hu_setup(cheshire_booking_all)
 
 # sep by fiscal year
-cheshire_high_utilizers_19 <- cheshire_high_utilizers %>% filter(fy == 2019)
-cheshire_high_utilizers_20 <- cheshire_high_utilizers %>% filter(fy == 2020)
-cheshire_high_utilizers_21 <- cheshire_high_utilizers %>% filter(fy == 2021)
+cheshire_high_utilizers_sentence_19 <- cheshire_high_utilizers_sentence %>% filter(fy == 2019)
+cheshire_high_utilizers_sentence_20 <- cheshire_high_utilizers_sentence %>% filter(fy == 2020)
+cheshire_high_utilizers_sentence_21 <- cheshire_high_utilizers_sentence %>% filter(fy == 2021)
+
+# sep by fiscal year
+cheshire_high_utilizers_booking_19 <- cheshire_high_utilizers_booking %>% filter(fy == 2019)
+cheshire_high_utilizers_booking_20 <- cheshire_high_utilizers_booking %>% filter(fy == 2020)
+cheshire_high_utilizers_booking_21 <- cheshire_high_utilizers_booking %>% filter(fy == 2021)
+
+######
+# Demographics of High Utilizers
+######
+
+cheshire_hu_race <- fnc_race_table(cheshire_high_utilizers_booking_19, cheshire_high_utilizers_booking_20, cheshire_high_utilizers_booking_21)
+cheshire_hu_sex  <- fnc_sex_table(cheshire_high_utilizers_booking_19, cheshire_high_utilizers_booking_20, cheshire_high_utilizers_booking_21)
 
 ######
 # Booking Types for High Utilizers
 ######
 
 # custom function to create booking type table of high utilizers
-# cheshire_hu_booking <- fnc_booking_table(cheshire_high_utilizers_19, cheshire_high_utilizers_20, cheshire_high_utilizers_21)
+cheshire_hu_booking <- fnc_booking_table(cheshire_high_utilizers_booking_19, cheshire_high_utilizers_booking_20, cheshire_high_utilizers_booking_21)
 
 ######
-# Sentence Types for High Utilizers
+# Sentence Statuses for High Utilizers
 ######
 
 # custom function to create sentence status table of high utilizers
-cheshire_hu_sentence <- fnc_sentence_table(cheshire_high_utilizers_19, cheshire_high_utilizers_20, cheshire_high_utilizers_21)
+cheshire_hu_sentence <- fnc_sentence_table(cheshire_high_utilizers_sentence_19, cheshire_high_utilizers_sentence_20, cheshire_high_utilizers_sentence_21)
 
 ######
 # Save data
@@ -166,5 +179,5 @@ save(cheshire_sentence,       file="C:/Users/mroberts/The Council of State Gover
 save(cheshire_race,           file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_race.Rda")
 save(cheshire_sex,            file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_sex.Rda")
 save(cheshire_heatmap,        file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_heatmap.Rda")
-# save(cheshire_hu_booking,     file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_hu_booking.Rda")
+save(cheshire_hu_booking,     file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_hu_booking.Rda")
 save(cheshire_hu_sentence,    file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_hu_sentence.Rda")

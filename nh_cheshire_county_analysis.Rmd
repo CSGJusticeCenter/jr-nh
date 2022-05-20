@@ -39,12 +39,6 @@ theme_set(theme_minimal())
 #### Race/Ethnicity
 
 ```{r}
-# How many people are booked into New Hampshire jails annually?
-# What are the most common jail admission and release types
-# What is the average length of incarceration in jail?   
-# How are protective custody holds factored into the jail population?
-
-# booking numbers by race ethnicity and FY
 fnc_freq_table(cheshire_race, "Race/Ethnicity") 
 ```
 
@@ -61,30 +55,41 @@ fnc_booking_heatmap(cheshire_heatmap)
 ```
 
 ```{r}
-# booking numbers by booking type and FY
 fnc_freq_table(cheshire_booking, "Booking Type")
 ```
 
 ### Sentence Status
 
 ```{r}
-# booking numbers by sentence status and FY
 fnc_freq_table(cheshire_sentence, "Sentence Status")
 ```
 
 # High Utilizers
+
+### Demographics
+
+#### Race/Ethnicity
+
+```{r}
+fnc_freq_table(cheshire_hu_race, "Race/Ethnicity") 
+```
+
+#### Sex
+
+```{r}
+fnc_freq_table(cheshire_hu_sex, "Sex")
+```
+
+### Booking Type
+
+```{r}
+fnc_freq_table(cheshire_hu_booking, "Booking Type")
+```
 
 ### Sentence Status
 
 Sentence status types of high utilizers (numbers represent individual bookings, not the number of individuals).  
 
 ```{r}
-#What percent of annual jail bookings are for people identified as high utilizers? What is the threshold? 
-#Is this percentage different for protective custody bookings?   
-#What percent of the daily jail population do high utilizers account for? 
-#How does the high utilizer jail population compare to others in jail in terms of gender, race, and ethnicity?   
-#What other indicators exist among the high utilizer population in jail including their Medicaid enrollment status or Medicaid eligibility, their housing status, and indicators of substance use and/or mental illness?  
-
-# booking numbers by race ethnicity and FY
 fnc_freq_table(cheshire_hu_sentence, "Sentence Status")
 ```
