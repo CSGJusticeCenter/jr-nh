@@ -1,0 +1,81 @@
+---
+title: "JRI New Hampshire"
+site: distill::distill_website
+---
+
+```{r, out.width="70%", echo=FALSE, layout = "l-body"}
+knitr::include_graphics("img/csg-logo.png")
+```
+
+Welcome to the JRI New Hampshire project website. This is a private, password protected website that should not be shared externally. Use the navigation in the top right corner to view county reports and other analyses.
+
+FOR INTERNAL CSG JC USE ONLY.
+
+**Project Purpose:** 
+
+This project will focus on the prevalence of people with behavioral health needs moving through local county jails and the availability and impact of existing services and supports for this population statewide.  
+
+Goal 1: Improve criminal justice and public health outcomes for people with behavioral health conditions who are high utilizers of the health and jail systems.  
+
+Goal 2: Reduce gaps in the state’s data systems and information sharing capacity by working with agencies and staff to build data collection and analysis capacities.   
+
+Matching data from all 10 counties’ jails with data from the Department of Health and Human Services (DHHS) would distinguish New Hampshire as the first state in the country to conduct a statewide jail to Medicaid data analysis.
+
+<br>
+
+**Scope of Work**  
+
+*	Facilitating cross-system data match to analyze county jail and Medicaid claims data.
+
+*	Analyzing jail data on high utilizers with behavioral health needs.
+
+*	Analyzing racial disproportionalities in jail incarceration.
+
+*	Conducting focus groups with providers, stakeholders, and jail staff.
+
+*	Assessing behavioral health needs, demographic characteristics, and available resources.
+
+*	Assessing the collaboration between behavioral health and criminal justice agencies.
+
+*	Identifying gaps in data systems to support improved data collection and analysis capacities.
+
+*	Identifying alternatives to incarceration programs to provide an overview of local available services.
+
+<br>
+
+**Key Questions**
+
+*Jail admissions:*
+
+* How many people are booked into New Hampshire jails annually?   
+
+* What are the most common jail admission and release types?   
+
+* What is the average length of incarceration in jail?   
+
+* How are protective custody holds factored into the jail population?   
+
+*High utilizers in jails:*
+
+* What percent of annual jail bookings are for people identified as high utilizers?   
+
+* Is this percentage different for protective custody bookings?   
+
+* What percent of the daily jail population do high utilizers account for?   
+    
+*Demographics of the high utilizer population:*
+
+* How does the high utilizer jail population compare to others in jail in terms of gender, race, and ethnicity?   
+
+* What other indicators exist among the high utilizer population in jail including their Medicaid enrollment status or Medicaid eligibility, their housing status, and indicators of substance use and/or mental illness?  
+
+<br>
+
+**Project Links**
+
+*	[Github repository](https://github.com/CSGJusticeCenter/jr-nh) 
+
+*	[Research SharePoint](https://csgorg.sharepoint.com/:f:/r/sites/Team-JC-Research/Shared%20Documents/JR_NH?csf=1&web=1&e=g4BOvw)   
+
+<br>
+

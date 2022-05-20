@@ -1,0 +1,42 @@
+name: "JRI New Hampshire"
+title: "JRI New Hampshire Project"
+description: |
+  Using a Justice Reinvestment Initiative approach to understand the prevalence of people with behavioral health needs moving through local county jails and the availability and impact of existing services and supports for this population statewide.
+favicon: img/favicon.png
+output_dir: "_site"
+navbar:
+  right:
+    - text: "Project and Analysis Plan"
+      href: index.html
+    - text: "Overall Trends"
+      menu:
+        - text: "Jail Admissions"
+          href: nh_jail_admissions_analysis.html
+        - text: "High Utilizers"
+          href: nh_high_utilizers_analysis.html
+    - text: "Descriptives"
+      menu:
+        - text: "Demographics"
+          href: nh_demographics_analysis.html
+        - text: "Medicaid"
+          href: nh_medicaid_analysis.html
+    - text: "County Reports"
+      menu:
+        - text: "Carroll"
+          href: nh_carroll_county_analysis.html
+        - text: "Cheshire"
+          href: nh_cheshire_county_analysis.html
+    - text: "Research"
+      menu:
+        - text: "Data Sources"
+          href: nh_data_sources.html
+        - text: "Data Dictionary"
+          href: nh_data_dictionary.html
+    - icon: fab fa-github
+      href: https://github.com/CSGJusticeCenter/jr-nh
+output:
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    theme: theme.css
+    self_contained: false
