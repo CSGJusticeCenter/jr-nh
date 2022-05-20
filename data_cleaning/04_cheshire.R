@@ -146,7 +146,7 @@ cheshire_high_utilizers_21 <- cheshire_high_utilizers %>% filter(fy == 2021)
 ######
 
 # custom function to create booking type table of high utilizers
-cheshire_hu_booking <- fnc_booking_table(cheshire_high_utilizers_19, cheshire_high_utilizers_20, cheshire_high_utilizers_21)
+# cheshire_hu_booking <- fnc_booking_table(cheshire_high_utilizers_19, cheshire_high_utilizers_20, cheshire_high_utilizers_21)
 
 ######
 # Sentence Types for High Utilizers
@@ -166,5 +166,5 @@ save(cheshire_sentence,       file="C:/Users/mroberts/The Council of State Gover
 save(cheshire_race,           file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_race.Rda")
 save(cheshire_sex,            file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_sex.Rda")
 save(cheshire_heatmap,        file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_heatmap.Rda")
-save(cheshire_hu_booking,     file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_hu_booking.Rda")
+# save(cheshire_hu_booking,     file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_hu_booking.Rda")
 save(cheshire_hu_sentence,    file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_hu_sentence.Rda")
