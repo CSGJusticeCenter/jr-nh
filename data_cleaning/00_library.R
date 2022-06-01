@@ -1,7 +1,10 @@
 ############################################
-# Packages
-# Last updated: May 16, 2022
+# Project: JRI New Hampshire
+# File: library.R
+# Last updated: June 1, 2022
 # Author: Mari Roberts
+
+# Load packages
 ############################################
 
 # load packages
@@ -16,6 +19,7 @@ library(ggplot2)
 library(dplyr)
 library(kableExtra)
 library(stringr)
+library(csgjcr)
 
 # highchart
 library(highcharter)

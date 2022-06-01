@@ -1,9 +1,13 @@
 ############################################
-# Custom functions for efficient coding
-# Last updated: May 13, 2022
+# Project: JRI New Hampshire
+# File: functions.R
+# Last updated: June 1, 2022
 # Author: Mari Roberts
+
+# Load custom functions for efficient coding
 ############################################
 
+# load packages
 source("data_cleaning/00_library.R")
 
 ###########

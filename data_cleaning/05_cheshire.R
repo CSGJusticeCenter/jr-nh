@@ -1,12 +1,14 @@
 ############################################
-# Format Cheshire County data
-# Last updated: May 12, 2022
+# Project: JRI New Hampshire
+# File: cheshire.R
+# Last updated: June 1, 2022
 # Author: Mari Roberts
 
 # Standardize files across counties
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
+# load packages and custom functions
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 
@@ -180,12 +182,12 @@ cheshire_hu_sentence <- fnc_sentence_table(cheshire_high_utilizers_sentence_19, 
 # Save data
 ######
 
-# save R data to load in Rmd files
-save(cheshire_adm,            file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_adm.Rda")
-save(cheshire_booking,        file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_booking.Rda")
-save(cheshire_sentence,       file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_sentence.Rda")
-save(cheshire_race,           file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_race.Rda")
-save(cheshire_sex,            file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_sex.Rda")
-save(cheshire_heatmap,        file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_heatmap.Rda")
-save(cheshire_hu_booking,     file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_hu_booking.Rda")
-save(cheshire_hu_sentence,    file="C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Data/Cheshire County/Converted Data/cheshire_hu_sentence.Rda")
+# save rds data
+write_rds(cheshire_adm,         file.path(sp_data_path, "cheshire_adm.rds"))
+write_rds(cheshire_booking,     file.path(sp_data_path, "cheshire_booking.rds"))
+write_rds(cheshire_sentence,    file.path(sp_data_path, "cheshire_sentence.rds"))
+write_rds(cheshire_race,        file.path(sp_data_path, "cheshire_race.rds"))
+write_rds(cheshire_sex,         file.path(sp_data_path, "cheshire_sex.rds"))
+write_rds(cheshire_heatmap,     file.path(sp_data_path, "cheshire_heatmap.rds"))
+write_rds(cheshire_hu_booking,  file.path(sp_data_path, "cheshire_hu_booking.rds"))
+write_rds(cheshire_hu_sentence, file.path(sp_data_path, "cheshire_hu_sentence.rds"))

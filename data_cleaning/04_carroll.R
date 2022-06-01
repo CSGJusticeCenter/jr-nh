@@ -1,12 +1,14 @@
 ############################################
-# Format Carroll County data
-# Last updated: May 12, 2022
+# Project: JRI New Hampshire
+# File: carroll.R
+# Last updated: June 1, 2022
 # Author: Mari Roberts
 
 # Standardize files across counties
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
+# load packages and custom functions
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 
@@ -81,3 +83,16 @@ carroll_booking_19 <- carroll_booking %>% filter(fy == 2019)
 carroll_booking_20 <- carroll_booking %>% filter(fy == 2020)
 carroll_booking_21 <- carroll_booking %>% filter(fy == 2021)
 
+######
+# Save data
+######
+
+# save rds data
+write_rds(carroll_adm,         file.path(sp_data_path, "carroll_adm.rds"))
+write_rds(carroll_booking,     file.path(sp_data_path, "carroll_booking.rds"))
+write_rds(carroll_sentence,    file.path(sp_data_path, "carroll_sentence.rds"))
+write_rds(carroll_race,        file.path(sp_data_path, "carroll_race.rds"))
+write_rds(carroll_sex,         file.path(sp_data_path, "carroll_sex.rds"))
+write_rds(carroll_heatmap,     file.path(sp_data_path, "carroll_heatmap.rds"))
+write_rds(carroll_hu_booking,  file.path(sp_data_path, "carroll_hu_booking.rds"))
+write_rds(carroll_hu_sentence, file.path(sp_data_path, "carroll_hu_sentence.rds"))

@@ -1,12 +1,14 @@
 ############################################
-# Format Merrimack County data
-# Last updated: May 20, 2022
+# Project: JRI New Hampshire
+# File: merrimack.R
+# Last updated: June 1, 2022
 # Author: Mari Roberts
 
 # Standardize files across counties
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
+# load packages and custom functions
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 
@@ -83,3 +85,17 @@ merrimack_adm_21 <- merrimack_adm %>% filter(fy == 2021)
 merrimack_booking_19 <- merrimack_booking %>% filter(fy == 2019)
 merrimack_booking_20 <- merrimack_booking %>% filter(fy == 2020)
 merrimack_booking_21 <- merrimack_booking %>% filter(fy == 2021)
+
+######
+# Save data
+######
+
+# save rds data
+write_rds(merrimack_adm,         file.path(sp_data_path, "merrimack_adm.rds"))
+write_rds(merrimack_booking,     file.path(sp_data_path, "merrimack_booking.rds"))
+write_rds(merrimack_sentence,    file.path(sp_data_path, "merrimack_sentence.rds"))
+write_rds(merrimack_race,        file.path(sp_data_path, "merrimack_race.rds"))
+write_rds(merrimack_sex,         file.path(sp_data_path, "merrimack_sex.rds"))
+write_rds(merrimack_heatmap,     file.path(sp_data_path, "merrimack_heatmap.rds"))
+write_rds(merrimack_hu_booking,  file.path(sp_data_path, "merrimack_hu_booking.rds"))
+write_rds(merrimack_hu_sentence, file.path(sp_data_path, "merrimack_hu_sentence.rds"))
