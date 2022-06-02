@@ -182,12 +182,12 @@ cheshire_hu_sentence <- fnc_sentence_table(cheshire_high_utilizers_sentence_19, 
 # Save data
 ######
 
-# save rds data
-write_rds(cheshire_adm,         file.path(sp_data_path, "cheshire_adm.rds"))
-write_rds(cheshire_booking,     file.path(sp_data_path, "cheshire_booking.rds"))
-write_rds(cheshire_sentence,    file.path(sp_data_path, "cheshire_sentence.rds"))
-write_rds(cheshire_race,        file.path(sp_data_path, "cheshire_race.rds"))
-write_rds(cheshire_sex,         file.path(sp_data_path, "cheshire_sex.rds"))
-write_rds(cheshire_heatmap,     file.path(sp_data_path, "cheshire_heatmap.rds"))
-write_rds(cheshire_hu_booking,  file.path(sp_data_path, "cheshire_hu_booking.rds"))
-write_rds(cheshire_hu_sentence, file.path(sp_data_path, "cheshire_hu_sentence.rds"))
+# save data to sharepoint
+save(cheshire_adm,         file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_adm.rds", sep = ""))
+save(cheshire_booking,     file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_booking.rds", sep = ""))
+save(cheshire_sentence,    file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_sentence.rds", sep = ""))
+save(cheshire_race,        file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_race.rds", sep = ""))
+save(cheshire_sex,         file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_sex.rds", sep = ""))
+save(cheshire_heatmap,     file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_heatmap.rds", sep = ""))
+save(cheshire_hu_booking,  file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_hu_booking.rds", sep = ""))
+save(cheshire_hu_sentence, file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_hu_sentence.rds", sep = ""))

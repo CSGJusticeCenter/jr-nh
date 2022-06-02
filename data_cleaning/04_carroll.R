@@ -21,24 +21,23 @@ carroll_releases <- clean_names(carroll_releases.xlsx)
 carroll_bookings <- clean_names(carroll_bookings.xlsx)
 
 # merge two adm files together
-carroll_adm_all <- merge(carroll_releases, carroll_bookings, by = c("inmate_id", "release_dt_tm", "yob"))
+carroll_adm_all <- merge(carroll_releases, carroll_bookings, by = c("inmate_id", "release_dt_tm"))
 
 # rename variables for consistency
 carroll_adm_all <- carroll_adm_all %>%
-  dplyr::select(id = unique_id,
+  dplyr::select(id = unique_person_id,
                 inmate_id,
                 yob,
                 race,
                 sex,
                 housing,
-                charge_offense_code = charge_code,
-                charge_desc = charge_description,
+                charge_code,
+                charge_desc = charge,
                 booking_date = booking_dt_tm,
-                booking_type = document_type,
+                booking_type,
                 release_date = release_dt_tm,
-                release_type = release_type,
-                release_status,
-                sentence_status,
+                release_type,
+                sentence_status = sentencing_status,
                 everything())
 
 # create FY year variable
@@ -87,12 +86,12 @@ carroll_booking_21 <- carroll_booking %>% filter(fy == 2021)
 # Save data
 ######
 
-# save rds data
-write_rds(carroll_adm,         file.path(sp_data_path, "carroll_adm.rds"))
-write_rds(carroll_booking,     file.path(sp_data_path, "carroll_booking.rds"))
-write_rds(carroll_sentence,    file.path(sp_data_path, "carroll_sentence.rds"))
-write_rds(carroll_race,        file.path(sp_data_path, "carroll_race.rds"))
-write_rds(carroll_sex,         file.path(sp_data_path, "carroll_sex.rds"))
-write_rds(carroll_heatmap,     file.path(sp_data_path, "carroll_heatmap.rds"))
-write_rds(carroll_hu_booking,  file.path(sp_data_path, "carroll_hu_booking.rds"))
-write_rds(carroll_hu_sentence, file.path(sp_data_path, "carroll_hu_sentence.rds"))
+# save data to sharepoint
+save(carroll_adm,         file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_adm.rds", sep = ""))
+save(carroll_booking,     file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_booking.rds", sep = ""))
+save(carroll_sentence,    file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_sentence.rds", sep = ""))
+save(carroll_race,        file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_race.rds", sep = ""))
+save(carroll_sex,         file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_sex.rds", sep = ""))
+save(carroll_heatmap,     file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_heatmap.rds", sep = ""))
+save(carroll_hu_booking,  file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_hu_booking.rds", sep = ""))
+save(carroll_hu_sentence, file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_hu_sentence.rds", sep = ""))

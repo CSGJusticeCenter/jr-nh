@@ -86,16 +86,28 @@ merrimack_booking_19 <- merrimack_booking %>% filter(fy == 2019)
 merrimack_booking_20 <- merrimack_booking %>% filter(fy == 2020)
 merrimack_booking_21 <- merrimack_booking %>% filter(fy == 2021)
 
+
+
+
+
+
+
+
+
+
+
+
+
 ######
 # Save data
 ######
 
-# save rds data
-write_rds(merrimack_adm,         file.path(sp_data_path, "merrimack_adm.rds"))
-write_rds(merrimack_booking,     file.path(sp_data_path, "merrimack_booking.rds"))
-write_rds(merrimack_sentence,    file.path(sp_data_path, "merrimack_sentence.rds"))
-write_rds(merrimack_race,        file.path(sp_data_path, "merrimack_race.rds"))
-write_rds(merrimack_sex,         file.path(sp_data_path, "merrimack_sex.rds"))
-write_rds(merrimack_heatmap,     file.path(sp_data_path, "merrimack_heatmap.rds"))
-write_rds(merrimack_hu_booking,  file.path(sp_data_path, "merrimack_hu_booking.rds"))
-write_rds(merrimack_hu_sentence, file.path(sp_data_path, "merrimack_hu_sentence.rds"))
+# save data to sharepoint
+save(merrimack_adm,         file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_adm.rds", sep = ""))
+save(merrimack_booking,     file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_booking.rds", sep = ""))
+save(merrimack_sentence,    file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_sentence.rds", sep = ""))
+save(merrimack_race,        file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_race.rds", sep = ""))
+save(merrimack_sex,         file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_sex.rds", sep = ""))
+save(merrimack_heatmap,     file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_heatmap.rds", sep = ""))
+save(merrimack_hu_booking,  file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_hu_booking.rds", sep = ""))
+save(merrimack_hu_sentence, file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_hu_sentence.rds", sep = ""))
