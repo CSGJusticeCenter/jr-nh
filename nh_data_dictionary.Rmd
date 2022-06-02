@@ -26,4 +26,4 @@ knitr::opts_chunk$set(
 theme_set(theme_minimal())
 ```
 
-Coming soon
+Coming soon.
