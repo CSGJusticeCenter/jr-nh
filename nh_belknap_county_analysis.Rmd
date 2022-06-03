@@ -82,8 +82,6 @@ fnc_freq_table(belknap_hu_booking, "Booking Type")
 
 ### Sentence Status
 
-Sentence status types of high utilizers (numbers represent individual bookings, not the number of individuals).  
-
 ```{r}
 fnc_freq_table(belknap_hu_sentence, "Sentence Status")
 ```
