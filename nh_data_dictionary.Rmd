@@ -28,19 +28,7 @@ knitr::opts_chunk$set(
 theme_set(theme_minimal())
 
 # load packages and pull data to create codebooks
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/02_import.R")
-source("data_cleaning/03_belknap.R")
-source("data_cleaning/04_carroll.R")
-source("data_cleaning/05_cheshire.R")
-source("data_cleaning/06_coos.R")
-source("data_cleaning/07_grafton.R")
-source("data_cleaning/08_hillsborough.R")
-source("data_cleaning/09_merrimack.R")
-source("data_cleaning/10_rockingham.R")
-source("data_cleaning/11_strafford.R")
-source("data_cleaning/12_sullivan.R")
+source("data_cleaning/13_dataframes.R")
 ```
 
 ## Belknap  

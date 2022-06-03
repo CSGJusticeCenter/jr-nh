@@ -10,6 +10,7 @@
 ############################################
 
 # set working directory to sharepoint where jail data is located
+source("data_cleaning/00_library.R")
 setwd(CSG_SP_PATH)
 
 #1 Belknap
