@@ -50,17 +50,17 @@ belknap_adm_all <- belknap_adm_all %>%
                         booking_date >= "2020-07-01" & booking_date <= "2021-06-30" ~ 2021),
          age = fy - yob,
          los = difftime(as.POSIXct(release_date), as.POSIXct(booking_date, tz="UTC"), units="days"),
-         # race = case_when(race == "A"  ~ "Asian or Pacific Islander",
-         #                  race == "B"  ~ "Black",
-         #                  race == "C"  ~ "White",
-         #                  race == "H"  ~ "Hispanic or Latino",
-         #                  race == "I"  ~ "American Indian or Alaskan Native",
-         #                  race == "NH" ~ "Native Hawaiin",
-         #                  race == "O"  ~ "Other",
-         #                  race == "P"  ~ "Asian or Pacific Islander",
-         #                  race == "U"  ~ "Unknown",
-         #                  race == "W"  ~ "White",
-         #                  race == "X"  ~ "X")
+         race = case_when(race == "A"  ~ "AAPI",
+                          race == "B"  ~ "Black",
+                          race == "C"  ~ "AAPI",
+                          race == "H"  ~ "Hispanic or Latino",
+                          race == "I"  ~ "AAPI",
+                          race == "NH" ~ "Unknown",
+                          race == "O"  ~ "Other",
+                          race == "P"  ~ "Other",
+                          race == "U"  ~ "Unknown",
+                          race == "W"  ~ "White",
+                          race == "X"  ~ "Unknown")
          ) %>%
   # remove booking outside of study timeframe
   filter(!is.na(fy))

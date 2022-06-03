@@ -49,11 +49,11 @@ carroll_adm_all <- carroll_adm_all %>%
                         booking_date >= "2020-07-01" & booking_date <= "2021-06-30" ~ 2021),
          age = fy - yob,
          los = difftime(as.POSIXct(release_date), as.POSIXct(booking_date, tz="UTC"), units="days"),
-         # race = case_when(race == "A" ~ "Asian or Pacific Islander",
-         #                  race == "B" ~ "Black",
-         #                  race == "I" ~ "American Indian or Alaskan Native",
-         #                  race == "U" ~ "Unknown",
-         #                  race == "W" ~ "White")
+         race = case_when(race == "A" ~ "AAPI",
+                          race == "B" ~ "Black",
+                          race == "I" ~ "American Indian or Alaskan Native",
+                          race == "U" ~ "Unknown",
+                          race == "W" ~ "White")
          ) %>%
   # remove booking outside of study timeframe
   filter(!is.na(fy))
