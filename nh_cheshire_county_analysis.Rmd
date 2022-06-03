@@ -62,6 +62,8 @@ fnc_freq_table(cheshire_sentence, "Sentence Status")
 
 # High Utilizers
 
+High utilizers are defined as individuals who were booked into jail more than 3 times in a fiscal year.  
+
 ### Demographics
 
 ```{r}

@@ -31,14 +31,15 @@ cheshire_adm_all <- cheshire_adm_all %>%
          charge = case_when(charge_desc == "PROTECTIVE CUSTODY" | charge_desc == "PROTECTIVE CUSTODY - DRUGS" ~ "PROTECTIVE CUSTODY", TRUE ~ charge_desc),
          age = fy - yob,
          los = difftime(as.POSIXct(release_date), as.POSIXct(booking_date, tz="UTC"), units="days"),
-         race = case_when(race == "A" ~ "Asian or Pacific Islander",
-                          race == "B" ~ "Black",
-                          race == "H" ~ "Hispanic or Latino",
-                          race == "I" ~ "American Indian or Alaskan Native",
-                          race == "L" ~ "Hispanic or Latino",
-                          race == "P" ~ "Asian or Pacific Islander",
-                          race == "U" ~ "Unknown",
-                          race == "W" ~ "White")) %>%
+         # race = case_when(race == "A" ~ "Asian or Pacific Islander",
+         #                  race == "B" ~ "Black",
+         #                  race == "H" ~ "Hispanic or Latino",
+         #                  race == "I" ~ "American Indian or Alaskan Native",
+         #                  race == "L" ~ "Hispanic or Latino",
+         #                  race == "P" ~ "Asian or Pacific Islander",
+         #                  race == "U" ~ "Unknown",
+         #                  race == "W" ~ "White")
+         ) %>%
   # remove booking outside of study timeframe
   filter(!is.na(fy))
 

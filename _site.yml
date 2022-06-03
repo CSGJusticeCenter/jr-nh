@@ -22,10 +22,14 @@ navbar:
           href: nh_medicaid_analysis.html
     - text: "County Reports"
       menu:
+        - text: "Belknap"
+          href: nh_belknap_county_analysis.html
         - text: "Carroll"
           href: nh_carroll_county_analysis.html
         - text: "Cheshire"
           href: nh_cheshire_county_analysis.html
+        - text: "Merrimack"
+          href: nh_merrimack_county_analysis.html
     - text: "Research"
       menu:
         - text: "To Do and Questions"

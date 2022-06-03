@@ -36,6 +36,28 @@ Charge Questions:
 - Do we need to determine which charges are sex, violent, drug, offense?  
 - Interested in part 1 violent crimes? 
 
-Cheshire Issues:  
+Belknap:  
 
-- Everyone has been indicated as "housed" which is likely a data entry or excel issue.  
+- Race categories: A, B, C, H, I, NH, O, P, U, W, X    
+- Booking date range: 2018-07-01 - 2021-06-30  
+- No data: Ethnicity, release type, sentence status  
+
+Carroll:  
+
+- Race categories: A, B, I, U, W   
+- Booking date range: 2018-07-01 - 2021-06-30  
+- No data: Ethnicity  
+
+Cheshire:  
+
+- Everyone has been indicated as "housed" which is likely a data entry or excel issue  
+- Race categories: A, B, H, I, L, P, U, W  
+- Booking date range: 2018-07-01 - 2021-06-29    
+- No data: Ethnicity, release type  
+
+Merrimack:  
+
+- Race categories:   
+- Date range: 2018-07-01 - 2021-06-30   
+- No data: Ethnicity, release type  
+

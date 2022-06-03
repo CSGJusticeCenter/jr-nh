@@ -15,3 +15,201 @@ source("data_cleaning/01_functions.R")
 ###################
 # Belknap County
 ###################
+
+# clean variable names
+belknap_adm_all <- clean_names(belknap_adm.xlsx)
+
+# rename variables for consistency
+belknap_adm_all <- belknap_adm_all %>%
+  dplyr::select(id = unique_person_id,
+                inmate_id,
+                yob = year_of_birth,
+                race,
+                ethnicity,
+                sex,
+                housing = housing_instability_or_homelessness_indicator,
+                # charge_code - needs a charge code bc the code and description are in one field
+                charge_desc = charged_offense_code_description_including_technical_violations_of_supervision,
+                booking_date,
+                booking_type,
+                release_date,
+                release_type,
+                sentence_status = sentencing_status,
+                everything())
+
+# change date formats
+belknap_adm_all$booking_date <- as.Date(belknap_adm_all$booking_date, format = "%m/%d/%Y")
+belknap_adm_all$release_date <- as.Date(belknap_adm_all$release_date, format = "%m/%d/%Y")
+
+# create FY year variable
+# will be able to filter by CY later
+belknap_adm_all <- belknap_adm_all %>%
+  mutate(fy = case_when(booking_date >= "2018-07-01" & booking_date <= "2019-06-30" ~ 2019,
+                        booking_date >= "2019-07-01" & booking_date <= "2020-06-30" ~ 2020,
+                        booking_date >= "2020-07-01" & booking_date <= "2021-06-30" ~ 2021),
+         age = fy - yob,
+         los = difftime(as.POSIXct(release_date), as.POSIXct(booking_date, tz="UTC"), units="days"),
+         # race = case_when(race == "A"  ~ "Asian or Pacific Islander",
+         #                  race == "B"  ~ "Black",
+         #                  race == "C"  ~ "White",
+         #                  race == "H"  ~ "Hispanic or Latino",
+         #                  race == "I"  ~ "American Indian or Alaskan Native",
+         #                  race == "NH" ~ "Native Hawaiin",
+         #                  race == "O"  ~ "Other",
+         #                  race == "P"  ~ "Asian or Pacific Islander",
+         #                  race == "U"  ~ "Unknown",
+         #                  race == "W"  ~ "White",
+         #                  race == "X"  ~ "X")
+         ) %>%
+  # remove booking outside of study timeframe
+  filter(!is.na(fy))
+
+# organize variables
+belknap_adm_all <- belknap_adm_all %>%
+  dplyr::select(id,
+                inmate_id,
+                yob,
+                race,
+                sex,
+                housing,
+                charge_desc,
+                booking_date,
+                booking_type,
+                release_date,
+                release_type,
+                sentence_status,
+                everything())
+
+# save long file that includes all charges
+belknap_adm_charges <- belknap_adm_all
+
+# remove charge codes and duplicates to get picture of cohort
+belknap_adm <- belknap_adm_all %>%
+  dplyr::select(inmate_id, race, yob, age, sex,
+                housing, sentence_status,
+                booking_date, los, fy) %>%
+  distinct()
+
+# remove charge codes and duplicates to get picture of cohort
+belknap_booking_all <- belknap_adm_all %>%
+  dplyr::select(inmate_id, race, yob, age, sex,
+                housing, booking_date, booking_type, los, fy) %>%
+  distinct()
+
+# sep by fiscal year
+belknap_adm_19 <- belknap_adm %>% filter(fy == 2019)
+belknap_adm_20 <- belknap_adm %>% filter(fy == 2020)
+belknap_adm_21 <- belknap_adm %>% filter(fy == 2021)
+
+# sep by fy year
+belknap_booking_19 <- belknap_booking_all %>% filter(fy == 2019)
+belknap_booking_20 <- belknap_booking_all %>% filter(fy == 2020)
+belknap_booking_21 <- belknap_booking_all %>% filter(fy == 2021)
+
+######
+# Race
+######
+
+# custom function to create table
+belknap_race <- fnc_race_table(belknap_adm_19, belknap_adm_20, belknap_adm_21)
+
+######
+# Sex
+######
+
+# custom function to create table
+belknap_sex <- fnc_sex_table(belknap_adm_19, belknap_adm_20, belknap_adm_21)
+
+######
+# Data for booking heatmap
+######
+
+# create data for heatmap showing the number of bookings by month and year
+df <- belknap_adm
+df$ymd <- lubridate::ymd(as.character(df$booking_date))
+df$month <- lubridate::month(df$ymd, label = TRUE)
+df$year <- lubridate::year(df$ymd)
+df$wday <- lubridate::wday(df$ymd, label = TRUE)
+df$hour <- lubridate::hour(df$ymd)
+
+belknap_heatmap <- ddply(df, c("year", "month"), summarise, N = length(ymd))
+
+#reverse order of months for easier graphing
+belknap_heatmap$month <- factor(belknap_heatmap$month, levels=rev(levels(belknap_heatmap$month)))
+
+######
+# Booking Types
+######
+
+# custom function to create table
+belknap_booking <- fnc_booking_table(belknap_booking_19, belknap_booking_20, belknap_booking_21)
+
+######
+# Sentence Statuses
+######
+
+# custom function to create table
+belknap_sentence <- fnc_sentence_table(belknap_adm_19, belknap_adm_20, belknap_adm_21)
+
+######
+# Length of Stay
+######
+
+# custom function to create table
+belknap_los <- fnc_los_table(belknap_adm_19, belknap_adm_20, belknap_adm_21)
+
+##############################################################################
+# High Utilizers - more than 2 bookings in a year?
+##############################################################################
+
+# custom function to create high utilizers dataframe
+belknap_high_utilizers_sentence <- fnc_hu_setup(belknap_adm)
+belknap_high_utilizers_booking  <- fnc_hu_setup(belknap_booking_all)
+
+# sep by fiscal year
+belknap_high_utilizers_sentence_19 <- belknap_high_utilizers_sentence %>% filter(fy == 2019)
+belknap_high_utilizers_sentence_20 <- belknap_high_utilizers_sentence %>% filter(fy == 2020)
+belknap_high_utilizers_sentence_21 <- belknap_high_utilizers_sentence %>% filter(fy == 2021)
+
+# sep by fiscal year
+belknap_high_utilizers_booking_19 <- belknap_high_utilizers_booking %>% filter(fy == 2019)
+belknap_high_utilizers_booking_20 <- belknap_high_utilizers_booking %>% filter(fy == 2020)
+belknap_high_utilizers_booking_21 <- belknap_high_utilizers_booking %>% filter(fy == 2021)
+
+######
+# Demographics of High Utilizers
+######
+
+# custom function to create table
+belknap_hu_race <- fnc_race_table(belknap_high_utilizers_booking_19, belknap_high_utilizers_booking_20, belknap_high_utilizers_booking_21)
+belknap_hu_sex  <- fnc_sex_table(belknap_high_utilizers_booking_19, belknap_high_utilizers_booking_20, belknap_high_utilizers_booking_21)
+
+######
+# Booking Types for High Utilizers
+######
+
+# custom function to create table
+belknap_hu_booking <- fnc_booking_table(belknap_high_utilizers_booking_19, belknap_high_utilizers_booking_20, belknap_high_utilizers_booking_21)
+
+######
+# Sentence Statuses for High Utilizers
+######
+
+# custom function to create table
+belknap_hu_sentence <- fnc_sentence_table(belknap_high_utilizers_sentence_19, belknap_high_utilizers_sentence_20, belknap_high_utilizers_sentence_21)
+
+######
+# Save data
+######
+
+# save data to sharepoint
+save(belknap_adm,         file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_adm.rds", sep = ""))
+save(belknap_booking,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_booking.rds", sep = ""))
+save(belknap_sentence,    file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_sentence.rds", sep = ""))
+save(belknap_race,        file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_race.rds", sep = ""))
+save(belknap_sex,         file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_sex.rds", sep = ""))
+save(belknap_heatmap,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_heatmap.rds", sep = ""))
+save(belknap_hu_booking,  file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_booking.rds", sep = ""))
+save(belknap_hu_sentence, file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_sentence.rds", sep = ""))
+save(belknap_hu_race,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_race.rds", sep = ""))
+save(belknap_hu_sex,      file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_sex.rds", sep = ""))

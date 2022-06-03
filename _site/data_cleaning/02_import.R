@@ -16,7 +16,7 @@ source("data_cleaning/00_library.R")
 
 # set working directory
 setwd(CSG_SP_PATH)
-belknap.xlsx <- read_csv("Data/Belknap County/Jail History Admin Form - Belknap DOC.csv")
+belknap_adm.xlsx <- read_csv("Data/Belknap County/Jail History Admin Form - Belknap DOC.csv")
 
 ###################
 # Carroll County

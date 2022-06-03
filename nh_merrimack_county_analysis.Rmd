@@ -1,5 +1,5 @@
 ---
-title: "Carroll County Trends"
+title: "Merrimack County Trends"
 output: 
   distill::distill_article:
     toc: true
@@ -37,27 +37,27 @@ theme_set(theme_minimal())
 ### Demographics
 
 ```{r}
-fnc_freq_table(carroll_race, "Race/Ethnicity") 
+fnc_freq_table(merrimack_race, "Race/Ethnicity") 
 ```
 
 ```{r}
-fnc_freq_table(carroll_sex, "Sex")
+fnc_freq_table(merrimack_sex, "Sex")
 ```
 
 ### Booking Type
 
 ```{r}
-fnc_booking_heatmap(carroll_heatmap)
+fnc_booking_heatmap(merrimack_heatmap)
 ```
 
 ```{r}
-fnc_freq_table(carroll_booking, "Booking Type")
+fnc_freq_table(merrimack_booking, "Booking Type")
 ```
 
 ### Sentence Status
 
 ```{r}
-fnc_freq_table(carroll_sentence, "Sentence Status")
+fnc_freq_table(merrimack_sentence, "Sentence Status")
 ```
 
 # High Utilizers
@@ -67,17 +67,17 @@ High utilizers are defined as individuals who were booked into jail more than 3 
 ### Demographics
 
 ```{r}
-fnc_freq_table(carroll_hu_race, "Race/Ethnicity") 
+fnc_freq_table(merrimack_hu_race, "Race/Ethnicity") 
 ```
 
 ```{r}
-fnc_freq_table(carroll_hu_sex, "Sex")
+fnc_freq_table(merrimack_hu_sex, "Sex")
 ```
 
 ### Booking Type
 
 ```{r}
-fnc_freq_table(carroll_hu_booking, "Booking Type")
+fnc_freq_table(merrimack_hu_booking, "Booking Type")
 ```
 
 ### Sentence Status
@@ -85,5 +85,5 @@ fnc_freq_table(carroll_hu_booking, "Booking Type")
 Sentence status types of high utilizers (numbers represent individual bookings, not the number of individuals).  
 
 ```{r}
-fnc_freq_table(carroll_hu_sentence, "Sentence Status")
+fnc_freq_table(merrimack_hu_sentence, "Sentence Status")
 ```
