@@ -45,7 +45,7 @@ theme_set(theme_minimal())
 - Race categories: A, B, I, U, W   
 - Booking date range: 2018-07-01 - 2021-06-30  
 - Housing: "Housed", "Unhoused"  
-- No data: Ethnicity  
+- No data: Ethnicity, release type is mostly missing
 
 ## Cheshire  
 

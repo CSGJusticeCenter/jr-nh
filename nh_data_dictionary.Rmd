@@ -29,25 +29,72 @@ theme_set(theme_minimal())
 
 # load packages and pull data to create codebooks
 source("data_cleaning/00_library.R")
-source("data_cleaning/13_dataframes.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/02_import.R")
+source("data_cleaning/03_belknap.R")
+source("data_cleaning/04_carroll.R")
+source("data_cleaning/05_cheshire.R")
+source("data_cleaning/06_coos.R")
+source("data_cleaning/07_grafton.R")
+source("data_cleaning/08_hillsborough.R")
+source("data_cleaning/09_merrimack.R")
+source("data_cleaning/10_rockingham.R")
+source("data_cleaning/11_strafford.R")
+source("data_cleaning/12_sullivan.R")
 ```
 
 ## Belknap  
+
+A - Asian  
+B - Black   
+C - Chinese  
+H - Hispanic  
+I - Indian  
+NH - DELETE  
+O - Other  
+P - Portuguese  
+U - Unknown  
+W - White  
+X - DELETE  
+J - Japanese  
+
 ```{r}
 view_df(belknap_adm_all)
 ```
 
 ## Carroll  
+
 ```{r}
 view_df(carroll_adm_all)
 ```
 
 ## Cheshire  
+
+A - Asian  
+B - Black  
+H - Hispanic  
+I - Native American  
+L - Latin / Hispanic  
+P - Hawaiian or pacific islander  
+U - Unknown  
+W - White  
+
 ```{r}
 view_df(cheshire_adm_all)
 ```
 
 ## Merrimack  
+
+A - Asian  
+B - Black or African American  
+H - Hispanic or Latino  
+I - American Indian or Alaskan  
+P - Native Hawaiian or Other Pacific Islander  
+U - Unknown  
+W - White  
+O - Unknown to data contact    
+X - Unknown to data contact  
+
 ```{r}
 view_df(merrimack_adm_all)
 ```
