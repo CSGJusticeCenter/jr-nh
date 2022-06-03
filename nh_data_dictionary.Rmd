@@ -15,7 +15,9 @@ libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer"
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE,
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
   dev = "ragg_png",
   cache = FALSE
   )
@@ -24,6 +26,29 @@ knitr::opts_chunk$set(
 ```{r include=FALSE}
 ### set theme
 theme_set(theme_minimal())
+
+# load packages and pull data to create codebooks
+source("data_cleaning/00_library.R")
+source("data_cleaning/13_dataframes.R")
 ```
 
-Coming soon.
+## Belknap  
+```{r}
+view_df(belknap_adm_all)
+```
+
+## Carroll  
+```{r}
+view_df(carroll_adm_all)
+```
+
+## Cheshire  
+```{r}
+view_df(cheshire_adm_all)
+```
+
+## Merrimack  
+```{r}
+view_df(merrimack_adm_all)
+```
+

@@ -9,6 +9,7 @@
 ############################################
 
 # load packages and custom functions
+setwd(L_PATH)
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 
@@ -180,10 +181,49 @@ merrimack_hu_booking <- fnc_booking_table(merrimack_high_utilizers_booking_19, m
 merrimack_hu_sentence <- fnc_sentence_table(merrimack_high_utilizers_sentence_19, merrimack_high_utilizers_sentence_20, merrimack_high_utilizers_sentence_21)
 
 ######
+# Create data dictionary
+######
+
+# change data types
+merrimack_adm_all$id <- as.factor(merrimack_adm_all$id)
+# merrimack_adm_all$inmate_id <- as.factor(merrimack_adm_all$inmate_id)
+merrimack_adm_all$yob <- as.numeric(merrimack_adm_all$yob)
+merrimack_adm_all$race <- as.factor(merrimack_adm_all$race)
+merrimack_adm_all$sex <- as.factor(merrimack_adm_all$sex)
+merrimack_adm_all$housing <- as.factor(merrimack_adm_all$housing)
+merrimack_adm_all$charge_desc <- as.factor(merrimack_adm_all$charge_desc)
+merrimack_adm_all$booking_type <- as.factor(merrimack_adm_all$booking_type)
+merrimack_adm_all$sentence_status <- as.factor(merrimack_adm_all$sentence_status)
+merrimack_adm_all$fy <- as.factor(merrimack_adm_all$fy)
+merrimack_adm_all$age <- as.numeric(merrimack_adm_all$age)
+merrimack_adm_all$los <- as.numeric(merrimack_adm_all$los)
+
+# data labels
+var.labels <- c(id = "Unique ID",
+                inmate_id = "Inmate ID",
+                yob  = "Year of birth",
+                race  = "Race",
+                sex = "Sex",
+                housing = "Housing indicator",
+                charge_desc = "Charge description",
+                booking_date = "Booking date",
+                booking_type = "Booking type",
+                release_date = "Release date",
+                sentence_status = "Sentence status",
+                fy = "Fiscal year",
+                age = "Age (years)",
+                los = "Length of stay (days)"
+)
+
+# add labels to data
+merrimack_adm_all <- labelled::set_variable_labels(merrimack_adm_all, .labels = var.labels)
+
+######
 # Save data
 ######
 
 # save data to sharepoint
+save(merrimack_adm_all,     file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_adm_all.rds", sep = ""))
 save(merrimack_adm,         file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_adm.rds", sep = ""))
 save(merrimack_booking,     file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_booking.rds", sep = ""))
 save(merrimack_sentence,    file=paste0(CSG_SP_PATH, "/Data/r_data/merrimack_sentence.rds", sep = ""))

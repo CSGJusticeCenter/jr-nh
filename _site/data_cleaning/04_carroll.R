@@ -9,6 +9,7 @@
 ############################################
 
 # load packages and custom functions
+setwd(L_PATH)
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 
@@ -176,10 +177,55 @@ carroll_hu_booking <- fnc_booking_table(carroll_high_utilizers_booking_19, carro
 carroll_hu_sentence <- fnc_sentence_table(carroll_high_utilizers_sentence_19, carroll_high_utilizers_sentence_20, carroll_high_utilizers_sentence_21)
 
 ######
+# Create data dictionary
+######
+
+# change data types
+carroll_adm_all$id <- as.factor(carroll_adm_all$id)
+# carroll_adm_all$inmate_id <- as.factor(carroll_adm_all$inmate_id)
+carroll_adm_all$yob <- as.numeric(carroll_adm_all$yob)
+carroll_adm_all$race <- as.factor(carroll_adm_all$race)
+carroll_adm_all$sex <- as.factor(carroll_adm_all$sex)
+carroll_adm_all$housing <- as.factor(carroll_adm_all$housing)
+carroll_adm_all$charge_code <- as.factor(carroll_adm_all$charge_code)
+carroll_adm_all$charge_desc <- as.factor(carroll_adm_all$charge_desc)
+carroll_adm_all$booking_type <- as.factor(carroll_adm_all$booking_type)
+carroll_adm_all$release_type <- as.factor(carroll_adm_all$release_type)
+carroll_adm_all$sentence_status <- as.factor(carroll_adm_all$sentence_status)
+carroll_adm_all$transfer_type <- as.factor(carroll_adm_all$transfer_type)
+carroll_adm_all$fy <- as.factor(carroll_adm_all$fy)
+carroll_adm_all$age <- as.numeric(carroll_adm_all$age)
+carroll_adm_all$los <- as.numeric(carroll_adm_all$los)
+
+# data labels
+var.labels <- c(id = "Unique ID",
+                inmate_id = "Inmate ID",
+                yob  = "Year of birth",
+                race  = "Race",
+                sex = "Sex",
+                housing = "Housing indicator",
+                charge_code = "Charge code",
+                charge_desc = "Charge description",
+                booking_date = "Booking date",
+                booking_type = "Booking type",
+                release_date = "Release date",
+                release_type = "Release type",
+                sentence_status = "Sentence status",
+                transfer_type = "Transfer type",
+                fy = "Fiscal year",
+                age = "Age (years)",
+                los = "Length of stay (days)"
+)
+
+# add labels to data
+carroll_adm_all <- labelled::set_variable_labels(carroll_adm_all, .labels = var.labels)
+
+######
 # Save data
 ######
 
 # save data to sharepoint
+save(carroll_adm_all,     file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_adm_all.rds", sep = ""))
 save(carroll_adm,         file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_adm.rds", sep = ""))
 save(carroll_booking,     file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_booking.rds", sep = ""))
 save(carroll_sentence,    file=paste0(CSG_SP_PATH, "/Data/r_data/carroll_sentence.rds", sep = ""))

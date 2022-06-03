@@ -9,6 +9,7 @@
 ############################################
 
 # load packages and custom functions
+setwd(L_PATH)
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 
@@ -24,11 +25,12 @@ cheshire_adm_all <- clean_names(cheshire_adm.xlsx)
 cheshire_adm_all <- cheshire_adm_all %>%
   dplyr::rename(charge_desc = charged_offense_code_description_including_technical_violations_of_supervision,
                 housing = housing_instability_or_homelessness_indicator,
-                charge_offense_code = charge_offence_code) %>%
+                charge_code = charge_offence_code,
+                transfer_type = transfer_type_if_applicable) %>%
   mutate(fy = case_when(booking_date >= "2018-07-01" & booking_date <= "2019-06-30" ~ 2019,
                         booking_date >= "2019-07-01" & booking_date <= "2020-06-30" ~ 2020,
                         booking_date >= "2020-07-01" & booking_date <= "2021-06-30" ~ 2021),
-         charge = case_when(charge_desc == "PROTECTIVE CUSTODY" | charge_desc == "PROTECTIVE CUSTODY - DRUGS" ~ "PROTECTIVE CUSTODY", TRUE ~ charge_desc),
+         charge_desc = case_when(charge_desc == "PROTECTIVE CUSTODY" | charge_desc == "PROTECTIVE CUSTODY - DRUGS" ~ "PROTECTIVE CUSTODY", TRUE ~ charge_desc),
          age = fy - yob,
          los = difftime(as.POSIXct(release_date), as.POSIXct(booking_date, tz="UTC"), units="days"),
          # race = case_when(race == "A" ~ "Asian or Pacific Islander",
@@ -49,11 +51,12 @@ cheshire_adm_all <- cheshire_adm_all %>%
          inmate_id,
          yob,
          race,
+         ethnicity,
          sex,
          housing,
-         charge_offense_code,
+         charge_code,
          charge_desc,
-         charge,
+         #charge,
          booking_date,
          booking_type,
          release_date,
@@ -180,10 +183,57 @@ cheshire_hu_booking <- fnc_booking_table(cheshire_high_utilizers_booking_19, che
 cheshire_hu_sentence <- fnc_sentence_table(cheshire_high_utilizers_sentence_19, cheshire_high_utilizers_sentence_20, cheshire_high_utilizers_sentence_21)
 
 ######
+# Create data dictionary
+######
+
+# change data types
+cheshire_adm_all$id <- as.factor(cheshire_adm_all$id)
+# cheshire_adm_all$inmate_id <- as.factor(cheshire_adm_all$inmate_id)
+cheshire_adm_all$yob <- as.numeric(cheshire_adm_all$yob)
+cheshire_adm_all$race <- as.factor(cheshire_adm_all$race)
+cheshire_adm_all$ethnicity <- as.factor(cheshire_adm_all$ethnicity)
+cheshire_adm_all$sex <- as.factor(cheshire_adm_all$sex)
+cheshire_adm_all$housing <- as.factor(cheshire_adm_all$housing)
+cheshire_adm_all$charge_code <- as.factor(cheshire_adm_all$charge_code)
+cheshire_adm_all$charge_desc <- as.factor(cheshire_adm_all$charge_desc)
+cheshire_adm_all$booking_type <- as.factor(cheshire_adm_all$booking_type)
+cheshire_adm_all$release_type <- as.factor(cheshire_adm_all$release_type)
+cheshire_adm_all$sentence_status <- as.factor(cheshire_adm_all$sentence_status)
+cheshire_adm_all$transfer_type <- as.factor(cheshire_adm_all$transfer_type)
+cheshire_adm_all$fy <- as.factor(cheshire_adm_all$fy)
+cheshire_adm_all$age <- as.numeric(cheshire_adm_all$age)
+cheshire_adm_all$los <- as.numeric(cheshire_adm_all$los)
+
+# data labels
+var.labels <- c(id = "Unique ID",
+                inmate_id = "Inmate ID",
+                yob  = "Year of birth",
+                race  = "Race",
+                ethnicity  = "Ethnicity",
+                sex = "Sex",
+                housing = "Housing indicator",
+                charge_code = "Charge code",
+                charge_desc = "Charge description",
+                booking_date = "Booking date",
+                booking_type = "Booking type",
+                release_date = "Release date",
+                release_type = "Release type",
+                sentence_status = "Sentence status",
+                transfer_type = "Transfer type",
+                fy = "Fiscal year",
+                age = "Age (years)",
+                los = "Length of stay (days)"
+)
+
+# add labels to data
+cheshire_adm_all <- labelled::set_variable_labels(cheshire_adm_all, .labels = var.labels)
+
+######
 # Save data
 ######
 
 # save data to sharepoint
+save(cheshire_adm_all,     file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_adm_all.rds", sep = ""))
 save(cheshire_adm,         file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_adm.rds", sep = ""))
 save(cheshire_booking,     file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_booking.rds", sep = ""))
 save(cheshire_sentence,    file=paste0(CSG_SP_PATH, "/Data/r_data/cheshire_sentence.rds", sep = ""))

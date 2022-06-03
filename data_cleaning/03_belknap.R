@@ -9,6 +9,7 @@
 ############################################
 
 # load packages and custom functions
+setwd(L_PATH)
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 
@@ -70,6 +71,7 @@ belknap_adm_all <- belknap_adm_all %>%
                 inmate_id,
                 yob,
                 race,
+                ethnicity,
                 sex,
                 housing,
                 charge_desc,
@@ -199,10 +201,53 @@ belknap_hu_booking <- fnc_booking_table(belknap_high_utilizers_booking_19, belkn
 belknap_hu_sentence <- fnc_sentence_table(belknap_high_utilizers_sentence_19, belknap_high_utilizers_sentence_20, belknap_high_utilizers_sentence_21)
 
 ######
+# Create data dictionary
+######
+
+# change data types
+belknap_adm_all$id <- as.factor(belknap_adm_all$id)
+# belknap_adm_all$inmate_id <- a(belknap_adm_all$inmate_id)
+belknap_adm_all$yob <- as.numeric(belknap_adm_all$yob)
+belknap_adm_all$race <- as.factor(belknap_adm_all$race)
+belknap_adm_all$ethnicity <- as.factor(belknap_adm_all$ethnicity)
+belknap_adm_all$sex <- as.factor(belknap_adm_all$sex)
+belknap_adm_all$housing <- as.factor(belknap_adm_all$housing)
+belknap_adm_all$charge_desc <- as.factor(belknap_adm_all$charge_desc)
+belknap_adm_all$booking_type <- as.factor(belknap_adm_all$booking_type)
+belknap_adm_all$release_type <- as.factor(belknap_adm_all$release_type)
+belknap_adm_all$sentence_status <- as.factor(belknap_adm_all$sentence_status)
+belknap_adm_all$fy <- as.factor(belknap_adm_all$fy)
+belknap_adm_all$age <- as.numeric(belknap_adm_all$age)
+belknap_adm_all$los <- as.numeric(belknap_adm_all$los)
+
+# data labels
+var.labels <- c(id = "Unique ID",
+                inmate_id = "Inmate ID",
+                yob  = "Year of birth",
+                race  = "Race",
+                ethnicity = "Ethnicity",
+                sex = "Sex",
+                housing = "Housing indicator",
+                charge_desc = "Charge description",
+                booking_date = "Booking date",
+                booking_type = "Booking type",
+                release_date = "Release date",
+                release_type = "Release type",
+                sentence_status = "Sentence status",
+                fy = "Fiscal year",
+                age = "Age (years)",
+                los = "Length of stay (days)"
+)
+
+# add labels to data
+belknap_adm_all <- labelled::set_variable_labels(belknap_adm_all, .labels = var.labels)
+
+######
 # Save data
 ######
 
 # save data to sharepoint
+save(belknap_adm_all,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_adm_all.rds", sep = ""))
 save(belknap_adm,         file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_adm.rds", sep = ""))
 save(belknap_booking,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_booking.rds", sep = ""))
 save(belknap_sentence,    file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_sentence.rds", sep = ""))

@@ -13,6 +13,7 @@
 setwd(CSG_SP_PATH)
 
 #1 Belknap
+load(file="Data/r_data/belknap_adm_all.rds")
 load(file="Data/r_data/belknap_adm.rds")
 load(file="Data/r_data/belknap_booking.rds")
 load(file="Data/r_data/belknap_sentence.rds")
@@ -25,6 +26,7 @@ load(file="Data/r_data/belknap_hu_race.rds")
 load(file="Data/r_data/belknap_hu_sex.rds")
 
 #2 Carroll
+load(file="Data/r_data/carroll_adm_all.rds")
 load(file="Data/r_data/carroll_adm.rds")
 load(file="Data/r_data/carroll_booking.rds")
 load(file="Data/r_data/carroll_sentence.rds")
@@ -37,6 +39,7 @@ load(file="Data/r_data/carroll_hu_race.rds")
 load(file="Data/r_data/carroll_hu_sex.rds")
 
 #3 Cheshire
+load(file="Data/r_data/cheshire_adm_all.rds")
 load(file="Data/r_data/cheshire_adm.rds")
 load(file="Data/r_data/cheshire_booking.rds")
 load(file="Data/r_data/cheshire_sentence.rds")
@@ -55,6 +58,7 @@ load(file="Data/r_data/cheshire_hu_sex.rds")
 #6 Hillsborough
 
 #7 Merrimack
+load(file="Data/r_data/merrimack_adm_all.rds")
 load(file="Data/r_data/merrimack_adm.rds")
 load(file="Data/r_data/merrimack_booking.rds")
 load(file="Data/r_data/merrimack_sentence.rds")

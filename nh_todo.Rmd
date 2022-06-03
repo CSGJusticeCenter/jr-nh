@@ -27,34 +27,34 @@ theme_set(theme_minimal())
 ```
 
 
-## Questions:  
+## Questions  
 
 - Should LOS include PC holds? Weekends?  
 - Do we need to determine which charges are sex, violent, or drug offense?  
 - Interested in part 1 violent crimes? 
 
-## Belknap:  
+## Belknap  
 
 - Race categories: A, B, C, H, I, NH, O, P, U, W, X    
 - Booking date range: 2018-07-01 - 2021-06-30  
 - Housing: "Housed", "Unhoused"  
 - No data: Ethnicity, release type, sentence status  
 
-## Carroll:  
+## Carroll  
 
 - Race categories: A, B, I, U, W   
 - Booking date range: 2018-07-01 - 2021-06-30  
 - Housing: "Housed", "Unhoused"  
 - No data: Ethnicity  
 
-## Cheshire:  
+## Cheshire  
 
 - Race categories: A, B, H, I, L, P, U, W   
 - Booking date range: 2018-07-01 - 2021-06-29    
 - Housing: All "Housed" - likely a data entry or excel issue  
 - No data: Ethnicity, release type  
 
-## Merrimack:  
+## Merrimack  
 
 - Race categories: A, B, H, I, O, P, U, W, X     
 - Date range: 2018-07-01 - 2021-06-30   
