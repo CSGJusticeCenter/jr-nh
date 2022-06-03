@@ -182,7 +182,7 @@ carroll_hu_sentence <- fnc_sentence_table(carroll_high_utilizers_sentence_19, ca
 
 # change data types
 carroll_adm_all$id <- as.factor(carroll_adm_all$id)
-# carroll_adm_all$inmate_id <- as.factor(carroll_adm_all$inmate_id)
+carroll_adm_all$inmate_id <- as.character(carroll_adm_all$inmate_id)
 carroll_adm_all$yob <- as.numeric(carroll_adm_all$yob)
 carroll_adm_all$race <- as.factor(carroll_adm_all$race)
 carroll_adm_all$sex <- as.factor(carroll_adm_all$sex)

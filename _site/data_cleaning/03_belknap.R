@@ -206,7 +206,7 @@ belknap_hu_sentence <- fnc_sentence_table(belknap_high_utilizers_sentence_19, be
 
 # change data types
 belknap_adm_all$id <- as.factor(belknap_adm_all$id)
-# belknap_adm_all$inmate_id <- a(belknap_adm_all$inmate_id)
+belknap_adm_all$inmate_id <- as.character(belknap_adm_all$inmate_id)
 belknap_adm_all$yob <- as.numeric(belknap_adm_all$yob)
 belknap_adm_all$race <- as.factor(belknap_adm_all$race)
 belknap_adm_all$ethnicity <- as.factor(belknap_adm_all$ethnicity)

@@ -186,7 +186,7 @@ merrimack_hu_sentence <- fnc_sentence_table(merrimack_high_utilizers_sentence_19
 
 # change data types
 merrimack_adm_all$id <- as.factor(merrimack_adm_all$id)
-# merrimack_adm_all$inmate_id <- as.factor(merrimack_adm_all$inmate_id)
+merrimack_adm_all$inmate_id <- as.character(merrimack_adm_all$inmate_id)
 merrimack_adm_all$yob <- as.numeric(merrimack_adm_all$yob)
 merrimack_adm_all$race <- as.factor(merrimack_adm_all$race)
 merrimack_adm_all$sex <- as.factor(merrimack_adm_all$sex)

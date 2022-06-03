@@ -188,7 +188,7 @@ cheshire_hu_sentence <- fnc_sentence_table(cheshire_high_utilizers_sentence_19, 
 
 # change data types
 cheshire_adm_all$id <- as.factor(cheshire_adm_all$id)
-# cheshire_adm_all$inmate_id <- as.factor(cheshire_adm_all$inmate_id)
+cheshire_adm_all$inmate_id <- as.character(cheshire_adm_all$inmate_id)
 cheshire_adm_all$yob <- as.numeric(cheshire_adm_all$yob)
 cheshire_adm_all$race <- as.factor(cheshire_adm_all$race)
 cheshire_adm_all$ethnicity <- as.factor(cheshire_adm_all$ethnicity)
