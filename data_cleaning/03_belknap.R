@@ -109,6 +109,22 @@ belknap_booking_20 <- belknap_booking_all %>% filter(fy == 2020)
 belknap_booking_21 <- belknap_booking_all %>% filter(fy == 2021)
 
 ######
+# PC holds over time
+######
+
+belknap_booking_all$month_year <-format(belknap_booking_all$booking_date,'%Y-%m')
+
+belknap_pch <- belknap_booking_all %>%
+  filter(booking_type == "PROTECTIVE CUSTODY") %>%
+  dplyr::group_by(month_year) %>%
+  dplyr::summarise(total = n())
+
+belknap_pc_highchart <- belknap_pch %>% hchart(
+  'line', hcaes(x = month_year, y = total),
+  color = "steelblue"
+)
+
+######
 # Race
 ######
 
@@ -247,14 +263,17 @@ belknap_adm_all <- labelled::set_variable_labels(belknap_adm_all, .labels = var.
 ######
 
 # save data to sharepoint
-save(belknap_adm_all,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_adm_all.rds", sep = ""))
-save(belknap_adm,         file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_adm.rds", sep = ""))
-save(belknap_booking,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_booking.rds", sep = ""))
-save(belknap_sentence,    file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_sentence.rds", sep = ""))
-save(belknap_race,        file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_race.rds", sep = ""))
-save(belknap_sex,         file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_sex.rds", sep = ""))
-save(belknap_heatmap,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_heatmap.rds", sep = ""))
-save(belknap_hu_booking,  file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_booking.rds", sep = ""))
-save(belknap_hu_sentence, file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_sentence.rds", sep = ""))
-save(belknap_hu_race,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_race.rds", sep = ""))
-save(belknap_hu_sex,      file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_sex.rds", sep = ""))
+save(belknap_adm_all,      file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_adm_all.rds", sep = ""))
+save(belknap_adm,          file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_adm.rds", sep = ""))
+save(belknap_booking,      file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_booking.rds", sep = ""))
+save(belknap_sentence,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_sentence.rds", sep = ""))
+save(belknap_race,         file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_race.rds", sep = ""))
+save(belknap_sex,          file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_sex.rds", sep = ""))
+save(belknap_heatmap,      file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_heatmap.rds", sep = ""))
+save(belknap_hu_booking,   file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_booking.rds", sep = ""))
+save(belknap_hu_sentence,  file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_sentence.rds", sep = ""))
+save(belknap_hu_race,      file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_race.rds", sep = ""))
+save(belknap_hu_sex,       file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_sex.rds", sep = ""))
+
+# save plots to sharepoint
+save(belknap_pc_highchart, file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_pc_highchart.rds", sep = ""))
