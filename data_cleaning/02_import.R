@@ -14,24 +14,22 @@ source("data_cleaning/00_library.R")
 # Belknap County
 ###################
 
-# set working directory
-setwd(CSG_SP_PATH)
-belknap_adm.xlsx <- read_csv("Data/Belknap County/Jail History Admin Form - Belknap DOC.csv")
+belknap_adm.xlsx <- read_csv(file=paste0(sp_data_path, "/Data/Belknap County/Jail History Admin Form - Belknap DOC.csv"))
 
 ###################
 # Carroll County
 ###################
 
-carroll_releases.xlsx <- read_excel("Data/Carroll County/CSG release data 7.1.2018-6.30.2021.xls")
-carroll_bookings.xlsx <- read_excel("Data/Carroll County/CSG data 7.1.2018-6.30-2021.xls")
+carroll_releases.xlsx <- read_excel(paste0(sp_data_path, "/Data/Carroll County/CSG release data 7.1.2018-6.30.2021.xls"))
+carroll_bookings.xlsx <- read_excel(paste0(sp_data_path, "/Data/Carroll County/CSG data 7.1.2018-6.30-2021.xls"))
 
 ###################
 # Cheshire County
 ###################
 
-cheshire_adm.xlsx      <- read_excel("Data/Cheshire County/CSG Jail Data D-IDENT.xlsx")
-cheshire_prog.xlsx     <- read_excel("Data/Cheshire County/MRT Attendance Logs CSG.xlsx")
-cheshire_mh_stats.xlsx <- read_excel("Data/Cheshire County/AAA MH & SU STATS CSG.xls")
+cheshire_adm.xlsx      <- read_excel(paste0(sp_data_path, "/Data/Cheshire County/CSG Jail Data D-IDENT.xlsx"))
+cheshire_prog.xlsx     <- read_excel(paste0(sp_data_path, "/Data/Cheshire County/MRT Attendance Logs CSG.xlsx"))
+cheshire_mh_stats.xlsx <- read_excel(paste0(sp_data_path, "/Data/Cheshire County/AAA MH & SU STATS CSG.xls"))
 
 ###################
 # Coos County
@@ -52,7 +50,7 @@ cheshire_mh_stats.xlsx <- read_excel("Data/Cheshire County/AAA MH & SU STATS CSG
 # Merrimack County
 ###################
 
-merrimack_adm.xlsx <- read_excel("Data/Merrimack County/Data Field 2 CSG 2019 to 2021 (2).xlsx")
+merrimack_adm.xlsx <- read_excel(paste0(sp_data_path, "/Data/Merrimack County/Data Field 2 CSG 2019 to 2021 (2).xlsx"))
 
 ###################
 # Rockingham County
@@ -67,10 +65,3 @@ merrimack_adm.xlsx <- read_excel("Data/Merrimack County/Data Field 2 CSG 2019 to
 ###################
 # Sullivan County
 ###################
-
-
-###################
-# Set working directory
-###################
-
-setwd(L_PATH)
