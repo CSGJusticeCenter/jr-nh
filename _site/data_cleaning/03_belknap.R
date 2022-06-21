@@ -9,7 +9,6 @@
 ############################################
 
 # load packages and custom functions
-setwd(L_PATH)
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 
@@ -61,7 +60,7 @@ belknap_adm_all <- belknap_adm_all %>%
                           race == "U"  ~ "Unknown",
                           race == "W"  ~ "White",
                           race == "X"  ~ "Unknown")
-         ) %>%
+  ) %>%
   # remove booking outside of study timeframe
   filter(!is.na(fy))
 
@@ -161,7 +160,7 @@ belknap_sentence <- fnc_sentence_table(belknap_adm_19, belknap_adm_20, belknap_a
 belknap_los <- fnc_los_table(belknap_adm_19, belknap_adm_20, belknap_adm_21)
 
 ##############################################################################
-# High Utilizers - more than 2 bookings in a year?
+# High Utilizers - more than 3 bookings in a year?
 ##############################################################################
 
 # custom function to create high utilizers dataframe
@@ -242,19 +241,53 @@ var.labels <- c(id = "Unique ID",
 # add labels to data
 belknap_adm_all <- labelled::set_variable_labels(belknap_adm_all, .labels = var.labels)
 
+##############################################################################
+# Highcharts
+##############################################################################
+
+######
+# PC holds over time
+######
+
+# subset data to PC holds
+# calculate number of PC holds by month and year
+# create tool tip for chart
+belknap_pch <- belknap_booking_all
+belknap_pch$month_year_text <- format(as.Date(belknap_pch$booking_date, "%d/%m/%Y"), "%b %Y")
+belknap_pch$month_year <- as.Date(as.yearmon(belknap_pch$month_year_text))
+
+belknap_pch <- belknap_pch %>%
+  filter(booking_type == "PROTECTIVE CUSTODY") %>%
+  dplyr::group_by(month_year, month_year_text) %>%
+  dplyr::summarise(total = n())
+belknap_pch <- belknap_pch %>%
+  mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"))
+
+#belknap_pch_highchart <-
+belknap_pch_highchart <- belknap_pch %>%
+  hchart('line', hcaes(x = month_year, y = total), color = "steelblue") %>%
+  hc_setup() %>%
+  hc_xAxis(title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
+  hc_yAxis(title = list(text = "Number of PC Hold Bookings", style = list(color =  "#000000", fontWeight = "bold"))) %>%
+  hc_title(text = "Number of PC Hold Bookings from 2019-2021")
+
 ######
 # Save data
 ######
 
 # save data to sharepoint
-save(belknap_adm_all,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_adm_all.rds", sep = ""))
-save(belknap_adm,         file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_adm.rds", sep = ""))
-save(belknap_booking,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_booking.rds", sep = ""))
-save(belknap_sentence,    file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_sentence.rds", sep = ""))
-save(belknap_race,        file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_race.rds", sep = ""))
-save(belknap_sex,         file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_sex.rds", sep = ""))
-save(belknap_heatmap,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_heatmap.rds", sep = ""))
-save(belknap_hu_booking,  file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_booking.rds", sep = ""))
-save(belknap_hu_sentence, file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_sentence.rds", sep = ""))
-save(belknap_hu_race,     file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_race.rds", sep = ""))
-save(belknap_hu_sex,      file=paste0(CSG_SP_PATH, "/Data/r_data/belknap_hu_sex.rds", sep = ""))
+save(belknap_adm_all,      file=paste0(sp_data_path, "/Data/r_data/belknap_adm_all.rds", sep = ""))
+save(belknap_adm,          file=paste0(sp_data_path, "/Data/r_data/belknap_adm.rds", sep = ""))
+save(belknap_booking,      file=paste0(sp_data_path, "/Data/r_data/belknap_booking.rds", sep = ""))
+save(belknap_sentence,     file=paste0(sp_data_path, "/Data/r_data/belknap_sentence.rds", sep = ""))
+save(belknap_race,         file=paste0(sp_data_path, "/Data/r_data/belknap_race.rds", sep = ""))
+save(belknap_sex,          file=paste0(sp_data_path, "/Data/r_data/belknap_sex.rds", sep = ""))
+save(belknap_heatmap,      file=paste0(sp_data_path, "/Data/r_data/belknap_heatmap.rds", sep = ""))
+save(belknap_hu_booking,   file=paste0(sp_data_path, "/Data/r_data/belknap_hu_booking.rds", sep = ""))
+save(belknap_hu_sentence,  file=paste0(sp_data_path, "/Data/r_data/belknap_hu_sentence.rds", sep = ""))
+save(belknap_hu_race,      file=paste0(sp_data_path, "/Data/r_data/belknap_hu_race.rds", sep = ""))
+save(belknap_hu_sex,       file=paste0(sp_data_path, "/Data/r_data/belknap_hu_sex.rds", sep = ""))
+
+# save plots to sharepoint
+save(belknap_pch_highchart, file=paste0(sp_data_path, "/Data/r_data/belknap_pch_highchart.rds", sep = ""))
+

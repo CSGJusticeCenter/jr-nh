@@ -1,21 +1,11 @@
 ############################################
 # Project: JRI New Hampshire
 # File: library.R
-# Last updated: June 1, 2022
+# Last updated: June 13, 2022
 # Author: Mari Roberts
 
-# Load packages
+# Load packages, set working directories
 ############################################
-
-###################
-# CHANGE THESE DEPENDING ON USER
-###################
-
-# path to jail data on research division sharepoint
-CSG_SP_PATH = "C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH"
-
-# path to local environment
-L_PATH = "C:/Users/mroberts/OneDrive - The Council of State Governments/Desktop/csgjc/repos/jr-nh"
 
 ###################
 # load packages
@@ -33,12 +23,27 @@ library(dplyr)
 library(kableExtra)
 library(stringr)
 library(csgjcr)
-
-# highchart
 library(highcharter)
-
-# data dictionary
 library(labelled)
 library(sjPlot)
 library(grid)
 library(gridExtra)
+library(zoo)
+
+###################
+# Fonts
+###################
+
+default_fonts <- c("Noto Sans")
+
+###################
+# Local and research sharepoint
+###################
+
+# path to data on research div sharepoint
+# make sure SP folder is synced locally
+# https://csgorg.sharepoint.com/:f:/s/Team-JC-Research/EhdvImKN2rdPnmHQ2TrKlooBdYqnnWc0SUXBNuh9C7d41g?e=NCsh8I
+# in your Renviron, set CSG_SP_PATH = "your sharepoint path here" and GITHUB_PAT = "your token here"
+# To generate a github token - usethis::create_github_token()
+# To edit Renviron - usethis::edit_r_environ()
+sp_data_path <- csg_sp_path(file.path(""))

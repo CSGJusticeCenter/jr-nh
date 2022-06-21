@@ -66,14 +66,14 @@ fnc_booking_by_year <- function(df){
 
 # booking heat map
 fnc_booking_heatmap <- function(df){
-ggplot(df, aes(year, month)) +
-  geom_tile(aes(fill = N), colour = "white") +
-  #scale_fill_gradient(low = "#d4e9f8", high = "#00475d") +
-  scale_fill_gradient(low = "#eeed90", high = "#315c15") +
-  guides(fill=guide_legend(title="Total Bookings")) +
-  labs(title = "Number of Bookings by Month and FY",
-       x = "Year", y = "Month") +
-  theme_bw() + theme_minimal()
+  ggplot(df, aes(year, month)) +
+    geom_tile(aes(fill = N), colour = "white") +
+    #scale_fill_gradient(low = "#d4e9f8", high = "#00475d") +
+    scale_fill_gradient(low = "#eeed90", high = "#315c15") +
+    guides(fill=guide_legend(title="Total Bookings")) +
+    labs(title = "Number of Bookings by Month and FY",
+         x = "Year", y = "Month") +
+    theme_bw() + theme_minimal()
 }
 
 ###########
@@ -84,10 +84,10 @@ ggplot(df, aes(year, month)) +
 fnc_freq_table <- function(df, title){
   last_row <- nrow(df)
   kable(df, format.args = list(big.mark = ","), align=rep('c'),
-      col.names=c(title,"# Bookings","% Bookings", "# Bookings","% Bookings", "# Bookings","% Bookings")) %>%
-  kable_styling(bootstrap_options = c("condensed", "responsive"),
-                row_label_position = "l") %>%
-  add_header_above(c(" " = 1, "FY 2019" = 2, "FY 2020" = 2, "FY 2021" = 2)) %>%
+        col.names=c(title,"# Bookings","% Bookings", "# Bookings","% Bookings", "# Bookings","% Bookings")) %>%
+    kable_styling(bootstrap_options = c("condensed", "responsive"),
+                  row_label_position = "l") %>%
+    add_header_above(c(" " = 1, "FY 2019" = 2, "FY 2020" = 2, "FY 2021" = 2)) %>%
     row_spec(last_row, bold = TRUE)
 }
 
@@ -160,7 +160,7 @@ fnc_race_table <- function(df_19, df_20, df_21){
   race_19 <- fnc_race_by_year(df_19)
   race_20 <- fnc_race_by_year(df_20)
   race_21 <- fnc_race_by_year(df_21)
-
+  
   # rename variables for merging, indicate which year
   race_19 <- race_19 %>% dplyr::rename(booking_count_19 = booking_count,
                                        booking_pct_19   = booking_pct)
@@ -168,11 +168,11 @@ fnc_race_table <- function(df_19, df_20, df_21){
                                        booking_pct_20   = booking_pct)
   race_21 <- race_21 %>% dplyr::rename(booking_count_21 = booking_count,
                                        booking_pct_21   = booking_pct)
-
+  
   # join data
   df_race <- merge(race_19, race_20, by = "race_ethnicity", all.x = TRUE, all.y = TRUE)
   df_race <- merge(df_race, race_21, by = "race_ethnicity", all.x = TRUE, all.y = TRUE)
-
+  
   # arrange table data
   df_race <- fnc_race_data_desc(df_race)
 }
@@ -182,7 +182,7 @@ fnc_sex_table <- function(df_19, df_20, df_21){
   sex_19 <- fnc_sex_by_year(df_19)
   sex_20 <- fnc_sex_by_year(df_20)
   sex_21 <- fnc_sex_by_year(df_21)
-
+  
   # rename variables for merging, indicate which year
   sex_19 <- sex_19 %>% dplyr::rename(booking_count_19 = booking_count,
                                      booking_pct_19   = booking_pct)
@@ -190,11 +190,11 @@ fnc_sex_table <- function(df_19, df_20, df_21){
                                      booking_pct_20   = booking_pct)
   sex_21 <- sex_21 %>% dplyr::rename(booking_count_21 = booking_count,
                                      booking_pct_21   = booking_pct)
-
+  
   # join data
   df_sex <- merge(sex_19, sex_20, by = "sex", all.x = TRUE, all.y = TRUE)
   df_sex <- merge(df_sex, sex_21, by = "sex", all.x = TRUE, all.y = TRUE)
-
+  
   # arrange table data
   df_sex <- fnc_sex_data_desc(df_sex)
 }
@@ -219,7 +219,7 @@ fnc_booking_table <- function(df_19, df_20, df_21){
   booking_19 <- fnc_booking_by_year(df_19)
   booking_20 <- fnc_booking_by_year(df_20)
   booking_21 <- fnc_booking_by_year(df_21)
-
+  
   # rename variables for merging, indicate which year
   booking_19 <- booking_19 %>% dplyr::rename(booking_count_19 = booking_count,
                                              booking_pct_19   = booking_pct)
@@ -227,11 +227,11 @@ fnc_booking_table <- function(df_19, df_20, df_21){
                                              booking_pct_20   = booking_pct)
   booking_21 <- booking_21 %>% dplyr::rename(booking_count_21 = booking_count,
                                              booking_pct_21   = booking_pct)
-
+  
   # join data
   df_booking <- merge(booking_19, booking_20, by = "booking_type", all.x = TRUE, all.y = TRUE)
   df_booking <- merge(df_booking, booking_21, by = "booking_type", all.x = TRUE, all.y = TRUE)
-
+  
   # arrange table data
   df_booking <- fnc_booking_data_desc(df_booking)
 }
@@ -241,7 +241,7 @@ fnc_sentence_table <- function(df_19, df_20, df_21){
   sentence_19 <- fnc_sentence_by_year(df_19)
   sentence_20 <- fnc_sentence_by_year(df_20)
   sentence_21 <- fnc_sentence_by_year(df_21)
-
+  
   # rename variables for merging, indicate which year
   sentence_19 <- sentence_19 %>% dplyr::rename(sentence_count_19 = sentence_count,
                                                sentence_pct_19   = sentence_pct)
@@ -249,11 +249,11 @@ fnc_sentence_table <- function(df_19, df_20, df_21){
                                                sentence_pct_20   = sentence_pct)
   sentence_21 <- sentence_21 %>% dplyr::rename(sentence_count_21 = sentence_count,
                                                sentence_pct_21   = sentence_pct)
-
+  
   # join data
   df_sentence <- merge(sentence_19, sentence_20, by = "sentence_status", all.x = TRUE, all.y = TRUE)
   df_sentence <- merge(df_sentence, sentence_21, by = "sentence_status", all.x = TRUE, all.y = TRUE)
-
+  
   # arrange table data
   df_sentence <- fnc_sentence_data_desc(df_sentence)
 }
@@ -269,11 +269,11 @@ fnc_hu_setup <- function(df){
   df_high_utilizers_21 <- df %>% filter(fy == 2021) %>%
     group_by(inmate_id, fy) %>%
     dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 3)
-
+  
   # join data
   df_high_utilizers <- rbind(df_high_utilizers_19, df_high_utilizers_20)
   df_high_utilizers <- rbind(df_high_utilizers, df_high_utilizers_21)
-
+  
   # merge with sentence data to get details
   df_high_utilizers <- left_join(df_high_utilizers, df, by = c("inmate_id", "fy"))
 }
@@ -289,4 +289,38 @@ fnc_hu_setup <- function(df){
 # Highcharter
 ###########
 
+# custom highcharts theme
+hc_theme_jc <- hc_theme_merge(
+  hc_theme_smpl(),
+  hc_theme(
+    colors = c(
+      "#1795BF",
+      "#68C6A8",
+      "#F0EA44",
+      "#E1B32D",
+      "#001F35"),
+    chart = list(marginTop = 75, style = list(fontFamily = default_fonts)),
+    title = list(style = list(fontFamily = default_fonts, fontSize = "20px")),
+    subtitle = list(style = list(fontFamily = default_fonts, fontSize = "16px")),
+    # legend = list(align = "right", verticalAlign = "bottom", layout = "vertical"), # labels = list(format = "{percentage:.0f}")
+    caption = list(align = "right", y = 15),
+    # xAxis = list(labels = list(style = list(fontSize = "15px")),gridLineColor = "transparent"),
+    plotOptions = list(
+      series = list(states = list(inactive = list(opacity = 1))),
+      line = list(marker = list(enabled = TRUE)),
+      spline = list(marker = list(enabled = TRUE)),
+      area = list(marker = list(enabled = TRUE)),
+      areaspline = list(marker = list(enabled = TRUE))))
+)
 
+# set up highcharts download buttons
+hc_setup <- function(x) {
+  hc_add_dependency(x, name = "modules/exporting.js") %>%
+    hc_add_dependency(name = "modules/offline-exporting.js") %>%
+    hc_exporting(
+      enabled = FALSE, # change to TRUE to add drop down download options
+      buttons = list(contextButton = list(menuItems = list("printChart", "downloadPNG", "downloadSVG", "downloadPDF")))) %>%
+    hc_add_theme(hc_theme_jc) %>%
+    hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
+    hc_plotOptions(series = list(animation = FALSE))
+}
