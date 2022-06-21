@@ -7,23 +7,12 @@ output:
     self_contained: false
 ---
 
-```{r include=FALSE}
-### call libraries
-library(easypackages)
-libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales","raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","ezknitr")
-```
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo = TRUE,
-  dev = "ragg_png",
+  #dev = "ragg_png",
   cache = FALSE
   )
-```
-
-```{r include=FALSE}
-### set theme
-theme_set(theme_minimal())
 ```
 
 
@@ -32,6 +21,16 @@ theme_set(theme_minimal())
 - Should LOS include PC holds? Weekends?  
 - Do we need to determine which charges are sex, violent, or drug offense?  
 - Interested in part 1 violent crimes? 
+
+# Visualization ideas
+
+- [Bookings by type over time](https://app.powerbigov.us/view?r=eyJrIjoiMmRkMmNiOTEtNDBlNy00ZjIwLTk3OTQtYzQ5YTA0YzcxZGZmIiwidCI6ImU0YTM0MGU2LWI4OWUtNGU2OC04ZWFhLTE1NDRkMjcwMzk4MCJ9) 
+- [Bookings with positive MH screen](https://www.tiftonison.com/dashboard-shows-mental-health-needs-at-johnson-county-jail/); [Another](https://viz.jocogov.org/t/Public/views/SteppingUp/Dashboard?%3Aembed=y&%3Aiid=1&%3AisGuestRedirectFromVizportal=y)
+- [Response to covid](https://safetyandjusticechallenge.org/topics/data-analysis/)
+- Did mental health/drug use increase after covid? 
+- [Pathways from arrest -> booking -> release](https://www.prisonpolicy.org/reports/incomejails.html) 
+- [Incarceration rates by race/ethnicity per 100,000 people in NH](https://www.prisonpolicy.org/graphs/2010rates/NH.html) 
+- Map showing available MH services
 
 ## Belknap  
 
