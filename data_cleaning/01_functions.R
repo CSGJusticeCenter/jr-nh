@@ -60,6 +60,17 @@ fnc_booking_by_year <- function(df){
            booking_type = str_to_title(booking_type))
 }
 
+# get prop of high utilizer by FY
+fnc_hu_by_year <- function(df){
+  df1 <- data.frame(summarytools::freq(df$high_utilizer, order = "freq", cum.percent = FALSE))
+  df1 <- df1 %>% tibble::rownames_to_column("high_utilizer") %>%
+    dplyr::select(high_utilizer,
+                  booking_count = Freq,
+                  booking_pct   = X..Valid) %>%
+    mutate(booking_pct = round(booking_pct, 1)) %>%
+    mutate(booking_pct = paste0(as.character(booking_pct), "%"))
+}
+
 ###########
 # Plots
 ###########
@@ -146,6 +157,21 @@ fnc_booking_data_desc <- function(df){
   df <- df %>%
     mutate(row_num = case_when(booking_type == "Total" ~ total,
                                booking_type == "<Na>" | booking_type == "<NA>" ~ na,
+                               TRUE ~ row_num))
+  df$row_num <- as.numeric(df$row_num)
+  df <- df %>% arrange(row_num) %>% dplyr::select(-row_num)
+}
+
+# arrange data descending
+fnc_hu_data_desc <- function(df){
+  df <- df %>% arrange(-booking_count_19)
+  df$row_num <- seq.int(nrow(df))
+  total <- as.character(as.numeric(max(df$row_num, na.rm = TRUE)) + 2)
+  na <- as.character(as.numeric(max(df$row_num, na.rm = TRUE)) + 1)
+  df$row_num <- as.character(df$row_num)
+  df <- df %>%
+    mutate(row_num = case_when(high_utilizer == "Total" ~ total,
+                               high_utilizer == "<Na>" | high_utilizer == "<NA>" ~ na,
                                TRUE ~ row_num))
   df$row_num <- as.numeric(df$row_num)
   df <- df %>% arrange(row_num) %>% dplyr::select(-row_num)
@@ -276,6 +302,28 @@ fnc_hu_setup <- function(df){
   
   # merge with sentence data to get details
   df_high_utilizers <- left_join(df_high_utilizers, df, by = c("inmate_id", "fy"))
+}
+
+fnc_hu_table <- function(df_19, df_20, df_21){
+  # get count and prop of high utilizer by FY
+  hu_19 <- fnc_hu_by_year(df_19)
+  hu_20 <- fnc_hu_by_year(df_20)
+  hu_21 <- fnc_hu_by_year(df_21)
+  
+  # rename variables for merging, indicate which year
+  hu_19 <- hu_19 %>% dplyr::rename(booking_count_19 = booking_count,
+                                   booking_pct_19   = booking_pct)
+  hu_20 <- hu_20 %>% dplyr::rename(booking_count_20 = booking_count,
+                                   booking_pct_20   = booking_pct)
+  hu_21 <- hu_21 %>% dplyr::rename(booking_count_21 = booking_count,
+                                   booking_pct_21   = booking_pct)
+  
+  # join data
+  df_hu <- merge(hu_19, hu_20, by = "high_utilizer", all.x = TRUE, all.y = TRUE)
+  df_hu <- merge(df_hu, hu_21, by = "high_utilizer", all.x = TRUE, all.y = TRUE)
+  
+  # arrange table data
+  df_hu <- fnc_hu_data_desc(df_hu)
 }
 
 ###########

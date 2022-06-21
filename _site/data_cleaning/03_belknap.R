@@ -84,11 +84,24 @@ belknap_adm_all <- belknap_adm_all %>%
 # save long file that includes all charges
 belknap_adm_charges <- belknap_adm_all
 
+# create high utilizer variable
+belknap_bookings <- belknap_adm_all %>%
+  select(inmate_id, booking_date, fy) %>% 
+  distinct() %>% 
+  dplyr::group_by(inmate_id, fy) %>%
+  dplyr::summarise(num_bookings = n()) %>% 
+  mutate(high_utilizer = ifelse(
+    num_bookings >= 3, "High Utilizer", "Not High Utilizer"
+  )) 
+
+# merge data back
+belknap_adm_all <- left_join(belknap_adm_all, belknap_bookings, by = c("inmate_id", "fy")) 
+
 # remove charge codes and duplicates to get picture of cohort
 belknap_adm <- belknap_adm_all %>%
   dplyr::select(inmate_id, race, yob, age, sex,
                 housing, sentence_status,
-                booking_date, los, fy) %>%
+                booking_date, los, fy, num_bookings, high_utilizer) %>%
   distinct()
 
 # remove charge codes and duplicates to get picture of cohort
@@ -106,6 +119,13 @@ belknap_adm_21 <- belknap_adm %>% filter(fy == 2021)
 belknap_booking_19 <- belknap_booking_all %>% filter(fy == 2019)
 belknap_booking_20 <- belknap_booking_all %>% filter(fy == 2020)
 belknap_booking_21 <- belknap_booking_all %>% filter(fy == 2021)
+
+######
+# High Utilizer proportion
+######
+
+# custom function to create table
+belknap_hu <- fnc_hu_table(belknap_adm_19, belknap_adm_20, belknap_adm_21)
 
 ######
 # Race
@@ -235,7 +255,9 @@ var.labels <- c(id = "Unique ID",
                 sentence_status = "Sentence status",
                 fy = "Fiscal year",
                 age = "Age (years)",
-                los = "Length of stay (days)"
+                los = "Length of stay (days)",
+                num_bookings = "Number of booking events in the fiscal year",
+                high_utilizer = "Is a high utilizer"
 )
 
 # add labels to data
@@ -280,6 +302,7 @@ save(belknap_adm_all,      file=paste0(sp_data_path, "/Data/r_data/belknap_adm_a
 save(belknap_adm,          file=paste0(sp_data_path, "/Data/r_data/belknap_adm.rds", sep = ""))
 save(belknap_booking,      file=paste0(sp_data_path, "/Data/r_data/belknap_booking.rds", sep = ""))
 save(belknap_sentence,     file=paste0(sp_data_path, "/Data/r_data/belknap_sentence.rds", sep = ""))
+save(belknap_hu,           file=paste0(sp_data_path, "/Data/r_data/belknap_hu.rds", sep = ""))
 save(belknap_race,         file=paste0(sp_data_path, "/Data/r_data/belknap_race.rds", sep = ""))
 save(belknap_sex,          file=paste0(sp_data_path, "/Data/r_data/belknap_sex.rds", sep = ""))
 save(belknap_heatmap,      file=paste0(sp_data_path, "/Data/r_data/belknap_heatmap.rds", sep = ""))

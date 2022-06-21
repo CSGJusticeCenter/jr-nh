@@ -59,6 +59,10 @@ fnc_freq_table(belknap_sentence, "Sentence Status")
 
 High utilizers are defined as individuals who were booked into jail more than 3 times in a fiscal year.  
 
+```{r}
+fnc_freq_table(belknap_hu, "High Utilizer")
+```
+
 ### Demographics
 
 ```{r}
