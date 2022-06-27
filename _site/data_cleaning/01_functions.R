@@ -72,22 +72,6 @@ fnc_hu_by_year <- function(df){
 }
 
 ###########
-# Plots
-###########
-
-# booking heat map
-fnc_booking_heatmap <- function(df){
-  ggplot(df, aes(year, month)) +
-    geom_tile(aes(fill = N), colour = "white") +
-    #scale_fill_gradient(low = "#d4e9f8", high = "#00475d") +
-    scale_fill_gradient(low = "#eeed90", high = "#315c15") +
-    guides(fill=guide_legend(title="Total Bookings")) +
-    labs(title = "Number of Bookings by Month and FY",
-         x = "Year", y = "Month") +
-    theme_bw() + theme_minimal()
-}
-
-###########
 # Tables
 ###########
 
@@ -284,26 +268,6 @@ fnc_sentence_table <- function(df_19, df_20, df_21){
   df_sentence <- fnc_sentence_data_desc(df_sentence)
 }
 
-fnc_hu_setup <- function(df){
-  # sep by fiscal year
-  df_high_utilizers_19 <- df %>% filter(fy == 2019) %>%
-    group_by(inmate_id, fy) %>%
-    dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 3)
-  df_high_utilizers_20 <- df %>% filter(fy == 2020) %>%
-    group_by(inmate_id, fy) %>%
-    dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 3)
-  df_high_utilizers_21 <- df %>% filter(fy == 2021) %>%
-    group_by(inmate_id, fy) %>%
-    dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 3)
-  
-  # join data
-  df_high_utilizers <- rbind(df_high_utilizers_19, df_high_utilizers_20)
-  df_high_utilizers <- rbind(df_high_utilizers, df_high_utilizers_21)
-  
-  # merge with sentence data to get details
-  df_high_utilizers <- left_join(df_high_utilizers, df, by = c("inmate_id", "fy"))
-}
-
 fnc_hu_table <- function(df_19, df_20, df_21){
   # get count and prop of high utilizer by FY
   hu_19 <- fnc_hu_by_year(df_19)
@@ -326,12 +290,65 @@ fnc_hu_table <- function(df_19, df_20, df_21){
   df_hu <- fnc_hu_data_desc(df_hu)
 }
 
+fnc_hu_setup <- function(df){
+  # sep by fiscal year
+  df_high_utilizers_19 <- df %>% filter(fy == 2019) %>%
+    group_by(inmate_id, fy) %>%
+    dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 3)
+  df_high_utilizers_20 <- df %>% filter(fy == 2020) %>%
+    group_by(inmate_id, fy) %>%
+    dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 3)
+  df_high_utilizers_21 <- df %>% filter(fy == 2021) %>%
+    group_by(inmate_id, fy) %>%
+    dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 3)
+  
+  # join data
+  df_high_utilizers <- rbind(df_high_utilizers_19, df_high_utilizers_20)
+  df_high_utilizers <- rbind(df_high_utilizers, df_high_utilizers_21)
+  
+  # merge with sentence data to get details
+  df_high_utilizers <- left_join(df_high_utilizers, df, by = c("inmate_id", "fy"))
+}
+
 ###########
-# Maps
+# Plots
 ###########
 
+# booking heat map
+fnc_booking_heatmap <- function(df){
+  ggplot(df, aes(year, month)) +
+    geom_tile(aes(fill = N), colour = "white") +
+    #scale_fill_gradient(low = "#d4e9f8", high = "#00475d") +
+    scale_fill_gradient(low = "#eeed90", high = "#315c15") +
+    guides(fill=guide_legend(title="Total Bookings")) +
+    labs(title = "Number of Bookings by Month and FY",
+         x = "Year", y = "Month") +
+    theme_bw() + theme_minimal()
+}
 
-
+# Highchart for pc holds over time
+# subset data to PC holds
+# calculate number of PC holds by month and year
+# create tool tip for chart
+fnc_pch_time_highchart <- function(df){
+  df_pch <- df
+  df_pch$month_year_text <- format(as.Date(df_pch$booking_date, "%d/%m/%Y"), "%b %Y")
+  df_pch$month_year <- as.Date(as.yearmon(df_pch$month_year_text))
+  
+  df_pch <- df_pch %>%
+    filter(booking_type == "PROTECTIVE CUSTODY") %>%
+    dplyr::group_by(month_year, month_year_text) %>%
+    dplyr::summarise(total = n())
+  df_pch <- df_pch %>%
+    mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"))
+  
+  df_pch_highchart <- df_pch %>%
+    hchart('line', hcaes(x = month_year, y = total), color = "steelblue") %>%
+    hc_setup() %>%
+    hc_xAxis(title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
+    hc_yAxis(title = list(text = "Number of PC Hold Bookings", style = list(color =  "#000000", fontWeight = "bold"))) %>%
+    hc_title(text = "Number of PC Hold Bookings from 2019-2021")
+}
 
 ###########
 # Highcharter

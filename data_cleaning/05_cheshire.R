@@ -47,36 +47,64 @@ cheshire_adm_all <- cheshire_adm_all %>%
 # organize variables
 cheshire_adm_all <- cheshire_adm_all %>%
   dplyr::select(id,
-         inmate_id,
-         yob,
-         race,
-         ethnicity,
-         sex,
-         housing,
-         charge_code,
-         charge_desc,
-         #charge,
-         booking_date,
-         booking_type,
-         release_date,
-         release_type,
-         sentence_status,
-         everything())
+                inmate_id,
+                yob,
+                race,
+                sex,
+                housing,
+                charge_desc,
+                booking_date,
+                booking_type,
+                release_date,
+                release_type,
+                sentence_status,
+                everything())
 
-# save long file that includes all charges
-cheshire_adm_charges <- cheshire_adm_all
+# create high utilizer variable
+cheshire_bookings <- cheshire_adm_all %>%
+  select(inmate_id, booking_date, fy) %>%
+  distinct() %>%
+  group_by(inmate_id, fy) %>%
+  dplyr::summarise(num_bookings = n()) %>%
+  mutate(high_utilizer = ifelse(
+    num_bookings >= 3, "High Utilizer", "Not High Utilizer"))
+
+# merge data back
+cheshire_adm_all <- left_join(cheshire_adm_all, cheshire_bookings, by = c("inmate_id", "fy"))
 
 # remove charge codes and duplicates to get picture of cohort
+# keep sentence status - more rows for each charge and sentence status
 cheshire_adm <- cheshire_adm_all %>%
-  dplyr::select(inmate_id, race, yob, age, sex,
-                housing, sentence_status,
-                booking_date, los, fy) %>%
+  dplyr::select(inmate_id,
+                race,
+                yob,
+                age,
+                sex,
+                housing,
+                sentence_status,
+                booking_date,
+                los,
+                fy,
+                num_bookings,
+                high_utilizer) %>%
   distinct()
 
 # remove charge codes and duplicates to get picture of cohort
-cheshire_booking_all <- cheshire_adm_all %>%
-  dplyr::select(inmate_id, race, yob, age, sex,
-                housing, booking_date, booking_type, los, fy) %>%
+# remove sentence status - less rows because each row is a booking event
+cheshire_booking <- cheshire_adm_all %>%
+  dplyr::select(inmate_id,
+                race,
+                yob,
+                age,
+                sex,
+                housing,
+                booking_date,
+                booking_type,
+                release_date,
+                los,
+                fy,
+                num_bookings,
+                high_utilizer) %>%
   distinct()
 
 # sep by fiscal year
@@ -85,6 +113,6 @@ cheshire_adm_20 <- cheshire_adm %>% filter(fy == 2020)
 cheshire_adm_21 <- cheshire_adm %>% filter(fy == 2021)
 
 # sep by fy year
-cheshire_booking_19 <- cheshire_booking_all %>% filter(fy == 2019)
-cheshire_booking_20 <- cheshire_booking_all %>% filter(fy == 2020)
-cheshire_booking_21 <- cheshire_booking_all %>% filter(fy == 2021)
+cheshire_booking_19 <- cheshire_booking %>% filter(fy == 2019)
+cheshire_booking_20 <- cheshire_booking %>% filter(fy == 2020)
+cheshire_booking_21 <- cheshire_booking %>% filter(fy == 2021)

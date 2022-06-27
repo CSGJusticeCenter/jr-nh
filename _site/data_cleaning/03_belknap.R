@@ -25,7 +25,6 @@ belknap_adm_all <- belknap_adm_all %>%
                 inmate_id,
                 yob = year_of_birth,
                 race,
-                ethnicity,
                 sex,
                 housing = housing_instability_or_homelessness_indicator,
                 # charge_code - needs a charge code bc the code and description are in one field
@@ -34,8 +33,7 @@ belknap_adm_all <- belknap_adm_all %>%
                 booking_type,
                 release_date,
                 release_type,
-                sentence_status = sentencing_status,
-                everything())
+                sentence_status = sentencing_status)
 
 # change date formats
 belknap_adm_all$booking_date <- as.Date(belknap_adm_all$booking_date, format = "%m/%d/%Y")
@@ -70,7 +68,6 @@ belknap_adm_all <- belknap_adm_all %>%
                 inmate_id,
                 yob,
                 race,
-                ethnicity,
                 sex,
                 housing,
                 charge_desc,
@@ -81,33 +78,51 @@ belknap_adm_all <- belknap_adm_all %>%
                 sentence_status,
                 everything())
 
-# save long file that includes all charges
-belknap_adm_charges <- belknap_adm_all
-
 # create high utilizer variable
 belknap_bookings <- belknap_adm_all %>%
-  select(inmate_id, booking_date, fy) %>% 
-  distinct() %>% 
-  dplyr::group_by(inmate_id, fy) %>%
-  dplyr::summarise(num_bookings = n()) %>% 
+  select(inmate_id, booking_date, fy) %>%
+  distinct() %>%
+  group_by(inmate_id, fy) %>%
+  dplyr::summarise(num_bookings = n()) %>%
   mutate(high_utilizer = ifelse(
-    num_bookings >= 3, "High Utilizer", "Not High Utilizer"
-  )) 
+    num_bookings >= 3, "High Utilizer", "Not High Utilizer"))
 
 # merge data back
-belknap_adm_all <- left_join(belknap_adm_all, belknap_bookings, by = c("inmate_id", "fy")) 
+belknap_adm_all <- left_join(belknap_adm_all, belknap_bookings, by = c("inmate_id", "fy"))
 
 # remove charge codes and duplicates to get picture of cohort
+# keep sentence status - more rows for each charge and sentence status
 belknap_adm <- belknap_adm_all %>%
-  dplyr::select(inmate_id, race, yob, age, sex,
-                housing, sentence_status,
-                booking_date, los, fy, num_bookings, high_utilizer) %>%
+  dplyr::select(inmate_id,
+                race,
+                yob,
+                age,
+                sex,
+                housing,
+                sentence_status,
+                booking_date,
+                los,
+                fy,
+                num_bookings,
+                high_utilizer) %>%
   distinct()
 
 # remove charge codes and duplicates to get picture of cohort
-belknap_booking_all <- belknap_adm_all %>%
-  dplyr::select(inmate_id, race, yob, age, sex,
-                housing, booking_date, booking_type, los, fy) %>%
+# remove sentence status - less rows because each row is a booking event
+belknap_booking <- belknap_adm_all %>%
+  dplyr::select(inmate_id,
+                race,
+                yob,
+                age,
+                sex,
+                housing,
+                booking_date,
+                booking_type,
+                release_date,
+                los,
+                fy,
+                num_bookings,
+                high_utilizer) %>%
   distinct()
 
 # sep by fiscal year
@@ -116,9 +131,9 @@ belknap_adm_20 <- belknap_adm %>% filter(fy == 2020)
 belknap_adm_21 <- belknap_adm %>% filter(fy == 2021)
 
 # sep by fy year
-belknap_booking_19 <- belknap_booking_all %>% filter(fy == 2019)
-belknap_booking_20 <- belknap_booking_all %>% filter(fy == 2020)
-belknap_booking_21 <- belknap_booking_all %>% filter(fy == 2021)
+belknap_booking_19 <- belknap_booking %>% filter(fy == 2019)
+belknap_booking_20 <- belknap_booking %>% filter(fy == 2020)
+belknap_booking_21 <- belknap_booking %>% filter(fy == 2021)
 
 ######
 # High Utilizer proportion
@@ -176,8 +191,8 @@ belknap_sentence <- fnc_sentence_table(belknap_adm_19, belknap_adm_20, belknap_a
 # Length of Stay
 ######
 
-# custom function to create table
-belknap_los <- fnc_los_table(belknap_adm_19, belknap_adm_20, belknap_adm_21)
+# # custom function to create table
+# belknap_los <- fnc_los_table(belknap_adm_19, belknap_adm_20, belknap_adm_21)
 
 ##############################################################################
 # High Utilizers - more than 3 bookings in a year?
@@ -224,40 +239,38 @@ belknap_hu_sentence <- fnc_sentence_table(belknap_high_utilizers_sentence_19, be
 ######
 
 # change data types
-belknap_adm_all$id <- as.factor(belknap_adm_all$id)
-belknap_adm_all$inmate_id <- as.character(belknap_adm_all$inmate_id)
-belknap_adm_all$yob <- as.numeric(belknap_adm_all$yob)
-belknap_adm_all$race <- as.factor(belknap_adm_all$race)
-belknap_adm_all$ethnicity <- as.factor(belknap_adm_all$ethnicity)
-belknap_adm_all$sex <- as.factor(belknap_adm_all$sex)
-belknap_adm_all$housing <- as.factor(belknap_adm_all$housing)
-belknap_adm_all$charge_desc <- as.factor(belknap_adm_all$charge_desc)
-belknap_adm_all$booking_type <- as.factor(belknap_adm_all$booking_type)
-belknap_adm_all$release_type <- as.factor(belknap_adm_all$release_type)
+belknap_adm_all$id              <- as.factor(belknap_adm_all$id)
+belknap_adm_all$inmate_id       <- as.character(belknap_adm_all$inmate_id)
+belknap_adm_all$yob             <- as.numeric(belknap_adm_all$yob)
+belknap_adm_all$race            <- as.factor(belknap_adm_all$race)
+belknap_adm_all$sex             <- as.factor(belknap_adm_all$sex)
+belknap_adm_all$housing         <- as.factor(belknap_adm_all$housing)
+belknap_adm_all$charge_desc     <- as.factor(belknap_adm_all$charge_desc)
+belknap_adm_all$booking_type    <- as.factor(belknap_adm_all$booking_type)
+belknap_adm_all$release_type    <- as.factor(belknap_adm_all$release_type)
 belknap_adm_all$sentence_status <- as.factor(belknap_adm_all$sentence_status)
-belknap_adm_all$fy <- as.factor(belknap_adm_all$fy)
-belknap_adm_all$age <- as.numeric(belknap_adm_all$age)
-belknap_adm_all$los <- as.numeric(belknap_adm_all$los)
+belknap_adm_all$fy              <- as.factor(belknap_adm_all$fy)
+belknap_adm_all$age             <- as.numeric(belknap_adm_all$age)
+belknap_adm_all$los             <- as.numeric(belknap_adm_all$los)
 
 # data labels
-var.labels <- c(id = "Unique ID",
-                inmate_id = "Inmate ID",
-                yob  = "Year of birth",
-                race  = "Race",
-                ethnicity = "Ethnicity",
-                sex = "Sex",
-                housing = "Housing indicator",
-                charge_desc = "Charge description",
-                booking_date = "Booking date",
-                booking_type = "Booking type",
-                release_date = "Release date",
-                release_type = "Release type",
+var.labels <- c(id              = "Unique ID",
+                inmate_id       = "Inmate ID",
+                yob             = "Year of birth",
+                race            = "Race",
+                sex             = "Sex",
+                housing         = "Housing indicator",
+                charge_desc     = "Charge description",
+                booking_date    = "Booking date",
+                booking_type    = "Booking type",
+                release_date    = "Release date",
+                release_type    = "Release type",
                 sentence_status = "Sentence status",
-                fy = "Fiscal year",
-                age = "Age (years)",
-                los = "Length of stay (days)",
-                num_bookings = "Number of booking events in the fiscal year",
-                high_utilizer = "Is a high utilizer"
+                fy              = "Fiscal year",
+                age             = "Age (years)",
+                los             = "Length of stay (days)",
+                num_bookings    = "Number of booking events in the fiscal year",
+                high_utilizer   = "Is a high utilizer"
 )
 
 # add labels to data
@@ -271,27 +284,8 @@ belknap_adm_all <- labelled::set_variable_labels(belknap_adm_all, .labels = var.
 # PC holds over time
 ######
 
-# subset data to PC holds
-# calculate number of PC holds by month and year
-# create tool tip for chart
-belknap_pch <- belknap_booking_all
-belknap_pch$month_year_text <- format(as.Date(belknap_pch$booking_date, "%d/%m/%Y"), "%b %Y")
-belknap_pch$month_year <- as.Date(as.yearmon(belknap_pch$month_year_text))
-
-belknap_pch <- belknap_pch %>%
-  filter(booking_type == "PROTECTIVE CUSTODY") %>%
-  dplyr::group_by(month_year, month_year_text) %>%
-  dplyr::summarise(total = n())
-belknap_pch <- belknap_pch %>%
-  mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"))
-
-#belknap_pch_highchart <-
-belknap_pch_highchart <- belknap_pch %>%
-  hchart('line', hcaes(x = month_year, y = total), color = "steelblue") %>%
-  hc_setup() %>%
-  hc_xAxis(title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-  hc_yAxis(title = list(text = "Number of PC Hold Bookings", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-  hc_title(text = "Number of PC Hold Bookings from 2019-2021")
+# custom function to generate a highchart showing pc hold bookings over time (month and year)
+belknap_pch_time_highchart <- fnc_pch_time_highchart(belknap_booking_all)
 
 ######
 # Save data
@@ -312,5 +306,4 @@ save(belknap_hu_race,      file=paste0(sp_data_path, "/Data/r_data/belknap_hu_ra
 save(belknap_hu_sex,       file=paste0(sp_data_path, "/Data/r_data/belknap_hu_sex.rds", sep = ""))
 
 # save plots to sharepoint
-save(belknap_pch_highchart, file=paste0(sp_data_path, "/Data/r_data/belknap_pch_highchart.rds", sep = ""))
-
+save(belknap_pch_time_highchart, file=paste0(sp_data_path, "/Data/r_data/belknap_pch_time_highchart.rds", sep = ""))

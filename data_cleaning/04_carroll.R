@@ -9,7 +9,6 @@
 ############################################
 
 # load packages and custom functions
-setwd(L_PATH)
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 
@@ -38,8 +37,7 @@ carroll_adm_all <- carroll_adm_all %>%
                 booking_type,
                 release_date = release_dt_tm,
                 release_type,
-                sentence_status = sentencing_status,
-                everything())
+                sentence_status = sentencing_status)
 
 # create FY year variable
 # will be able to filter by CY later
@@ -58,20 +56,67 @@ carroll_adm_all <- carroll_adm_all %>%
   # remove booking outside of study timeframe
   filter(!is.na(fy))
 
-# save long file that includes all charges
-carroll_adm_charges <- carroll_adm_all
+# organize variables
+carroll_adm_all <- carroll_adm_all %>%
+  dplyr::select(id,
+                inmate_id,
+                yob,
+                race,
+                sex,
+                housing,
+                charge_desc,
+                booking_date,
+                booking_type,
+                release_date,
+                release_type,
+                sentence_status,
+                everything())
+
+# create high utilizer variable
+carroll_bookings <- carroll_adm_all %>%
+  select(inmate_id, booking_date, fy) %>%
+  distinct() %>%
+  group_by(inmate_id, fy) %>%
+  dplyr::summarise(num_bookings = n()) %>%
+  mutate(high_utilizer = ifelse(
+    num_bookings >= 3, "High Utilizer", "Not High Utilizer"))
+
+# merge data back
+carroll_adm_all <- left_join(carroll_adm_all, carroll_bookings, by = c("inmate_id", "fy"))
 
 # remove charge codes and duplicates to get picture of cohort
+# keep sentence status - more rows for each charge and sentence status
 carroll_adm <- carroll_adm_all %>%
-  dplyr::select(inmate_id, race, yob, age, sex,
-                housing, sentence_status,
-                booking_date, fy) %>%
+  dplyr::select(inmate_id,
+                race,
+                yob,
+                age,
+                sex,
+                housing,
+                sentence_status,
+                booking_date,
+                los,
+                fy,
+                num_bookings,
+                high_utilizer) %>%
   distinct()
 
 # remove charge codes and duplicates to get picture of cohort
-carroll_booking_all <- carroll_adm_all %>%
-  dplyr::select(inmate_id, race, yob, age, sex,
-                housing, booking_date, booking_type, fy) %>%
+# remove sentence status - less rows because each row is a booking event
+carroll_booking <- carroll_adm_all %>%
+  dplyr::select(inmate_id,
+                race,
+                yob,
+                age,
+                sex,
+                housing,
+                booking_date,
+                booking_type,
+                release_date,
+                los,
+                fy,
+                num_bookings,
+                high_utilizer) %>%
   distinct()
 
 # sep by fiscal year
@@ -80,6 +125,6 @@ carroll_adm_20 <- carroll_adm %>% filter(fy == 2020)
 carroll_adm_21 <- carroll_adm %>% filter(fy == 2021)
 
 # sep by fy year
-carroll_booking_19 <- carroll_booking_all %>% filter(fy == 2019)
-carroll_booking_20 <- carroll_booking_all %>% filter(fy == 2020)
-carroll_booking_21 <- carroll_booking_all %>% filter(fy == 2021)
+carroll_booking_19 <- carroll_booking %>% filter(fy == 2019)
+carroll_booking_20 <- carroll_booking %>% filter(fy == 2020)
+carroll_booking_21 <- carroll_booking %>% filter(fy == 2021)

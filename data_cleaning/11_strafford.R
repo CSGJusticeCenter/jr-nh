@@ -9,7 +9,6 @@
 ############################################
 
 # load packages and custom functions
-setwd(L_PATH)
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 

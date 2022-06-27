@@ -46,7 +46,7 @@ fnc_freq_table(belknap_booking, "Booking Type")
 ```
 
 ```{r}
-belknap_pch_highchart
+belknap_pch_time_highchart
 ```
 
 ### Sentence Status
