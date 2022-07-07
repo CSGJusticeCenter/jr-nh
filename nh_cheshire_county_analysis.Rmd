@@ -23,4 +23,64 @@ knitr::opts_chunk$set(
   )
 ```
 
-Coming soon.
+# Jail admissions
+
+### Demographics
+
+```{r}
+fnc_freq_table(cheshire_race, "Race/Ethnicity") 
+```
+
+```{r}
+fnc_freq_table(cheshire_sex, "Sex")
+```
+
+### Booking Type
+
+```{r}
+fnc_booking_heatmap(cheshire_heatmap)
+```
+
+```{r}
+fnc_freq_table(cheshire_bookings, "Booking Type")
+```
+
+```{r}
+cheshire_pch_time_highchart
+```
+
+### Sentence Status
+
+```{r}
+fnc_freq_table(cheshire_sentence, "Sentence Status")
+```
+
+# High Utilizers
+
+High utilizers are defined as individuals who were booked into jail more than 3 times in a fiscal year.  
+
+```{r}
+fnc_freq_table(cheshire_hu, "High Utilizer")
+```
+
+### Demographics
+
+```{r}
+fnc_freq_table(cheshire_hu_race, "Race/Ethnicity") 
+```
+
+```{r}
+fnc_freq_table(cheshire_hu_sex, "Sex")
+```
+
+### Booking Type
+
+```{r}
+fnc_freq_table(cheshire_hu_booking, "Booking Type")
+```
+
+### Sentence Status
+
+```{r}
+fnc_freq_table(cheshire_hu_sentence, "Sentence Status")
+```

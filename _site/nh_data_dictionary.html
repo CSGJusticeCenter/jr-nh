@@ -2489,7 +2489,7 @@ W - White<br />
 X - DELETE<br />
 J - Japanese</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code>id [1], ethnicity [5], release_type [12], sentence_status [13]</code></pre>
+<pre><code>id [1], charge_code [7], release_type [12], sentence_status [13]</code></pre>
 <table style="border-collapse:collapse; border:none;">
 <caption>
 Data frame: belknap_adm_all
@@ -2559,7 +2559,7 @@ AAPI<br>Black<br>Hispanic or Latino<br>Other<br>Unknown<br>White
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-6
+5
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 sex
@@ -2575,7 +2575,7 @@ F<br>M<br>T
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-7
+6
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 housing
@@ -2734,6 +2734,22 @@ Is a high utilizer
 &lt;output omitted&gt;
 </td>
 </tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+19
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Protective custody hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+0<br>1
+</td>
+</tr>
 </table>
 </div>
 <h2 id="carroll">Carroll</h2>
@@ -2867,8 +2883,7 @@ Charge code
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-1.9701388888888889<br>10.81875<br>10.902777777777779<br>10.918750000000001<br>10.924999999999999<br>10.927777777777777<br>10.932638888888889<br>10.959027777777777<br>10.959722222222224<br>10.966666666666667<br>10.988888888888889<br>104:28-A<br>11.017361111111112<br>11.019444444444444<br>11.044444444444444<br><span
-style="omit">&lt;… truncated&gt;</span>
+&lt;output omitted&gt;
 </td>
 </tr>
 <tr>
@@ -2982,15 +2997,15 @@ PRISONER
 14
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-transfer_type
+fy
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Transfer type
+Fiscal year
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-INMATE MADE BAIL<br>RELEASED TO OUTSIDE
+2019<br>2020<br>2021
 </td>
 </tr>
 <tr>
@@ -2998,15 +3013,13 @@ INMATE MADE BAIL<br>RELEASED TO OUTSIDE
 15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-fy
+age
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Fiscal year
+Age (years)
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-2019<br>2020<br>2021
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: 17-86</em>
 </td>
 </tr>
 <tr>
@@ -3014,13 +3027,13 @@ Fiscal year
 16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-age
+los
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Age (years)
+Length of stay (days)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: 17-86</em>
+<em>range: 0-857</em>
 </td>
 </tr>
 <tr>
@@ -3028,13 +3041,45 @@ Age (years)
 17
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-los
+num_bookings
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Length of stay (days)
+Number of booking events in the fiscal year
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
-<em>range: 0.0-856.9</em>
+<em>range: 1-12</em>
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+18
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+high_utilizer
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Is a high utilizer
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+&lt;output omitted&gt;
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+19
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Protective custody hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+0<br>1
 </td>
 </tr>
 </table>
@@ -3049,7 +3094,7 @@ P - Hawaiian or pacific islander<br />
 U - Unknown<br />
 W - White</p>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code>ethnicity [5], release_type [13], transfer_type [15]</code></pre>
+<pre><code>release_type [12]</code></pre>
 <table style="border-collapse:collapse; border:none;">
 <caption>
 Data frame: cheshire_adm_all
@@ -3137,7 +3182,7 @@ Latino<br>Unknown<br>White
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-6
+5
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 sex
@@ -3153,7 +3198,7 @@ F<br>M<br>TRANF
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-7
+6
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 housing
@@ -3169,7 +3214,7 @@ Housed
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-8
+7
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 charge_code
@@ -3180,14 +3225,12 @@ Charge code
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-10.81875<br>10.918750000000001<br>10.932638888888889<br>10.959027777777777<br>10.966666666666667<br>11.017361111111112<br>13.279166666666667<br>13.643055555555556<br>159:3-A<br>172-B:1
-XIII<br>173-B:9<br>179:62<br>2.11<br>207:37-A<br>22.461111111111112<br><span
-style="omit">&lt;… truncated&gt;</span>
+&lt;output omitted&gt;
 </td>
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-9
+8
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 charge_desc
@@ -3209,7 +3252,7 @@ DEGREE ASSAULT<br><span style="omit">&lt;… truncated&gt;</span>
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-10
+9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 booking_date
@@ -3224,7 +3267,7 @@ Booking date
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-11
+10
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 booking_type
@@ -3243,7 +3286,7 @@ COURT ARREST WARRANT<br>UNKNOWN
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-12
+11
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 release_date
@@ -3258,7 +3301,7 @@ Release date
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-14
+13
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 sentence_status
@@ -3278,7 +3321,7 @@ WEEKENDS<br>SENTENCED / WORK RELEASE
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-16
+14
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 fy
@@ -3294,7 +3337,7 @@ Fiscal year
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-17
+15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 age
@@ -3308,7 +3351,7 @@ Age (years)
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-18
+16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 los
@@ -3318,6 +3361,52 @@ Length of stay (days)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
 <em>range: 0.0-971.1</em>
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+17
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+num_bookings
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Number of booking events in the fiscal year
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
+<em>range: 1-40</em>
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+18
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+high_utilizer
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Is a high utilizer
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+&lt;output omitted&gt;
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+19
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Protective custody hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+0<br>1
 </td>
 </tr>
 </table>
@@ -3333,6 +3422,7 @@ W - White<br />
 O - Unknown to data contact<br />
 X - Unknown to data contact</p>
 <div class="layout-chunk" data-layout="l-body">
+<pre><code>charge_code [7], release_type [12]</code></pre>
 <table style="border-collapse:collapse; border:none;">
 <caption>
 Data frame: merrimack_adm_all
@@ -3452,7 +3542,7 @@ Housed<br>Unhoused<br>Unknown
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-7
+8
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 charge_desc
@@ -3474,7 +3564,7 @@ A WARRANT<br><span style="omit">&lt;… truncated&gt;</span>
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-8
+9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 booking_date
@@ -3489,7 +3579,7 @@ Booking date
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-9
+10
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 booking_type
@@ -3508,7 +3598,7 @@ CUSTODY<br>SENTENCING<br>UNKNOWN
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-10
+11
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 release_date
@@ -3523,7 +3613,7 @@ Release date
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-11
+13
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 sentence_status
@@ -3542,7 +3632,7 @@ Misdemeanor
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-12
+14
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 fy
@@ -3558,7 +3648,7 @@ Fiscal year
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-13
+15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 age
@@ -3572,7 +3662,7 @@ Age (years)
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-14
+16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 los
@@ -3584,9 +3674,55 @@ Length of stay (days)
 <em>range: 0.0-868.4</em>
 </td>
 </tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+17
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+num_bookings
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Number of booking events in the fiscal year
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: 1-21</em>
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+18
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+high_utilizer
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Is a high utilizer
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+&lt;output omitted&gt;
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+19
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Protective custody hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+0<br>1
+</td>
+</tr>
 </table>
 </div>
-<div class="sourceCode" id="cb3"><pre
+<div class="sourceCode" id="cb4"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

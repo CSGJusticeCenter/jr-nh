@@ -1,5 +1,5 @@
 ---
-title: "Carroll County Trends"
+title: "Belknap County Trends"
 output: 
   distill::distill_article:
     toc: true
@@ -23,4 +23,64 @@ knitr::opts_chunk$set(
   )
 ```
 
-Coming soon.
+# Jail admissions
+
+### Demographics
+
+```{r}
+fnc_freq_table(belknap_race, "Race/Ethnicity") 
+```
+
+```{r}
+fnc_freq_table(belknap_sex, "Sex")
+```
+
+### Booking Type
+
+```{r}
+fnc_booking_heatmap(belknap_heatmap)
+```
+
+```{r}
+fnc_freq_table(belknap_bookings, "Booking Type")
+```
+
+```{r}
+belknap_pch_time_highchart
+```
+
+### Sentence Status
+
+```{r}
+fnc_freq_table(belknap_sentence, "Sentence Status")
+```
+
+# High Utilizers
+
+High utilizers are defined as individuals who were booked into jail more than 3 times in a fiscal year.  
+
+```{r}
+fnc_freq_table(belknap_hu, "High Utilizer")
+```
+
+### Demographics
+
+```{r}
+fnc_freq_table(belknap_hu_race, "Race/Ethnicity") 
+```
+
+```{r}
+fnc_freq_table(belknap_hu_sex, "Sex")
+```
+
+### Booking Type
+
+```{r}
+fnc_freq_table(belknap_hu_booking, "Booking Type")
+```
+
+### Sentence Status
+
+```{r}
+fnc_freq_table(belknap_hu_sentence, "Sentence Status")
+```
