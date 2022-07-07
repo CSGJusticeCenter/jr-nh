@@ -14,6 +14,17 @@ source("data_cleaning/00_library.R")
 # Data cleaning
 ###########
 
+# create high utilizer variable
+fnc_create_hu_variable <- function(df){
+  df1 <- df %>%
+    select(inmate_id, booking_date, fy) %>%
+    distinct() %>%
+    group_by(inmate_id, fy) %>%
+    dplyr::summarise(num_bookings = n()) %>%
+    mutate(high_utilizer = ifelse(
+      num_bookings >= 3, "High Utilizer", "Not High Utilizer"))
+}
+
 # get prop of race/ethnicity by FY
 fnc_race_by_year <- function(df){
   df1 <- data.frame(summarytools::freq(df$race, order = "freq", cum.percent = FALSE))
@@ -170,7 +181,7 @@ fnc_race_table <- function(df_19, df_20, df_21){
   race_19 <- fnc_race_by_year(df_19)
   race_20 <- fnc_race_by_year(df_20)
   race_21 <- fnc_race_by_year(df_21)
-  
+
   # rename variables for merging, indicate which year
   race_19 <- race_19 %>% dplyr::rename(booking_count_19 = booking_count,
                                        booking_pct_19   = booking_pct)
@@ -178,11 +189,11 @@ fnc_race_table <- function(df_19, df_20, df_21){
                                        booking_pct_20   = booking_pct)
   race_21 <- race_21 %>% dplyr::rename(booking_count_21 = booking_count,
                                        booking_pct_21   = booking_pct)
-  
+
   # join data
   df_race <- merge(race_19, race_20, by = "race_ethnicity", all.x = TRUE, all.y = TRUE)
   df_race <- merge(df_race, race_21, by = "race_ethnicity", all.x = TRUE, all.y = TRUE)
-  
+
   # arrange table data
   df_race <- fnc_race_data_desc(df_race)
 }
@@ -192,7 +203,7 @@ fnc_sex_table <- function(df_19, df_20, df_21){
   sex_19 <- fnc_sex_by_year(df_19)
   sex_20 <- fnc_sex_by_year(df_20)
   sex_21 <- fnc_sex_by_year(df_21)
-  
+
   # rename variables for merging, indicate which year
   sex_19 <- sex_19 %>% dplyr::rename(booking_count_19 = booking_count,
                                      booking_pct_19   = booking_pct)
@@ -200,11 +211,11 @@ fnc_sex_table <- function(df_19, df_20, df_21){
                                      booking_pct_20   = booking_pct)
   sex_21 <- sex_21 %>% dplyr::rename(booking_count_21 = booking_count,
                                      booking_pct_21   = booking_pct)
-  
+
   # join data
   df_sex <- merge(sex_19, sex_20, by = "sex", all.x = TRUE, all.y = TRUE)
   df_sex <- merge(df_sex, sex_21, by = "sex", all.x = TRUE, all.y = TRUE)
-  
+
   # arrange table data
   df_sex <- fnc_sex_data_desc(df_sex)
 }
@@ -229,7 +240,7 @@ fnc_booking_table <- function(df_19, df_20, df_21){
   booking_19 <- fnc_booking_by_year(df_19)
   booking_20 <- fnc_booking_by_year(df_20)
   booking_21 <- fnc_booking_by_year(df_21)
-  
+
   # rename variables for merging, indicate which year
   booking_19 <- booking_19 %>% dplyr::rename(booking_count_19 = booking_count,
                                              booking_pct_19   = booking_pct)
@@ -237,11 +248,11 @@ fnc_booking_table <- function(df_19, df_20, df_21){
                                              booking_pct_20   = booking_pct)
   booking_21 <- booking_21 %>% dplyr::rename(booking_count_21 = booking_count,
                                              booking_pct_21   = booking_pct)
-  
+
   # join data
   df_booking <- merge(booking_19, booking_20, by = "booking_type", all.x = TRUE, all.y = TRUE)
   df_booking <- merge(df_booking, booking_21, by = "booking_type", all.x = TRUE, all.y = TRUE)
-  
+
   # arrange table data
   df_booking <- fnc_booking_data_desc(df_booking)
 }
@@ -251,7 +262,7 @@ fnc_sentence_table <- function(df_19, df_20, df_21){
   sentence_19 <- fnc_sentence_by_year(df_19)
   sentence_20 <- fnc_sentence_by_year(df_20)
   sentence_21 <- fnc_sentence_by_year(df_21)
-  
+
   # rename variables for merging, indicate which year
   sentence_19 <- sentence_19 %>% dplyr::rename(sentence_count_19 = sentence_count,
                                                sentence_pct_19   = sentence_pct)
@@ -259,11 +270,11 @@ fnc_sentence_table <- function(df_19, df_20, df_21){
                                                sentence_pct_20   = sentence_pct)
   sentence_21 <- sentence_21 %>% dplyr::rename(sentence_count_21 = sentence_count,
                                                sentence_pct_21   = sentence_pct)
-  
+
   # join data
   df_sentence <- merge(sentence_19, sentence_20, by = "sentence_status", all.x = TRUE, all.y = TRUE)
   df_sentence <- merge(df_sentence, sentence_21, by = "sentence_status", all.x = TRUE, all.y = TRUE)
-  
+
   # arrange table data
   df_sentence <- fnc_sentence_data_desc(df_sentence)
 }
@@ -273,7 +284,7 @@ fnc_hu_table <- function(df_19, df_20, df_21){
   hu_19 <- fnc_hu_by_year(df_19)
   hu_20 <- fnc_hu_by_year(df_20)
   hu_21 <- fnc_hu_by_year(df_21)
-  
+
   # rename variables for merging, indicate which year
   hu_19 <- hu_19 %>% dplyr::rename(booking_count_19 = booking_count,
                                    booking_pct_19   = booking_pct)
@@ -281,11 +292,11 @@ fnc_hu_table <- function(df_19, df_20, df_21){
                                    booking_pct_20   = booking_pct)
   hu_21 <- hu_21 %>% dplyr::rename(booking_count_21 = booking_count,
                                    booking_pct_21   = booking_pct)
-  
+
   # join data
   df_hu <- merge(hu_19, hu_20, by = "high_utilizer", all.x = TRUE, all.y = TRUE)
   df_hu <- merge(df_hu, hu_21, by = "high_utilizer", all.x = TRUE, all.y = TRUE)
-  
+
   # arrange table data
   df_hu <- fnc_hu_data_desc(df_hu)
 }
@@ -301,11 +312,11 @@ fnc_hu_setup <- function(df){
   df_high_utilizers_21 <- df %>% filter(fy == 2021) %>%
     group_by(inmate_id, fy) %>%
     dplyr::summarise(num_bookings = n()) %>% filter(num_bookings > 3)
-  
+
   # join data
   df_high_utilizers <- rbind(df_high_utilizers_19, df_high_utilizers_20)
   df_high_utilizers <- rbind(df_high_utilizers, df_high_utilizers_21)
-  
+
   # merge with sentence data to get details
   df_high_utilizers <- left_join(df_high_utilizers, df, by = c("inmate_id", "fy"))
 }
@@ -331,17 +342,13 @@ fnc_booking_heatmap <- function(df){
 # calculate number of PC holds by month and year
 # create tool tip for chart
 fnc_pch_time_highchart <- function(df){
-  df_pch <- df
-  df_pch$month_year_text <- format(as.Date(df_pch$booking_date, "%d/%m/%Y"), "%b %Y")
-  df_pch$month_year <- as.Date(as.yearmon(df_pch$month_year_text))
-  
+  df_pch <- df %>% filter(pc_hold == 1)
   df_pch <- df_pch %>%
-    filter(booking_type == "PROTECTIVE CUSTODY") %>%
     dplyr::group_by(month_year, month_year_text) %>%
     dplyr::summarise(total = n())
   df_pch <- df_pch %>%
     mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"))
-  
+
   df_pch_highchart <- df_pch %>%
     hchart('line', hcaes(x = month_year, y = total), color = "steelblue") %>%
     hc_setup() %>%

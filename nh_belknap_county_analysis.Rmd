@@ -42,7 +42,7 @@ fnc_booking_heatmap(belknap_heatmap)
 ```
 
 ```{r}
-fnc_freq_table(belknap_booking, "Booking Type")
+fnc_freq_table(belknap_bookings, "Booking Type")
 ```
 
 ```{r}

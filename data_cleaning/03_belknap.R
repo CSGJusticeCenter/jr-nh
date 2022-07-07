@@ -21,13 +21,14 @@ belknap_adm_all <- clean_names(belknap_adm.xlsx)
 
 # rename variables for consistency
 belknap_adm_all <- belknap_adm_all %>%
+  mutate(charge_code = NA) %>%
   dplyr::select(id = unique_person_id,
                 inmate_id,
                 yob = year_of_birth,
                 race,
                 sex,
                 housing = housing_instability_or_homelessness_indicator,
-                # charge_code - needs a charge code bc the code and description are in one field
+                charge_code,
                 charge_desc = charged_offense_code_description_including_technical_violations_of_supervision,
                 booking_date,
                 booking_type,
@@ -70,6 +71,7 @@ belknap_adm_all <- belknap_adm_all %>%
                 race,
                 sex,
                 housing,
+                charge_code,
                 charge_desc,
                 booking_date,
                 booking_type,
@@ -79,16 +81,14 @@ belknap_adm_all <- belknap_adm_all %>%
                 everything())
 
 # create high utilizer variable
-belknap_bookings <- belknap_adm_all %>%
-  select(inmate_id, booking_date, fy) %>%
-  distinct() %>%
-  group_by(inmate_id, fy) %>%
-  dplyr::summarise(num_bookings = n()) %>%
-  mutate(high_utilizer = ifelse(
-    num_bookings >= 3, "High Utilizer", "Not High Utilizer"))
+belknap_bookings <- fnc_create_hu_variable(belknap_adm_all)
 
 # merge data back
 belknap_adm_all <- left_join(belknap_adm_all, belknap_bookings, by = c("inmate_id", "fy"))
+
+# create a PC hold variable
+belknap_adm_all <- belknap_adm_all %>%
+  mutate(pc_hold = ifelse(charge_desc == "PROTECTIVE CUSTODY" | charge_desc == "PROTECTIVE CUSTODY/INTOXICATION", 1, 0))
 
 # remove charge codes and duplicates to get picture of cohort
 # keep sentence status - more rows for each charge and sentence status
@@ -104,7 +104,8 @@ belknap_adm <- belknap_adm_all %>%
                 los,
                 fy,
                 num_bookings,
-                high_utilizer) %>%
+                high_utilizer,
+                pc_hold) %>%
   distinct()
 
 # remove charge codes and duplicates to get picture of cohort
@@ -122,7 +123,8 @@ belknap_booking <- belknap_adm_all %>%
                 los,
                 fy,
                 num_bookings,
-                high_utilizer) %>%
+                high_utilizer,
+                pc_hold) %>%
   distinct()
 
 # sep by fiscal year
@@ -178,7 +180,7 @@ belknap_heatmap$month <- factor(belknap_heatmap$month, levels=rev(levels(belknap
 ######
 
 # custom function to create table
-belknap_booking <- fnc_booking_table(belknap_booking_19, belknap_booking_20, belknap_booking_21)
+belknap_bookings <- fnc_booking_table(belknap_booking_19, belknap_booking_20, belknap_booking_21)
 
 ######
 # Sentence Statuses
@@ -200,7 +202,7 @@ belknap_sentence <- fnc_sentence_table(belknap_adm_19, belknap_adm_20, belknap_a
 
 # custom function to create high utilizers dataframe
 belknap_high_utilizers_sentence <- fnc_hu_setup(belknap_adm)
-belknap_high_utilizers_booking  <- fnc_hu_setup(belknap_booking_all)
+belknap_high_utilizers_booking  <- fnc_hu_setup(belknap_booking)
 
 # sep by fiscal year
 belknap_high_utilizers_sentence_19 <- belknap_high_utilizers_sentence %>% filter(fy == 2019)
@@ -250,6 +252,7 @@ belknap_adm_all$booking_type    <- as.factor(belknap_adm_all$booking_type)
 belknap_adm_all$release_type    <- as.factor(belknap_adm_all$release_type)
 belknap_adm_all$sentence_status <- as.factor(belknap_adm_all$sentence_status)
 belknap_adm_all$fy              <- as.factor(belknap_adm_all$fy)
+belknap_adm_all$pc_hold         <- as.factor(belknap_adm_all$pc_hold)
 belknap_adm_all$age             <- as.numeric(belknap_adm_all$age)
 belknap_adm_all$los             <- as.numeric(belknap_adm_all$los)
 
@@ -260,6 +263,7 @@ var.labels <- c(id              = "Unique ID",
                 race            = "Race",
                 sex             = "Sex",
                 housing         = "Housing indicator",
+                charge_code     = "Charge code",
                 charge_desc     = "Charge description",
                 booking_date    = "Booking date",
                 booking_type    = "Booking type",
@@ -270,7 +274,8 @@ var.labels <- c(id              = "Unique ID",
                 age             = "Age (years)",
                 los             = "Length of stay (days)",
                 num_bookings    = "Number of booking events in the fiscal year",
-                high_utilizer   = "Is a high utilizer"
+                high_utilizer   = "Is a high utilizer",
+                pc_hold         = "Protective custody hold"
 )
 
 # add labels to data
@@ -284,8 +289,12 @@ belknap_adm_all <- labelled::set_variable_labels(belknap_adm_all, .labels = var.
 # PC holds over time
 ######
 
+# create month year variables
+belknap_booking$month_year_text <- format(as.Date(belknap_booking$booking_date, "%d/%m/%Y"), "%b %Y")
+belknap_booking$month_year      <- as.Date(as.yearmon(belknap_booking$month_year_text))
+
 # custom function to generate a highchart showing pc hold bookings over time (month and year)
-belknap_pch_time_highchart <- fnc_pch_time_highchart(belknap_booking_all)
+belknap_pch_time_highchart <- fnc_pch_time_highchart(belknap_booking)
 
 ######
 # Save data
@@ -294,7 +303,7 @@ belknap_pch_time_highchart <- fnc_pch_time_highchart(belknap_booking_all)
 # save data to sharepoint
 save(belknap_adm_all,      file=paste0(sp_data_path, "/Data/r_data/belknap_adm_all.rds", sep = ""))
 save(belknap_adm,          file=paste0(sp_data_path, "/Data/r_data/belknap_adm.rds", sep = ""))
-save(belknap_booking,      file=paste0(sp_data_path, "/Data/r_data/belknap_booking.rds", sep = ""))
+save(belknap_bookings,     file=paste0(sp_data_path, "/Data/r_data/belknap_bookings.rds", sep = ""))
 save(belknap_sentence,     file=paste0(sp_data_path, "/Data/r_data/belknap_sentence.rds", sep = ""))
 save(belknap_hu,           file=paste0(sp_data_path, "/Data/r_data/belknap_hu.rds", sep = ""))
 save(belknap_race,         file=paste0(sp_data_path, "/Data/r_data/belknap_race.rds", sep = ""))
