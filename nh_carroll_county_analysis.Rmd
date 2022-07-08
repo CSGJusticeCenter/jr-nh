@@ -1,5 +1,5 @@
 ---
-title: "Belknap County Trends"
+title: "Carroll County Trends"
 output: 
   distill::distill_article:
     toc: true
@@ -28,31 +28,31 @@ knitr::opts_chunk$set(
 ### Demographics
 
 ```{r}
-fnc_freq_table(belknap_race, "Race/Ethnicity") 
+fnc_freq_table(carroll_race, "Race/Ethnicity") 
 ```
 
 ```{r}
-fnc_freq_table(belknap_sex, "Sex")
+fnc_freq_table(carroll_sex, "Sex")
 ```
 
 ### Booking Type
 
 ```{r}
-fnc_booking_heatmap(belknap_heatmap)
+fnc_booking_heatmap(carroll_heatmap)
 ```
 
 ```{r}
-fnc_freq_table(belknap_bookings, "Booking Type")
+fnc_freq_table(carroll_bookings, "Booking Type")
 ```
 
 ```{r}
-belknap_pch_time_highchart
+carroll_pch_time_highchart
 ```
 
 ### Sentence Status
 
 ```{r}
-fnc_freq_table(belknap_sentence, "Sentence Status")
+fnc_freq_table(carroll_sentence, "Sentence Status")
 ```
 
 # High Utilizers
@@ -60,27 +60,27 @@ fnc_freq_table(belknap_sentence, "Sentence Status")
 High utilizers are defined as individuals who were booked into jail more than 3 times in a fiscal year.  
 
 ```{r}
-fnc_freq_table(belknap_hu, "High Utilizer")
+fnc_freq_table(carroll_hu, "High Utilizer")
 ```
 
 ### Demographics
 
 ```{r}
-fnc_freq_table(belknap_hu_race, "Race/Ethnicity") 
+fnc_freq_table(carroll_hu_race, "Race/Ethnicity") 
 ```
 
 ```{r}
-fnc_freq_table(belknap_hu_sex, "Sex")
+fnc_freq_table(carroll_hu_sex, "Sex")
 ```
 
 ### Booking Type
 
 ```{r}
-fnc_freq_table(belknap_hu_booking, "Booking Type")
+fnc_freq_table(carroll_hu_booking, "Booking Type")
 ```
 
 ### Sentence Status
 
 ```{r}
-fnc_freq_table(belknap_hu_sentence, "Sentence Status")
+fnc_freq_table(carroll_hu_sentence, "Sentence Status")
 ```
