@@ -1,8 +1,18 @@
-# Justice Reinvenstment Intiative - New Hampshire
+# Justice Reinvestment Intiative - New Hampshire
 
 This project focuses on the prevalence of people with behavioral health needs moving through local county jails and the availability and impact of existing services and supports for this population statewide.  
 
-# Reposoitory Structure
+# Repository Structure
+
+    |-- Background 
+      |-- DHHS          # DHHS documentation
+        |-- NH_datadiagram.tex #create data flow & security diagram
+        |-- SharePoint.png     #image for diagram
+        |-- flow1.png          #image for diagram
+        |-- flow2.png          #image for diagram
+        |-- flow3.png          #image for diagram
+
+
 
     |-- data_cleaning 
       |-- 00_library.R          # load packages
