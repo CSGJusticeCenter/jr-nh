@@ -45,6 +45,26 @@ fnc_booking_heatmap(merrimack_heatmap)
 fnc_freq_table(merrimack_bookings, "Booking Type")
 ```
 
+PC Holds determined by charge field but PC holds are indicated in the charge description, booking type, sentence status. When a PC hold is indicated in the charge description it can have any of the following booking types and sentence statuses.   
+
+Booking types for PC holds:   
+
+- ARREST WARRANT (1)  
+- DETAINEE REQUEST (155)   
+- DETAINER (7)   
+- PROBATION (4)  
+- PROTECTIVE CUSTODY (1,211)  
+
+Sentence statuses for PC holds:   
+
+- 24 HOUR HOLD (13)  
+- DUAL STATUS (1)  
+- PC-IEA (60)  
+- Pre-trial Felony (6)  
+- Pre-trial Misdemeanor (1)  
+- PROTECTIVE CUSTODY HOLD (1,300)  
+- Sentenced Felony (1)  
+
 ```{r}
 merrimack_pch_time_highchart
 ```

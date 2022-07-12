@@ -353,8 +353,8 @@ fnc_pch_time_highchart <- function(df){
     hchart('line', hcaes(x = month_year, y = total), color = "steelblue") %>%
     hc_setup() %>%
     hc_xAxis(title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-    hc_yAxis(title = list(text = "Number of PC Hold Bookings", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-    hc_title(text = "Number of PC Hold Bookings from 2019-2021")
+    hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold"))) %>%
+    hc_title(text = "Number of PC Holds from 2019-2021")
 }
 
 ###########

@@ -15,3 +15,11 @@ source("data_cleaning/01_functions.R")
 ###################
 # Sullivan County
 ###################
+
+# clean variable names
+sullivan_adm_all <- clean_names(sullivan_adm.xlsx)
+
+# fix date formats
+sullivan_adm_all$booking_date <- as.POSIXct(sullivan_adm_all$booking, format = '%m/%d/%Y %H:%M')
+sullivan_adm_all$booking_date <- format(sullivan_adm_all$booking_date, "%m/%d/%Y")
+sullivan_adm_all$booking_date <- as.Date(sullivan_adm_all$booking_date, format = "%m/%d/%Y")

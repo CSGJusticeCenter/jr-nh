@@ -35,7 +35,7 @@ html {
   /*-- Specify custom fonts ~~~ must be imported above   --*/
   --heading-font:    "Source Sans Pro", sans-serif;
   --mono-font:       "Source Code Pro", monospace;
-  --body-font:       "Lora", serif;
+  --body-font:       "Source Sans Pro", sans-serif;
   --navbar-font:     "Source Sans Pro", sans-serif;  /* websites + blogs only */
 }
 
@@ -80,7 +80,7 @@ d-appendix {
 }
 
 /*-- Additional custom styles --*/
-/* Add any additional CSS rules below                      */
+/* Add any additional CSS rules below*/
 
 p code {
   padding: 1px;

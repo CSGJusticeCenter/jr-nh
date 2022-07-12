@@ -45,6 +45,18 @@ fnc_booking_heatmap(cheshire_heatmap)
 fnc_freq_table(cheshire_bookings, "Booking Type")
 ```
 
+PC Holds determined by charge field but PC holds are indicated in the charge description, booking type, sentence status. When a PC hold is indicated in the charge description it can have any of the following booking types and sentence statuses.  
+
+Booking types for PC holds:   
+
+- DETAINEE REQUEST (261)   
+- DETAINER (821)   
+
+Sentence statuses for PC holds:   
+
+- PRE-TRIAL (15 instances)  
+- PROTECTIVE CUSTODY (1,037)   
+
 ```{r}
 cheshire_pch_time_highchart
 ```

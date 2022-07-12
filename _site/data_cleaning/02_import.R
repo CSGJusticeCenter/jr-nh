@@ -65,3 +65,5 @@ merrimack_adm.xlsx <- read_excel(paste0(sp_data_path, "/Data/Merrimack County/Da
 ###################
 # Sullivan County
 ###################
+
+sullivan_adm.xlsx <- read_csv(paste0(sp_data_path, "/Data/Sullivan County/CSG de identified data working.csv"))

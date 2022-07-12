@@ -89,7 +89,7 @@ carroll_adm_all <- left_join(carroll_adm_all, carroll_bookings, by = c("inmate_i
 
 # create a PC hold variable
 carroll_adm_all <- carroll_adm_all %>%
-  mutate(pc_hold = ifelse(sentence_status == "PROTECTIVE CUSTODY", 1, 0))
+  mutate(pc_hold = ifelse(charge_desc == "PROTECTIVE CUSTODY", 1, 0))
 
 # remove charge codes and duplicates to get picture of cohort
 # keep sentence status - more rows for each charge and sentence status
@@ -253,6 +253,7 @@ carroll_adm_all$booking_type    <- as.factor(carroll_adm_all$booking_type)
 carroll_adm_all$release_type    <- as.factor(carroll_adm_all$release_type)
 carroll_adm_all$sentence_status <- as.factor(carroll_adm_all$sentence_status)
 carroll_adm_all$fy              <- as.factor(carroll_adm_all$fy)
+carroll_adm_all$high_utilizer   <- as.factor(carroll_adm_all$high_utilizer)
 carroll_adm_all$pc_hold         <- as.factor(carroll_adm_all$pc_hold)
 carroll_adm_all$age             <- as.numeric(carroll_adm_all$age)
 carroll_adm_all$los             <- as.numeric(carroll_adm_all$los)
