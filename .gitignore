@@ -1,6 +1,7 @@
 *.httr-oauth
 *.xlsx
 *.xls
+*.aux
 *.docx
 *.pdf
 *.sas7bdat
