@@ -1,29 +1,18 @@
 \documentclass{article}
 \usepackage{tikz}
 \usepackage{pgflibraryshapes}
-\usepackage{alltt}
 \usepackage[paperheight = 8in, paperwidth = 12in]{geometry}
 \usepackage{graphicx}
-\usepackage{multirow}%for special tables
-\usepackage{color, colortbl}
-\usepackage{rotating}
-\usepackage{lscape}
+\usepackage{mathtools}
+\usepackage{amsmath}
 \usetikzlibrary{shapes,arrows,decorations.pathmorphing,backgrounds,positioning,fit,petri,shadows,calc}
 
-\definecolor{grey}{rgb}{0.55,0.55,0.55}
 \definecolor{lblue}{rgb}{0,0.6,0.9}
-\definecolor{llyellow}{rgb}{0,1,1}
-\definecolor{lyellow}{rgb}{0,0.9,0.9}
-\definecolor{yellow}{rgb}{0,0.8,0.8}
-\definecolor{sgreen}{rgb}{0.53,0.86,0.41}
 \definecolor{csgblue}{rgb}{0,0.33,0.72} %CSG blue theme
 \definecolor{csgwhite}{rgb}{1,1,1} %CSG white theme
 \definecolor{csgblack}{rgb}{0,0,0} %CSG black theme
 \definecolor{csggray}{rgb}{0.65,0.66,0.67} %CSG regional gray theme
 \definecolor{specblue}{rgb}{0.86,0.91,0.99}
-\newcommand\Fontchangeextra{\fontsize{5}{7.2}\selectfont}
-\newcommand\Fontchangeextranew{\fontsize{4.5}{7.2}\selectfont}
-\newcommand\Fontchange{\fontsize{8}{7.2}\selectfont}
 
 \begin{document}
 	
@@ -32,33 +21,20 @@
 %%%%%%%%%%%%%%%%%%%%%
 %Define block styles%
 %%%%%%%%%%%%%%%%%%%%%
-%bubble block
+
+%bubble node
 \tikzstyle{block} = [rectangle, draw, fill=specblue, node distance=3cm, draw = csgblue!30, line width = 1mm,
 text width=50em, rounded corners, minimum height=13em]
-\tikzstyle{blockc} = [rectangle, draw, fill=csgblue, node distance=3.5cm, text centered,
-text width=8em, rounded corners, minimum height=2em]
 
-%box block
-\tikzstyle{box} = [rectangle, draw, fill=sgreen, text centered,
-text width=6em, minimum height=2.5em]
-\tikzstyle{boxr} = [rectangle, draw, fill=red, node distance=3.5cm, text centered,
-text width=8em, minimum height=1.5em]
-
-%empty block
+%empty node
 \tikzstyle{cloud} = [node distance=2cm, text width=10cm, text centered]
 
-%cylinders
+%cylinder node
 \tikzstyle{jails} = [minimum width=1.8cm, minimum height=2cm, text width = 1.5cm, align = center,
 cylinder, shape border rotate=90, shape aspect = .5, draw, 
 cylinder uses custom fill, cylinder body fill = lblue!25, cylinder end fill = lblue!25]
 
-%circle block
-\tikzstyle{cloudcp} = [circular drop shadow, circle, draw, fill=csgblue!20,
-node distance=7.5cm, minimum height=3em]
-\tikzstyle{cloudbp} = [circular drop shadow, circle, draw, fill=csggray!20,
-node distance=1.85cm, minimum height=4.5em]
-
-%straight lines
+%straight line arrows
 \tikzstyle{line}  = [node distance = 1cm, draw, thick, -latex', line width=0.5mm]
 
 %%%%%%%%
@@ -68,6 +44,11 @@ node distance=1.85cm, minimum height=4.5em]
 \begin{tikzpicture}[remember picture,overlay]
 
 %nodes
+
+	%title
+	\node (doctitle) at (current page.north)
+	                 [align = left, yshift = -1.5cm]
+	                 {{\large \textbf{CSG Justice Center \(|\) New Hampshire High Utilizers Project \(|\) Data Flow \& Security Diagram}} \\ \\ Updated \today};
 
     %Jails/DHHS
 	\node (belknap) at (current page.north west) 
@@ -130,9 +111,7 @@ node distance=1.85cm, minimum height=4.5em]
 	\draw [line]   (csg2) -- node[below,align=left] {\scriptsize \textbf{WNS - HTTPS}} node[above,align=left] {\scriptsize One Drive Sync Client} (csg3) ;
 	\draw [line]   ($(csg3) - (-1,0.5)$)  -- node[below,align=left] {\scriptsize \textbf{WNS - HTTPS}} node[above,align=left] {\scriptsize One Drive Sync Client} ($(csg4) - (2,0.5)$);
 	\draw [line]   ($(csg4) + (-2,0.5)$)  -- node[below,align=left] {\scriptsize \textbf{WNS - HTTPS}} node[above,align=left] {\scriptsize One Drive Sync Client} ($(csg3) + (1,0.5)$);	
-	
-	
-						 
+					 
 \end{tikzpicture}
 
 \end{document}
