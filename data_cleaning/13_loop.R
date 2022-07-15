@@ -70,6 +70,14 @@ counties <- nh_sentence$county %>%
   unique() %>%
   sort()
 
+counties_except_coos <- nh_sentence %>%
+  filter(county != "Coos")
+
+counties_except_coos <-
+  counties_except_coos$county %>%
+  unique() %>%
+  sort()
+
 ######
 # High Utilizer proportion
 ######
@@ -226,25 +234,15 @@ nh_hu_sentence_status <- bind_rows(nh_hu_sentence_status)
 nh_booking$month_year_text <- format(as.Date(nh_booking$booking_date, "%d/%m/%Y"), "%b %Y")
 nh_booking$month_year      <- as.Date(as.yearmon(nh_booking$month_year_text))
 
-nh_pch_time_highchart <- map(.x = counties,  .f = function(x) {
-  df <- fnc_pch_time_highchart(nh_booking)
+nh_pch_time_highchart <- map(.x = counties_except_coos,  .f = function(x) {
+  df <- nh_booking %>% filter(county == x)
+  fnc_pch_time_highchart(df)
 })
 
+nh_pch_time_highchart <- setNames(nh_pch_time_highchart,c("Belknap","Carroll","Cheshire", "Merrimack", "Rockingham"))
+# names(nh_pch_time_highchart)[1:5] <- c("Belknap","Carroll","Cheshire", "Merrimack", "Rockingham")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+nh_pch_time_highchart$Belknap
 
 
 ############# TEST
