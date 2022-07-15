@@ -396,3 +396,4 @@ hc_setup <- function(x) {
     hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
     hc_plotOptions(series = list(animation = FALSE))
 }
+

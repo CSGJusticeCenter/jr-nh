@@ -23,13 +23,17 @@ navbar:
     - text: "County Reports"
       menu:
         - text: "Belknap"
-          href: nh_belknap_county_analysis.html
+          href: Belknap_county_report.html
         - text: "Carroll"
-          href: nh_carroll_county_analysis.html
+          href: Carroll_county_report.html
         - text: "Cheshire"
-          href: nh_cheshire_county_analysis.html
+          href: Cheshire_county_report.html
+        - text: "Coos"
+          href: Coos_county_report.html
         - text: "Merrimack"
-          href: nh_merrimack_county_analysis.html
+          href: Merrimack_county_report.html
+        - text: "Rockingham"
+          href: Rockingham_county_report.html
     - text: "Research"
       menu:
         - text: "To Do and Questions"

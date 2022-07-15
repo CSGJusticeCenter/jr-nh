@@ -1,0 +1,35 @@
+---
+title: "County Report"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    self_contained: false
+---
+
+```{r include=FALSE}
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
+  #dev = "ragg_png",
+  cache = FALSE
+  )
+```
+
+```{r comment=NA, results = 'asis'}
+# assign county name being looped in generate_adm_reports.R
+county_name <- subgroup
+
+# print header of county
+cat("#", county_name, "\n")
+```
+```{r}
+
+```
+

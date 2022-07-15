@@ -46,4 +46,4 @@ default_fonts <- c("Noto Sans")
 # in your Renviron, set CSG_SP_PATH = "your sharepoint path here" and GITHUB_PAT = "your token here"
 # To generate a github token - usethis::create_github_token()
 # To edit Renviron - usethis::edit_r_environ()
-sp_data_path <- csg_sp_path(file.path(""))
+sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))

@@ -19,7 +19,14 @@ knitr::opts_chunk$set(
 ## Questions  
 
 - Should LOS include PC holds? Weekends?  
-- Interested in part 1 violent crimes? 
+- How should we define high utilizer?
+
+## To Do
+
+- Add 3 yr totals to tables  
+- Create two way tables between high utilizer vs not high utilizer to see how they differ across characteristics  
+- PC holds compositions  
+- Most common charges by charge category  
 
 ## Belknap  
 
