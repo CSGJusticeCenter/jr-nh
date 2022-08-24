@@ -37,8 +37,8 @@ merrimack_adm_all <- merrimack_adm_all %>%
          release_type = NA,
          race = case_when(race == "A" ~ "AAPI",
                           race == "B" ~ "Black",
-                          race == "H" ~ "Hispanic or Latino",
-                          race == "I" ~ "American Indian or Alaskan Native",
+                          race == "H" ~ "Hispanic",
+                          race == "I" ~ "American Indian Alaska Native",
                           race == "O" ~ "Other",
                           race == "P" ~ "AAPI",
                           race == "U" ~ "Unknown",
@@ -100,6 +100,7 @@ merrimack_adm_all$sentence_status <- as.factor(merrimack_adm_all$sentence_status
 merrimack_adm_all$fy              <- as.factor(merrimack_adm_all$fy)
 merrimack_adm_all$high_utilizer   <- as.factor(merrimack_adm_all$high_utilizer)
 merrimack_adm_all$pc_hold         <- as.factor(merrimack_adm_all$pc_hold)
+merrimack_adm_all$county          <- as.factor(merrimack_adm_all$county)
 merrimack_adm_all$age             <- as.numeric(merrimack_adm_all$age)
 merrimack_adm_all$los             <- as.numeric(merrimack_adm_all$los)
 
@@ -122,7 +123,8 @@ var.labels <- c(id              = "Unique ID",
                 los             = "Length of stay (days)",
                 num_bookings    = "Number of booking events in the fiscal year",
                 high_utilizer   = "Is a high utilizer",
-                pc_hold         = "Protective custody hold"
+                pc_hold         = "Protective custody hold",
+                county          = "County"
 )
 
 # add labels to data

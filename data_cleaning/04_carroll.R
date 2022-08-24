@@ -57,7 +57,7 @@ carroll_adm_all <- carroll_adm_all %>%
          los = difftime(as.POSIXct(release_date), as.POSIXct(booking_date, tz="UTC"), units="days"),
          race = case_when(race == "A" ~ "AAPI",
                           race == "B" ~ "Black",
-                          race == "I" ~ "American Indian or Alaskan Native",
+                          race == "I" ~ "American Indian Alaska Native",
                           race == "U" ~ "Unknown",
                           race == "W" ~ "White")
          ) %>%
@@ -110,6 +110,7 @@ carroll_adm_all$sentence_status <- as.factor(carroll_adm_all$sentence_status)
 carroll_adm_all$fy              <- as.factor(carroll_adm_all$fy)
 carroll_adm_all$high_utilizer   <- as.factor(carroll_adm_all$high_utilizer)
 carroll_adm_all$pc_hold         <- as.factor(carroll_adm_all$pc_hold)
+carroll_adm_all$county          <- as.factor(carroll_adm_all$county)
 carroll_adm_all$age             <- as.numeric(carroll_adm_all$age)
 carroll_adm_all$los             <- as.numeric(carroll_adm_all$los)
 
@@ -132,7 +133,8 @@ var.labels <- c(id              = "Unique ID",
                 los             = "Length of stay (days)",
                 num_bookings    = "Number of booking events in the fiscal year",
                 high_utilizer   = "Is a high utilizer",
-                pc_hold         = "Protective custody hold"
+                pc_hold         = "Protective custody hold",
+                county          = "County"
 )
 
 # add labels to data

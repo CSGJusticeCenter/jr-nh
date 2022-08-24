@@ -51,13 +51,13 @@ coos_adm.xlsx          <- read_excel(paste0(sp_data_path, "/Data/Coos County/Cop
 # Merrimack County
 ###################
 
-merrimack_adm.xlsx     <- read_excel(paste0(sp_data_path, "/Data/Merrimack County/Data Field 2 CSG 2019 to 2021 (2).xlsx"))
+merrimack_adm.xlsx    <- read_excel(paste0(sp_data_path, "/Data/Merrimack County/Data Field 2 CSG 2019 to 2021 (2).xlsx"))
 
 ###################
 # Rockingham County
 ###################
 
-rockingham_adm.xlsx     <- read_csv(paste0(sp_data_path, "/Data/Rockingham County/Inmate Report 070118 through 063021 Deidentified.csv"))
+rockingham_adm.xlsx   <- read_csv(paste0(sp_data_path, "/Data/Rockingham County/Inmate Report 070118 through 063021 Deidentified.csv"))
 
 ###################
 # Strafford County
@@ -68,4 +68,4 @@ rockingham_adm.xlsx     <- read_csv(paste0(sp_data_path, "/Data/Rockingham Count
 # Sullivan County
 ###################
 
-sullivan_adm.xlsx     <- read_csv(paste0(sp_data_path, "/Data/Sullivan County/CSG de identified data working.csv"))
+sullivan_adm.xlsx     <- read_excel(paste0(sp_data_path, "/Data/Sullivan County/8.15.22 de identified.xlsx"))

@@ -34,9 +34,9 @@ cheshire_adm_all <- cheshire_adm_all %>%
          los = difftime(as.POSIXct(release_date), as.POSIXct(booking_date, tz="UTC"), units="days"),
          race = case_when(race == "A" ~ "AAPI",
                           race == "B" ~ "Black",
-                          race == "H" ~ "Hispanic or Latino",
-                          race == "I" ~ "American Indian or Alaskan Native",
-                          race == "L" ~ "Hispanic or Latino",
+                          race == "H" ~ "Hispanic",
+                          race == "I" ~ "American Indian Alaska Native",
+                          race == "L" ~ "Hispanic",
                           race == "P" ~ "AAPI",
                           race == "U" ~ "Unknown",
                           race == "W" ~ "White")
@@ -97,6 +97,7 @@ cheshire_adm_all$sentence_status <- as.factor(cheshire_adm_all$sentence_status)
 cheshire_adm_all$fy              <- as.factor(cheshire_adm_all$fy)
 cheshire_adm_all$high_utilizer   <- as.factor(cheshire_adm_all$high_utilizer)
 cheshire_adm_all$pc_hold         <- as.factor(cheshire_adm_all$pc_hold)
+cheshire_adm_all$county          <- as.factor(cheshire_adm_all$county)
 cheshire_adm_all$age             <- as.numeric(cheshire_adm_all$age)
 cheshire_adm_all$los             <- as.numeric(cheshire_adm_all$los)
 
@@ -119,7 +120,8 @@ var.labels <- c(id              = "Unique ID",
                 los             = "Length of stay (days)",
                 num_bookings    = "Number of booking events in the fiscal year",
                 high_utilizer   = "Is a high utilizer",
-                pc_hold         = "Protective custody hold"
+                pc_hold         = "Protective custody hold",
+                county          = "County"
 )
 
 # add labels to data

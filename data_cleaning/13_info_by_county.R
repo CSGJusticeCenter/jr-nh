@@ -1,20 +1,22 @@
 ############################################
 # Project: JRI New Hampshire
 # File: loop.R
-# Last updated: July 15, 2022
+# Last updated: August 22, 2022
 # Author: Mari Roberts
 
 # combine county files
 # loop through counties to generate tables
 ############################################
 
-# combine county data for large NH dataframe with all charge descriptions
+# combine county data or large NH dataframe with all charge descriptions
+# missing strafford, hillsborough for now
 nh_adm_all <- do.call("rbind", list(belknap_adm_all,
                                     carroll_adm_all,
                                     cheshire_adm_all,
                                     coos_adm_all,
                                     merrimack_adm_all,
-                                    rockingham_adm_all))
+                                    rockingham_adm_all,
+                                    sullivan_adm_all))
 
 
 # remove charge codes and duplicates
@@ -66,17 +68,22 @@ nh_booking_19 <- nh_booking %>% filter(fy == 2019)
 nh_booking_20 <- nh_booking %>% filter(fy == 2020)
 nh_booking_21 <- nh_booking %>% filter(fy == 2021)
 
+# get list of counties
 counties <- nh_sentence$county %>%
   unique() %>%
   sort()
 
-counties_except_coos <- nh_sentence %>%
-  filter(county != "Coos")
+# # filter out Coos because they don't capture PC holds
+# counties_except_coos <- nh_sentence %>%
+#   filter(county != "Coos")
+# counties_except_coos <-
+#   counties_except_coos$county %>%
+#   unique() %>%
+#   sort()
 
-counties_except_coos <-
-  counties_except_coos$county %>%
-  unique() %>%
-  sort()
+# create month year variables
+nh_booking$month_year_text <- format(as.Date(nh_booking$booking_date, "%d/%m/%Y"), "%b %Y")
+nh_booking$month_year      <- as.Date(as.yearmon(nh_booking$month_year_text))
 
 ######
 # High Utilizer proportion
@@ -147,6 +154,35 @@ nh_sentence_status <- map(.x = counties,  .f = function(x) {
 })
 
 nh_sentence_status <- bind_rows(nh_sentence_status)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 ##########################################################################
 # High Utilizers - more than 3 bookings in a year
@@ -222,27 +258,11 @@ nh_hu_sentence_status <- bind_rows(nh_hu_sentence_status)
 
 
 
-##############################################################################
-# Highcharts
-##############################################################################
 
-######
-# PC holds over time
-######
 
-# create month year variables
-nh_booking$month_year_text <- format(as.Date(nh_booking$booking_date, "%d/%m/%Y"), "%b %Y")
-nh_booking$month_year      <- as.Date(as.yearmon(nh_booking$month_year_text))
 
-nh_pch_time_highchart <- map(.x = counties_except_coos,  .f = function(x) {
-  df <- nh_booking %>% filter(county == x)
-  fnc_pch_time_highchart(df)
-})
 
-nh_pch_time_highchart <- setNames(nh_pch_time_highchart,c("Belknap","Carroll","Cheshire", "Merrimack", "Rockingham"))
-# names(nh_pch_time_highchart)[1:5] <- c("Belknap","Carroll","Cheshire", "Merrimack", "Rockingham")
 
-nh_pch_time_highchart$Belknap
 
 
 ############# TEST

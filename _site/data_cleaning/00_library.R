@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: library.R
-# Last updated: June 13, 2022
+# Last updated: August 22, 2022
 # Author: Mari Roberts
 
 # Load packages, set working directories

@@ -51,8 +51,8 @@ belknap_adm_all <- belknap_adm_all %>%
          race = case_when(race == "A"  ~ "AAPI",
                           race == "B"  ~ "Black",
                           race == "C"  ~ "AAPI",
-                          race == "H"  ~ "Hispanic or Latino",
-                          race == "I"  ~ "AAPI",
+                          race == "H"  ~ "Hispanic",
+                          race == "I"  ~ "American Indian Alaska Native",
                           race == "NH" ~ "Unknown",
                           race == "O"  ~ "Other",
                           race == "P"  ~ "Other",
@@ -109,6 +109,7 @@ belknap_adm_all$sentence_status <- as.factor(belknap_adm_all$sentence_status)
 belknap_adm_all$fy              <- as.factor(belknap_adm_all$fy)
 belknap_adm_all$high_utilizer   <- as.factor(belknap_adm_all$high_utilizer)
 belknap_adm_all$pc_hold         <- as.factor(belknap_adm_all$pc_hold)
+belknap_adm_all$county          <- as.factor(belknap_adm_all$county)
 belknap_adm_all$age             <- as.numeric(belknap_adm_all$age)
 belknap_adm_all$los             <- as.numeric(belknap_adm_all$los)
 
@@ -131,7 +132,8 @@ var.labels <- c(id              = "Unique ID",
                 los             = "Length of stay (days)",
                 num_bookings    = "Number of booking events in the fiscal year",
                 high_utilizer   = "Is a high utilizer",
-                pc_hold         = "Protective custody hold"
+                pc_hold         = "Protective custody hold",
+                county          = "County"
 )
 
 # add labels to data

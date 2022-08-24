@@ -38,6 +38,8 @@ navbar:
       menu:
         - text: "To Do and Questions"
           href: nh_todo.html
+        - text: "Analysis Plan"
+          href: nh_analysis_plan.html
         - text: "Data Dictionary"
           href: nh_data_dictionary.html
     - icon: fab fa-github

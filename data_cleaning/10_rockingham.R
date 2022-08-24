@@ -51,8 +51,8 @@ rockingham_adm_all <- rockingham_adm_all %>%
          race = case_when(race == "A"  ~ "AAPI",
                           race == "B"  ~ "Black",
                           race == "C"  ~ "AAPI",
-                          race == "H"  ~ "Hispanic or Latino",
-                          race == "I"  ~ "AAPI",
+                          race == "H"  ~ "Hispanic",
+                          race == "I"  ~ "American Indian Alaska Native",
                           race == "NH" ~ "Unknown",
                           race == "O"  ~ "Other",
                           race == "P"  ~ "Other",
@@ -109,6 +109,7 @@ rockingham_adm_all$sentence_status <- as.factor(rockingham_adm_all$sentence_stat
 rockingham_adm_all$fy              <- as.factor(rockingham_adm_all$fy)
 rockingham_adm_all$high_utilizer   <- as.factor(rockingham_adm_all$high_utilizer)
 rockingham_adm_all$pc_hold         <- as.factor(rockingham_adm_all$pc_hold)
+rockingham_adm_all$county         <- as.factor(rockingham_adm_all$county)
 rockingham_adm_all$age             <- as.numeric(rockingham_adm_all$age)
 rockingham_adm_all$los             <- as.numeric(rockingham_adm_all$los)
 
@@ -131,7 +132,8 @@ var.labels <- c(id              = "Unique ID",
                 los             = "Length of stay (days)",
                 num_bookings    = "Number of booking events in the fiscal year",
                 high_utilizer   = "Is a high utilizer",
-                pc_hold         = "Protective custody hold"
+                pc_hold         = "Protective custody hold",
+                county          = "County"
 )
 
 # add labels to data

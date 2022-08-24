@@ -37,8 +37,8 @@ merrimack_adm_all <- merrimack_adm_all %>%
          release_type = NA,
          race = case_when(race == "A" ~ "AAPI",
                           race == "B" ~ "Black",
-                          race == "H" ~ "Hispanic or Latino",
-                          race == "I" ~ "American Indian or Alaskan Native",
+                          race == "H" ~ "Hispanic",
+                          race == "I" ~ "American Indian Alaska Native",
                           race == "O" ~ "Other",
                           race == "P" ~ "AAPI",
                           race == "U" ~ "Unknown",
@@ -81,3 +81,51 @@ merrimack_adm_all <- left_join(merrimack_adm_all, merrimack_bookings, by = c("in
 merrimack_adm_all <- merrimack_adm_all %>%
   mutate(pc_hold = ifelse(charge_desc == "PROTECTIVE CUSTODY" | charge_desc == "PROTECTIVE CUSTODY/INTOXICATION", 1, 0),
          county = "Merrimack")
+
+######
+# Create data dictionary
+######
+
+# change data types
+merrimack_adm_all$id              <- as.factor(merrimack_adm_all$id)
+merrimack_adm_all$inmate_id       <- as.character(merrimack_adm_all$inmate_id)
+merrimack_adm_all$yob             <- as.numeric(merrimack_adm_all$yob)
+merrimack_adm_all$race            <- as.factor(merrimack_adm_all$race)
+merrimack_adm_all$sex             <- as.factor(merrimack_adm_all$sex)
+merrimack_adm_all$housing         <- as.factor(merrimack_adm_all$housing)
+merrimack_adm_all$charge_desc     <- as.factor(merrimack_adm_all$charge_desc)
+merrimack_adm_all$booking_type    <- as.factor(merrimack_adm_all$booking_type)
+merrimack_adm_all$release_type    <- as.factor(merrimack_adm_all$release_type)
+merrimack_adm_all$sentence_status <- as.factor(merrimack_adm_all$sentence_status)
+merrimack_adm_all$fy              <- as.factor(merrimack_adm_all$fy)
+merrimack_adm_all$high_utilizer   <- as.factor(merrimack_adm_all$high_utilizer)
+merrimack_adm_all$pc_hold         <- as.factor(merrimack_adm_all$pc_hold)
+merrimack_adm_all$county          <- as.factor(merrimack_adm_all$county)
+merrimack_adm_all$age             <- as.numeric(merrimack_adm_all$age)
+merrimack_adm_all$los             <- as.numeric(merrimack_adm_all$los)
+
+# data labels
+var.labels <- c(id              = "Unique ID",
+                inmate_id       = "Inmate ID",
+                yob             = "Year of birth",
+                race            = "Race",
+                sex             = "Sex",
+                housing         = "Housing indicator",
+                charge_code     = "Charge code",
+                charge_desc     = "Charge description",
+                booking_date    = "Booking date",
+                booking_type    = "Booking type",
+                release_date    = "Release date",
+                release_type    = "Release type",
+                sentence_status = "Sentence status",
+                fy              = "Fiscal year",
+                age             = "Age (years)",
+                los             = "Length of stay (days)",
+                num_bookings    = "Number of booking events in the fiscal year",
+                high_utilizer   = "Is a high utilizer",
+                pc_hold         = "Protective custody hold",
+                county          = "County"
+)
+
+# add labels to data
+merrimack_adm_all <- labelled::set_variable_labels(merrimack_adm_all, .labels = var.labels)
