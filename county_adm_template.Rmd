@@ -30,4 +30,3 @@ county_name <- subgroup
 # print header of county
 cat("#", county_name, "\n")
 ```
-

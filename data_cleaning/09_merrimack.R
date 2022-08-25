@@ -8,10 +8,6 @@
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-# load packages and custom functions
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-
 ###################
 # Merrimack County
 ###################
@@ -61,7 +57,6 @@ merrimack_adm_all <- merrimack_adm_all %>%
                 yob,
                 race,
                 sex,
-                housing,
                 charge_code,
                 charge_desc,
                 booking_date,
@@ -72,15 +67,26 @@ merrimack_adm_all <- merrimack_adm_all %>%
                 everything())
 
 # create high utilizer variable
-merrimack_bookings <- fnc_create_hu_variable(merrimack_adm_all)
+merrimack_hu <- fnc_create_hu_variable(merrimack_adm_all)
 
 # merge data back
-merrimack_adm_all <- left_join(merrimack_adm_all, merrimack_bookings, by = c("inmate_id", "fy"))
+merrimack_adm_all <- left_join(merrimack_adm_all, merrimack_hu, by = c("inmate_id", "fy"))
 
 # create a PC hold variable and county variable
 merrimack_adm_all <- merrimack_adm_all %>%
   mutate(pc_hold = ifelse(charge_desc == "PROTECTIVE CUSTODY" | charge_desc == "PROTECTIVE CUSTODY/INTOXICATION", 1, 0),
          county = "Merrimack")
+
+# make sex codes consistent
+merrimack_adm_all <- merrimack_adm_all %>%
+  mutate(sex = case_when(
+    sex == "M"     ~ "Male",
+    sex == "F"     ~ "Female",
+    sex == "TF"    ~ "Transgender",
+    sex == "U"     ~ "Unknown",
+    is.na(sex)     ~ "Unknown")) %>%
+  distinct() %>%
+  select(-housing)
 
 ######
 # Create data dictionary
@@ -92,7 +98,6 @@ merrimack_adm_all$inmate_id       <- as.character(merrimack_adm_all$inmate_id)
 merrimack_adm_all$yob             <- as.numeric(merrimack_adm_all$yob)
 merrimack_adm_all$race            <- as.factor(merrimack_adm_all$race)
 merrimack_adm_all$sex             <- as.factor(merrimack_adm_all$sex)
-merrimack_adm_all$housing         <- as.factor(merrimack_adm_all$housing)
 merrimack_adm_all$charge_desc     <- as.factor(merrimack_adm_all$charge_desc)
 merrimack_adm_all$booking_type    <- as.factor(merrimack_adm_all$booking_type)
 merrimack_adm_all$release_type    <- as.factor(merrimack_adm_all$release_type)
@@ -110,7 +115,6 @@ var.labels <- c(id              = "Unique ID",
                 yob             = "Year of birth",
                 race            = "Race",
                 sex             = "Sex",
-                housing         = "Housing indicator",
                 charge_code     = "Charge code",
                 charge_desc     = "Charge description",
                 booking_date    = "Booking date",
@@ -129,3 +133,5 @@ var.labels <- c(id              = "Unique ID",
 
 # add labels to data
 merrimack_adm_all <- labelled::set_variable_labels(merrimack_adm_all, .labels = var.labels)
+
+save(merrimack_adm_all,  file=paste0(sp_data_path, "/Data/r_data/merrimack_adm_all.Rda",  sep = ""))

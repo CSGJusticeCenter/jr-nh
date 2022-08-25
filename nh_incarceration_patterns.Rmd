@@ -1,0 +1,47 @@
+---
+title: "Incarceration Patterns"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
+  #dev = "ragg_png",
+  cache = FALSE
+  )
+
+# load packages
+source("data_cleaning/00_library.R")
+
+# load data
+load(paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda", sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",          sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",        sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",          sep = ""))
+```
+
+# Protective Custody Holds
+
+```{r}
+# protective custody holds over time
+# does not include Coos because Coos doesn't track PC holds
+
+nh_pch_time_highchart %>%   
+  hc_caption(text = paste("<b>Counties included:</b>", toString(pch_counties))) 
+```
+```{r, results='asis'}
+# print header for pc hold section
+cat("**Protective custody holds accounted for", nh_pch_pct_amt, "% of bookings from 2019 to 2021.**","\n\n")
+```
+
+```{r}
+nh_pch_table %>% 
+   tab_source_note(source_note = html('Counties included: ', toString(pch_counties)))
+```
+

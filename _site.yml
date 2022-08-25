@@ -11,7 +11,7 @@ navbar:
     - text: "Overall Trends"
       menu:
         - text: "Jail Admissions"
-          href: nh_jail_admissions_analysis.html
+          href: nh_incarceration_patterns.html
         - text: "High Utilizers"
           href: nh_high_utilizers_analysis.html
     - text: "Descriptives"

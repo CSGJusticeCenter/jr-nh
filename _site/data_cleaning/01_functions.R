@@ -12,6 +12,14 @@ source("data_cleaning/00_library.R")
 
 ####################################
 
+# replace NAs with blanks or no data
+fnc_replace_nas <- function(df){
+  df <- df %>%
+    mutate_if(grepl('<NA>',.), ~replace(., grepl('<NA>', .), "NA")) %>%
+    mutate_if(grepl('NA%',.), ~replace(., grepl('NA%', .), "-"))
+}
+
+
 # create high utilizer variable
 fnc_create_hu_variable <- function(df){
   df1 <- df %>%
@@ -45,26 +53,37 @@ fnc_hu_setup <- function(df){
 
 # get row and column totals for tables
 fnc_row_totals <- function(df){
-  df <- df %>%
-    mutate(total = count_19 + count_20 + count_21) %>%
-    mutate(freq = (total/sum(total, na.rm = TRUE))*100) %>%
+
+  withnas <- df %>%
     adorn_totals("row") %>%
-    mutate(pct_19 = round(pct_19, 1),
-           pct_20 = round(pct_20, 1),
-           pct_21 = round(pct_21, 1),
-           freq = round(freq, 1)) %>%
-    mutate(pct_19 = paste0(as.character(pct_19), "%"),
-           pct_20 = paste0(as.character(pct_20), "%"),
-           pct_21 = paste0(as.character(pct_21), "%"),
-           freq = paste0(as.character(freq), "%"))
+    mutate(total = count_19 + count_20 + count_21)
+  nonas <- df %>%
+    dplyr::filter(across(everything(), ~ !grepl("NA", .))) %>%
+    dplyr::filter(across(everything(), ~ !grepl("Total", .))) %>%
+    mutate(total = count_19 + count_20 + count_21) %>%
+    mutate(freq = (total/sum(total, na.rm = TRUE))) %>%
+    adorn_totals("row") %>%
+    select(c(1, "freq"))
+  df_freq <- merge(withnas, nonas, by.x = 1, by.y = 1, all.x = TRUE)
+
+  return(df_freq)
 }
 
 ###########
 # Prop by fiscal year
 ###########
 
+# get prop of pc holds by FY
+fnc_pc_hold_by_year <- function(df, type){
+  df1 <- data.frame(summarytools::freq(df$pc_hold, order = "freq", cum.percent = FALSE))
+  df1 <- df1 %>% tibble::rownames_to_column("pc_hold") %>%
+    dplyr::select(pc_hold,
+                  count = Freq,
+                  pct   = X..Valid)
+}
+
 # get prop of high utilizer by FY
-fnc_hu_by_year <- function(df){
+fnc_hu_by_year <- function(df, type){
   df1 <- data.frame(summarytools::freq(df$high_utilizer, order = "freq", cum.percent = FALSE))
   df1 <- df1 %>% tibble::rownames_to_column("high_utilizer") %>%
     dplyr::select(high_utilizer,
@@ -111,6 +130,21 @@ fnc_booking_by_year <- function(df){
 ###########
 # Data descending
 ###########
+
+# arrange data descending
+fnc_pc_hold_data_desc <- function(df){
+  df <- df %>% arrange(-count_19)
+  df <- df[1:length(df)]
+  df$row_num <- seq.int(nrow(df))
+  total_num <- as.character(as.numeric(max(df$row_num, na.rm = TRUE)) + 2)
+  na_num <- as.character(as.numeric(max(df$row_num, na.rm = TRUE)) + 1)
+  df$row_num <- as.character(df$row_num)
+  df <- df %>%
+    mutate(row_num = case_when(pc_hold == "Total" ~ total_num,
+                               pc_hold == "NA" ~ na_num,
+                               TRUE ~ row_num))
+  df <- df %>% arrange(row_num) %>% dplyr::select(-row_num)
+}
 
 # arrange data descending
 fnc_sentence_data_desc <- function(df){
@@ -190,6 +224,44 @@ fnc_hu_data_desc <- function(df){
 ###########
 # Combine fy data into one table
 ###########
+
+fnc_pc_hold_table <- function(df_19, df_20, df_21){
+  # get count and prop of pc_hold by FY
+  pc_hold_19 <- fnc_pc_hold_by_year(df_19)
+  pc_hold_20 <- fnc_pc_hold_by_year(df_20)
+  pc_hold_21 <- fnc_pc_hold_by_year(df_21)
+
+  # rename variables for merging, indicate which year
+  pc_hold_19 <- pc_hold_19 %>% dplyr::rename(count_19 = count,
+                                             pct_19   = pct)
+  pc_hold_20 <- pc_hold_20 %>% dplyr::rename(count_20 = count,
+                                             pct_20   = pct)
+  pc_hold_21 <- pc_hold_21 %>% dplyr::rename(count_21 = count,
+                                             pct_21   = pct)
+
+  # join data
+  df <- merge(pc_hold_19, pc_hold_20, by = "pc_hold", all.x = TRUE, all.y = TRUE)
+  df <- merge(df, pc_hold_21, by = "pc_hold", all.x = TRUE, all.y = TRUE)
+
+  # create row totals and frequencies
+  df[df == "NA%"] = NA
+  df <- df %>%
+    filter(pc_hold != "Total")
+  df <- fnc_replace_nas(df)
+
+  # get totals and frequencies without including NAs
+  df <- fnc_row_totals(df)
+
+  # divide pcts by 100
+  df <- df %>% mutate(pct_19 = pct_19/100,
+                      pct_20 = pct_20/100,
+                      pct_21 = pct_21/100)
+
+  # arrange table data
+  df <- fnc_pc_hold_data_desc(df)
+
+  return(df)
+}
 
 fnc_race_table <- function(df_19, df_20, df_21){
   # get count and prop of race ethnicity by FY

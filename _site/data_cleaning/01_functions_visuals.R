@@ -31,7 +31,7 @@ fnc_table_settings <- function(gt_object){
       column_labels.border.bottom.color = "gray",
 
       # font sizes
-      heading.title.font.size = px(14),
+      heading.title.font.size = px(12),
       heading.subtitle.font.size = px(12),
       column_labels.font.size = px(12),
       table.font.size = px(12),
@@ -46,29 +46,29 @@ fnc_table_settings <- function(gt_object){
     )
 }
 
-# custom function to format table headers for admissions and population tables
-fnc_headers <- function(gt_object){
+# custom function to format table headers for pc holds
+fnc_pc_holds_headers <- function(gt_object){
   gt_object %>%
-    cols_width(
-      "metric"        ~ px(270),
-      "previous_2018" ~ px(70),
-      "previous_2019" ~ px(70),
-      "previous_2020" ~ px(70),
-      "current_2018"  ~ px(70),
-      "current_2019"  ~ px(70),
-      "current_2020"  ~ px(70),
-      "current_2021"  ~ px(70)
-    ) %>%
+  cols_width(
+    "pc_hold"  ~ px(100),
+    "count_19" ~ px(70),
+    "pct_19"   ~ px(70),
+    "count_20" ~ px(70),
+    "pct_20"   ~ px(70),
+    "count_21" ~ px(70),
+    "pct_21"   ~ px(70),
+    "total"    ~ px(70),
+    "freq"     ~ px(70)) %>%
     cols_label(
-      metric        = "Data",
-      previous_2018 = "2018",
-      previous_2019 = "2019",
-      previous_2020 = "2020",
-      current_2018	= "2018",
-      current_2019	= "2019",
-      current_2020	= "2020",
-      current_2021	= "2021"
-    )
+      pc_hold  = " ",
+      count_19 = "Count",
+      pct_19   = "Freq",
+      count_20 = "Count",
+      pct_20   = "Freq",
+      count_21 = "Count",
+      pct_21	 = "Freq",
+      total    = "3 Yr Total",
+      freq     = "Freq")
 }
 
 ###########
@@ -87,70 +87,9 @@ fnc_booking_heatmap <- function(df){
     theme_bw() + theme_minimal()
 }
 
-# Highchart for pc holds over time
-# subset data to PC holds
-# calculate number of PC holds by month and year
-# create tool tip for chart
-fnc_pch_time_highchart <- function(df){
-
-  # filter to PC holds
-  df1 <- df %>% filter(pc_hold == 1)
-
-  { if(dim(df1)[1] != 0){
-
-    df1 <- df1 %>%
-      dplyr::group_by(month_year, month_year_text) %>%
-      dplyr::summarise(total = n())
-    df1 <- df1 %>%
-      mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"),
-             month_year_text = as.factor(month_year_text))
-
-    chart <- df1 %>%
-      hchart('line', hcaes(x = month_year_text, y = total), color = "steelblue") %>%
-      hc_setup() %>%
-      hc_xAxis(
-        title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
-        plotLines = list(list(label = list(text = "Start of COVID-19 Pandemic"), color = "#FF0000", width = 2, value = 8, zIndex = 1))
-      ) %>%
-      hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-      hc_title(text = "Number of PC Holds from 2019-2021")
-
-    return(chart)
-
-    # if there isn't data on pc holds (Coos), then leave the plot blank
-  } else if(dim(df1)[1] == 0){
-    chart <- ""
-  }
-  }
-}
-
 ###########
 # Highcharter
 ###########
-
-# # custom highcharts theme
-# hc_theme_jc <- hc_theme_merge(
-#   hc_theme_smpl(),
-#   hc_theme(
-#     colors = c(
-#       "#1795BF",
-#       "#68C6A8",
-#       "#F0EA44",
-#       "#E1B32D",
-#       "#001F35"),
-#     chart = list(marginTop = 75, style = list(fontFamily = default_fonts)),
-#     title = list(style = list(fontFamily = default_fonts, fontSize = "20px")),
-#     subtitle = list(style = list(fontFamily = default_fonts, fontSize = "16px")),
-#     # legend = list(align = "right", verticalAlign = "bottom", layout = "vertical"), # labels = list(format = "{percentage:.0f}")
-#     caption = list(align = "right", y = 15),
-#     # xAxis = list(labels = list(style = list(fontSize = "15px")),gridLineColor = "transparent"),
-#     plotOptions = list(
-#       series = list(states = list(inactive = list(opacity = 1))),
-#       line = list(marker = list(enabled = TRUE)),
-#       spline = list(marker = list(enabled = TRUE)),
-#       area = list(marker = list(enabled = TRUE)),
-#       areaspline = list(marker = list(enabled = TRUE))))
-# )
 
 # custom highcharts theme for plots
 hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "#D6C246", "#dcdcdc"),
@@ -167,18 +106,6 @@ hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "
                                            arearange = list(marker = list(enabled = FALSE)),
                                            bubble = list(maxSize = "10%")))
 
-# # set up highcharts download buttons
-# hc_setup <- function(x) {
-#   hc_add_dependency(x, name = "modules/exporting.js") %>%
-#     hc_add_dependency(name = "modules/offline-exporting.js") %>%
-#     hc_exporting(
-#       enabled = FALSE, # change to TRUE to add drop down download options
-#       buttons = list(contextButton = list(menuItems = list("printChart", "downloadPNG", "downloadSVG", "downloadPDF")))) %>%
-#     hc_add_theme(hc_theme_jc) %>%
-#     hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
-#     hc_plotOptions(series = list(animation = FALSE))
-# }
-
 # set up highcharts download buttons
 hc_setup <- function(x) {
   highcharter::hc_add_dependency(x, name = "plugins/series-label.js") %>%
@@ -187,6 +114,37 @@ hc_setup <- function(x) {
     highcharter::hc_add_dependency(name = "plugins/export-data.js") %>%
     highcharter::hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
     highcharter::hc_exporting(enabled = TRUE)
+}
+
+
+# Highchart for pc holds over time
+# subset data to PC holds
+# calculate number of PC holds by month and year
+fnc_pch_time_highchart <- function(df){
+
+  # filter to PC holds
+  df1 <- df %>% filter(pc_hold == "PC Hold")
+
+  df1 <- df1 %>%
+    dplyr::group_by(month_year, month_year_text) %>%
+    dplyr::summarise(total = n())
+  df1 <- df1 %>%
+    mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"),
+           month_year_text = as.factor(month_year_text))
+
+  chart <- df1 %>%
+    hchart('line', hcaes(x = month_year_text, y = total), color = jri_dark_blue) %>%
+    hc_setup() %>%
+    hc_add_theme(hc_theme_jc) %>%
+    hc_xAxis(
+      title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
+      plotLines = list(list(label = list(text = "Start of COVID-19 Pandemic"), color = jri_red, width = 2, value = 20, zIndex = 1))
+    ) %>%
+    hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold")))
+    # hc_title(text = "Number of PC Holds from 2019-2021", align = "left")
+
+  return(chart)
+
 }
 
 ###########

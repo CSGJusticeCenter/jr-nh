@@ -8,10 +8,6 @@
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-# load packages and custom functions
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-
 ###################
 # Carroll County
 ###################
@@ -82,15 +78,24 @@ carroll_adm_all <- carroll_adm_all %>%
                 everything())
 
 # create high utilizer variable
-carroll_bookings <- fnc_create_hu_variable(carroll_adm_all)
+carroll_hu <- fnc_create_hu_variable(carroll_adm_all)
 
 # merge data back
-carroll_adm_all <- left_join(carroll_adm_all, carroll_bookings, by = c("inmate_id", "fy"))
+carroll_adm_all <- left_join(carroll_adm_all, carroll_hu, by = c("inmate_id", "fy"))
 
 # create a PC hold variable and county variable
 carroll_adm_all <- carroll_adm_all %>%
   mutate(pc_hold = ifelse(charge_desc == "PROTECTIVE CUSTODY", 1, 0),
          county = "Carroll")
+
+# make sex codes consistent
+carroll_adm_all <- carroll_adm_all %>%
+  mutate(sex = case_when(
+    sex == "M"     ~ "Male",
+    sex == "F"     ~ "Female",
+    is.na(sex)     ~ "Unknown")) %>%
+  distinct() %>%
+  select(-housing)
 
 ######
 # Create data dictionary
@@ -102,7 +107,6 @@ carroll_adm_all$inmate_id       <- as.character(carroll_adm_all$inmate_id)
 carroll_adm_all$yob             <- as.numeric(carroll_adm_all$yob)
 carroll_adm_all$race            <- as.factor(carroll_adm_all$race)
 carroll_adm_all$sex             <- as.factor(carroll_adm_all$sex)
-carroll_adm_all$housing         <- as.factor(carroll_adm_all$housing)
 carroll_adm_all$charge_desc     <- as.factor(carroll_adm_all$charge_desc)
 carroll_adm_all$booking_type    <- as.factor(carroll_adm_all$booking_type)
 carroll_adm_all$release_type    <- as.factor(carroll_adm_all$release_type)
@@ -120,7 +124,6 @@ var.labels <- c(id              = "Unique ID",
                 yob             = "Year of birth",
                 race            = "Race",
                 sex             = "Sex",
-                housing         = "Housing indicator",
                 charge_code     = "Charge code",
                 charge_desc     = "Charge description",
                 booking_date    = "Booking date",
@@ -139,3 +142,5 @@ var.labels <- c(id              = "Unique ID",
 
 # add labels to data
 carroll_adm_all <- labelled::set_variable_labels(carroll_adm_all, .labels = var.labels)
+
+save(carroll_adm_all,    file=paste0(sp_data_path, "/Data/r_data/carroll_adm_all.Rda",    sep = ""))

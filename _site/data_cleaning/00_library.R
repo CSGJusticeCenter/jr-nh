@@ -29,12 +29,27 @@ library(sjPlot)
 library(grid)
 library(gridExtra)
 library(zoo)
+library(gt)
 
 ###################
 # Fonts
 ###################
 
-default_fonts <- c("Noto Sans")
+default_fonts <- c("Franklin Gothic Book Regular")
+# install.packages('extrafont')
+# library(extrafont)
+# font_import(paths = "C:/Users/mroberts/AppData/Local/Microsoft/Windows/Fonts")
+# Register fonts for Windows bitmap output
+# loadfonts(device = "win", quiet = TRUE)
+fonts()
+
+# Specify the font family with the name displayed on the fonts() output
+plot(trees$Volume,
+     main = "Custom fonts in R base",
+     xlab = "",
+     ylab = "Volume",
+     pch = 21, col = 4, bg = 4,
+     family = "Franklin Gothic Book Regular") # We are setting the "Algerian" font
 
 ###################
 # Local and research sharepoint
@@ -47,3 +62,14 @@ default_fonts <- c("Noto Sans")
 # To generate a github token - usethis::create_github_token()
 # To edit Renviron - usethis::edit_r_environ()
 sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
+
+###################
+# Colors
+###################
+
+# official jri colors
+jri_light_blue <- "#167a9c"
+jri_dark_blue  <- "#293e5c"
+jri_red        <- "#b95826"
+jri_green      <- "#557e39"
+

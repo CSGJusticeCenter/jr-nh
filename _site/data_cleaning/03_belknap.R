@@ -8,10 +8,6 @@
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-# load packages and custom functions
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-
 ###################
 # Belknap County
 ###################
@@ -81,15 +77,25 @@ belknap_adm_all <- belknap_adm_all %>%
                 everything())
 
 # create high utilizer variable
-belknap_bookings <- fnc_create_hu_variable(belknap_adm_all)
+belknap_hu <- fnc_create_hu_variable(belknap_adm_all)
 
 # merge data back
-belknap_adm_all <- left_join(belknap_adm_all, belknap_bookings, by = c("inmate_id", "fy"))
+belknap_adm_all <- left_join(belknap_adm_all, belknap_hu, by = c("inmate_id", "fy"))
 
 # create a PC hold variable and county variable
 belknap_adm_all <- belknap_adm_all %>%
   mutate(pc_hold = ifelse(charge_desc == "PROTECTIVE CUSTODY" | charge_desc == "PROTECTIVE CUSTODY/INTOXICATION", 1, 0),
          county = "Belknap")
+
+# make sex codes consistent
+belknap_adm_all <- belknap_adm_all %>%
+  mutate(sex = case_when(
+    sex == "M"     ~ "Male",
+    sex == "F"     ~ "Female",
+    sex == "T"     ~ "Transgender",
+    is.na(sex)     ~ "Unknown")) %>%
+  distinct() %>%
+  select(-housing)
 
 ######
 # Create data dictionary
@@ -101,7 +107,6 @@ belknap_adm_all$inmate_id       <- as.character(belknap_adm_all$inmate_id)
 belknap_adm_all$yob             <- as.numeric(belknap_adm_all$yob)
 belknap_adm_all$race            <- as.factor(belknap_adm_all$race)
 belknap_adm_all$sex             <- as.factor(belknap_adm_all$sex)
-belknap_adm_all$housing         <- as.factor(belknap_adm_all$housing)
 belknap_adm_all$charge_desc     <- as.factor(belknap_adm_all$charge_desc)
 belknap_adm_all$booking_type    <- as.factor(belknap_adm_all$booking_type)
 belknap_adm_all$release_type    <- as.factor(belknap_adm_all$release_type)
@@ -119,7 +124,6 @@ var.labels <- c(id              = "Unique ID",
                 yob             = "Year of birth",
                 race            = "Race",
                 sex             = "Sex",
-                housing         = "Housing indicator",
                 charge_code     = "Charge code",
                 charge_desc     = "Charge description",
                 booking_date    = "Booking date",
@@ -138,3 +142,5 @@ var.labels <- c(id              = "Unique ID",
 
 # add labels to data
 belknap_adm_all <- labelled::set_variable_labels(belknap_adm_all, .labels = var.labels)
+
+save(belknap_adm_all,    file=paste0(sp_data_path, "/Data/r_data/belknap_adm_all.Rda",    sep = ""))

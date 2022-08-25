@@ -8,10 +8,6 @@
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-# load packages and custom functions
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-
 ###################
 # Sullivan County
 ###################
@@ -83,15 +79,25 @@ sullivan_adm_all <- sullivan_adm_all %>%
                 everything())
 
 # create high utilizer variable
-sullivan_bookings <- fnc_create_hu_variable(sullivan_adm_all)
+sullivan_hu <- fnc_create_hu_variable(sullivan_adm_all)
 
 # merge data back
-sullivan_adm_all <- left_join(sullivan_adm_all, sullivan_bookings, by = c("inmate_id", "fy"))
+sullivan_adm_all <- left_join(sullivan_adm_all, sullivan_hu, by = c("inmate_id", "fy"))
 
 # create a PC hold variable and county variable
 sullivan_adm_all <- sullivan_adm_all %>%
   mutate(pc_hold = ifelse(booking_type == "PROTECTIVE CUSTODY", 1, 0),
          county = "Sullivan")
+
+# make sex codes consistent
+sullivan_adm_all <- sullivan_adm_all %>%
+  mutate(sex = case_when(
+    sex == "M"     ~ "Male",
+    sex == "F"     ~ "Female",
+    sex == "U"     ~ "Unknown",
+    is.na(sex)     ~ "Unknown")) %>%
+  distinct() %>%
+  select(-housing)
 
 ######
 # Create data dictionary
@@ -103,7 +109,6 @@ sullivan_adm_all$inmate_id       <- as.character(sullivan_adm_all$inmate_id)
 sullivan_adm_all$yob             <- as.numeric(sullivan_adm_all$yob)
 sullivan_adm_all$race            <- as.factor(sullivan_adm_all$race)
 sullivan_adm_all$sex             <- as.factor(sullivan_adm_all$sex)
-sullivan_adm_all$housing         <- as.factor(sullivan_adm_all$housing)
 sullivan_adm_all$charge_desc     <- as.factor(sullivan_adm_all$charge_desc)
 sullivan_adm_all$booking_type    <- as.factor(sullivan_adm_all$booking_type)
 sullivan_adm_all$release_type    <- as.factor(sullivan_adm_all$release_type)
@@ -121,7 +126,6 @@ var.labels <- c(id              = "Unique ID",
                 yob             = "Year of birth",
                 race            = "Race",
                 sex             = "Sex",
-                housing         = "Housing indicator",
                 charge_code     = "Charge code",
                 charge_desc     = "Charge description",
                 booking_date    = "Booking date",
@@ -140,3 +144,5 @@ var.labels <- c(id              = "Unique ID",
 
 # add labels to data
 sullivan_adm_all <- labelled::set_variable_labels(sullivan_adm_all, .labels = var.labels)
+
+save(sullivan_adm_all,   file=paste0(sp_data_path, "/Data/r_data/sullivan_adm_all.Rda",   sep = ""))

@@ -21,3 +21,9 @@ counties_pch_time_highchart <-
   setNames(counties_pch_time_highchart,c("Belknap","Carroll","Cheshire", "Coos","Merrimack", "Sullivan","Rockingham"))
 
 counties_pch_time_highchart$Belknap
+
+######
+# Save to SP
+######
+
+save(counties_pch_time_highchart, file=paste0(sp_data_path, "/Data/r_data/counties_pch_time_highchart.Rda",   sep = ""))

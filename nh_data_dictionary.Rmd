@@ -68,6 +68,12 @@ W - White
 view_df(cheshire_adm_all)
 ```
 
+## Coos
+
+```{r}
+view_df(coos_adm_all)
+```
+
 ## Merrimack  
 
 A - Asian  
@@ -84,3 +90,14 @@ X - Unknown to data contact
 view_df(merrimack_adm_all)
 ```
 
+## Rockingham
+
+```{r}
+view_df(rockingham_adm_all)
+```
+
+## Sullivan
+
+```{r}
+view_df(sullivan_adm_all)
+```

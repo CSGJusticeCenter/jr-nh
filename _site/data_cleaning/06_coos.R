@@ -8,10 +8,6 @@
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-# load packages and custom functions
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-
 ###################
 # Coos County
 ###################
@@ -81,15 +77,24 @@ coos_adm_all <- coos_adm_all %>%
                 everything())
 
 # create high utilizer variable
-coos_bookings <- fnc_create_hu_variable(coos_adm_all)
+coos_hu <- fnc_create_hu_variable(coos_adm_all)
 
 # merge data back
-coos_adm_all <- left_join(coos_adm_all, coos_bookings, by = c("inmate_id", "fy"))
+coos_adm_all <- left_join(coos_adm_all, coos_hu, by = c("inmate_id", "fy"))
 
 # create a PC hold variable and county variable
 coos_adm_all <- coos_adm_all %>%
   mutate(pc_hold = NA,
          county = "Coos")
+
+# make sex codes consistent
+coos_adm_all <- coos_adm_all %>%
+  mutate(sex = case_when(
+    sex == "M"     ~ "Male",
+    sex == "F"     ~ "Female",
+    is.na(sex)     ~ "Unknown")) %>%
+  distinct() %>%
+  select(-housing)
 
 ######
 # Create data dictionary
@@ -101,7 +106,6 @@ coos_adm_all$inmate_id       <- as.character(coos_adm_all$inmate_id)
 coos_adm_all$yob             <- as.numeric(coos_adm_all$yob)
 coos_adm_all$race            <- as.factor(coos_adm_all$race)
 coos_adm_all$sex             <- as.factor(coos_adm_all$sex)
-coos_adm_all$housing         <- as.factor(coos_adm_all$housing)
 coos_adm_all$charge_desc     <- as.factor(coos_adm_all$charge_desc)
 coos_adm_all$booking_type    <- as.factor(coos_adm_all$booking_type)
 coos_adm_all$release_type    <- as.factor(coos_adm_all$release_type)
@@ -119,7 +123,6 @@ var.labels <- c(id              = "Unique ID",
                 yob             = "Year of birth",
                 race            = "Race",
                 sex             = "Sex",
-                housing         = "Housing indicator",
                 charge_code     = "Charge code",
                 charge_desc     = "Charge description",
                 booking_date    = "Booking date",
@@ -138,3 +141,5 @@ var.labels <- c(id              = "Unique ID",
 
 # add labels to data
 coos_adm_all <- labelled::set_variable_labels(coos_adm_all, .labels = var.labels)
+
+save(coos_adm_all,       file=paste0(sp_data_path, "/Data/r_data/coos_adm_all.Rda",       sep = ""))

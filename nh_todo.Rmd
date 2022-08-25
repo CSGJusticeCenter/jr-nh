@@ -9,7 +9,9 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
-  echo = TRUE,
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
   #dev = "ragg_png",
   cache = FALSE
   )

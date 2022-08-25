@@ -8,10 +8,6 @@
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-# load packages and custom functions
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-
 ###################
 # Rockingham County
 ###################
@@ -81,15 +77,25 @@ rockingham_adm_all <- rockingham_adm_all %>%
                 everything())
 
 # create high utilizer variable
-rockingham_bookings <- fnc_create_hu_variable(rockingham_adm_all)
+rockingham_hu <- fnc_create_hu_variable(rockingham_adm_all)
 
 # merge data back
-rockingham_adm_all <- left_join(rockingham_adm_all, rockingham_bookings, by = c("inmate_id", "fy"))
+rockingham_adm_all <- left_join(rockingham_adm_all, rockingham_hu, by = c("inmate_id", "fy"))
 
 # create a PC hold variable and county variable
 rockingham_adm_all <- rockingham_adm_all %>%
   mutate(pc_hold = ifelse(charge_desc == "PROTECTIVE CUSTODY", 1, 0),
          county = "Rockingham")
+
+# make sex codes consistent
+rockingham_adm_all <- rockingham_adm_all %>%
+  mutate(sex = case_when(
+    sex == "M"     ~ "Male",
+    sex == "F"     ~ "Female",
+    sex == "T"    ~ "Transgender",
+    is.na(sex)     ~ "Unknown")) %>%
+  distinct() %>%
+  select(-housing)
 
 ######
 # Create data dictionary
@@ -101,7 +107,6 @@ rockingham_adm_all$inmate_id       <- as.character(rockingham_adm_all$inmate_id)
 rockingham_adm_all$yob             <- as.numeric(rockingham_adm_all$yob)
 rockingham_adm_all$race            <- as.factor(rockingham_adm_all$race)
 rockingham_adm_all$sex             <- as.factor(rockingham_adm_all$sex)
-rockingham_adm_all$housing         <- as.factor(rockingham_adm_all$housing)
 rockingham_adm_all$charge_desc     <- as.factor(rockingham_adm_all$charge_desc)
 rockingham_adm_all$booking_type    <- as.factor(rockingham_adm_all$booking_type)
 rockingham_adm_all$release_type    <- as.factor(rockingham_adm_all$release_type)
@@ -119,7 +124,6 @@ var.labels <- c(id              = "Unique ID",
                 yob             = "Year of birth",
                 race            = "Race",
                 sex             = "Sex",
-                housing         = "Housing indicator",
                 charge_code     = "Charge code",
                 charge_desc     = "Charge description",
                 booking_date    = "Booking date",
@@ -138,3 +142,5 @@ var.labels <- c(id              = "Unique ID",
 
 # add labels to data
 rockingham_adm_all <- labelled::set_variable_labels(rockingham_adm_all, .labels = var.labels)
+
+save(rockingham_adm_all, file=paste0(sp_data_path, "/Data/r_data/rockingham_adm_all.Rda", sep = ""))

@@ -8,10 +8,6 @@
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-# load packages and custom functions
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-
 ###################
 # Cheshire County
 ###################
@@ -69,15 +65,25 @@ cheshire_adm_all <- cheshire_adm_all %>%
   select(-c(transfer_type, ethnicity))
 
 # create high utilizer variable
-cheshire_bookings <- fnc_create_hu_variable(cheshire_adm_all)
+cheshire_hu <- fnc_create_hu_variable(cheshire_adm_all)
 
 # merge data back
-cheshire_adm_all <- left_join(cheshire_adm_all, cheshire_bookings, by = c("inmate_id", "fy"))
+cheshire_adm_all <- left_join(cheshire_adm_all, cheshire_hu, by = c("inmate_id", "fy"))
 
 # create a PC hold variable and county variable
 cheshire_adm_all <- cheshire_adm_all %>%
   mutate(pc_hold = ifelse(charge_desc == "PROTECTIVE CUSTODY", 1, 0),
          county = "Cheshire")
+
+# make sex codes consistent
+cheshire_adm_all <- cheshire_adm_all %>%
+  mutate(sex = case_when(
+    sex == "M"     ~ "Male",
+    sex == "F"     ~ "Female",
+    sex == "TRANF" ~ "Transgender",
+    is.na(sex)     ~ "Unknown")) %>%
+  distinct() %>%
+  select(-housing)
 
 ######
 # Create data dictionary
@@ -89,7 +95,6 @@ cheshire_adm_all$inmate_id       <- as.character(cheshire_adm_all$inmate_id)
 cheshire_adm_all$yob             <- as.numeric(cheshire_adm_all$yob)
 cheshire_adm_all$race            <- as.factor(cheshire_adm_all$race)
 cheshire_adm_all$sex             <- as.factor(cheshire_adm_all$sex)
-cheshire_adm_all$housing         <- as.factor(cheshire_adm_all$housing)
 cheshire_adm_all$charge_desc     <- as.factor(cheshire_adm_all$charge_desc)
 cheshire_adm_all$booking_type    <- as.factor(cheshire_adm_all$booking_type)
 cheshire_adm_all$release_type    <- as.factor(cheshire_adm_all$release_type)
@@ -107,7 +112,6 @@ var.labels <- c(id              = "Unique ID",
                 yob             = "Year of birth",
                 race            = "Race",
                 sex             = "Sex",
-                housing         = "Housing indicator",
                 charge_code     = "Charge code",
                 charge_desc     = "Charge description",
                 booking_date    = "Booking date",
@@ -126,3 +130,5 @@ var.labels <- c(id              = "Unique ID",
 
 # add labels to data
 cheshire_adm_all <- labelled::set_variable_labels(cheshire_adm_all, .labels = var.labels)
+
+save(cheshire_adm_all,   file=paste0(sp_data_path, "/Data/r_data/cheshire_adm_all.Rda",   sep = ""))

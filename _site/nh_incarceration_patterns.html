@@ -87,27 +87,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>JRI New Hampshire Project: Jail Admissions Trends</title>
+  <title>JRI New Hampshire Project: Incarceration Patterns</title>
 
 
   <link rel="icon" type="image/png" href="img/favicon.png"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="JRI New Hampshire Project: Jail Admissions Trends"/>
+  <meta property="og:title" content="JRI New Hampshire Project: Incarceration Patterns"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="JRI New Hampshire Project"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="JRI New Hampshire Project: Jail Admissions Trends"/>
+  <meta property="twitter:title" content="JRI New Hampshire Project: Incarceration Patterns"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Jail Admissions Trends"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Incarceration Patterns"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2367,6 +2367,53 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+  <script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
+  <script src="site_libs/proj4js-2.3.15/proj4.js"></script>
+  <link href="site_libs/highcharts-9.3.1/css/motion.css" rel="stylesheet" />
+  <script src="site_libs/highcharts-9.3.1/highcharts.js"></script>
+  <script src="site_libs/highcharts-9.3.1/highcharts-3d.js"></script>
+  <script src="site_libs/highcharts-9.3.1/highcharts-more.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/stock.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/map.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/data.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/exporting.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/offline-exporting.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/drilldown.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/item-series.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/overlapping-datalabels.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/annotations.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/export-data.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/funnel.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/heatmap.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/treemap.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/sankey.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/dependency-wheel.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/organization.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/solid-gauge.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/streamgraph.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/sunburst.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/vector.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/wordcloud.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/xrange.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/tilemap.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/venn.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/gantt.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/timeline.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/parallel-coordinates.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/bullet.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/coloraxis.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/dumbbell.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/lollipop.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/series-label.js"></script>
+  <script src="site_libs/highcharts-9.3.1/plugins/motion.js"></script>
+  <script src="site_libs/highcharts-9.3.1/custom/reset.js"></script>
+  <script src="site_libs/highcharts-9.3.1/modules/boost.js"></script>
+  <script src="site_libs/highchart-binding-0.9.4/highchart.js"></script>
+  <script src="site_libs/series-label.js-9.3.1/series-label.js"></script>
+  <script src="site_libs/accessibility.js-9.3.1/accessibility.js"></script>
+  <script src="site_libs/exporting.js-9.3.1/exporting.js"></script>
+  <script src="site_libs/export-data.js-9.3.1/export-data.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2386,7 +2433,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Jail Admissions Trends","authors":[]}
+{"title":"Incarceration Patterns","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2405,7 +2452,7 @@ Overall Trends
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="nh_jail_admissions_analysis.html">Jail Admissions</a>
+<a href="nh_incarceration_patterns.html">Jail Admissions</a>
 <a href="nh_high_utilizers_analysis.html">High Utilizers</a>
 </div>
 </div>
@@ -2459,7 +2506,7 @@ Research
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Jail Admissions Trends</h1>
+<h1>Incarceration Patterns</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2467,7 +2514,510 @@ Research
 
 
 <div class="d-article">
-<p>Coming soon.</p>
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a href="#protective-custody-holds">Protective Custody
+Holds</a></li>
+</ul>
+</nav>
+</div>
+<h1 id="protective-custody-holds">Protective Custody Holds</h1>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-a74a3ef4b7e6e42d85e8" style="width:624px;height:384px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a74a3ef4b7e6e42d85e8">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Number of PC Holds","style":{"color":"#000000","fontWeight":"bold"}},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":true},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"month_year":"2018-07-01","month_year_text":"Jul 2018","total":354,"tooltip":"<b>Jul 2018<\/b><br>Total: 354<br>","y":354,"name":"Jul 2018"},{"month_year":"2018-08-01","month_year_text":"Aug 2018","total":404,"tooltip":"<b>Aug 2018<\/b><br>Total: 404<br>","y":404,"name":"Aug 2018"},{"month_year":"2018-09-01","month_year_text":"Sep 2018","total":240,"tooltip":"<b>Sep 2018<\/b><br>Total: 240<br>","y":240,"name":"Sep 2018"},{"month_year":"2018-10-01","month_year_text":"Oct 2018","total":180,"tooltip":"<b>Oct 2018<\/b><br>Total: 180<br>","y":180,"name":"Oct 2018"},{"month_year":"2018-11-01","month_year_text":"Nov 2018","total":169,"tooltip":"<b>Nov 2018<\/b><br>Total: 169<br>","y":169,"name":"Nov 2018"},{"month_year":"2018-12-01","month_year_text":"Dec 2018","total":182,"tooltip":"<b>Dec 2018<\/b><br>Total: 182<br>","y":182,"name":"Dec 2018"},{"month_year":"2019-01-01","month_year_text":"Jan 2019","total":164,"tooltip":"<b>Jan 2019<\/b><br>Total: 164<br>","y":164,"name":"Jan 2019"},{"month_year":"2019-02-01","month_year_text":"Feb 2019","total":194,"tooltip":"<b>Feb 2019<\/b><br>Total: 194<br>","y":194,"name":"Feb 2019"},{"month_year":"2019-03-01","month_year_text":"Mar 2019","total":204,"tooltip":"<b>Mar 2019<\/b><br>Total: 204<br>","y":204,"name":"Mar 2019"},{"month_year":"2019-04-01","month_year_text":"Apr 2019","total":161,"tooltip":"<b>Apr 2019<\/b><br>Total: 161<br>","y":161,"name":"Apr 2019"},{"month_year":"2019-05-01","month_year_text":"May 2019","total":235,"tooltip":"<b>May 2019<\/b><br>Total: 235<br>","y":235,"name":"May 2019"},{"month_year":"2019-06-01","month_year_text":"Jun 2019","total":295,"tooltip":"<b>Jun 2019<\/b><br>Total: 295<br>","y":295,"name":"Jun 2019"},{"month_year":"2019-07-01","month_year_text":"Jul 2019","total":354,"tooltip":"<b>Jul 2019<\/b><br>Total: 354<br>","y":354,"name":"Jul 2019"},{"month_year":"2019-08-01","month_year_text":"Aug 2019","total":332,"tooltip":"<b>Aug 2019<\/b><br>Total: 332<br>","y":332,"name":"Aug 2019"},{"month_year":"2019-09-01","month_year_text":"Sep 2019","total":245,"tooltip":"<b>Sep 2019<\/b><br>Total: 245<br>","y":245,"name":"Sep 2019"},{"month_year":"2019-10-01","month_year_text":"Oct 2019","total":174,"tooltip":"<b>Oct 2019<\/b><br>Total: 174<br>","y":174,"name":"Oct 2019"},{"month_year":"2019-11-01","month_year_text":"Nov 2019","total":176,"tooltip":"<b>Nov 2019<\/b><br>Total: 176<br>","y":176,"name":"Nov 2019"},{"month_year":"2019-12-01","month_year_text":"Dec 2019","total":191,"tooltip":"<b>Dec 2019<\/b><br>Total: 191<br>","y":191,"name":"Dec 2019"},{"month_year":"2020-01-01","month_year_text":"Jan 2020","total":162,"tooltip":"<b>Jan 2020<\/b><br>Total: 162<br>","y":162,"name":"Jan 2020"},{"month_year":"2020-02-01","month_year_text":"Feb 2020","total":167,"tooltip":"<b>Feb 2020<\/b><br>Total: 167<br>","y":167,"name":"Feb 2020"},{"month_year":"2020-03-01","month_year_text":"Mar 2020","total":170,"tooltip":"<b>Mar 2020<\/b><br>Total: 170<br>","y":170,"name":"Mar 2020"},{"month_year":"2020-04-01","month_year_text":"Apr 2020","total":116,"tooltip":"<b>Apr 2020<\/b><br>Total: 116<br>","y":116,"name":"Apr 2020"},{"month_year":"2020-05-01","month_year_text":"May 2020","total":163,"tooltip":"<b>May 2020<\/b><br>Total: 163<br>","y":163,"name":"May 2020"},{"month_year":"2020-06-01","month_year_text":"Jun 2020","total":190,"tooltip":"<b>Jun 2020<\/b><br>Total: 190<br>","y":190,"name":"Jun 2020"},{"month_year":"2020-07-01","month_year_text":"Jul 2020","total":230,"tooltip":"<b>Jul 2020<\/b><br>Total: 230<br>","y":230,"name":"Jul 2020"},{"month_year":"2020-08-01","month_year_text":"Aug 2020","total":240,"tooltip":"<b>Aug 2020<\/b><br>Total: 240<br>","y":240,"name":"Aug 2020"},{"month_year":"2020-09-01","month_year_text":"Sep 2020","total":188,"tooltip":"<b>Sep 2020<\/b><br>Total: 188<br>","y":188,"name":"Sep 2020"},{"month_year":"2020-10-01","month_year_text":"Oct 2020","total":158,"tooltip":"<b>Oct 2020<\/b><br>Total: 158<br>","y":158,"name":"Oct 2020"},{"month_year":"2020-11-01","month_year_text":"Nov 2020","total":145,"tooltip":"<b>Nov 2020<\/b><br>Total: 145<br>","y":145,"name":"Nov 2020"},{"month_year":"2020-12-01","month_year_text":"Dec 2020","total":134,"tooltip":"<b>Dec 2020<\/b><br>Total: 134<br>","y":134,"name":"Dec 2020"},{"month_year":"2021-01-01","month_year_text":"Jan 2021","total":148,"tooltip":"<b>Jan 2021<\/b><br>Total: 148<br>","y":148,"name":"Jan 2021"},{"month_year":"2021-02-01","month_year_text":"Feb 2021","total":129,"tooltip":"<b>Feb 2021<\/b><br>Total: 129<br>","y":129,"name":"Feb 2021"},{"month_year":"2021-03-01","month_year_text":"Mar 2021","total":137,"tooltip":"<b>Mar 2021<\/b><br>Total: 137<br>","y":137,"name":"Mar 2021"},{"month_year":"2021-04-01","month_year_text":"Apr 2021","total":150,"tooltip":"<b>Apr 2021<\/b><br>Total: 150<br>","y":150,"name":"Apr 2021"},{"month_year":"2021-05-01","month_year_text":"May 2021","total":164,"tooltip":"<b>May 2021<\/b><br>Total: 164<br>","y":164,"name":"May 2021"},{"month_year":"2021-06-01","month_year_text":"Jun 2021","total":219,"tooltip":"<b>Jun 2021<\/b><br>Total: 219<br>","y":219,"name":"Jun 2021"}],"type":"line","color":"#293e5c"}],"xAxis":{"type":"category","title":{"text":"Month and Year","style":{"color":"#000000","fontWeight":"bold"}},"plotLines":[{"label":{"text":"Start of COVID-19 Pandemic"},"color":"#b95826","width":2,"value":20,"zIndex":1}]},"tooltip":{"formatter":"function(){return(this.point.tooltip)}"},"caption":{"text":"<b>Counties included:<\/b> Belknap, Carroll, Cheshire, Merrimack, Rockingham, Sullivan"}},"theme":{"colors":["#D25E2D","#EDB799","#C7E8F5","#236ca7","#D6C246","#dcdcdc"],"chart":{"style":{"fontFamily":"sans","color":"#666666"}},"title":{"align":"left","style":{"fontFamily":"sans","fontSize":"24px"}},"subtitle":{"align":"left","style":{"fontFamily":"sans","fontSize":"16px"}},"legend":{"align":"left","verticalAlign":"top"},"xAxis":{"gridLineColor":"transparent","lineColor":"transparent","minorGridLineColor":"transparent","tickColor":"transparent"},"yAxis":{"labels":{"enabled":false},"gridLineColor":"transparent","lineColor":"transparent","minorGridLineColor":"transparent","tickColor":"transparent"},"plotOptions":{"line":{"marker":{"enabled":false}},"spline":{"marker":{"enabled":false}},"area":{"marker":{"enabled":false}},"areaspline":{"marker":{"enabled":false}},"arearange":{"marker":{"enabled":false}},"bubble":{"maxSize":"10%"}}},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":"sans","debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><strong>Protective custody holds accounted for 23.7 % of bookings
+from 2019 to 2021.</strong></p>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div id="zxugdlwjbx" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>html {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+}
+
+#zxugdlwjbx .gt_table {
+  display: table;
+  border-collapse: collapse;
+  margin-left: 0;
+  margin-right: auto;
+  color: #333333;
+  font-size: 12px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: hidden;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #BEBEBE;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#zxugdlwjbx .gt_heading {
+  background-color: #FFFFFF;
+  text-align: left;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#zxugdlwjbx .gt_title {
+  color: #333333;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#zxugdlwjbx .gt_subtitle {
+  color: #333333;
+  font-size: 12px;
+  font-weight: initial;
+  padding-top: 0;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#zxugdlwjbx .gt_bottom_border {
+  border-bottom-style: hidden;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zxugdlwjbx .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #BEBEBE;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#zxugdlwjbx .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#zxugdlwjbx .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#zxugdlwjbx .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#zxugdlwjbx .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#zxugdlwjbx .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #BEBEBE;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#zxugdlwjbx .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: transparent;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: hidden;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#zxugdlwjbx .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 12px;
+  font-weight: initial;
+  border-top-style: transparent;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: hidden;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#zxugdlwjbx .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#zxugdlwjbx .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#zxugdlwjbx .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#zxugdlwjbx .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: dashed;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zxugdlwjbx .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#zxugdlwjbx .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#zxugdlwjbx .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zxugdlwjbx .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#zxugdlwjbx .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#zxugdlwjbx .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zxugdlwjbx .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zxugdlwjbx .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#zxugdlwjbx .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#zxugdlwjbx .gt_table_body {
+  border-top-style: transparent;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: transparent;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#zxugdlwjbx .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#zxugdlwjbx .gt_footnote {
+  margin: 0px;
+  font-size: 12px;
+  padding-left: 4px;
+  padding-right: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zxugdlwjbx .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#zxugdlwjbx .gt_sourcenote {
+  font-size: 12px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#zxugdlwjbx .gt_left {
+  text-align: left;
+}
+
+#zxugdlwjbx .gt_center {
+  text-align: center;
+}
+
+#zxugdlwjbx .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#zxugdlwjbx .gt_font_normal {
+  font-weight: normal;
+}
+
+#zxugdlwjbx .gt_font_bold {
+  font-weight: bold;
+}
+
+#zxugdlwjbx .gt_font_italic {
+  font-style: italic;
+}
+
+#zxugdlwjbx .gt_super {
+  font-size: 65%;
+}
+
+#zxugdlwjbx .gt_two_val_uncert {
+  display: inline-block;
+  line-height: 1em;
+  text-align: right;
+  font-size: 60%;
+  vertical-align: -0.25em;
+  margin-left: 0.1em;
+}
+
+#zxugdlwjbx .gt_footnote_marks {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 75%;
+  vertical-align: 0.4em;
+}
+
+#zxugdlwjbx .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#zxugdlwjbx .gt_slash_mark {
+  font-size: 0.7em;
+  line-height: 0.7em;
+  vertical-align: 0.15em;
+}
+
+#zxugdlwjbx .gt_fraction_numerator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: 0.45em;
+}
+
+#zxugdlwjbx .gt_fraction_denominator {
+  font-size: 0.6em;
+  line-height: 0.6em;
+  vertical-align: -0.05em;
+}
+</style>
+<table class="gt_table" style="table-layout: fixed;; width: 0px">
+  <colgroup>
+    <col style="width:100px;"/>
+    <col style="width:70px;"/>
+    <col style="width:70px;"/>
+    <col style="width:70px;"/>
+    <col style="width:70px;"/>
+    <col style="width:70px;"/>
+    <col style="width:70px;"/>
+    <col style="width:70px;"/>
+    <col style="width:70px;"/>
+  </colgroup>
+  
+  <thead class="gt_col_headings">
+    <tr>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;"> </th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Count</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Freq</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Count</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Freq</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Count</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Freq</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">3 Yr Total</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Freq</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Non-PC Hold</td>
+<td class="gt_row gt_right">9,123</td>
+<td class="gt_row gt_right">76.6%</td>
+<td class="gt_row gt_right">7,796</td>
+<td class="gt_row gt_right">76.2%</td>
+<td class="gt_row gt_right">6,523</td>
+<td class="gt_row gt_right">76.2%</td>
+<td class="gt_row gt_right">23,442</td>
+<td class="gt_row gt_right">76.3%</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">PC Hold</td>
+<td class="gt_row gt_right">2,782</td>
+<td class="gt_row gt_right">23.4%</td>
+<td class="gt_row gt_right">2,440</td>
+<td class="gt_row gt_right">23.8%</td>
+<td class="gt_row gt_right">2,042</td>
+<td class="gt_row gt_right">23.8%</td>
+<td class="gt_row gt_right">7,264</td>
+<td class="gt_row gt_right">23.7%</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">NA</td>
+<td class="gt_row gt_right">300</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">212</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">121</td>
+<td class="gt_row gt_right">NA</td>
+<td class="gt_row gt_right">633</td>
+<td class="gt_row gt_right">NA</td></tr>
+    <tr><td class="gt_row gt_left" style="font-weight: bold;">Total</td>
+<td class="gt_row gt_right">12,205</td>
+<td class="gt_row gt_right">100.0%</td>
+<td class="gt_row gt_right">10,448</td>
+<td class="gt_row gt_right">100.0%</td>
+<td class="gt_row gt_right">8,686</td>
+<td class="gt_row gt_right">100.0%</td>
+<td class="gt_row gt_right">31,339</td>
+<td class="gt_row gt_right">100.0%</td></tr>
+  </tbody>
+  <tfoot class="gt_sourcenotes">
+    <tr>
+      <td class="gt_sourcenote" colspan="9">Counties included:  Belknap, Carroll, Cheshire, Merrimack, Rockingham, Sullivan</td>
+    </tr>
+  </tfoot>
+  
+</table>
+</div>
+</div>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

@@ -12,30 +12,63 @@
 # nh_booking, nh_booking_19, nh_booking_20, nh_booking_21
 ############################################
 
-df <- nh_booking %>%
+##############################
+# PC HOLDS
+##############################
+
+df_pch <- nh_booking %>%
+  filter(county != "Coos") %>%
   mutate(pc_hold = as.numeric(pc_hold)) %>%
-  mutate(pc_hold = ifelse(pc_hold == 2, 1, 0))
+  mutate(pc_hold = ifelse(pc_hold == 2, "PC Hold", "Non-PC Hold"))
 
-fnc_pch_time_highchart(df)
+# get counties included
+pch_counties <- df_pch %>%
+  mutate(county = as.character(county))
+pch_counties <- unique(pch_counties$county)
 
+###########
+# Highchart pc holds over time
+###########
 
+nh_pch_time_highchart <- fnc_pch_time_highchart(df_pch)
 
-# filter to PC holds change this to proportions
-df1 <- df %>% filter(pc_hold == 1)
+###########
+# Table pc holds by FY
+###########
 
-  df1 <- df1 %>%
-    dplyr::group_by(month_year, month_year_text, county) %>%
-    dplyr::summarise(total = n())
-  df1 <- df1 %>%
-    mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"))
+# filter by year
+pch_19 <- df_pch %>% filter(fy == 2019)
+pch_20 <- df_pch %>% filter(fy == 2020)
+pch_21 <- df_pch %>% filter(fy == 2021)
 
-  chart <- df1 %>%
-    hchart('line', hcaes(x = month_year, y = total, group = county)) %>%
-    hc_setup() %>%
-    hc_xAxis(title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-    hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-    hc_title(text = "Number of PC Holds from 2019-2021")
+# generate table showing PC holds from 2019-2021
+df <- fnc_pc_hold_table(pch_19, pch_20, pch_21)
 
+# % of bookings that are PC holds
+nh_pch_pct_amt <- df %>% filter(pc_hold == "PC Hold")
+nh_pch_pct_amt <- nh_pch_pct_amt$freq*100
+nh_pch_pct_amt <- round(nh_pch_pct_amt, 1)
 
+# gt table
+nh_pch_table <- gt(df) %>%
 
+  # bold headers and year column
+  tab_style(style = cell_text(weight = 'bold'), locations = cells_body(columns = c(pc_hold))) %>%
+  tab_style(locations = cells_column_labels(columns = everything()),
+            style = list(cell_text(weight = "bold"))) %>%
+
+  fmt_number(columns = c(count_19, count_20, count_21, total), decimals = 0, sep_mark = ",") %>%
+  fmt_percent(columns = c(pct_19, pct_20, pct_21, freq), decimals = 1) %>%
+
+  fnc_table_settings() %>%
+  fnc_pc_holds_headers()
+
+######
+# Save to SP
+######
+
+save(nh_pch_time_highchart, file=paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda", sep = ""))
+save(nh_pch_table,          file=paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",          sep = ""))
+save(nh_pch_pct_amt,        file=paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",        sep = ""))
+save(pch_counties,          file=paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",          sep = ""))
 
