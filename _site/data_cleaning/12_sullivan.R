@@ -90,8 +90,8 @@ sullivan_adm_all <- left_join(sullivan_adm_all, sullivan_bookings, by = c("inmat
 
 # create a PC hold variable and county variable
 sullivan_adm_all <- sullivan_adm_all %>%
-  mutate(pc_hold = ifelse(charge_desc == "PROTECTIVE CUSTODY", 1, 0),
-         county = "sullivan")
+  mutate(pc_hold = ifelse(booking_type == "PROTECTIVE CUSTODY", 1, 0),
+         county = "Sullivan")
 
 ######
 # Create data dictionary

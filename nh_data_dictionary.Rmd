@@ -18,8 +18,14 @@ knitr::opts_chunk$set(
 ```
 
 ```{r include=FALSE}
-# load packages and pull data to create codebooks
-source("data_cleaning/13_dataframes.R")
+# load data
+load(paste0(sp_data_path, "/Data/r_data/belknap_adm_all.Rda",    sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/carroll_adm_all.Rda",    sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/cheshire_adm_all.Rda",   sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/coos_adm_all.Rda",       sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/merrimack_adm_all.Rda",  sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/rockingham_adm_all.Rda", sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/sullivan_adm_all.Rda",   sep = ""))
 ```
 
 ## Belknap  

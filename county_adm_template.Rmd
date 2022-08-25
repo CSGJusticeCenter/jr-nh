@@ -10,6 +10,7 @@ output:
 ```{r include=FALSE}
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
+source("data_cleaning/01_functions_visuals.R")
 ```
 
 ```{r setup, include=FALSE}

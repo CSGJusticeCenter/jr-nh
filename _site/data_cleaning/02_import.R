@@ -68,4 +68,4 @@ rockingham_adm.xlsx   <- read_csv(paste0(sp_data_path, "/Data/Rockingham County/
 # Sullivan County
 ###################
 
-sullivan_adm.xlsx     <- read_excel(paste0(sp_data_path, "/Data/Sullivan County/8.15.22 de identified.xlsx"))
+sullivan_adm.xlsx     <- read_excel(paste0(sp_data_path, "/Data/Sullivan County/8.23.22 de identified (5).xlsx"))

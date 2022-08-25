@@ -4,7 +4,7 @@
 # Last updated: June 1, 2022
 # Author: Mari Roberts
 
-# Load custom functions for efficient coding
+# Custom data cleaning and table functions
 ############################################
 
 # load packages
@@ -46,7 +46,7 @@ fnc_hu_setup <- function(df){
 # get row and column totals for tables
 fnc_row_totals <- function(df){
   df <- df %>%
-  mutate(total = count_19 + count_20 + count_21) %>%
+    mutate(total = count_19 + count_20 + count_21) %>%
     mutate(freq = (total/sum(total, na.rm = TRUE))*100) %>%
     adorn_totals("row") %>%
     mutate(pct_19 = round(pct_19, 1),
@@ -330,95 +330,3 @@ fnc_hu_table <- function(df_19, df_20, df_21){
     filter(high_utilizer != "Total")
   df <- fnc_row_totals(df)
 }
-
-###########
-# Kable tables
-###########
-
-# kable freq tables
-fnc_freq_table <- function(df, title){
-  last_row <- nrow(df)
-  kable(df, format.args = list(big.mark = ","), align=rep('c'),
-        col.names=c(title,"# Bookings","% Bookings", "# Bookings","% Bookings", "# Bookings","% Bookings")) %>%
-    kable_styling(bootstrap_options = c("condensed", "responsive"),
-                  row_label_position = "l") %>%
-    add_header_above(c(" " = 1, "FY 2019" = 2, "FY 2020" = 2, "FY 2021" = 2)) %>%
-    row_spec(last_row, bold = TRUE)
-}
-
-###########
-# Plots
-###########
-
-# booking heat map
-fnc_booking_heatmap <- function(df){
-  ggplot(df, aes(year, month)) +
-    geom_tile(aes(fill = N), colour = "white") +
-    #scale_fill_gradient(low = "#d4e9f8", high = "#00475d") +
-    scale_fill_gradient(low = "#eeed90", high = "#315c15") +
-    guides(fill=guide_legend(title="Total Bookings")) +
-    labs(title = "Number of Bookings by Month and FY",
-         x = "Year", y = "Month") +
-    theme_bw() + theme_minimal()
-}
-
-# Highchart for pc holds over time
-# subset data to PC holds
-# calculate number of PC holds by month and year
-# create tool tip for chart
-fnc_pch_time_highchart <- function(df){
-  df_pch <- df %>% filter(pc_hold == 1)
-  df_pch <- df_pch %>%
-    dplyr::group_by(month_year, month_year_text) %>%
-    dplyr::summarise(total = n())
-  df_pch <- df_pch %>%
-    mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"))
-
-  df_pch_highchart <- df_pch %>%
-    hchart('line', hcaes(x = month_year, y = total), color = "steelblue") %>%
-    hc_setup() %>%
-    hc_xAxis(title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-    hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-    hc_title(text = "Number of PC Holds from 2019-2021")
-}
-
-###########
-# Highcharter
-###########
-
-# custom highcharts theme
-hc_theme_jc <- hc_theme_merge(
-  hc_theme_smpl(),
-  hc_theme(
-    colors = c(
-      "#1795BF",
-      "#68C6A8",
-      "#F0EA44",
-      "#E1B32D",
-      "#001F35"),
-    chart = list(marginTop = 75, style = list(fontFamily = default_fonts)),
-    title = list(style = list(fontFamily = default_fonts, fontSize = "20px")),
-    subtitle = list(style = list(fontFamily = default_fonts, fontSize = "16px")),
-    # legend = list(align = "right", verticalAlign = "bottom", layout = "vertical"), # labels = list(format = "{percentage:.0f}")
-    caption = list(align = "right", y = 15),
-    # xAxis = list(labels = list(style = list(fontSize = "15px")),gridLineColor = "transparent"),
-    plotOptions = list(
-      series = list(states = list(inactive = list(opacity = 1))),
-      line = list(marker = list(enabled = TRUE)),
-      spline = list(marker = list(enabled = TRUE)),
-      area = list(marker = list(enabled = TRUE)),
-      areaspline = list(marker = list(enabled = TRUE))))
-)
-
-# set up highcharts download buttons
-hc_setup <- function(x) {
-  hc_add_dependency(x, name = "modules/exporting.js") %>%
-    hc_add_dependency(name = "modules/offline-exporting.js") %>%
-    hc_exporting(
-      enabled = FALSE, # change to TRUE to add drop down download options
-      buttons = list(contextButton = list(menuItems = list("printChart", "downloadPNG", "downloadSVG", "downloadPDF")))) %>%
-    hc_add_theme(hc_theme_jc) %>%
-    hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
-    hc_plotOptions(series = list(animation = FALSE))
-}
-

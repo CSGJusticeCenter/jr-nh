@@ -24,7 +24,7 @@ ggplot(df, aes(x="", y=prop, fill=type)) +
   theme(legend.position="none") +
   geom_text(aes(y = ypos, label =  paste(type, "\n", round(prop,0), "%", sep = "")),
             color = "black", size=6, nudge_x = 0.2, nudge_y = 1.5) +
-  scale_fill_brewer(palette="Set1") + scale_fill_manual(values=c("#d3d3d3", "#E69F00"))
+  scale_fill_brewer(palette="Set1") + scale_fill_manual(values=c("#d3d3d3", "#b95826"))
 
 # And an analysis conducted by the Sullivan County Department of Corrections found a 76 percent
 # overlap between people in the county jail and people served by the community mental health center
