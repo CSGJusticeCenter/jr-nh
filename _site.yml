@@ -10,30 +10,15 @@ navbar:
       href: index.html
     - text: "Overall Trends"
       menu:
-        - text: "Jail Admissions"
+        - text: "Incarceration Patterns"
           href: nh_incarceration_patterns.html
         - text: "High Utilizers"
           href: nh_high_utilizers_analysis.html
-    - text: "Descriptives"
-      menu:
         - text: "Demographics"
           href: nh_demographics_analysis.html
         - text: "Medicaid"
           href: nh_medicaid_analysis.html
     - text: "County Reports"
-      menu:
-        - text: "Belknap"
-          href: Belknap_county_report.html
-        - text: "Carroll"
-          href: Carroll_county_report.html
-        - text: "Cheshire"
-          href: Cheshire_county_report.html
-        - text: "Coos"
-          href: Coos_county_report.html
-        - text: "Merrimack"
-          href: Merrimack_county_report.html
-        - text: "Rockingham"
-          href: Rockingham_county_report.html
     - text: "Research"
       menu:
         - text: "To Do and Questions"

@@ -35,20 +35,12 @@ library(gt)
 # Fonts
 ###################
 
-default_fonts <- c("Franklin Gothic Book Regular")
+default_fonts <- c("Noto Sans")
 # install.packages('extrafont')
 # library(extrafont)
 # font_import(paths = "C:/Users/mroberts/AppData/Local/Microsoft/Windows/Fonts")
 # Register fonts for Windows bitmap output
 # loadfonts(device = "win", quiet = TRUE)
-
-# Specify the font family with the name displayed on the fonts() output
-plot(trees$Volume,
-     main = "Custom fonts in R base",
-     xlab = "",
-     ylab = "Volume",
-     pch = 21, col = 4, bg = 4,
-     family = "arial") # We are setting the "Algerian" font
 
 ###################
 # Local and research sharepoint

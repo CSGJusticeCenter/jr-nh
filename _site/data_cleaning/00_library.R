@@ -41,7 +41,6 @@ default_fonts <- c("Franklin Gothic Book Regular")
 # font_import(paths = "C:/Users/mroberts/AppData/Local/Microsoft/Windows/Fonts")
 # Register fonts for Windows bitmap output
 # loadfonts(device = "win", quiet = TRUE)
-fonts()
 
 # Specify the font family with the name displayed on the fonts() output
 plot(trees$Volume,
@@ -49,7 +48,7 @@ plot(trees$Volume,
      xlab = "",
      ylab = "Volume",
      pch = 21, col = 4, bg = 4,
-     family = "Franklin Gothic Book Regular") # We are setting the "Algerian" font
+     family = "arial") # We are setting the "Algerian" font
 
 ###################
 # Local and research sharepoint
