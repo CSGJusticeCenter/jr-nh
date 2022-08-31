@@ -98,7 +98,7 @@ hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "
                         subtitle = list(align = "left", style = list(fontFamily = default_fonts, fontSize = "16px")),
                         legend = list(align = "left", verticalAlign = "top"),
                         xAxis = list(gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
-                        yAxis = list(labels = list(enabled = FALSE), gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
+                        yAxis = list(labels = list(enabled = TRUE), gridLineColor = "#D3D3D3", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
                         plotOptions = list(line = list(marker = list(enabled = FALSE)),
                                            spline = list(marker = list(enabled = FALSE)),
                                            area = list(marker = list(enabled = FALSE)),

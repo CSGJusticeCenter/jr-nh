@@ -20,11 +20,20 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 
 # load data
+load(paste0(sp_data_path, "/Data/r_data/nh_booking_by_fy.Rda",      sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda", sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",          sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",        sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",          sep = ""))
+ 
 ```
+
+# Bookings
+
+```{r}
+nh_booking_by_fy
+```
+
 
 # Protective Custody Holds
 

@@ -9,7 +9,9 @@ knitr::include_graphics("img/csg-logo.png")
 
 Welcome to the JRI New Hampshire project website. This is a private, password protected website that should not be shared externally. Use the navigation in the top right corner to view county reports and other analyses.
 
-FOR INTERNAL CSG JC USE ONLY.
+<br>
+
+<br>
 
 **Project Purpose:** 
 
@@ -20,6 +22,12 @@ Goal 1: Improve criminal justice and public health outcomes for people with beha
 Goal 2: Reduce gaps in the state’s data systems and information sharing capacity by working with agencies and staff to build data collection and analysis capacities.   
 
 Matching data from all 10 counties’ jails with data from the Department of Health and Human Services (DHHS) would distinguish New Hampshire as the first state in the country to conduct a statewide jail to Medicaid data analysis.
+
+<br>
+
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+knitr::include_graphics("img/nh-jri-flow.png")
+```
 
 <br>
 
@@ -74,8 +82,6 @@ Matching data from all 10 counties’ jails with data from the Department of Hea
 **Project Links**
 
 *	[Github repository](https://github.com/CSGJusticeCenter/jr-nh) 
-
-*	[Research SharePoint](https://csgorg.sharepoint.com/:f:/r/sites/Team-JC-Research/Shared%20Documents/JR_NH?csf=1&web=1&e=g4BOvw)   
 
 <br>
 
