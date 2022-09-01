@@ -23,6 +23,16 @@ knitr::opts_chunk$set(
 - Should LOS include PC holds? Weekends?  
 - How should we define high utilizer?
 
+## Jail Questions
+
+Belknap
+
+- Protective custody charge but their booking type is "pretrial", what does that mean? There are some cases where the charge is protective custody but the booking type is "pretrial" or "protective custody."?
+
+Sullivan
+
+- Race categories? What does N and K stand for?
+
 ## To Do
 
 - Add 3 yr totals to tables  

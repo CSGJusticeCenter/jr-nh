@@ -12,6 +12,186 @@ source("data_cleaning/00_library.R")
 
 ####################################
 
+###########
+# Create fy, age, los, recode race, and order variables
+###########
+
+fnc_data_setup <- function(df){
+  df1 <- df %>%
+    mutate(fy = case_when(booking_date >= "2018-07-01" & booking_date <= "2019-06-30" ~ 2019,
+                          booking_date >= "2019-07-01" & booking_date <= "2020-06-30" ~ 2020,
+                          booking_date >= "2020-07-01" & booking_date <= "2021-06-30" ~ 2021),
+           age = fy - yob,
+           los = difftime(as.POSIXct(release_date), as.POSIXct(booking_date, tz="UTC"), units="days"),
+           race_label = case_when(race_code == "A"  ~ "AAPI",
+                                  race_code == "C"  ~ "AAPI",
+                                  race_code == "P"  ~ "AAPI",
+                                  race_code == "K"  ~ "AAPI",
+
+
+                                  race_code == "B"  ~ "Black",
+
+                                  race_code == "H"  ~ "Hispanic",
+                                  race_code == "L"  ~ "Hispanic",
+
+                                  race_code == "I"  ~ "American Indian Alaska Native",
+
+                                  race_code == "U"  ~ "Unknown",
+                                  race_code == "NH" ~ "Unknown",
+                                  race_code == "N"  ~ "Unknown",
+                                  race_code == "X"  ~ "Unknown",
+
+                                  race_code == "O"  ~ "Other",
+                                  race_code == "P"  ~ "Other",
+
+                                  race_code == "W"  ~ "White")) %>%
+    filter(fy == 2019 | fy == 2020 | fy == 2021) %>%
+    dplyr::select(id,
+                  inmate_id,
+                  yob,
+                  race_code,
+                  race_label,
+                  sex,
+                  age,
+                  charge_code,
+                  charge_desc,
+                  booking_date,
+                  booking_type,
+                  release_date,
+                  release_type,
+                  sentence_status,
+                  los,
+                  county,
+                  fy)
+}
+
+###########
+# Create pc hold variables
+###########
+
+# some PC holds are indicated in the charge description but labeled as pretrial in the booking type
+# account for this by creating multiple pc hold variables
+fnc_pc_hold_variables <- function(df){
+  df1 <- df %>%
+    mutate(pc_hold_booking = ifelse(booking_type == "PROTECTIVE CUSTODY", 1, 0),
+
+           pc_hold_charge  = ifelse(charge_desc == "PROTECTIVE CUSTODY"         | charge_desc == "PROTECTIVE CUSTODY/INTOXICATION" |
+                                    charge_desc == "PROTECTIVE CUSTODY - DRUGS" | charge_desc == "Treatment and Services: Protective Custody", 1, 0),
+
+           pc_hold_sentence = ifelse(sentence_status == "PROTECTIVE CUSTODY" | sentence_status == "PROTECTIVE CUSTODY HOLD", 1, 0)) %>%
+
+    mutate(pc_hold         = ifelse(pc_hold_booking == 1 | pc_hold_charge == 1 | pc_hold_sentence == 1, 1, 0))
+}
+
+###########
+# Add sex labels
+###########
+
+fnc_sex_labels <- function(df){
+  df <- df %>%
+    mutate(sex = case_when(
+      sex == "M"     ~ "Male",
+      sex == "F"     ~ "Female",
+      sex == "T"     ~ "Transgender",
+      sex == "TF"    ~ "Transgender",
+      sex == "TRANF" ~ "Transgender",
+      sex == "U"     ~ "Unknown",
+      is.na(sex)     ~ "Unknown"),
+      TRUE ~ sex) %>%
+    distinct()
+}
+
+###########
+# Add data labels to county data
+###########
+
+fnc_add_data_labels <- function(df){
+
+  df1 <- df
+
+  # change data types
+  df1$id              <- as.factor(df1$id)
+  df1$inmate_id       <- as.character(df1$inmate_id)
+  df1$yob             <- as.numeric(df1$yob)
+  df1$race_code       <- as.factor(df1$race_code)
+  df1$race_label      <- as.factor(df1$race_label)
+  df1$sex             <- as.factor(df1$sex)
+  df1$charge_desc     <- as.factor(df1$charge_desc)
+  df1$booking_type    <- as.factor(df1$booking_type)
+  df1$release_type    <- as.factor(df1$release_type)
+  df1$sentence_status <- as.factor(df1$sentence_status)
+  df1$fy              <- as.factor(df1$fy)
+  df1$high_utilizer   <- as.factor(df1$high_utilizer)
+  df1$pc_hold_booking <- as.factor(df1$pc_hold_booking)
+  df1$pc_hold_charge  <- as.factor(df1$pc_hold_charge)
+  df1$pc_hold         <- as.factor(df1$pc_hold)
+  df1$county          <- as.factor(df1$county)
+  df1$age             <- as.numeric(df1$age)
+  df1$los             <- as.numeric(df1$los)
+
+  # data labels
+  var.labels <- c(id              = "Unique ID",
+                  inmate_id       = "Inmate ID",
+                  yob             = "Year of birth",
+                  race_code       = "Original race code",
+                  race_label      = "Race",
+                  sex             = "Sex",
+                  age             = "Age (years)",
+                  charge_code     = "Charge code",
+                  charge_desc     = "Charge description",
+                  booking_date    = "Booking date",
+                  booking_type    = "Booking type",
+                  release_date    = "Release date",
+                  release_type    = "Release type",
+                  sentence_status = "Sentence status",
+                  los             = "Length of stay (days)",
+                  county          = "County",
+                  fy              = "Fiscal year",
+                  num_bookings    = "Number of booking events in the fiscal year",
+                  high_utilizer   = "Is a high utilizer",
+                  pc_hold_booking = "Protective custody hold (booking type)",
+                  pc_hold_charge  = "Protective custody hold (charge type)",
+                  pc_hold         = "Protective custody hold (booking or charge type)")
+  # add labels to data
+  df1 <- labelled::set_variable_labels(df1, .labels = var.labels)
+
+}
+
+
+###########################################################################################################################################
+
+# Standardizing counties
+# Uses functions above
+
+###########################################################################################################################################
+
+fnc_standardize_counties <- function(df){
+  # Create fy, age, los, recode race, and order variables
+  df <- fnc_data_setup(df)
+
+  # create high utilizer variable
+  belknap_hu <- fnc_create_hu_variable(df)
+  df <- left_join(df, belknap_hu, by = c("inmate_id", "fy"))
+
+  # create a PC hold variables
+  # some PC holds are indicated in the charge description but labeled as pretrial in the booking type
+  # account for this by creating multiple pc hold variables
+  df <- fnc_pc_hold_variables(df)
+
+  # custom function to add sex code labels
+  df <- fnc_sex_labels(df)
+
+  # custom function to add data label
+  df <- fnc_add_data_labels(df)
+}
+
+
+###########################################################################################################################################
+
+# Content functions
+
+###########################################################################################################################################
+
 # replace NAs with blanks or no data
 fnc_replace_nas <- function(df){
   df <- df %>%
@@ -114,3 +294,5 @@ fnc_variable_table <- function(df_19, df_20, df_21, variable_name){
 
   return(df)
 }
+
+

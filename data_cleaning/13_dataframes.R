@@ -12,8 +12,34 @@
 # nh_booking, nh_booking_19, nh_booking_20, nh_booking_21
 ############################################
 
+######
+# Standardize and save data
+######
+
+# custom function that creates the variables we need and relabels codes so they're consistent across counties
+belknap_adm    <- fnc_standardize_counties(belknap_adm_all)
+carroll_adm    <- fnc_standardize_counties(carroll_adm_all)
+cheshire_adm   <- fnc_standardize_counties(cheshire_adm_all)
+coos_adm       <- fnc_standardize_counties(coos_adm_all)
+merrimack_adm  <- fnc_standardize_counties(merrimack_adm_all)
+rockingham_adm <- fnc_standardize_counties(rockingham_adm_all)
+sullivan_adm   <- fnc_standardize_counties(sullivan_adm_all)
+
+# save data to SP
+save(belknap_adm,    file=paste0(sp_data_path, "/Data/r_data/belknap_adm_all.Rda",    sep = ""))
+save(carroll_adm,    file=paste0(sp_data_path, "/Data/r_data/carroll_adm_all.Rda",    sep = ""))
+save(cheshire_adm,   file=paste0(sp_data_path, "/Data/r_data/cheshire_adm_all.Rda",   sep = ""))
+save(coos_adm,       file=paste0(sp_data_path, "/Data/r_data/coos_adm_all.Rda",       sep = ""))
+save(merrimack_adm,  file=paste0(sp_data_path, "/Data/r_data/merrimack_adm_all.Rda",  sep = ""))
+save(rockingham_adm, file=paste0(sp_data_path, "/Data/r_data/rockingham_adm_all.Rda", sep = ""))
+save(sullivan_adm,   file=paste0(sp_data_path, "/Data/r_data/sullivan_adm_all.Rda",   sep = ""))
+
+######
+# STATE-WIDE DATA
 # combine county data or large NH dataframe with all charge descriptions
 # missing strafford, hillsborough for now
+######
+
 nh_adm_all <- do.call("rbind", list(belknap_adm_all,
                                     carroll_adm_all,
                                     cheshire_adm_all,
@@ -33,10 +59,10 @@ nh_adm_all <- do.call("rbind", list(belknap_adm_all,
 # keep sentence status
 nh_sentence <- nh_adm_all %>%
   dplyr::select(inmate_id,
-                race,
+                race = race_label,
                 yob,
                 age,
-                sex,
+                gender = sex,
                 sentence_status,
                 booking_date,
                 fy,
@@ -56,10 +82,11 @@ dim(nh_sentence)
 # create month year variables
 nh_booking <- nh_adm_all %>%
   dplyr::select(inmate_id,
-                race,
+                race_code,
+                race = race_label,
                 yob,
                 age,
-                sex,
+                gender = sex,
                 booking_date,
                 booking_type,
                 fy,

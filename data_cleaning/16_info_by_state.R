@@ -21,12 +21,28 @@
 # How many people were booked into New Hampshire jails annually?
 ##################
 
+
+
+
+# “Local” version – both graphic and stats, but for single counties
+
+
+# Graphic: line plot or other, with state-level, annual admissions per year FY2019-2021
+# Accompanying statistic: average annual admissions per year (total admission/3)
+
+##################
+# What are the most common booking types?
+# try to find a way to explain how protective custody holds are labeled as numerous
+# things in the booking type, charge description, etc.
+##################
+
 # custom functions to find the number of booking types by fiscal year
 df_booking <- fnc_variable_table(nh_booking_19, nh_booking_20, nh_booking_21, "booking_type")
 df_booking <- fnc_variable_table_desc(df_booking)
 df_booking <- df_booking %>% filter(variable_name != "Total") %>%
   select(booking_type = variable_name, everything())
 
+# create reactable table of number/freq of booking types by fiscal year and for all 3 years
 nh_booking_by_fy <- reactable(df_booking,
           # rowStyle = function(index) {
           #   if (index %in% c(40)) {
@@ -85,11 +101,6 @@ nh_booking_by_fy <- reactable(df_booking,
                                   format = colFormat(percent = TRUE, digits = 1))))
 
 
-# “Local” version – both graphic and stats, but for single counties
-
-
-# Graphic: line plot or other, with state-level, annual admissions per year FY2019-2021
-# Accompanying statistic: average annual admissions per year (total admission/3)
 
 
 
