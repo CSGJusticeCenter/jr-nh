@@ -19,19 +19,19 @@ knitr::opts_chunk$set(
 
 ```{r include=FALSE}
 # load data
-load(paste0(sp_data_path, "/Data/r_data/belknap_adm_all.Rda",    sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/carroll_adm_all.Rda",    sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/cheshire_adm_all.Rda",   sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/coos_adm_all.Rda",       sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/merrimack_adm_all.Rda",  sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/rockingham_adm_all.Rda", sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/sullivan_adm_all.Rda",   sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",    sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda",    sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/cheshire_adm.Rda",   sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/coos_adm.Rda",       sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda",  sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda", sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",   sep = ""))
 ```
 
 ## Belknap  
 
-A - Asian  
-B - Black   
+A - Asian      
+B - Black       
 C - Chinese  
 H - Hispanic  
 I - Indian  
@@ -44,7 +44,7 @@ X - DELETE
 J - Japanese  
 
 ```{r}
-view_df(belknap_adm_all)
+view_df(belknap_adm)
 ```
 
 ## Carroll  

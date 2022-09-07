@@ -31,7 +31,7 @@ fnc_table_settings <- function(gt_object){
       column_labels.border.bottom.color = "gray",
 
       # font sizes
-      heading.title.font.size = px(12),
+      heading.title.font.size = px(14),
       heading.subtitle.font.size = px(12),
       column_labels.font.size = px(12),
       table.font.size = px(12),
@@ -87,43 +87,14 @@ fnc_booking_heatmap <- function(df){
     theme_bw() + theme_minimal()
 }
 
-###########
-# Highcharter
-###########
-
-# custom highcharts theme for plots
-hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "#D6C246", "#dcdcdc"),
-                        chart = list(style = list(fontFamily = default_fonts, color = "#666666")),
-                        title = list(align = "left", style = list(fontFamily = default_fonts, fontSize = "24px")),
-                        subtitle = list(align = "left", style = list(fontFamily = default_fonts, fontSize = "16px")),
-                        legend = list(align = "left", verticalAlign = "top"),
-                        xAxis = list(gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
-                        yAxis = list(labels = list(enabled = TRUE), gridLineColor = "#D3D3D3", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
-                        plotOptions = list(line = list(marker = list(enabled = FALSE)),
-                                           spline = list(marker = list(enabled = FALSE)),
-                                           area = list(marker = list(enabled = FALSE)),
-                                           areaspline = list(marker = list(enabled = FALSE)),
-                                           arearange = list(marker = list(enabled = FALSE)),
-                                           bubble = list(maxSize = "10%")))
-
-# set up highcharts download buttons
-hc_setup <- function(x) {
-  highcharter::hc_add_dependency(x, name = "plugins/series-label.js") %>%
-    highcharter::hc_add_dependency(name = "plugins/accessibility.js") %>%
-    highcharter::hc_add_dependency(name = "plugins/exporting.js") %>%
-    highcharter::hc_add_dependency(name = "plugins/export-data.js") %>%
-    highcharter::hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
-    highcharter::hc_exporting(enabled = TRUE)
-}
-
-
-# Highchart for pc holds over time
-# subset data to PC holds
-# calculate number of PC holds by month and year
 fnc_pch_time_highchart <- function(df){
 
   # filter to PC holds
   df1 <- df %>% filter(pc_hold == "PC Hold")
+
+  counties <- df1 %>%
+    mutate(county = as.character(county))
+  counties <- unique(counties$county)
 
   df1 <- df1 %>%
     dplyr::group_by(month_year, month_year_text) %>%
@@ -135,16 +106,59 @@ fnc_pch_time_highchart <- function(df){
   chart <- df1 %>%
     hchart('line', hcaes(x = month_year_text, y = total), color = jri_dark_blue) %>%
     hc_setup() %>%
-    hc_add_theme(hc_theme_jc) %>%
     hc_xAxis(
       title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
       plotLines = list(list(label = list(text = "Start of COVID-19 Pandemic"), color = jri_red, width = 2, value = 20, zIndex = 1))
     ) %>%
-    hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold")))
-    # hc_title(text = "Number of PC Holds from 2019-2021", align = "left")
+    hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold"))) %>%
+    hc_title(text = "Number of PC Holds from 2019-2021") %>%
+    hc_caption(
+      text = (paste(" ", counties))
+    )
 
   return(chart)
 
+}
+
+###########
+# Highcharter
+###########
+
+# custom highcharts theme for plots
+hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "#D6C246", "#dcdcdc"),
+                        chart = list(style = list(fontFamily = default_fonts, color = "#666666")),
+                        title = list(align = "left", style = list(fontFamily = default_fonts, fontSize = "24px")),
+                        subtitle = list(align = "left", style = list(fontFamily = default_fonts, fontSize = "16px")),
+                        legend = list(align = "left", verticalAlign = "top"),
+                        xAxis = list(gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
+                        yAxis = list(labels = list(enabled = FALSE), gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
+                        plotOptions = list(line = list(marker = list(enabled = FALSE)),
+                                           spline = list(marker = list(enabled = FALSE)),
+                                           area = list(marker = list(enabled = FALSE)),
+                                           areaspline = list(marker = list(enabled = FALSE)),
+                                           arearange = list(marker = list(enabled = FALSE)),
+                                           bubble = list(maxSize = "10%")))
+
+# # set up highcharts download buttons
+# hc_setup <- function(x) {
+#   hc_add_dependency(x, name = "modules/exporting.js") %>%
+#     hc_add_dependency(name = "modules/offline-exporting.js") %>%
+#     hc_exporting(
+#       enabled = FALSE, # change to TRUE to add drop down download options
+#       buttons = list(contextButton = list(menuItems = list("printChart", "downloadPNG", "downloadSVG", "downloadPDF")))) %>%
+#     hc_add_theme(hc_theme_jc) %>%
+#     hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
+#     hc_plotOptions(series = list(animation = FALSE))
+# }
+
+# set up highcharts download buttons
+hc_setup <- function(x) {
+  highcharter::hc_add_dependency(x, name = "plugins/series-label.js") %>%
+    highcharter::hc_add_dependency(name = "plugins/accessibility.js") %>%
+    highcharter::hc_add_dependency(name = "plugins/exporting.js") %>%
+    highcharter::hc_add_dependency(name = "plugins/export-data.js") %>%
+    highcharter::hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
+    highcharter::hc_exporting(enabled = TRUE)
 }
 
 ###########

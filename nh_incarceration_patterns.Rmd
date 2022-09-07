@@ -20,37 +20,55 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 
 # load data
-load(paste0(sp_data_path, "/Data/r_data/nh_booking_by_fy.Rda",      sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda", sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",          sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",        sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",          sep = ""))
- 
+load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_amt.Rda",      sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_counties.Rda",               sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_people_booked.Rda",          sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_county.Rda",   sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_barchart.Rda", sep = ""))
+
+load(paste0(sp_data_path, "/Data/r_data/nh_booking_by_fy.Rda",          sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda",     sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",              sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",            sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",              sep = ""))
 ```
 
-# Bookings
+# Jail Admissions
+
+```{r, results='asis'}
+# print header for pc hold section
+cat("**There were ", nh_people_booked_amt, " people were booked into NH jails from FY 2019 to FY 2021.**"," This finding was calculated using data from the following counties: ", nh_counties, ".\n\n", sep = "")
+```
+```{r}
+nh_people_booked_barchart
+```
 
 ```{r}
-nh_booking_by_fy
+nh_people_booked
 ```
+```{r}
+nh_people_booked_county
+```
+
 
 
 # Protective Custody Holds
 
-```{r}
-# protective custody holds over time
-# does not include Coos because Coos doesn't track PC holds
-
-nh_pch_time_highchart %>%   
-  hc_caption(text = paste("<b>Counties included:</b>", toString(pch_counties))) 
-```
 ```{r, results='asis'}
 # print header for pc hold section
-cat("**Protective custody holds accounted for", nh_pch_pct_amt, "% of bookings from 2019 to 2021.**","\n\n")
+cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings from 2019 to 2021.**"," This finding was calculated using data from the following counties: ", pch_counties, ".\n\n", sep = "")
 ```
 
 ```{r}
-nh_pch_table %>% 
-   tab_source_note(source_note = html('Counties included: ', toString(pch_counties)))
+nh_pch_table 
 ```
+
+```{r}
+# protective custody holds over time
+nh_pch_time_highchart %>%   
+  hc_caption(text = paste("<em>Counties included: ", toString(pch_counties), "</em>")) 
+```
+
+
+
 

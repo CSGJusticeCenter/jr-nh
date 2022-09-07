@@ -2367,12 +2367,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
-  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
-  <script src="site_libs/react-17.0.0/react.min.js"></script>
-  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
-  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
   <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
-  <script src="site_libs/reactable-binding-0.2.3/reactable.js"></script>
   <script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
   <script src="site_libs/proj4js-2.3.15/proj4.js"></script>
   <link href="site_libs/highcharts-9.3.1/css/motion.css" rel="stylesheet" />
@@ -2419,6 +2414,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <script src="site_libs/accessibility.js-9.3.1/accessibility.js"></script>
   <script src="site_libs/exporting.js-9.3.1/exporting.js"></script>
   <script src="site_libs/export-data.js-9.3.1/export-data.js"></script>
+  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+  <script src="site_libs/react-17.0.0/react.min.js"></script>
+  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
+  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+  <script src="site_libs/reactable-binding-0.2.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2500,511 +2500,46 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#bookings">Bookings</a></li>
+<li><a href="#jail-admissions">Jail Admissions</a></li>
 <li><a href="#protective-custody-holds">Protective Custody
 Holds</a></li>
 </ul>
 </nav>
 </div>
-<h1 id="bookings">Bookings</h1>
+<h1 id="jail-admissions">Jail Admissions</h1>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-5d97e60a5d98040485e4" class="reactable html-widget" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-5d97e60a5d98040485e4">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"booking_type":["ADULT ORDER OF COMMITMENT","HOLD SHEET","DETAINEE REQUEST","PROTECTIVE CUSTODY","PRETRIAL","ARREST WARRANT","DETAINER","BAIL ORDER","SUPERIOR COURT BAIL ORDER","SUPERIOR COURT MITTIMUS","ELECTRONIC BENCH WARRANT","SENTENCED","24 HOUR DETENTION REQUEST","FEDERAL HOLD","PROBATION","PROBATION DETENTION ORDER","DRUG COURT SENTENCING ORDER","COURT COMMITTED","UNKNOWN","VIOLATION OF PROBATION","SENTENCING","WARRANT ARREST","CAPIAS","FELONY FIRST","OVERNIGHT HOLD","INDICTMENT","VIOLATION OF PAROLE","DETENTION ORDER","NH STATE PRISONER","CIRCUIT COURT BAIL ORDER","CONVERTED DOCUMENT","IAD AGREEMENT","SUPERIOR COURT ARREST WARRANT","DUAL","DIVERSION ORDER","MITTIMUS","ADMIN TRANSFER","FEDERAL FORM 41","PAROLE","<NA>","Total"],"count_19":[2316,2026,1491,1274,829,555,466,435,371,351,268,234,217,145,133,127,118,116,79,79,73,61,59,49,22,17,15,12,11,10,8,6,5,3,1,1,0,0,0,448,12431],"pct_19":[0.193273804556455,0.169072853208712,0.124426270549946,0.106317282817325,0.0691813402319953,0.0463156137861971,0.0388884252691313,0.036301427021614,0.0309605274138363,0.0292914962864057,0.0223650171075691,0.0195276641909372,0.0181089877326212,0.0121004756738713,0.011099056997413,0.0105983476591838,0.00984728365184011,0.00968038053909705,0.00659267295335058,0.00659267295335058,0.00609196361512142,0.00509054493866311,0.00492364182592005,0.00408912626220479,0.00183593424017358,0.00141867645831595,0.0012517733455729,0.00100141867645832,0.00091796712008679,0.000834515563715263,0.000667612450972211,0.000500709338229158,0.000417257781857632,0.000250354669114579,8.34515563715263e-05,8.34515563715263e-05,0,0,0,0,1],"count_20":[2066,1339,1420,1015,714,522,367,393,523,240,271,128,171,96,105,106,98,127,34,33,57,24,43,28,7,3,9,9,18,306,21,2,1,3,5,0,2,1,0,381,10688],"pct_20":[0.200446298631998,0.129911710488018,0.137770447268846,0.0984767633647036,0.0692733094013777,0.0506451925875619,0.0356068691180751,0.0381294266032793,0.0507422140293005,0.0232851460172698,0.0262928107111672,0.0124187445425439,0.0165906665373047,0.00931405840690793,0.0101872513825555,0.0102842728242942,0.00950810129038518,0.0123217231008053,0.00329872901911322,0.0032017075773746,0.00553022217910158,0.00232851460172698,0.00417192199476084,0.00271660036868148,0.00067915009217037,0.000291064325215873,0.000873192975647618,0.000873192975647618,0.00174638595129524,0.029688561172019,0.00203745027651111,0.000194042883477248,9.70214417386242e-05,0.000291064325215873,0.000485107208693121,0,0.000194042883477248,9.70214417386242e-05,0,0,1],"count_21":[1490,1032,1355,758,573,408,317,396,525,188,204,110,148,138,93,51,69,131,36,35,51,24,40,30,10,1,15,15,17,367,4,0,5,1,0,0,3,0,2,249,8891],"pct_21":[0.172413793103448,0.119416801666281,0.156792409164545,0.087711177968063,0.0663040962740106,0.0472112936820181,0.0366813237676464,0.0458227262207822,0.0607498264290673,0.0217542235593613,0.023605646841009,0.0127285350613284,0.0171256653552418,0.015968525804212,0.0107613978245776,0.00590141171025226,0.00798426290210599,0.0151585281184911,0.00416570238370747,0.00404998842860449,0.00590141171025226,0.00277713492247165,0.00462855820411942,0.00347141865308956,0.00115713955102985,0.000115713955102985,0.00173570932654478,0.00173570932654478,0.00196713723675075,0.0424670215227956,0.000462855820411942,0,0.000578569775514927,0.000115713955102985,0,0,0.000347141865308956,0,0.000231427910205971,0,1],"total":[5872,4397,4266,3047,2116,1485,1150,1224,1419,779,743,472,536,379,331,284,285,374,149,147,181,109,142,107,39,21,39,36,46,683,33,8,11,7,6,1,5,1,2,1078,32010],"freq":[0.189835768783137,0.142150523729471,0.137915427389112,0.0985064011379801,0.0684081210397,0.0480085348506401,0.0371783266520109,0.0395706711496185,0.0458748221906117,0.0251842751842752,0.0240204319151688,0.0152592784171732,0.0173283331178068,0.0122526833053149,0.0107008922798396,0.00918143023406181,0.00921375921375921,0.0120910384068279,0.00481701797491271,0.00475236001551791,0.00585154532522954,0.00352385878701668,0.00459071511703091,0.00345920082762188,0.00126083020819863,0.000678908573645416,0.00126083020819863,0.00116384326910643,0.00148713306608043,0.0220806931333247,0.00106685633001422,0.000258631837579206,0.000355618776671408,0.000226302857881805,0.000193973878184404,3.23289796974008e-05,0.000161644898487004,3.23289796974008e-05,6.46579593948015e-05,"NA",1]},"columns":[{"accessor":"booking_type","name":"Booking Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":275},{"accessor":"count_19","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80},{"accessor":"pct_19","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":80},{"accessor":"count_20","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80},{"accessor":"pct_20","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":80},{"accessor":"count_21","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80},{"accessor":"pct_21","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"freq","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":90}],"columnGroups":[{"name":"2019","columns":["count_19","pct_19"]},{"name":"2020","columns":["count_20","pct_20"]},{"name":"2021","columns":["count_21","pct_21"]},{"name":"3 Years","columns":["total","freq"]}],"defaultPageSize":41,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"rowStyle":[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","border-color":"#d3d3d3"}],"inline":true,"theme":{"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"1ff86fb0f31abd2c25a541decf969e95","key":"1ff86fb0f31abd2c25a541decf969e95"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<p><strong>There were 20,277 people were booked into NH jails from FY
+2019 to FY 2021.</strong> This finding was calculated using data from
+the following counties: Belknap, Carroll, Coos, Merrimack, Rockingham,
+Sullivan.</p>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-6effba4bab2ff0e53b1f" style="width:624px;height:384px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6effba4bab2ff0e53b1f">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Number of PC Holds","style":{"color":"#000000","fontWeight":"bold"}},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":true},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false,"dataLabels":{"enabled":true,"format":"{point.label}"}},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"fy":"2019","total":7720,"label":"7,720","y":7720,"color":"#167a9c","name":"2019"},{"fy":"2020","total":6679,"label":"6,679","y":6679,"color":"#167a9c","name":"2020"},{"fy":"2021","total":5878,"label":"5,878","y":5878,"color":"#167a9c","name":"2021"}],"type":"column"}],"xAxis":{"type":"category","title":{"text":"Fiscal Year","style":{"color":"#000000","fontWeight":"bold"}}},"tooltip":{"formatter":"function(){return(this.point.tooltip)}"}},"theme":{"colors":["#D25E2D","#EDB799","#C7E8F5","#236ca7","#D6C246","#dcdcdc"],"chart":{"style":{"fontFamily":"Noto Sans","color":"#666666"}},"title":{"align":"left","style":{"fontFamily":"Noto Sans","fontSize":"24px"}},"subtitle":{"align":"left","style":{"fontFamily":"Noto Sans","fontSize":"16px"}},"legend":{"align":"left","verticalAlign":"top"},"xAxis":{"gridLineColor":"transparent","lineColor":"transparent","minorGridLineColor":"transparent","tickColor":"transparent"},"yAxis":{"labels":{"enabled":false},"gridLineColor":"transparent","lineColor":"transparent","minorGridLineColor":"transparent","tickColor":"transparent"},"plotOptions":{"line":{"marker":{"enabled":false}},"spline":{"marker":{"enabled":false}},"area":{"marker":{"enabled":false}},"areaspline":{"marker":{"enabled":false}},"arearange":{"marker":{"enabled":false}},"bubble":{"maxSize":"10%"}}},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":",","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":"null","printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":"Noto+Sans","debug":false},"evals":["hc_opts.tooltip.formatter","conf_opts.lang.numericSymbols"],"jsHooks":[]}</script>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-4f96c6c6b3372338029e" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-4f96c6c6b3372338029e">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"variable_name":["# People Booked into Jail"],"2019":[7720],"2020":[6679],"2021":[5878],"total":[20277]},"columns":[{"accessor":"variable_name","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":185},{"accessor":"2019","name":"2019","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80},{"accessor":"2020","name":"2020","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80},{"accessor":"2021","name":"2021","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total","name":"Total","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80}],"defaultPageSize":1,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"inline":true,"theme":{"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"0bd359dfc80abf1c8ecdaf948f71cb94","key":"0bd359dfc80abf1c8ecdaf948f71cb94"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-612b033cd0937d6b1cac" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-612b033cd0937d6b1cac">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Coos","Merrimack","Rockingham","Sullivan"],"2019":[1218,1786,181,1612,2391,532],"2020":[942,1604,193,1372,2142,426],"2021":[751,1439,156,1235,1910,387],"total":[2911,4829,530,4219,6443,1345]},"columns":[{"accessor":"county","name":"County","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":"Total","align":"left","footerStyle":{"fontWeight":"bold"},"minWidth":150},{"accessor":"2019","name":"2019","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["7,720"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"2020","name":"2020","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["6,679"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"2021","name":"2021","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["5,878"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total","name":"Total","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["20,277"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80}],"defaultPageSize":6,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"inline":true,"theme":{"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"d04cb0de54a04f5b565ab5a072e3d382","key":"d04cb0de54a04f5b565ab5a072e3d382"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <h1 id="protective-custody-holds">Protective Custody Holds</h1>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-543a243b1c9d7cccb50e" style="width:624px;height:384px;" class="highchart html-widget"></div>
-<script type="application/json" data-for="htmlwidget-543a243b1c9d7cccb50e">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Number of PC Holds","style":{"color":"#000000","fontWeight":"bold"}},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":true},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"month_year":"2018-07-01","month_year_text":"Jul 2018","total":354,"tooltip":"<b>Jul 2018<\/b><br>Total: 354<br>","y":354,"name":"Jul 2018"},{"month_year":"2018-08-01","month_year_text":"Aug 2018","total":404,"tooltip":"<b>Aug 2018<\/b><br>Total: 404<br>","y":404,"name":"Aug 2018"},{"month_year":"2018-09-01","month_year_text":"Sep 2018","total":240,"tooltip":"<b>Sep 2018<\/b><br>Total: 240<br>","y":240,"name":"Sep 2018"},{"month_year":"2018-10-01","month_year_text":"Oct 2018","total":180,"tooltip":"<b>Oct 2018<\/b><br>Total: 180<br>","y":180,"name":"Oct 2018"},{"month_year":"2018-11-01","month_year_text":"Nov 2018","total":169,"tooltip":"<b>Nov 2018<\/b><br>Total: 169<br>","y":169,"name":"Nov 2018"},{"month_year":"2018-12-01","month_year_text":"Dec 2018","total":182,"tooltip":"<b>Dec 2018<\/b><br>Total: 182<br>","y":182,"name":"Dec 2018"},{"month_year":"2019-01-01","month_year_text":"Jan 2019","total":164,"tooltip":"<b>Jan 2019<\/b><br>Total: 164<br>","y":164,"name":"Jan 2019"},{"month_year":"2019-02-01","month_year_text":"Feb 2019","total":194,"tooltip":"<b>Feb 2019<\/b><br>Total: 194<br>","y":194,"name":"Feb 2019"},{"month_year":"2019-03-01","month_year_text":"Mar 2019","total":204,"tooltip":"<b>Mar 2019<\/b><br>Total: 204<br>","y":204,"name":"Mar 2019"},{"month_year":"2019-04-01","month_year_text":"Apr 2019","total":161,"tooltip":"<b>Apr 2019<\/b><br>Total: 161<br>","y":161,"name":"Apr 2019"},{"month_year":"2019-05-01","month_year_text":"May 2019","total":235,"tooltip":"<b>May 2019<\/b><br>Total: 235<br>","y":235,"name":"May 2019"},{"month_year":"2019-06-01","month_year_text":"Jun 2019","total":295,"tooltip":"<b>Jun 2019<\/b><br>Total: 295<br>","y":295,"name":"Jun 2019"},{"month_year":"2019-07-01","month_year_text":"Jul 2019","total":354,"tooltip":"<b>Jul 2019<\/b><br>Total: 354<br>","y":354,"name":"Jul 2019"},{"month_year":"2019-08-01","month_year_text":"Aug 2019","total":332,"tooltip":"<b>Aug 2019<\/b><br>Total: 332<br>","y":332,"name":"Aug 2019"},{"month_year":"2019-09-01","month_year_text":"Sep 2019","total":245,"tooltip":"<b>Sep 2019<\/b><br>Total: 245<br>","y":245,"name":"Sep 2019"},{"month_year":"2019-10-01","month_year_text":"Oct 2019","total":174,"tooltip":"<b>Oct 2019<\/b><br>Total: 174<br>","y":174,"name":"Oct 2019"},{"month_year":"2019-11-01","month_year_text":"Nov 2019","total":176,"tooltip":"<b>Nov 2019<\/b><br>Total: 176<br>","y":176,"name":"Nov 2019"},{"month_year":"2019-12-01","month_year_text":"Dec 2019","total":191,"tooltip":"<b>Dec 2019<\/b><br>Total: 191<br>","y":191,"name":"Dec 2019"},{"month_year":"2020-01-01","month_year_text":"Jan 2020","total":162,"tooltip":"<b>Jan 2020<\/b><br>Total: 162<br>","y":162,"name":"Jan 2020"},{"month_year":"2020-02-01","month_year_text":"Feb 2020","total":167,"tooltip":"<b>Feb 2020<\/b><br>Total: 167<br>","y":167,"name":"Feb 2020"},{"month_year":"2020-03-01","month_year_text":"Mar 2020","total":170,"tooltip":"<b>Mar 2020<\/b><br>Total: 170<br>","y":170,"name":"Mar 2020"},{"month_year":"2020-04-01","month_year_text":"Apr 2020","total":116,"tooltip":"<b>Apr 2020<\/b><br>Total: 116<br>","y":116,"name":"Apr 2020"},{"month_year":"2020-05-01","month_year_text":"May 2020","total":163,"tooltip":"<b>May 2020<\/b><br>Total: 163<br>","y":163,"name":"May 2020"},{"month_year":"2020-06-01","month_year_text":"Jun 2020","total":190,"tooltip":"<b>Jun 2020<\/b><br>Total: 190<br>","y":190,"name":"Jun 2020"},{"month_year":"2020-07-01","month_year_text":"Jul 2020","total":230,"tooltip":"<b>Jul 2020<\/b><br>Total: 230<br>","y":230,"name":"Jul 2020"},{"month_year":"2020-08-01","month_year_text":"Aug 2020","total":240,"tooltip":"<b>Aug 2020<\/b><br>Total: 240<br>","y":240,"name":"Aug 2020"},{"month_year":"2020-09-01","month_year_text":"Sep 2020","total":188,"tooltip":"<b>Sep 2020<\/b><br>Total: 188<br>","y":188,"name":"Sep 2020"},{"month_year":"2020-10-01","month_year_text":"Oct 2020","total":158,"tooltip":"<b>Oct 2020<\/b><br>Total: 158<br>","y":158,"name":"Oct 2020"},{"month_year":"2020-11-01","month_year_text":"Nov 2020","total":145,"tooltip":"<b>Nov 2020<\/b><br>Total: 145<br>","y":145,"name":"Nov 2020"},{"month_year":"2020-12-01","month_year_text":"Dec 2020","total":134,"tooltip":"<b>Dec 2020<\/b><br>Total: 134<br>","y":134,"name":"Dec 2020"},{"month_year":"2021-01-01","month_year_text":"Jan 2021","total":148,"tooltip":"<b>Jan 2021<\/b><br>Total: 148<br>","y":148,"name":"Jan 2021"},{"month_year":"2021-02-01","month_year_text":"Feb 2021","total":129,"tooltip":"<b>Feb 2021<\/b><br>Total: 129<br>","y":129,"name":"Feb 2021"},{"month_year":"2021-03-01","month_year_text":"Mar 2021","total":137,"tooltip":"<b>Mar 2021<\/b><br>Total: 137<br>","y":137,"name":"Mar 2021"},{"month_year":"2021-04-01","month_year_text":"Apr 2021","total":150,"tooltip":"<b>Apr 2021<\/b><br>Total: 150<br>","y":150,"name":"Apr 2021"},{"month_year":"2021-05-01","month_year_text":"May 2021","total":164,"tooltip":"<b>May 2021<\/b><br>Total: 164<br>","y":164,"name":"May 2021"},{"month_year":"2021-06-01","month_year_text":"Jun 2021","total":219,"tooltip":"<b>Jun 2021<\/b><br>Total: 219<br>","y":219,"name":"Jun 2021"}],"type":"line","color":"#293e5c"}],"xAxis":{"type":"category","title":{"text":"Month and Year","style":{"color":"#000000","fontWeight":"bold"}},"plotLines":[{"label":{"text":"Start of COVID-19 Pandemic"},"color":"#b95826","width":2,"value":20,"zIndex":1}]},"tooltip":{"formatter":"function(){return(this.point.tooltip)}"},"caption":{"text":"<b>Counties included:<\/b> Belknap, Carroll, Cheshire, Merrimack, Rockingham, Sullivan"}},"theme":{"colors":["#D25E2D","#EDB799","#C7E8F5","#236ca7","#D6C246","#dcdcdc"],"chart":{"style":{"fontFamily":"Noto Sans","color":"#666666"}},"title":{"align":"left","style":{"fontFamily":"Noto Sans","fontSize":"24px"}},"subtitle":{"align":"left","style":{"fontFamily":"Noto Sans","fontSize":"16px"}},"legend":{"align":"left","verticalAlign":"top"},"xAxis":{"gridLineColor":"transparent","lineColor":"transparent","minorGridLineColor":"transparent","tickColor":"transparent"},"yAxis":{"labels":{"enabled":true},"gridLineColor":"#D3D3D3","lineColor":"transparent","minorGridLineColor":"transparent","tickColor":"transparent"},"plotOptions":{"line":{"marker":{"enabled":false}},"spline":{"marker":{"enabled":false}},"area":{"marker":{"enabled":false}},"areaspline":{"marker":{"enabled":false}},"arearange":{"marker":{"enabled":false}},"bubble":{"maxSize":"10%"}}},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":"Noto+Sans","debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+<p><strong>Protective custody holds accounted for 23.5% of bookings from
+2019 to 2021.</strong> This finding was calculated using data from the
+following counties: Belknap, Carroll, Merrimack, Rockingham,
+Sullivan.</p>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<p><strong>Protective custody holds accounted for 23.7 % of bookings
-from 2019 to 2021.</strong></p>
+<div id="htmlwidget-f8c0c18ec9a1937dc0a7" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Counties included:  Belknap, Carroll, Merrimack, Rockingham, Sullivan .  Coos removes bookings that are PC holds so Coos's administrative data is not included in this table.</p>
+<script type="application/json" data-for="htmlwidget-f8c0c18ec9a1937dc0a7">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"new_variable_name":["Non-PC Hold","PC Hold","NA"],"count_19":[9430,2848,21],"pct_19":[0.76804039745887,0.23195960254113,0],"count_20":[8033,2494,14],"pct_20":[0.763085399449036,0.236914600550964,0],"count_21":[6690,2064,3],"pct_21":[0.764222069910898,0.235777930089102,0],"total":[24153,7406,38],"freq":[0.765328432459837,0.234671567540163,0]},"columns":[{"accessor":"new_variable_name","name":" ","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":"Total","align":"left","footerStyle":{"fontWeight":"bold"},"minWidth":150},{"accessor":"count_19","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["12,299"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"pct_19","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"count_20","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["10,541"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"pct_20","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"count_21","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["8,757"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"pct_21","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["31,597"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":100},{"accessor":"freq","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":90}],"columnGroups":[{"name":"2019","columns":["count_19","pct_19"]},{"name":"2020","columns":["count_20","pct_20"]},{"name":"2021","columns":["count_21","pct_21"]},{"name":"3 Years","columns":["total","freq"]}],"defaultPageSize":3,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"inline":true,"theme":{"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"b06d2fdaf8675342f089acff1432f7c9","key":"b06d2fdaf8675342f089acff1432f7c9"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div id="jfabbpapbx" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
-}
-
-#jfabbpapbx .gt_table {
-  display: table;
-  border-collapse: collapse;
-  margin-left: 0;
-  margin-right: auto;
-  color: #333333;
-  font-size: 12px;
-  font-weight: normal;
-  font-style: normal;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: hidden;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #BEBEBE;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#jfabbpapbx .gt_heading {
-  background-color: #FFFFFF;
-  text-align: left;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#jfabbpapbx .gt_title {
-  color: #333333;
-  font-size: 12px;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#jfabbpapbx .gt_subtitle {
-  color: #333333;
-  font-size: 12px;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#jfabbpapbx .gt_bottom_border {
-  border-bottom-style: hidden;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#jfabbpapbx .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #BEBEBE;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#jfabbpapbx .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 12px;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#jfabbpapbx .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 12px;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#jfabbpapbx .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#jfabbpapbx .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#jfabbpapbx .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #BEBEBE;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#jfabbpapbx .gt_group_heading {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 12px;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: transparent;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: hidden;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#jfabbpapbx .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 12px;
-  font-weight: initial;
-  border-top-style: transparent;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: hidden;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#jfabbpapbx .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#jfabbpapbx .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#jfabbpapbx .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#jfabbpapbx .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: dashed;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#jfabbpapbx .gt_stub_row_group {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 5px;
-  padding-right: 5px;
-  vertical-align: top;
-}
-
-#jfabbpapbx .gt_row_group_first td {
-  border-top-width: 2px;
-}
-
-#jfabbpapbx .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#jfabbpapbx .gt_first_summary_row {
-  border-top-style: solid;
-  border-top-color: #D3D3D3;
-}
-
-#jfabbpapbx .gt_first_summary_row.thick {
-  border-top-width: 2px;
-}
-
-#jfabbpapbx .gt_last_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#jfabbpapbx .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#jfabbpapbx .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#jfabbpapbx .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#jfabbpapbx .gt_table_body {
-  border-top-style: transparent;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: transparent;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#jfabbpapbx .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#jfabbpapbx .gt_footnote {
-  margin: 0px;
-  font-size: 12px;
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#jfabbpapbx .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#jfabbpapbx .gt_sourcenote {
-  font-size: 12px;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#jfabbpapbx .gt_left {
-  text-align: left;
-}
-
-#jfabbpapbx .gt_center {
-  text-align: center;
-}
-
-#jfabbpapbx .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#jfabbpapbx .gt_font_normal {
-  font-weight: normal;
-}
-
-#jfabbpapbx .gt_font_bold {
-  font-weight: bold;
-}
-
-#jfabbpapbx .gt_font_italic {
-  font-style: italic;
-}
-
-#jfabbpapbx .gt_super {
-  font-size: 65%;
-}
-
-#jfabbpapbx .gt_two_val_uncert {
-  display: inline-block;
-  line-height: 1em;
-  text-align: right;
-  font-size: 60%;
-  vertical-align: -0.25em;
-  margin-left: 0.1em;
-}
-
-#jfabbpapbx .gt_footnote_marks {
-  font-style: italic;
-  font-weight: normal;
-  font-size: 75%;
-  vertical-align: 0.4em;
-}
-
-#jfabbpapbx .gt_asterisk {
-  font-size: 100%;
-  vertical-align: 0;
-}
-
-#jfabbpapbx .gt_slash_mark {
-  font-size: 0.7em;
-  line-height: 0.7em;
-  vertical-align: 0.15em;
-}
-
-#jfabbpapbx .gt_fraction_numerator {
-  font-size: 0.6em;
-  line-height: 0.6em;
-  vertical-align: 0.45em;
-}
-
-#jfabbpapbx .gt_fraction_denominator {
-  font-size: 0.6em;
-  line-height: 0.6em;
-  vertical-align: -0.05em;
-}
-</style>
-<table class="gt_table" style="table-layout: fixed;; width: 0px">
-  <colgroup>
-    <col style="width:100px;"/>
-    <col style="width:70px;"/>
-    <col style="width:70px;"/>
-    <col style="width:70px;"/>
-    <col style="width:70px;"/>
-    <col style="width:70px;"/>
-    <col style="width:70px;"/>
-    <col style="width:70px;"/>
-    <col style="width:70px;"/>
-  </colgroup>
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1" style="font-weight: bold;"> </th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Count</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Freq</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Count</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Freq</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Count</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Freq</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">3 Yr Total</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" style="font-weight: bold;">Freq</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr><td class="gt_row gt_left" style="font-weight: bold;">Non-PC Hold</td>
-<td class="gt_row gt_right">9,123</td>
-<td class="gt_row gt_right">76.6%</td>
-<td class="gt_row gt_right">7,796</td>
-<td class="gt_row gt_right">76.2%</td>
-<td class="gt_row gt_right">6,523</td>
-<td class="gt_row gt_right">76.2%</td>
-<td class="gt_row gt_right">23,442</td>
-<td class="gt_row gt_right">76.3%</td></tr>
-    <tr><td class="gt_row gt_left" style="font-weight: bold;">PC Hold</td>
-<td class="gt_row gt_right">2,782</td>
-<td class="gt_row gt_right">23.4%</td>
-<td class="gt_row gt_right">2,440</td>
-<td class="gt_row gt_right">23.8%</td>
-<td class="gt_row gt_right">2,042</td>
-<td class="gt_row gt_right">23.8%</td>
-<td class="gt_row gt_right">7,264</td>
-<td class="gt_row gt_right">23.7%</td></tr>
-    <tr><td class="gt_row gt_left" style="font-weight: bold;">NA</td>
-<td class="gt_row gt_right">300</td>
-<td class="gt_row gt_right">0.0%</td>
-<td class="gt_row gt_right">212</td>
-<td class="gt_row gt_right">0.0%</td>
-<td class="gt_row gt_right">121</td>
-<td class="gt_row gt_right">0.0%</td>
-<td class="gt_row gt_right">633</td>
-<td class="gt_row gt_right">0.0%</td></tr>
-    <tr><td class="gt_row gt_left" style="font-weight: bold;">Total</td>
-<td class="gt_row gt_right">12,205</td>
-<td class="gt_row gt_right">100.0%</td>
-<td class="gt_row gt_right">10,448</td>
-<td class="gt_row gt_right">100.0%</td>
-<td class="gt_row gt_right">8,686</td>
-<td class="gt_row gt_right">100.0%</td>
-<td class="gt_row gt_right">31,339</td>
-<td class="gt_row gt_right">100.0%</td></tr>
-  </tbody>
-  <tfoot class="gt_sourcenotes">
-    <tr>
-      <td class="gt_sourcenote" colspan="9">Counties included:  Belknap, Carroll, Cheshire, Merrimack, Rockingham, Sullivan</td>
-    </tr>
-  </tfoot>
-  
-</table>
-</div>
+<div id="htmlwidget-e0edb633937ab44bff02" style="width:624px;height:384px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-e0edb633937ab44bff02">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":"Number of PC Holds from 2019-2021"},"yAxis":{"title":{"text":"Number of PC Holds","style":{"color":"#000000","fontWeight":"bold"}},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":true},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"month_year":"2018-07-01","month_year_text":"Jul 2018","total":355,"tooltip":"<b>Jul 2018<\/b><br>Total: 355<br>","y":355,"name":"Jul 2018"},{"month_year":"2018-08-01","month_year_text":"Aug 2018","total":409,"tooltip":"<b>Aug 2018<\/b><br>Total: 409<br>","y":409,"name":"Aug 2018"},{"month_year":"2018-09-01","month_year_text":"Sep 2018","total":246,"tooltip":"<b>Sep 2018<\/b><br>Total: 246<br>","y":246,"name":"Sep 2018"},{"month_year":"2018-10-01","month_year_text":"Oct 2018","total":182,"tooltip":"<b>Oct 2018<\/b><br>Total: 182<br>","y":182,"name":"Oct 2018"},{"month_year":"2018-11-01","month_year_text":"Nov 2018","total":176,"tooltip":"<b>Nov 2018<\/b><br>Total: 176<br>","y":176,"name":"Nov 2018"},{"month_year":"2018-12-01","month_year_text":"Dec 2018","total":190,"tooltip":"<b>Dec 2018<\/b><br>Total: 190<br>","y":190,"name":"Dec 2018"},{"month_year":"2019-01-01","month_year_text":"Jan 2019","total":171,"tooltip":"<b>Jan 2019<\/b><br>Total: 171<br>","y":171,"name":"Jan 2019"},{"month_year":"2019-02-01","month_year_text":"Feb 2019","total":196,"tooltip":"<b>Feb 2019<\/b><br>Total: 196<br>","y":196,"name":"Feb 2019"},{"month_year":"2019-03-01","month_year_text":"Mar 2019","total":207,"tooltip":"<b>Mar 2019<\/b><br>Total: 207<br>","y":207,"name":"Mar 2019"},{"month_year":"2019-04-01","month_year_text":"Apr 2019","total":168,"tooltip":"<b>Apr 2019<\/b><br>Total: 168<br>","y":168,"name":"Apr 2019"},{"month_year":"2019-05-01","month_year_text":"May 2019","total":245,"tooltip":"<b>May 2019<\/b><br>Total: 245<br>","y":245,"name":"May 2019"},{"month_year":"2019-06-01","month_year_text":"Jun 2019","total":303,"tooltip":"<b>Jun 2019<\/b><br>Total: 303<br>","y":303,"name":"Jun 2019"},{"month_year":"2019-07-01","month_year_text":"Jul 2019","total":363,"tooltip":"<b>Jul 2019<\/b><br>Total: 363<br>","y":363,"name":"Jul 2019"},{"month_year":"2019-08-01","month_year_text":"Aug 2019","total":342,"tooltip":"<b>Aug 2019<\/b><br>Total: 342<br>","y":342,"name":"Aug 2019"},{"month_year":"2019-09-01","month_year_text":"Sep 2019","total":251,"tooltip":"<b>Sep 2019<\/b><br>Total: 251<br>","y":251,"name":"Sep 2019"},{"month_year":"2019-10-01","month_year_text":"Oct 2019","total":175,"tooltip":"<b>Oct 2019<\/b><br>Total: 175<br>","y":175,"name":"Oct 2019"},{"month_year":"2019-11-01","month_year_text":"Nov 2019","total":176,"tooltip":"<b>Nov 2019<\/b><br>Total: 176<br>","y":176,"name":"Nov 2019"},{"month_year":"2019-12-01","month_year_text":"Dec 2019","total":198,"tooltip":"<b>Dec 2019<\/b><br>Total: 198<br>","y":198,"name":"Dec 2019"},{"month_year":"2020-01-01","month_year_text":"Jan 2020","total":164,"tooltip":"<b>Jan 2020<\/b><br>Total: 164<br>","y":164,"name":"Jan 2020"},{"month_year":"2020-02-01","month_year_text":"Feb 2020","total":174,"tooltip":"<b>Feb 2020<\/b><br>Total: 174<br>","y":174,"name":"Feb 2020"},{"month_year":"2020-03-01","month_year_text":"Mar 2020","total":177,"tooltip":"<b>Mar 2020<\/b><br>Total: 177<br>","y":177,"name":"Mar 2020"},{"month_year":"2020-04-01","month_year_text":"Apr 2020","total":116,"tooltip":"<b>Apr 2020<\/b><br>Total: 116<br>","y":116,"name":"Apr 2020"},{"month_year":"2020-05-01","month_year_text":"May 2020","total":165,"tooltip":"<b>May 2020<\/b><br>Total: 165<br>","y":165,"name":"May 2020"},{"month_year":"2020-06-01","month_year_text":"Jun 2020","total":193,"tooltip":"<b>Jun 2020<\/b><br>Total: 193<br>","y":193,"name":"Jun 2020"},{"month_year":"2020-07-01","month_year_text":"Jul 2020","total":231,"tooltip":"<b>Jul 2020<\/b><br>Total: 231<br>","y":231,"name":"Jul 2020"},{"month_year":"2020-08-01","month_year_text":"Aug 2020","total":242,"tooltip":"<b>Aug 2020<\/b><br>Total: 242<br>","y":242,"name":"Aug 2020"},{"month_year":"2020-09-01","month_year_text":"Sep 2020","total":190,"tooltip":"<b>Sep 2020<\/b><br>Total: 190<br>","y":190,"name":"Sep 2020"},{"month_year":"2020-10-01","month_year_text":"Oct 2020","total":160,"tooltip":"<b>Oct 2020<\/b><br>Total: 160<br>","y":160,"name":"Oct 2020"},{"month_year":"2020-11-01","month_year_text":"Nov 2020","total":146,"tooltip":"<b>Nov 2020<\/b><br>Total: 146<br>","y":146,"name":"Nov 2020"},{"month_year":"2020-12-01","month_year_text":"Dec 2020","total":135,"tooltip":"<b>Dec 2020<\/b><br>Total: 135<br>","y":135,"name":"Dec 2020"},{"month_year":"2021-01-01","month_year_text":"Jan 2021","total":148,"tooltip":"<b>Jan 2021<\/b><br>Total: 148<br>","y":148,"name":"Jan 2021"},{"month_year":"2021-02-01","month_year_text":"Feb 2021","total":132,"tooltip":"<b>Feb 2021<\/b><br>Total: 132<br>","y":132,"name":"Feb 2021"},{"month_year":"2021-03-01","month_year_text":"Mar 2021","total":139,"tooltip":"<b>Mar 2021<\/b><br>Total: 139<br>","y":139,"name":"Mar 2021"},{"month_year":"2021-04-01","month_year_text":"Apr 2021","total":151,"tooltip":"<b>Apr 2021<\/b><br>Total: 151<br>","y":151,"name":"Apr 2021"},{"month_year":"2021-05-01","month_year_text":"May 2021","total":168,"tooltip":"<b>May 2021<\/b><br>Total: 168<br>","y":168,"name":"May 2021"},{"month_year":"2021-06-01","month_year_text":"Jun 2021","total":222,"tooltip":"<b>Jun 2021<\/b><br>Total: 222<br>","y":222,"name":"Jun 2021"}],"type":"line","color":"#293e5c"}],"xAxis":{"type":"category","title":{"text":"Month and Year","style":{"color":"#000000","fontWeight":"bold"}},"plotLines":[{"label":{"text":"Start of COVID-19 Pandemic"},"color":"#b95826","width":2,"value":20,"zIndex":1}]},"tooltip":{"formatter":"function(){return(this.point.tooltip)}"},"caption":{"text":"<em>Counties included:  Belknap, Carroll, Merrimack, Rockingham, Sullivan <\/em>"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":",","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":"null","printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter","conf_opts.lang.numericSymbols"],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
