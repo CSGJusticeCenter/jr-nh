@@ -36,7 +36,7 @@ library(showtext)
 
 # https://stackoverflow.com/questions/61204259/how-can-i-resolve-the-no-font-name-issue-when-importing-fonts-into-r-using-ext
 # install older version so extrafonts works
-remotes::install_version("Rttf2pt1", version = "1.3.8")
+# remotes::install_version("Rttf2pt1", version = "1.3.8")
 library(remotes)
 library(extrafont)
 
@@ -60,6 +60,7 @@ loadfonts(device = "win", quiet = TRUE)
 
 ggplot(mtcars) +
   geom_point(aes(wt, mpg)) +
+  ggtitle("Hello this is a title") +
   theme(text = element_text(family = "Franklin Gothic Book"))
 
 ##############
@@ -96,4 +97,3 @@ jri_light_blue <- "#167a9c"
 jri_dark_blue  <- "#293e5c"
 jri_red        <- "#b95826"
 jri_green      <- "#557e39"
-

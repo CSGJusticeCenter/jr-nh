@@ -87,16 +87,13 @@ fnc_booking_heatmap <- function(df){
     theme_bw() + theme_minimal()
 }
 
-fnc_pch_time_highchart <- function(df){
+fnc_covid_time_highchart <- function(df, yaxis_label, title){
 
-  # filter to PC holds
-  df1 <- df %>% filter(pc_hold == "PC Hold")
-
-  counties <- df1 %>%
+  counties <- df %>%
     mutate(county = as.character(county))
   counties <- unique(counties$county)
 
-  df1 <- df1 %>%
+  df1 <- df %>%
     dplyr::group_by(month_year, month_year_text) %>%
     dplyr::summarise(total = n())
   df1 <- df1 %>%
@@ -110,8 +107,8 @@ fnc_pch_time_highchart <- function(df){
       title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
       plotLines = list(list(label = list(text = "Start of COVID-19 Pandemic"), color = jri_red, width = 2, value = 20, zIndex = 1))
     ) %>%
-    hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-    hc_title(text = "Number of PC Holds from 2019-2021") %>%
+    hc_yAxis(title = list(text = yaxis_label, style = list(color =  "#000000", fontWeight = "bold"))) %>%
+    hc_title(text = title) %>%
     hc_caption(
       text = (paste(" ", counties))
     )
