@@ -1,6 +1,6 @@
 ############################################
 # Project: JRI New Hampshire
-# File: info_by_state.R
+# File: incarceration_patterns.R
 # Last updated: August 22, 2022
 # Author: Mari Roberts
 
@@ -11,11 +11,6 @@
 # nh_sentence, nh_sentence_19, nh_sentence_20, nh_sentence_21
 # nh_booking, nh_booking_19, nh_booking_20, nh_booking_21
 ############################################
-
-
-############################################################
-# Incarceration Patterns
-############################################################
 
 ##################
 # How many people were booked into New Hampshire jails annually?
@@ -73,6 +68,17 @@ nh_people_booked_barchart <- df_people_booked_pre %>%
   hc_add_theme(hc_theme_jc) %>%
   hc_plotOptions(series = list(dataLabels = list(enabled = TRUE, format = "{point.label}")))
 
+# save changes between years to call in sentences in incarceration patterns rmd
+v1 <- as.numeric(filter(df_people_booked_pre, fy==2019) %>% select(total))
+v2 <- as.numeric(filter(df_people_booked_pre, fy==2020) %>% select(total))
+v3 <- as.numeric(filter(df_people_booked_pre, fy==2021) %>% select(total))
+nh_booked_change_19_20 <- (v2 - v1)/v1
+nh_booked_change_19_20 <- round(nh_booked_change_19_20*100, 1)
+nh_booked_change_20_21 <- (v3 - v2)/v2
+nh_booked_change_20_21 <- round(nh_booked_change_20_21*100, 1)
+nh_booked_change_19_21 <- (v3 - v1)/v1
+nh_booked_change_19_21 <- round(nh_booked_change_19_21*100, 1)
+
 ###
 # by county
 ###
@@ -125,11 +131,13 @@ nh_people_booked_county <- reactable(nh_people_booked_county,
 # Graphic: line plot or other, with state-level, annual admissions per year FY2019-2021
 # Accompanying statistic: average annual admissions per year (total admission/3)
 
-##################
+############################################################################################################
+# Booking Types
+
 # What are the most common booking types?
 # try to find a way to explain how protective custody holds are labeled as numerous
 # things in the booking type, charge description, etc.
-##################
+############################################################################################################
 
 # custom functions to find the number of booking types by fiscal year
 df_booking <- fnc_variable_table(nh_booking_19, nh_booking_20, nh_booking_21, "booking_type")
@@ -191,9 +199,9 @@ nh_booking_types <- reactable(df_booking,
                                   format = colFormat(percent = TRUE, digits = 1))))
 
 
-############################################################
+############################################################################################################
 # PC HOLDS
-############################################################
+############################################################################################################
 
 ###########
 # Highchart pc holds over time
@@ -205,8 +213,11 @@ df_pch <- nh_booking %>% filter(county != "Coos")
 # get counties included
 pch_counties <- fnc_counties_in_data(df_pch)
 
+# filter to PC holds
+df1 <- df_pch %>% filter(pc_hold == "PC Hold")
+
 # generate high chart using custom function
-nh_pch_time_highchart <- fnc_pch_time_highchart(df_pch)
+nh_pch_time_highchart <- fnc_covid_time_highchart(df1, yaxis_label = "Number of PC Holds", title = NULL)
 
 ###########
 # Table pc holds by FY
@@ -231,15 +242,20 @@ nh_pch_pct_amt <- round(nh_pch_pct_amt, 1)
 # create reactable table for pc holds by fiscal year
 nh_pch_table <- fnc_reactable_fy(pch_df, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data is not included in this table.")
 
-######
+############################################################################################################
 # Save to SP
-######
+############################################################################################################
 
 save(nh_counties,               file=paste0(sp_data_path, "/Data/r_data/nh_counties.Rda",               sep = ""))
 save(nh_people_booked_amt,      file=paste0(sp_data_path, "/Data/r_data/nh_people_booked_amt.Rda",      sep = ""))
+
 save(nh_people_booked,          file=paste0(sp_data_path, "/Data/r_data/nh_people_booked.Rda",          sep = ""))
 save(nh_people_booked_county,   file=paste0(sp_data_path, "/Data/r_data/nh_people_booked_county.Rda",   sep = ""))
 save(nh_people_booked_barchart, file=paste0(sp_data_path, "/Data/r_data/nh_people_booked_barchart.Rda", sep = ""))
+
+save(nh_booked_change_19_20,    file=paste0(sp_data_path, "/Data/r_data/nh_booked_change_19_20.Rda",    sep = ""))
+save(nh_booked_change_20_21,    file=paste0(sp_data_path, "/Data/r_data/nh_booked_change_20_21.Rda",    sep = ""))
+save(nh_booked_change_19_21,    file=paste0(sp_data_path, "/Data/r_data/nh_booked_change_19_21.Rda",    sep = ""))
 
 save(nh_booking_types,          file=paste0(sp_data_path, "/Data/r_data/nh_booking_types.Rda",          sep = ""))
 save(nh_pch_time_highchart,     file=paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda",     sep = ""))

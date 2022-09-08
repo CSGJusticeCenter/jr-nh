@@ -87,16 +87,17 @@ fnc_booking_heatmap <- function(df){
     theme_bw() + theme_minimal()
 }
 
-fnc_pch_time_highchart <- function(df){
+###########
+# highcharts
+###########
 
-  # filter to PC holds
-  df1 <- df %>% filter(pc_hold == "PC Hold")
+fnc_covid_time_highchart <- function(df, yaxis_label, title){
 
-  counties <- df1 %>%
+  counties <- df %>%
     mutate(county = as.character(county))
   counties <- unique(counties$county)
 
-  df1 <- df1 %>%
+  df1 <- df %>%
     dplyr::group_by(month_year, month_year_text) %>%
     dplyr::summarise(total = n())
   df1 <- df1 %>%
@@ -110,8 +111,8 @@ fnc_pch_time_highchart <- function(df){
       title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
       plotLines = list(list(label = list(text = "Start of COVID-19 Pandemic"), color = jri_red, width = 2, value = 20, zIndex = 1))
     ) %>%
-    hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-    hc_title(text = "Number of PC Holds from 2019-2021") %>%
+    hc_yAxis(title = list(text = yaxis_label, style = list(color =  "#000000", fontWeight = "bold"))) %>%
+    hc_title(text = title) %>%
     hc_caption(
       text = (paste(" ", counties))
     )
@@ -119,10 +120,6 @@ fnc_pch_time_highchart <- function(df){
   return(chart)
 
 }
-
-###########
-# Highcharter
-###########
 
 # custom highcharts theme for plots
 hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "#D6C246", "#dcdcdc"),
@@ -141,18 +138,6 @@ hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "
                                            areaspline = list(marker = list(enabled = FALSE)),
                                            arearange = list(marker = list(enabled = FALSE)),
                                            bubble = list(maxSize = "10%")))
-
-# # set up highcharts download buttons
-# hc_setup <- function(x) {
-#   hc_add_dependency(x, name = "modules/exporting.js") %>%
-#     hc_add_dependency(name = "modules/offline-exporting.js") %>%
-#     hc_exporting(
-#       enabled = FALSE, # change to TRUE to add drop down download options
-#       buttons = list(contextButton = list(menuItems = list("printChart", "downloadPNG", "downloadSVG", "downloadPDF")))) %>%
-#     hc_add_theme(hc_theme_jc) %>%
-#     hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
-#     hc_plotOptions(series = list(animation = FALSE))
-# }
 
 # set up highcharts download buttons
 hc_setup <- function(x) {

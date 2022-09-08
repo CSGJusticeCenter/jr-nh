@@ -7,6 +7,8 @@ output:
     self_contained: false
 ---
 
+The following incarceration patterns were found using jail administrative data submitted directly to CSG.   
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
   echo=FALSE, 

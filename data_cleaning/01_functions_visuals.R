@@ -87,6 +87,10 @@ fnc_booking_heatmap <- function(df){
     theme_bw() + theme_minimal()
 }
 
+###########
+# highcharts
+###########
+
 fnc_covid_time_highchart <- function(df, yaxis_label, title){
 
   counties <- df %>%
@@ -117,10 +121,6 @@ fnc_covid_time_highchart <- function(df, yaxis_label, title){
 
 }
 
-###########
-# Highcharter
-###########
-
 # custom highcharts theme for plots
 hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "#D6C246", "#dcdcdc"),
                         chart = list(style = list(#fontFamily = "Franklin Gothic Book",
@@ -138,18 +138,6 @@ hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "
                                            areaspline = list(marker = list(enabled = FALSE)),
                                            arearange = list(marker = list(enabled = FALSE)),
                                            bubble = list(maxSize = "10%")))
-
-# # set up highcharts download buttons
-# hc_setup <- function(x) {
-#   hc_add_dependency(x, name = "modules/exporting.js") %>%
-#     hc_add_dependency(name = "modules/offline-exporting.js") %>%
-#     hc_exporting(
-#       enabled = FALSE, # change to TRUE to add drop down download options
-#       buttons = list(contextButton = list(menuItems = list("printChart", "downloadPNG", "downloadSVG", "downloadPDF")))) %>%
-#     hc_add_theme(hc_theme_jc) %>%
-#     hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
-#     hc_plotOptions(series = list(animation = FALSE))
-# }
 
 # set up highcharts download buttons
 hc_setup <- function(x) {
