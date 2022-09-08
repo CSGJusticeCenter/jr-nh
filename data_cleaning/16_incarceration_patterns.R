@@ -45,7 +45,7 @@ nh_people_booked <- reactable(df_people_booked,
           compact = TRUE,
           fullWidth = FALSE,
           columns = list(
-            `variable_name` = colDef(minWidth = 185, name = ""),
+            `variable_name` = colDef(minWidth = 225, name = ""),
             `2019`  = colDef(minWidth = 80, name = "2019"),
             `2020`  = colDef(minWidth = 80, name = "2020"),
             `2021`  = colDef(minWidth = 80, name = "2021",

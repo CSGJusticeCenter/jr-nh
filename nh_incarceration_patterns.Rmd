@@ -42,7 +42,7 @@ load(paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",              sep = ""
 
 # Jail Admissions
 
-### By County
+### By State
 
 ```{r, results='asis'}
 # print header for pc hold section
@@ -53,7 +53,7 @@ nh_people_booked_barchart
 ```
 
 ```{r, results='asis'}
-cat("**The number of people booked into jails has been decreasing. There was a ", nh_booked_change_19_20, "% decrease between FY2019 and FY2020, and ", nh_booked_change_20_21, "% decrease between FY2020 and FY2021. There was an overall decrease of ", nh_booked_change_19_21, "% between FY2019 and FY2021.\n\n", sep = "")
+cat("**The number of people booked into jails has been decreasing. There was a ", nh_booked_change_19_20, "% decrease between FY2019 and FY2020, and ", nh_booked_change_20_21, "% decrease between FY2020 and FY2021. There was an overall decrease of ", nh_booked_change_19_21, "% between FY2019 and FY2021.**\n\n", sep = "")
 ```
 ```{r}
 nh_people_booked
@@ -71,6 +71,8 @@ nh_people_booked_county
 
 # Protective Custody Holds
 
+### By State
+
 ```{r, results='asis'}
 # print header for pc hold section
 cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings from 2019 to 2021.**"," This finding was calculated using data from the following counties: ", pch_counties, ".\n\n", sep = "")
@@ -80,6 +82,8 @@ cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings 
 ```{r}
 nh_pch_table 
 ```
+<br>
+<br>
 
 ```{r}
 # protective custody holds over time
@@ -87,6 +91,6 @@ nh_pch_time_highchart %>%
   hc_caption(text = paste("<em>Counties included: ", toString(pch_counties), "</em>")) 
 ```
 
-
+### By County
 
 
