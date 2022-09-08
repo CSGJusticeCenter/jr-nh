@@ -126,9 +126,12 @@ fnc_pch_time_highchart <- function(df){
 
 # custom highcharts theme for plots
 hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "#D6C246", "#dcdcdc"),
-                        chart = list(style = list(fontFamily = default_fonts, color = "#666666")),
-                        title = list(align = "left", style = list(fontFamily = default_fonts, fontSize = "24px")),
-                        subtitle = list(align = "left", style = list(fontFamily = default_fonts, fontSize = "16px")),
+                        chart = list(style = list(#fontFamily = "Franklin Gothic Book",
+                                                  color = "#666666")),
+                        title = list(align = "left", style = list(#fontFamily = "Franklin Gothic Book",
+                                                                  fontSize = "24px")),
+                        subtitle = list(align = "left", style = list(#fontFamily = "Franklin Gothic Book",
+                                                                     fontSize = "16px")),
                         legend = list(align = "left", verticalAlign = "top"),
                         xAxis = list(gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
                         yAxis = list(labels = list(enabled = FALSE), gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),

@@ -35,6 +35,8 @@ load(paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",              sep = ""
 
 # Jail Admissions
 
+### By County
+
 ```{r, results='asis'}
 # print header for pc hold section
 cat("**There were ", nh_people_booked_amt, " people were booked into NH jails from FY 2019 to FY 2021.**"," This finding was calculated using data from the following counties: ", nh_counties, ".\n\n", sep = "")
@@ -43,14 +45,19 @@ cat("**There were ", nh_people_booked_amt, " people were booked into NH jails fr
 nh_people_booked_barchart
 ```
 
+<center>
 ```{r}
 nh_people_booked
 ```
+</center>
+
+### By County
+
 ```{r}
 nh_people_booked_county
 ```
 
-
+<br>
 
 # Protective Custody Holds
 

@@ -64,6 +64,7 @@ nh_people_booked_amt <- format(round(as.numeric(nh_people_booked_amt), 0), nsmal
 # get counties included
 nh_counties <- fnc_counties_in_data(nh_booking)
 
+showtext_auto()
 nh_people_booked_barchart <- df_people_booked_pre %>%
   hchart('column', hcaes(x = fy, y = total, color = jri_light_blue)) %>%
   hc_xAxis(title = list(text = "Fiscal Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
@@ -110,7 +111,7 @@ nh_people_booked_county <- reactable(nh_people_booked_county,
                             fullWidth = FALSE,
                             columns = list(
                               `county` = colDef(footer = "Total",
-                                                minWidth = 150, name = "County"),
+                                                minWidth = 200, name = "County"),
                               `2019`  = colDef(minWidth = 80, name = "2019", align = "center"),
                               `2020`  = colDef(minWidth = 80, name = "2020", align = "center"),
                               `2021`  = colDef(minWidth = 80, name = "2021", align = "center",

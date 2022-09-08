@@ -25,7 +25,7 @@ Matching data from all 10 counties’ jails with data from the Department of Hea
 
 <br>
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
 knitr::include_graphics("img/nh-jri-flow.png")
 ```
 
