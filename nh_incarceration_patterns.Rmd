@@ -85,6 +85,8 @@ nh_pch_table
 <br>
 <br>
 
+**Protective custody holds tend to occur during summer months. There was a decline in protective custody holds at the start of the pandemic but they began climbing again shortly after.**  
+
 ```{r}
 # protective custody holds over time
 nh_pch_time_highchart %>%   

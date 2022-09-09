@@ -46,6 +46,8 @@ coos_adm.xlsx          <- read_excel(paste0(sp_data_path, "/Data/Coos County/Cop
 # Hillsborough County
 ###################
 
+hillsborough_adm.xlsx         <- read_excel(paste0(sp_data_path, "/Data/Hillsborough County/Justice Center 2.xls"))
+hillsborough_bh.xlsx          <- read_excel(paste0(sp_data_path, "/Data/Hillsborough County/Justice Center 3.xls"))
 
 ###################
 # Merrimack County

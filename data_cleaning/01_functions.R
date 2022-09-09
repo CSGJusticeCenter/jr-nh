@@ -27,26 +27,31 @@ fnc_data_setup <- function(df){
                                   race_code == "C"  ~ "AAPI",
                                   race_code == "P"  ~ "AAPI",
                                   race_code == "K"  ~ "AAPI",
+                                  race_code == "Asian/Pacific Islander" ~ "AAPI",
 
 
                                   race_code == "B"  ~ "Black",
+                                  race_code == "Black" ~ "Black",
 
                                   race_code == "H"  ~ "Hispanic",
                                   race_code == "L"  ~ "Hispanic",
 
                                   race_code == "I"  ~ "American Indian Alaska Native",
+                                  race_code == "American Indian/Alaskan Native" ~ "American Indian Alaska Native",
 
                                   race_code == "U"  ~ "Unknown",
                                   race_code == "NH" ~ "Unknown",
                                   race_code == "N"  ~ "Unknown",
                                   race_code == "X"  ~ "Unknown",
+                                  race_code == "Not Specified" ~ "Unknown",
+                                  race_code == "Unknown" ~ "Unknown",
 
                                   race_code == "O"  ~ "Other",
                                   race_code == "P"  ~ "Other",
 
-                                  race_code == "W"  ~ "White")) %>%
+                                  race_code == "W"  ~ "White",
+                                  race_code == "White" ~ "White")) %>%
     filter(fy == 2019 | fy == 2020 | fy == 2021) %>%
-    mutate(id = ifelse(is.na(id), inmate_id, id)) %>%
     dplyr::select(id,
                   inmate_id,
                   yob,
@@ -64,6 +69,16 @@ fnc_data_setup <- function(df){
                   los,
                   county,
                   fy)
+}
+
+# create booking id to get a sense of how many booking events occurred
+fnc_booking_id <- function(df){
+  df <- df %>%
+  mutate(id = ifelse(is.na(id), inmate_id, id)) %>%
+  dplyr::group_by(id, booking_date) %>%
+  dplyr::mutate(booking_id = n()) %>%
+  ungroup() %>%
+  select(id, inmate_id, booking_id, everything())
 }
 
 ###########
@@ -100,13 +115,16 @@ fnc_pc_hold_variables <- function(df){
 fnc_sex_labels <- function(df){
   df <- df %>%
     mutate(gender = case_when(
-      gender == "M"     ~ "Male",
-      gender == "F"     ~ "Female",
-      gender == "T"     ~ "Transgender",
-      gender == "TF"    ~ "Transgender",
-      gender == "TRANF" ~ "Transgender",
-      gender == "U"     ~ "Unknown",
-      is.na(gender)     ~ "Unknown"),
+      gender == "M"      ~ "Male",
+      gender == "Male"   ~ "Male",
+      gender == "F"      ~ "Female",
+      gender == "Female" ~ "Female",
+      gender == "T"      ~ "Transgender",
+      gender == "TF"     ~ "Transgender",
+      gender == "TRANF"  ~ "Transgender",
+      gender == "Not Specified" ~ "Unknown",
+      gender == "U"      ~ "Unknown",
+      is.na(gender)      ~ "Unknown"),
       TRUE ~ gender) %>%
     distinct()
 }

@@ -17,13 +17,14 @@
 ######
 
 # custom function that creates the variables we need and relabels codes so they're consistent across counties
-belknap_adm    <- fnc_standardize_counties(belknap_adm_all)
-carroll_adm    <- fnc_standardize_counties(carroll_adm_all)
-cheshire_adm   <- fnc_standardize_counties(cheshire_adm_all)
-coos_adm       <- fnc_standardize_counties(coos_adm_all)
-merrimack_adm  <- fnc_standardize_counties(merrimack_adm_all)
-rockingham_adm <- fnc_standardize_counties(rockingham_adm_all)
-sullivan_adm   <- fnc_standardize_counties(sullivan_adm_all)
+belknap_adm      <- fnc_standardize_counties(belknap_adm_all)
+carroll_adm      <- fnc_standardize_counties(carroll_adm_all)
+cheshire_adm     <- fnc_standardize_counties(cheshire_adm_all)
+coos_adm         <- fnc_standardize_counties(coos_adm_all)
+hillsborough_adm <- fnc_standardize_counties(hillsborough_adm_all)
+merrimack_adm    <- fnc_standardize_counties(merrimack_adm_all)
+rockingham_adm   <- fnc_standardize_counties(rockingham_adm_all)
+sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all)
 
 # save data to SP
 save(belknap_adm,    file=paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",    sep = ""))
