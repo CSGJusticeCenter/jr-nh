@@ -4,7 +4,7 @@
 # Last updated: June 1, 2022
 # Author: Mari Roberts
 
-# Custom data cleaning and table functions
+# Custom data cleaning and structure functions
 ############################################
 
 # load packages
@@ -16,6 +16,9 @@ source("data_cleaning/00_library.R")
 # Create fy, age, los, recode race, and order variables
 ###########
 
+# add code to check for hispanic vs non hispanic variables by county????????????????????????????
+# create fy, age, los, and race variabe
+# organize variables
 fnc_data_setup <- function(df){
   df1 <- df %>%
     mutate(fy = case_when(booking_date >= "2018-07-01" & booking_date <= "2019-06-30" ~ 2019,
@@ -26,7 +29,7 @@ fnc_data_setup <- function(df){
            race_label = case_when(race_code == "A"  ~ "AAPI",
                                   race_code == "C"  ~ "AAPI",
                                   race_code == "P"  ~ "AAPI",
-                                  race_code == "K"  ~ "AAPI",
+                                  race_code == "K"  ~ "Black Hispanic",
                                   race_code == "Asian/Pacific Islander" ~ "AAPI",
 
 
@@ -72,13 +75,12 @@ fnc_data_setup <- function(df){
 }
 
 # create booking id to get a sense of how many booking events occurred
+# based on inmate id and booking date
 fnc_booking_id <- function(df){
-  df <- df %>%
-  mutate(id = ifelse(is.na(id), inmate_id, id)) %>%
-  dplyr::group_by(id, booking_date) %>%
-  dplyr::mutate(booking_id = n()) %>%
-  ungroup() %>%
-  select(id, inmate_id, booking_id, everything())
+  df1 <- df %>%
+    mutate(id = ifelse(is.na(id), inmate_id, id))
+  df1$booking_id <- df1 %>% group_indices(id, booking_date)
+  df1 <- df1 %>% select(id, inmate_id, booking_id, everything())
 }
 
 ###########
@@ -86,7 +88,8 @@ fnc_booking_id <- function(df){
 ###########
 
 # some PC holds are indicated in the charge description but labeled as pretrial in the booking type
-# account for this by creating multiple pc hold variables
+# account for this by creating multiple pc hold variables (pc_hold_booking, pc_hold_charge, pc_hold_sentence)
+# create an overall pc_hold variable depending on any indication of pc hold in bookings, charges, and sentence statuses
 fnc_pc_hold_variables <- function(df){
   df1 <- df %>%
     mutate(pc_hold_booking = case_when(booking_type == "PROTECTIVE CUSTODY" ~ "PC Hold",
@@ -109,9 +112,26 @@ fnc_pc_hold_variables <- function(df){
 }
 
 ###########
+# Add high utilizer variables
+###########
+
+# create flag for high utilizer for bookings in the top 1%, 3%, 5% percentile of bookings
+fnc_create_high_utilizer_variables <- function(df){
+  df1 <- df %>%
+    dplyr::select(id, booking_id, booking_date, fy) %>%
+    dplyr::distinct() %>%
+    dplyr::group_by(id, fy) %>%
+    dplyr::summarise(num_bookings = n()) %>%
+    mutate(high_utilizer_1_pct = quantile(num_bookings, 0.99) < num_bookings,
+           high_utilizer_3_pct = quantile(num_bookings, 0.97) < num_bookings,
+           high_utilizer_5_pct = quantile(num_bookings, 0.95) < num_bookings)
+}
+
+###########
 # Add sex labels
 ###########
 
+# add sex labels depending on sex code
 fnc_sex_labels <- function(df){
   df <- df %>%
     mutate(gender = case_when(
@@ -133,54 +153,63 @@ fnc_sex_labels <- function(df){
 # Add data labels to county data
 ###########
 
+# add labels to data for data dictionaries
 fnc_add_data_labels <- function(df){
 
   df1 <- df
 
   # change data types
-  df1$id              <- as.factor(df1$id)
-  df1$inmate_id       <- as.character(df1$inmate_id)
-  df1$yob             <- as.numeric(df1$yob)
-  df1$race_code       <- as.factor(df1$race_code)
-  df1$race            <- as.factor(df1$race)
-  df1$gender          <- as.factor(df1$gender)
-  df1$charge_desc     <- as.factor(df1$charge_desc)
-  df1$booking_type    <- as.factor(df1$booking_type)
-  df1$release_type    <- as.factor(df1$release_type)
-  df1$sentence_status <- as.factor(df1$sentence_status)
-  df1$fy              <- as.factor(df1$fy)
-  df1$high_utilizer   <- as.factor(df1$high_utilizer)
-  df1$pc_hold_booking <- as.factor(df1$pc_hold_booking)
-  df1$pc_hold_charge  <- as.factor(df1$pc_hold_charge)
-  df1$pc_hold         <- as.factor(df1$pc_hold)
-  df1$county          <- as.factor(df1$county)
-  df1$age             <- as.numeric(df1$age)
-  df1$los             <- as.numeric(df1$los)
+  df1$id                  <- as.character(df1$id)
+  df1$inmate_id           <- as.character(df1$inmate_id)
+  df1$yob                 <- as.numeric(df1$yob)
+  df1$race_code           <- as.factor(df1$race_code)
+  df1$race                <- as.factor(df1$race)
+  df1$gender              <- as.factor(df1$gender)
+  df1$charge_code         <- as.factor(df1$charge_code)
+  df1$charge_desc         <- as.factor(df1$charge_desc)
+  df1$booking_type        <- as.factor(df1$booking_type)
+  df1$release_type        <- as.factor(df1$release_type)
+  df1$sentence_status     <- as.factor(df1$sentence_status)
+  df1$fy                  <- as.factor(df1$fy)
+  df1$high_utilizer_1_pct <- as.factor(df1$high_utilizer_1_pct)
+  df1$high_utilizer_3_pct <- as.factor(df1$high_utilizer_3_pct)
+  df1$high_utilizer_5_pct <- as.factor(df1$high_utilizer_5_pct)
+  df1$pc_hold_booking     <- as.factor(df1$pc_hold_booking)
+  df1$pc_hold_charge      <- as.factor(df1$pc_hold_charge)
+  df1$pc_hold_sentence    <- as.factor(df1$pc_hold_sentence)
+  df1$pc_hold             <- as.factor(df1$pc_hold)
+  df1$county              <- as.factor(df1$county)
+  df1$age                 <- as.numeric(df1$age)
+  df1$los                 <- as.numeric(df1$los)
+
 
   # data labels
-  var.labels <- c(id              = "Unique ID",
-                  inmate_id       = "Inmate ID",
-                  yob             = "Year of birth",
-                  race_code       = "Original race code",
-                  race            = "Race",
-                  gender          = "Gender",
-                  age             = "Age (years)",
-                  charge_code     = "Charge code",
-                  charge_desc     = "Charge description",
-                  booking_date    = "Booking date",
-                  booking_type    = "Booking type",
-                  release_date    = "Release date",
-                  release_type    = "Release type",
-                  sentence_status = "Sentence status",
-                  los             = "Length of stay (days)",
-                  county          = "County",
-                  fy              = "Fiscal year",
-                  num_bookings    = "Number of booking events in the fiscal year",
-                  high_utilizer   = "Is a high utilizer",
-                  pc_hold_booking = "Protective custody hold (booking type)",
-                  pc_hold_charge  = "Protective custody hold (charge type)",
-                  pc_hold_sentence= "Protective custody hold (sentence status)",
-                  pc_hold         = "Protective custody hold (in booking type, charge type, or sentence status)")
+  var.labels <- c(id                  = "Unique ID",
+                  inmate_id           = "Inmate ID",
+                  booking_id          = "Booking id created by id and booking date",
+                  yob                 = "Year of birth",
+                  race_code           = "Original race code",
+                  race                = "Race",
+                  gender              = "Gender",
+                  age                 = "Age (years)",
+                  charge_code         = "Charge code",
+                  charge_desc         = "Charge description",
+                  booking_date        = "Booking date",
+                  booking_type        = "Booking type",
+                  release_date        = "Release date",
+                  release_type        = "Release type",
+                  sentence_status     = "Sentence status",
+                  los                 = "Length of stay (days)",
+                  county              = "County",
+                  fy                  = "Fiscal year",
+                  num_bookings        = "Number of booking events in the fiscal year",
+                  high_utilizer_1_pct = "Is a high utilizer (in top 1% percentile)",
+                  high_utilizer_3_pct = "Is a high utilizer (in top 3% percentile)",
+                  high_utilizer_5_pct = "Is a high utilizer (in top 5% percentile)",
+                  pc_hold_booking     = "Protective custody hold (booking type)",
+                  pc_hold_charge      = "Protective custody hold (charge type)",
+                  pc_hold_sentence    = "Protective custody hold (sentence status)",
+                  pc_hold             = "Protective custody hold (in booking type, charge type, or sentence status)")
   # add labels to data
   df1 <- labelled::set_variable_labels(df1, .labels = var.labels)
 
@@ -198,9 +227,12 @@ fnc_standardize_counties <- function(df){
   # Create fy, age, los, recode race, and order variables
   df1 <- fnc_data_setup(df)
 
+  # add booking id by id and booking date
+  df1 <- fnc_booking_id(df1)
+
   # create high utilizer variable
-  df_hu <- fnc_create_hu_variable(df1)
-  df1 <- left_join(df1, df_hu, by = c("inmate_id", "fy"))
+  df_hu <- fnc_create_high_utilizer_variables(df1)
+  df1 <- left_join(df1, df_hu, by = c("id", "fy"))
 
   # create a PC hold variables
   # some PC holds are indicated in the charge description but labeled as pretrial in the booking type
@@ -212,6 +244,9 @@ fnc_standardize_counties <- function(df){
 
   # custom function to add data label
   df1 <- fnc_add_data_labels(df1)
+
+  # remove duplicates
+  df1 <- df1 %>% distinct()
 }
 
 
@@ -322,72 +357,6 @@ fnc_variable_table <- function(df_19, df_20, df_21, variable_name){
   df[is.na(df)] = 0
 
   return(df)
-}
-
-###########
-# Reactable table by fy
-###########
-
-fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, note){
-
-  df1 <- df %>%
-    dplyr::rename(new_variable_name = 1)
-
-  # create reactable table of number/freq of booking types by fiscal year and for all 3 years
-  fy_table <- reactable(df1,
-                        pagination = FALSE,
-                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-                        defaultColDef = reactable::colDef(
-                          format = colFormat(separators = TRUE), align = "center",
-                          footer = function(values, name) {
-                            if (name %in% c("count_19", "count_20", "count_21", "total")) {
-                              htmltools::div(paste0("", formatC(
-                                x = sum(values),
-                                digits = 0,
-                                big.mark = ",",
-                                format = "f"
-                              )))
-                            }
-                          },
-                          footerStyle = list(fontWeight = "bold")
-                        ),
-                        compact = TRUE,
-                        fullWidth = FALSE,
-                        columnGroups = list(
-                          colGroup(name = "2019", columns = c("count_19", "pct_19")),
-                          colGroup(name = "2020", columns = c("count_20", "pct_20")),
-                          colGroup(name = "2021", columns = c("count_21", "pct_21")),
-                          colGroup(name = "3 Years", columns = c("total", "freq"))
-                        ),
-                        columns = list(
-                          new_variable_name = colDef(footer = "Total",
-                                                     name = metric_label,
-                                                     align = "left",
-                                                     minWidth = label_width),
-                          count_19     = colDef(minWidth = 80,
-                                                name = "Count"),
-                          pct_19       = colDef(minWidth = 80,
-                                                name = "%",
-                                                format = colFormat(percent = TRUE, digits = 1)),
-                          count_20     = colDef(minWidth = 80,
-                                                name = "Count"),
-                          pct_20       = colDef(minWidth = 80,
-                                                name = "%",
-                                                format = colFormat(percent = TRUE, digits = 1)),
-                          count_21     = colDef(minWidth = 80,
-                                                name = "Count"),
-                          pct_21       = colDef(minWidth = 80,
-                                                name = "%",
-                                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3"),
-                                                format = colFormat(percent = TRUE, digits = 1)),
-                          total        = colDef(minWidth = 100,
-                                                name = "Count"),
-                          freq         = colDef(minWidth = 90,
-                                                name = "%",
-                                                format = colFormat(percent = TRUE, digits = 1)))) %>%
-    add_source(paste("Counties included: ", reactable_counties, ". ", note), font_style = "italic", font_size = 14)
-
-  return(fy_table)
 }
 
 # custom function to get counties in data

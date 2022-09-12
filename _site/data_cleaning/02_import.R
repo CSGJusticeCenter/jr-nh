@@ -10,6 +10,8 @@
 # load packages
 source("data_cleaning/00_library.R")
 
+raw_adm_data_availability.xlsx <- read_excel(paste0(sp_data_path, "/Data/Raw_data_dictionaries_09_12_22.xlsx"), sheet = "Overall")
+
 ###################
 # Belknap County
 ###################
@@ -46,6 +48,8 @@ coos_adm.xlsx          <- read_excel(paste0(sp_data_path, "/Data/Coos County/Cop
 # Hillsborough County
 ###################
 
+hillsborough_adm.xlsx         <- read_excel(paste0(sp_data_path, "/Data/Hillsborough County/Justice Center 2.xls"))
+hillsborough_bh.xlsx          <- read_excel(paste0(sp_data_path, "/Data/Hillsborough County/Justice Center 3.xls"))
 
 ###################
 # Merrimack County

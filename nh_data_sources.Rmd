@@ -1,5 +1,5 @@
 ---
-title: "Data Sources"
+title: "Data Sources and Availability"
 output: 
   distill::distill_article:
     toc: true
@@ -17,4 +17,17 @@ knitr::opts_chunk$set(
   )
 ```
 
-Coming soon.
+
+```{r}
+# load data
+load(paste0(sp_data_path, "/Data/r_data/raw_adm_data_availability_table.Rda", sep = ""))
+```
+
+# Jail Data Availability 
+
+NH is not on a unified system so data availability varied by county.  
+
+```{r}
+raw_adm_data_availability_table
+```
+

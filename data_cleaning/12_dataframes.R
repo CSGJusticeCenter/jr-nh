@@ -8,7 +8,7 @@
 
 # Creates:
 # nh_adm_all
-# nh_sentence, nh_sentence_19, nh_sentence_20, nh_sentence_21
+# nh_charges, nh_charges_19, nh_charges_20, nh_charges_21
 # nh_booking, nh_booking_19, nh_booking_20, nh_booking_21
 ############################################
 
@@ -45,7 +45,7 @@ nh_adm_all <- do.call("rbind", list(belknap_adm,
                                     carroll_adm,
                                     cheshire_adm,
                                     coos_adm,
-                                    #hillsborough_adm,
+                                    hillsborough_adm,
                                     merrimack_adm,
                                     rockingham_adm,
                                     #strafford_adm,
@@ -53,26 +53,32 @@ nh_adm_all <- do.call("rbind", list(belknap_adm,
                                     ))
 
 ####################################################
-# Sentence status dataframe
+# Charges dataframe
 ####################################################
 
 # remove charge codes and duplicates
-# keep sentence status
-nh_sentence <- nh_adm_all %>%
-  dplyr::select(id,
+nh_charges <- nh_adm_all %>%
+  dplyr::select(county,
+                id,
                 race,
                 yob,
                 age,
                 gender,
-                sentence_status,
+                booking_id,
                 booking_date,
+                charge_code,
+                charge_desc,
                 fy,
                 num_bookings,
-                high_utilizer,
-                pc_hold,
-                county) %>%
+                high_utilizer_1_pct,
+                high_utilizer_3_pct,
+                high_utilizer_5_pct,
+                pc_hold_booking,
+                pc_hold_charge,
+                pc_hold_sentence,
+                pc_hold) %>%
   distinct()
-dim(nh_sentence)
+dim(nh_charges) # 60121
 
 ####################################################
 # Booking type dataframe
@@ -82,24 +88,30 @@ dim(nh_sentence)
 # remove sentence status
 # create month year variables
 nh_booking <- nh_adm_all %>%
-  dplyr::select(id,
+  dplyr::select(county,
+                id,
                 race,
                 yob,
                 age,
                 gender,
+                booking_id,
                 booking_date,
                 booking_type,
                 fy,
                 num_bookings,
-                high_utilizer,
-                pc_hold,
-                county) %>%
+                high_utilizer_1_pct,
+                high_utilizer_3_pct,
+                high_utilizer_5_pct,
+                pc_hold_booking,
+                pc_hold_charge,
+                pc_hold_sentence,
+                pc_hold) %>%
   mutate(month_year_text = format(as.Date(booking_date, "%d/%m/%Y"), "%b %Y"),
          month_year      = as.Date(as.yearmon(month_year_text))) %>%
   distinct()
-dim(nh_booking)
+dim(nh_booking) # 43593
 
-# replace "NA" with actual NA
+# replace "NA" with actual NA ??????????????????????????????????
 nh_booking <- nh_booking %>%
   mutate(pc_hold = ifelse(pc_hold == "NA", NA, pc_hold)) %>%
   mutate(pc_hold = case_when(pc_hold == 2 ~ "PC Hold",
@@ -114,9 +126,9 @@ nh_booking <- nh_booking %>%
 ########################################################################################################
 
 # sep by fiscal year
-nh_sentence_19 <- nh_sentence %>% filter(fy == 2019)
-nh_sentence_20 <- nh_sentence %>% filter(fy == 2020)
-nh_sentence_21 <- nh_sentence %>% filter(fy == 2021)
+nh_charges_19 <- nh_charges %>% filter(fy == 2019)
+nh_charges_20 <- nh_charges %>% filter(fy == 2020)
+nh_charges_21 <- nh_charges %>% filter(fy == 2021)
 
 # sep by fy year
 nh_booking_19 <- nh_booking %>% filter(fy == 2019)

@@ -33,6 +33,3 @@ belknap_adm_all <- belknap_adm.xlsx %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
          county = "Belknap")
-
-# not working
-belknap_adm_all <- fnc_booking_id(belknap_adm_all)

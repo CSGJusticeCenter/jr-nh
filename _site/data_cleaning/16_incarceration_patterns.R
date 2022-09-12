@@ -8,7 +8,7 @@
 
 # Uses tables created in info_by_county.R
 # nh_adm_all
-# nh_sentence, nh_sentence_19, nh_sentence_20, nh_sentence_21
+# nh_charges, nh_charges_19, nh_charges_20, nh_charges_21
 # nh_booking, nh_booking_19, nh_booking_20, nh_booking_21
 ############################################
 

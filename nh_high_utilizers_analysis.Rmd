@@ -17,4 +17,10 @@ knitr::opts_chunk$set(
   )
 ```
 
-Coming soon.
+# High Utilizers Based on Jail Bookings
+
+# Top 1%
+
+# Top 3%
+
+# Top 5%

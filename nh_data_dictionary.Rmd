@@ -19,6 +19,7 @@ knitr::opts_chunk$set(
 
 ```{r include=FALSE}
 # load data
+load(paste0(sp_data_path, "/Data/r_data/raw_adm_data_availability_table.Rda", sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",    sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda",    sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/cheshire_adm.Rda",   sep = ""))
@@ -28,20 +29,17 @@ load(paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda", sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",   sep = ""))
 ```
 
-## Belknap  
+# Jail Data Availability 
 
-A - Asian      
-B - Black       
-C - Chinese  
-H - Hispanic  
-I - Indian  
-NH - DELETE  
-O - Other  
-P - Portuguese  
-U - Unknown  
-W - White  
-X - DELETE  
-J - Japanese  
+NH is not on a unified system so data availability varied by county.  
+
+```{r}
+raw_adm_data_availability_table
+```
+
+# Data Dictionaries
+
+## Belknap  
 
 ```{r}
 view_df(belknap_adm)
@@ -50,54 +48,35 @@ view_df(belknap_adm)
 ## Carroll  
 
 ```{r}
-view_df(carroll_adm_all)
+view_df(carroll_adm)
 ```
 
 ## Cheshire  
 
-A - Asian  
-B - Black  
-H - Hispanic  
-I - Native American  
-L - Latin / Hispanic  
-P - Hawaiian or pacific islander  
-U - Unknown  
-W - White  
-
 ```{r}
-view_df(cheshire_adm_all)
+view_df(cheshire_adm)
 ```
 
 ## Coos
 
 ```{r}
-view_df(coos_adm_all)
+view_df(coos_adm)
 ```
 
 ## Merrimack  
 
-A - Asian  
-B - Black or African American  
-H - Hispanic or Latino  
-I - American Indian or Alaskan  
-P - Native Hawaiian or Other Pacific Islander  
-U - Unknown  
-W - White  
-O - Unknown to data contact    
-X - Unknown to data contact  
-
 ```{r}
-view_df(merrimack_adm_all)
+view_df(merrimack_adm)
 ```
 
 ## Rockingham
 
 ```{r}
-view_df(rockingham_adm_all)
+view_df(rockingham_adm)
 ```
 
 ## Sullivan
 
 ```{r}
-view_df(sullivan_adm_all)
+view_df(sullivan_adm)
 ```

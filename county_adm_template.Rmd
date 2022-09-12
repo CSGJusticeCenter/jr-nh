@@ -24,9 +24,9 @@ knitr::opts_chunk$set(
 ```
 
 ```{r comment=NA, results = 'asis'}
-# assign county name being looped in generate_adm_reports.R
-county_name <- subgroup
-
-# print header of county
-cat("#", county_name, "\n")
+# # assign county name being looped in generate_adm_reports.R
+# county_name <- subgroup
+# 
+# # print header of county
+# cat("#", county_name, "\n")
 ```

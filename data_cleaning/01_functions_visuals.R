@@ -163,3 +163,72 @@ fnc_freq_table <- function(df, title){
     add_header_above(c(" " = 1, "FY 2019" = 2, "FY 2020" = 2, "FY 2021" = 2)) %>%
     row_spec(last_row, bold = TRUE)
 }
+
+
+###########
+# Reactable tables
+###########
+
+# show number of bookings by type by fiscal year
+# coos does not have booking type
+fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, note){
+
+  df1 <- df %>%
+    dplyr::rename(new_variable_name = 1)
+
+  # create reactable table of number/freq of booking types by fiscal year and for all 3 years
+  fy_table <- reactable(df1,
+                        pagination = FALSE,
+                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                        defaultColDef = reactable::colDef(
+                          format = colFormat(separators = TRUE), align = "center",
+                          footer = function(values, name) {
+                            if (name %in% c("count_19", "count_20", "count_21", "total")) {
+                              htmltools::div(paste0("", formatC(
+                                x = sum(values),
+                                digits = 0,
+                                big.mark = ",",
+                                format = "f"
+                              )))
+                            }
+                          },
+                          footerStyle = list(fontWeight = "bold")
+                        ),
+                        compact = TRUE,
+                        fullWidth = FALSE,
+                        columnGroups = list(
+                          colGroup(name = "2019", columns = c("count_19", "pct_19")),
+                          colGroup(name = "2020", columns = c("count_20", "pct_20")),
+                          colGroup(name = "2021", columns = c("count_21", "pct_21")),
+                          colGroup(name = "3 Years", columns = c("total", "freq"))
+                        ),
+                        columns = list(
+                          new_variable_name = colDef(footer = "Total",
+                                                     name = metric_label,
+                                                     align = "left",
+                                                     minWidth = label_width),
+                          count_19     = colDef(minWidth = 80,
+                                                name = "Count"),
+                          pct_19       = colDef(minWidth = 80,
+                                                name = "%",
+                                                format = colFormat(percent = TRUE, digits = 1)),
+                          count_20     = colDef(minWidth = 80,
+                                                name = "Count"),
+                          pct_20       = colDef(minWidth = 80,
+                                                name = "%",
+                                                format = colFormat(percent = TRUE, digits = 1)),
+                          count_21     = colDef(minWidth = 80,
+                                                name = "Count"),
+                          pct_21       = colDef(minWidth = 80,
+                                                name = "%",
+                                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3"),
+                                                format = colFormat(percent = TRUE, digits = 1)),
+                          total        = colDef(minWidth = 100,
+                                                name = "Count"),
+                          freq         = colDef(minWidth = 90,
+                                                name = "%",
+                                                format = colFormat(percent = TRUE, digits = 1)))) %>%
+    add_source(paste("Counties included: ", reactable_counties, ". ", note), font_style = "italic", font_size = 14)
+
+  return(fy_table)
+}
