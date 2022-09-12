@@ -60,6 +60,7 @@ nh_adm_all <- do.call("rbind", list(belknap_adm,
 nh_charges <- nh_adm_all %>%
   dplyr::select(county,
                 id,
+                inmate_id,
                 race,
                 yob,
                 age,
@@ -90,6 +91,7 @@ dim(nh_charges) # 60121
 nh_booking <- nh_adm_all %>%
   dplyr::select(county,
                 id,
+                inmate_id,
                 race,
                 yob,
                 age,
