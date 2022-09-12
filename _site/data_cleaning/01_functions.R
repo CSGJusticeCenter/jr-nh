@@ -76,11 +76,13 @@ fnc_data_setup <- function(df){
 
 # create booking id to get a sense of how many booking events occurred
 # based on inmate id and booking date
-fnc_booking_id <- function(df){
+fnc_booking_id <- function(df, county){
   df1 <- df %>%
     mutate(id = ifelse(is.na(id), inmate_id, id))
   df1$booking_id <- df1 %>% group_indices(id, booking_date)
-  df1 <- df1 %>% select(id, inmate_id, booking_id, everything())
+  df1 <- df1 %>%
+    mutate(booking_id = paste(county, booking_id, sep = "_")) %>%
+    select(id, inmate_id, booking_id, everything())
 }
 
 ###########
@@ -223,12 +225,12 @@ fnc_add_data_labels <- function(df){
 
 ###########################################################################################################################################
 
-fnc_standardize_counties <- function(df){
+fnc_standardize_counties <- function(df, county){
   # Create fy, age, los, recode race, and order variables
   df1 <- fnc_data_setup(df)
 
   # add booking id by id and booking date
-  df1 <- fnc_booking_id(df1)
+  df1 <- fnc_booking_id(df1, county)
 
   # create high utilizer variable
   df_hu <- fnc_create_high_utilizer_variables(df1)

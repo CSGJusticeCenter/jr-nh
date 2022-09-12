@@ -58,7 +58,7 @@ showtext_auto()
 nh_people_booked_barchart <- df_people_booked_pre %>%
   hchart('column', hcaes(x = fy, y = total, color = jri_light_blue)) %>%
   hc_xAxis(title = list(text = "Fiscal Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-  hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold"))) %>%
+  hc_yAxis(title = list(text = "Number of People Booked", style = list(color =  "#000000", fontWeight = "bold"))) %>%
   hc_setup() %>%
   hc_add_theme(hc_theme_jc) %>%
   hc_plotOptions(series = list(dataLabels = list(enabled = TRUE, format = "{point.label}")))
@@ -127,14 +127,24 @@ nh_people_booked_county <- reactable(nh_people_booked_county,
 # by state
 ###
 
-df_bookings_pre <- nh_booking %>%
-  select(id, inmate_id, booking_id, fy, county) %>%
-  distinct() %>%
+# larger df with pc hold variable
+df_bookings_events_all <- nh_booking %>%
+  select(id, inmate_id, booking_id, fy, county, pc_hold) %>%
+  distinct()
+dim(df_bookings_events_all) # 39767
+
+# smaller df without pc hold variable
+df_bookings_events_distinct <- df_bookings_events_all %>%
+  select(-pc_hold) %>%
+  distinct()
+dim(df_bookings_events_distinct) # 39355
+
+# calculate number of booking events per year
+df_bookings_events <- df_bookings_events_distinct %>%
   group_by(fy) %>%
   dplyr::summarise(total = n()) %>%
   mutate(label = formatC(total, format="d", big.mark=","))
-
-df_bookings <- df_bookings_pre %>%
+df_bookings <- df_bookings_events %>%
   select(-label) %>%
   t %>% as.data.frame() %>%
   row_to_names(1) %>%
@@ -143,6 +153,7 @@ df_bookings <- df_bookings_pre %>%
          `2021` = as.numeric(`2021`)) %>%
   mutate(total = `2019` + `2020` + `2021`)
 
+# crete dataframe showing number of bookings by fiscal year
 df_bookings <- tibble::rownames_to_column(df_bookings, "variable_name")
 df_bookings <- df_bookings %>% mutate(variable_name = ifelse(variable_name == "total", "# of Bookings", ""))
 nh_bookings <- reactable(df_bookings,
@@ -166,11 +177,12 @@ nh_bookings_amt <- format(round(as.numeric(nh_bookings_amt), 0), nsmall=0, big.m
 # get counties included
 nh_counties <- fnc_counties_in_data(nh_booking)
 
+# bar chart showing the number of bookings by FY
 showtext_auto()
 nh_bookings_barchart <- df_bookings_pre %>%
   hchart('column', hcaes(x = fy, y = total, color = jri_light_blue)) %>%
   hc_xAxis(title = list(text = "Fiscal Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
-  hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold"))) %>%
+  hc_yAxis(title = list(text = "Number of Bookings", style = list(color =  "#000000", fontWeight = "bold"))) %>%
   hc_setup() %>%
   hc_add_theme(hc_theme_jc) %>%
   hc_plotOptions(series = list(dataLabels = list(enabled = TRUE, format = "{point.label}")))
@@ -304,35 +316,45 @@ nh_booking_types <- reactable(df_booking,
 ############################################################################################################
 
 ###########
-# Highchart pc holds over time
+# Highchart pc holds over time ?????????????????? FIX SO NUMBER IS CONSISTENT WITH BOOKINGS
 ###########
 
 # remove Coos
-df_pch <- nh_booking %>% filter(county != "Coos")
+# see if pc hold occured during booking event
+df_pch <- df_bookings_events_all %>%
+  # dplyr::filter(county != "Coos") %>%
+  dplyr::group_by(id, inmate_id, booking_id, fy, county, pc_hold) %>%
+  dplyr::distinct() %>%
+  dplyr::mutate(pc_hold_in_booking = case_when(pc_hold == "PC Hold" ~ TRUE,
+                                               TRUE ~ FALSE)) %>%
+  dplyr::ungroup() %>%
+  dplyr::select(county, id, booking_id, fy) %>%
+  dplyr::distinct()
+dim(df_pch)
 
 # get counties included
 pch_counties <- fnc_counties_in_data(df_pch)
 
 # filter to PC holds
-df1 <- df_pch %>% filter(pc_hold == "PC Hold")
+df1 <- df_pch %>% filter(pc_hold_in_booking == TRUE)
 
 # generate high chart using custom function
 nh_pch_time_highchart <- fnc_covid_time_highchart(df1, yaxis_label = "Number of PC Holds", title = NULL)
 
 ###########
-# Table pc holds by FY
+# Table pc holds by FY?????????????????????????????
 ###########
 
 # filter by year
-pch_19 <- df_pch %>% filter(fy == 2019)
-pch_20 <- df_pch %>% filter(fy == 2020)
-pch_21 <- df_pch %>% filter(fy == 2021)
+pch_19 <- df_pch %>% select(county, id, booking_id, fy, pc_hold_in_booking) %>% distinct() %>% filter(fy == 2019)
+pch_20 <- df_pch %>% select(county, id, booking_id, fy, pc_hold_in_booking) %>% distinct() %>% filter(fy == 2020)
+pch_21 <- df_pch %>% select(county, id, booking_id, fy, pc_hold_in_booking) %>% distinct() %>% filter(fy == 2021)
 
 # generate table showing PC holds from 2019-2021
-pch_df <- fnc_variable_table(pch_19, pch_20, pch_21, "pc_hold")
-pch_df <- pch_df %>% dplyr::rename(pc_hold = variable_name)
+pch_df <- fnc_variable_table(pch_19, pch_20, pch_21, "pc_hold_in_booking")
+pch_df <- pch_df %>% dplyr::rename(pc_hold_in_booking = variable_name)
 pch_df[is.na(pch_df)] = 0
-pch_df <- pch_df %>% filter(pc_hold != "Total")
+pch_df <- pch_df %>% filter(pc_hold_in_booking != "Total")
 
 # % of bookings that are PC holds
 nh_pch_pct_amt <- pch_df %>% filter(pc_hold == "PC Hold")
