@@ -368,12 +368,50 @@ pch_df[is.na(pch_df)] = 0
 pch_df <- pch_df %>% filter(pc_hold_in_booking != "Total")
 
 # % of bookings that are PC holds
-nh_pch_pct_amt <- pch_df %>% filter(pc_hold_in_booking == "Yes")
+nh_pch_pct_amt <- pch_df %>% filter(pc_hold_in_booking == "PC Hold Booking")
 nh_pch_pct_amt <- nh_pch_pct_amt$freq*100
 nh_pch_pct_amt <- round(nh_pch_pct_amt, 1)
 
 # create reactable table for pc holds by fiscal year
 nh_pch_table <- fnc_reactable_fy(pch_df, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table.")
+
+###########
+# Table pc holds by FY by county
+###########
+
+detach(package:plyr)
+# select variables
+# count number of pc holds vs non-pc holds by county by fiscal year
+nh_pc_holds_county <- df_pch %>%
+  select(id, booking_id, fy, county, pc_hold_in_booking) %>%
+  distinct() %>%
+  group_by(fy, county, pc_hold_in_booking) %>%
+  dplyr::summarise(total = n())
+
+# reshape table for viewing
+nh_pc_holds_county <- nh_pc_holds_county %>% spread(pc_hold_in_booking, total) %>% clean_names()
+nh_pc_holds_county <- dcast(setDT(nh_pc_holds_county), county~fy, value.var=c('non_pc_hold_booking', 'pc_hold_booking'))
+
+# calculate % of bookings that pc holds by county by fiscal year
+nh_pc_holds_county <- nh_pc_holds_county %>%
+  mutate(pc_hold_pct_2019 = pc_hold_booking_2019/(non_pc_hold_booking_2019 + pc_hold_booking_2019),
+         pc_hold_pct_2020 = pc_hold_booking_2020/(non_pc_hold_booking_2020 + pc_hold_booking_2020),
+         pc_hold_pct_2021 = pc_hold_booking_2021/(non_pc_hold_booking_2021 + pc_hold_booking_2021),
+         pc_hold_total = pc_hold_booking_2019 + pc_hold_booking_2020 + pc_hold_booking_2021,
+         non_pc_hold_total = non_pc_hold_booking_2019 + non_pc_hold_booking_2020 + non_pc_hold_booking_2021) %>%
+  mutate(freq = pc_hold_total/(non_pc_hold_total + pc_hold_total)) %>%
+  select(county,
+         count_19 = pc_hold_booking_2019,
+         pct_19   = pc_hold_pct_2019,
+         count_20 = pc_hold_booking_2020,
+         pct_20   = pc_hold_pct_2020,
+         count_21 = pc_hold_booking_2021,
+         pct_21   = pc_hold_pct_2021,
+         total    = pc_hold_total,
+         freq)
+
+# format into a reactable table
+nh_pc_holds_county <- fnc_reactable_fy(nh_pc_holds_county, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table.")
 
 ############################################################################################################
 # Save to SP
@@ -398,7 +436,11 @@ save(nh_bookings_change_20_21,      file=paste0(sp_data_path, "/Data/r_data/nh_b
 save(nh_bookings_change_19_21,      file=paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_21.Rda",      sep = ""))
 
 save(nh_booking_types,              file=paste0(sp_data_path, "/Data/r_data/nh_booking_types.Rda",              sep = ""))
+
 save(nh_pch_time_highchart,         file=paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda",         sep = ""))
 save(nh_pch_table,                  file=paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",                  sep = ""))
 save(nh_pch_pct_amt,                file=paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",                sep = ""))
 save(pch_counties,                  file=paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                  sep = ""))
+
+save(nh_pc_holds_county,            file=paste0(sp_data_path, "/Data/r_data/nh_pc_holds_county.Rda",            sep = ""))
+

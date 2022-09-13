@@ -27,13 +27,14 @@ rockingham_adm   <- fnc_standardize_counties(rockingham_adm_all,   "Rockingham")
 sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all,     "Sullivan")
 
 # save data to SP
-save(belknap_adm,    file=paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",    sep = ""))
-save(carroll_adm,    file=paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda",    sep = ""))
-save(cheshire_adm,   file=paste0(sp_data_path, "/Data/r_data/cheshire_adm.Rda",   sep = ""))
-save(coos_adm,       file=paste0(sp_data_path, "/Data/r_data/coos_adm.Rda",       sep = ""))
-save(merrimack_adm,  file=paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda",  sep = ""))
-save(rockingham_adm, file=paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda", sep = ""))
-save(sullivan_adm,   file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",   sep = ""))
+save(belknap_adm,      file=paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",      sep = ""))
+save(carroll_adm,      file=paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda",      sep = ""))
+save(cheshire_adm,     file=paste0(sp_data_path, "/Data/r_data/cheshire_adm.Rda",     sep = ""))
+save(coos_adm,         file=paste0(sp_data_path, "/Data/r_data/coos_adm.Rda",         sep = ""))
+save(hillsborough_adm, file=paste0(sp_data_path, "/Data/r_data/hillsborough_adm.Rda", sep = ""))
+save(merrimack_adm,    file=paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda",    sep = ""))
+save(rockingham_adm,   file=paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda",   sep = ""))
+save(sullivan_adm,     file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
 
 ######
 # STATE-WIDE DATA

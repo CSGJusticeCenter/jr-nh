@@ -11,8 +11,6 @@ Welcome to the JRI New Hampshire project website. This is a private, password pr
 
 <br>
 
-<br>
-
 **Project Purpose:** 
 
 This project will focus on the prevalence of people with behavioral health needs moving through local county jails and the availability and impact of existing services and supports for this population statewide.  
@@ -49,8 +47,6 @@ knitr::include_graphics("img/nh-jri-flow.png")
 
 *	Identifying alternatives to incarceration programs to provide an overview of local available services.
 
-<br>
-
 **Key Questions**
 
 *Jail admissions:*
@@ -77,11 +73,8 @@ knitr::include_graphics("img/nh-jri-flow.png")
 
 * What other indicators exist among the high utilizer population in jail including their Medicaid enrollment status or Medicaid eligibility, their housing status, and indicators of substance use and/or mental illness?  
 
-<br>
-
 **Project Links**
 
 *	[Github repository](https://github.com/CSGJusticeCenter/jr-nh) 
 
 <br>
-

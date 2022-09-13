@@ -32,25 +32,27 @@ load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_19_20.Rda", sep 
 load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_20_21.Rda", sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_19_21.Rda", sep = ""))
 
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings.Rda",              sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_county.Rda",       sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_barchart.Rda",     sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_20.Rda", sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_20_21.Rda", sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_21.Rda", sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_bookings.Rda",                   sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_bookings_county.Rda",            sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_bookings_barchart.Rda",          sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_20.Rda",      sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_20_21.Rda",      sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_21.Rda",      sep = ""))
 
 load(paste0(sp_data_path, "/Data/r_data/nh_booking_by_fy.Rda",              sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda",         sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",                  sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",                sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                  sep = ""))
+
+load(paste0(sp_data_path, "/Data/r_data/nh_pc_holds_county.Rda",            sep = ""))
 ```
 
 # Jail Admissions
 
 ### People Booked By State
 
-Please Note: The number of people booked per fiscal year, not the number of bookings, which is a later section.  
+Please Note: This section shows the number of individual people booked per fiscal year, regardless of the number of times booked. This does not reflect the total number of bookings, which is a later section.  
 
 ```{r, results='asis'}
 # print header for pc hold section
@@ -79,7 +81,7 @@ nh_people_booked_county
 
 ### Number of Bookings By State
 
-Please Note: The number bookings per fiscal year, not the number of people. Therefore, people could be counted more than once if they were booked into jail more than once in a fiscal year.    
+Please Note: This section reflects the number of bookings per fiscal year, not the number of people. Therefore, people could be counted more than once if they were booked into jail more than once in a fiscal year.    
 
 ```{r, results='asis'}
 # print header for pc hold section
@@ -125,7 +127,7 @@ cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings 
 nh_pch_table 
 ```
 <br>
-<br>
+
 
 **Protective custody holds tend to occur most frequently during summer months. There was a decline in protective custody holds at the start of the pandemic but they began climbing again shortly after.**  
 
@@ -137,4 +139,12 @@ nh_pch_time_highchart %>%
 
 ### By County
 
+The proportion of bookings that were protective custody holds varied greatly by county. The table below shoes the number of and proportion of bookings that included a protective custody hold charge.  
 
+Belknap had the highest proportion of bookings that were protective custody holds.  
+
+```{r}
+nh_pc_holds_county
+```
+
+### How Protective Custody Holds Are Recorded
