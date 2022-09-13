@@ -31,6 +31,6 @@ cheshire_adm_all <- cheshire_adm.xlsx %>%
                 sentence_status) %>%
   mutate(booking_date = format(booking_date, format = "%m/%d/%Y"),
          release_date = format(release_date, format = "%m/%d/%Y"),
-         county = "Carroll") %>%
+         county = "Cheshire") %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"))

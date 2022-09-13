@@ -12,6 +12,8 @@
 # Carroll County
 ###################
 
+# carroll must have done the unique ids incorrectly
+
 # clean variable names
 # not using releases for now because of merge issues
 # carroll_releases <- clean_names(carroll_releases.xlsx)
@@ -22,11 +24,12 @@ carroll_adm_all <- clean_names(carroll_bookings.xlsx)
 
 # change date formats
 carroll_adm_all$booking_dt_tm <- .POSIXct(carroll_adm_all$booking_dt_tm, tz="UTC")
-carroll_adm_all$booking_dt_tm <- format(carroll_adm_all$booking_dt_tm, "%m/%d/%Y")
-carroll_adm_all$booking_dt_tm <- as.Date(carroll_adm_all$booking_dt_tm, format = "%m/%d/%Y")
+carroll_adm_all$booking_dt_tm <-   format(carroll_adm_all$booking_dt_tm, "%m/%d/%Y")
+carroll_adm_all$booking_dt_tm <-  as.Date(carroll_adm_all$booking_dt_tm, format = "%m/%d/%Y")
+
 carroll_adm_all$release_dt_tm <- .POSIXct(carroll_adm_all$release_dt_tm, tz="UTC")
-carroll_adm_all$release_dt_tm <- format(carroll_adm_all$release_dt_tm, "%m/%d/%Y")
-carroll_adm_all$release_dt_tm <- as.Date(carroll_adm_all$release_dt_tm, format = "%m/%d/%Y")
+carroll_adm_all$release_dt_tm <-   format(carroll_adm_all$release_dt_tm, "%m/%d/%Y")
+carroll_adm_all$release_dt_tm <-  as.Date(carroll_adm_all$release_dt_tm, format = "%m/%d/%Y")
 
 # set up data to be consistent with other counties
 carroll_adm_all <- carroll_bookings.xlsx %>%

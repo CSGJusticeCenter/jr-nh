@@ -21,12 +21,12 @@ navbar:
     - text: "County Reports"
     - text: "Research"
       menu:
-    - text: "Analysis Plan"
-      href: nh_analysis_plan.html
-    - text: "Data Availability"
-      href: nh_data_availability.html
-    - text: "Data Dictionaries"
-      href: nh_data_dictionary.html
+        - text: "Data Availability"
+          href: nh_data_availability.html
+        - text: "Data Dictionaries"
+          href: nh_data_dictionary.html
+        - text: "Analysis Plan"
+          href: nh_analysis_plan.html
     - icon: fab fa-github
       href: https://github.com/CSGJusticeCenter/jr-nh
 output:

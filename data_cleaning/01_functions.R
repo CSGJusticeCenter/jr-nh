@@ -81,7 +81,8 @@ fnc_booking_id <- function(df, county){
     mutate(id = ifelse(is.na(id), inmate_id, id))
   df1$booking_id <- df1 %>% group_indices(id, booking_date)
   df1 <- df1 %>%
-    mutate(booking_id = paste(county, booking_id, sep = "_")) %>%
+    mutate(id = paste(county, id, sep = "_"),
+           booking_id = paste(county, booking_id, sep = "_")) %>%
     select(id, inmate_id, booking_id, everything())
 }
 
@@ -99,7 +100,8 @@ fnc_pc_hold_variables <- function(df){
                                        TRUE ~ "Non-PC Hold"),
 
            pc_hold_charge  = case_when(charge_desc == "PROTECTIVE CUSTODY"         | charge_desc == "PROTECTIVE CUSTODY/INTOXICATION" |
-                                       charge_desc == "PROTECTIVE CUSTODY - DRUGS" | charge_desc == "Treatment and Services: Protective Custody" ~ "PC Hold",
+                                       charge_desc == "PROTECTIVE CUSTODY - DRUGS" | charge_desc == "Treatment and Services: Protective Custody" |
+                                       charge_desc == "172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII" ~ "PC Hold",
                                        is.na(charge_desc) ~ "NA",
                                        TRUE ~ "Non-PC Hold"),
 
@@ -146,8 +148,8 @@ fnc_sex_labels <- function(df){
       gender == "TRANF"  ~ "Transgender",
       gender == "Not Specified" ~ "Unknown",
       gender == "U"      ~ "Unknown",
-      is.na(gender)      ~ "Unknown"),
-      TRUE ~ gender) %>%
+      is.na(gender)      ~ "Unknown",
+      TRUE ~ gender)) %>%
     distinct()
 }
 

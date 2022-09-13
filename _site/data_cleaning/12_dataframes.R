@@ -41,16 +41,16 @@ save(sullivan_adm,   file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda", 
 # missing strafford, hillsborough for now
 ######
 
-nh_adm_all <- do.call("rbind", list(belknap_adm,
-                                    carroll_adm,
-                                    cheshire_adm,
-                                    coos_adm,
-                                    hillsborough_adm,
-                                    merrimack_adm,
-                                    rockingham_adm,
-                                    #strafford_adm,
-                                    sullivan_adm
-                                    ))
+nh_adm_all <- rbind(belknap_adm,
+                    carroll_adm,
+                    cheshire_adm,
+                    coos_adm,
+                    hillsborough_adm,
+                    merrimack_adm,
+                    rockingham_adm,
+                    #strafford_adm,
+                    sullivan_adm
+                    )
 
 ####################################################
 # Charges dataframe
@@ -60,7 +60,6 @@ nh_adm_all <- do.call("rbind", list(belknap_adm,
 nh_charges <- nh_adm_all %>%
   dplyr::select(county,
                 id,
-                inmate_id,
                 race,
                 yob,
                 age,
@@ -91,7 +90,6 @@ dim(nh_charges) # 60121
 nh_booking <- nh_adm_all %>%
   dplyr::select(county,
                 id,
-                inmate_id,
                 race,
                 yob,
                 age,
@@ -132,10 +130,10 @@ nh_charges_19 <- nh_charges %>% filter(fy == 2019)
 nh_charges_20 <- nh_charges %>% filter(fy == 2020)
 nh_charges_21 <- nh_charges %>% filter(fy == 2021)
 
-# sep by fy year
-nh_booking_19 <- nh_booking %>% filter(fy == 2019)
-nh_booking_20 <- nh_booking %>% filter(fy == 2020)
-nh_booking_21 <- nh_booking %>% filter(fy == 2021)
+# # sep by fy year
+# nh_booking_19 <- nh_booking %>% filter(fy == 2019)
+# nh_booking_20 <- nh_booking %>% filter(fy == 2020)
+# nh_booking_21 <- nh_booking %>% filter(fy == 2021)
 
 # get list of counties
 counties <- nh_adm_all$county %>%
