@@ -82,7 +82,7 @@ fnc_booking_id <- function(df, county){
   df1$booking_id <- df1 %>% group_indices(id, booking_date)
   df1 <- df1 %>%
     mutate(id = paste(county, id, sep = "_"),
-           booking_id = paste(county, booking_id, sep = "_")) %>%
+           booking_id = paste(county, "booking", booking_id, sep = "_")) %>%
     select(id, inmate_id, booking_id, everything())
 }
 

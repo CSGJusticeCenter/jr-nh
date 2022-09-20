@@ -40,11 +40,6 @@ cheshire_mh_stats.xlsx <- read_excel(paste0(sp_data_path, "/Data/Cheshire County
 coos_adm.xlsx          <- read_excel(paste0(sp_data_path, "/Data/Coos County/Copy of CSG booking data.xls"))
 
 ###################
-# Grafton County
-###################
-
-
-###################
 # Hillsborough County
 ###################
 

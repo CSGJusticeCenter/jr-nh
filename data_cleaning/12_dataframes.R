@@ -140,3 +140,4 @@ nh_charges_21 <- nh_charges %>% filter(fy == 2021)
 counties <- nh_adm_all$county %>%
   unique() %>%
   sort()
+

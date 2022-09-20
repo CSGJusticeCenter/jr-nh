@@ -185,7 +185,7 @@ nh_counties <- fnc_counties_in_data(nh_booking)
 
 # bar chart showing the number of bookings by FY
 showtext_auto()
-nh_bookings_barchart <- df_bookings_pre %>%
+nh_bookings_barchart <- df_bookings_events %>%
   hchart('column', hcaes(x = fy, y = total, color = jri_light_blue)) %>%
   hc_xAxis(title = list(text = "Fiscal Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
   hc_yAxis(title = list(text = "Number of Bookings", style = list(color =  "#000000", fontWeight = "bold"))) %>%
@@ -194,9 +194,9 @@ nh_bookings_barchart <- df_bookings_pre %>%
   hc_plotOptions(series = list(dataLabels = list(enabled = TRUE, format = "{point.label}")))
 
 # save changes between years to call in sentences in incarceration patterns rmd
-v1 <- as.numeric(filter(df_bookings_pre, fy==2019) %>% select(total))
-v2 <- as.numeric(filter(df_bookings_pre, fy==2020) %>% select(total))
-v3 <- as.numeric(filter(df_bookings_pre, fy==2021) %>% select(total))
+v1 <- as.numeric(filter(df_bookings_events, fy==2019) %>% select(total))
+v2 <- as.numeric(filter(df_bookings_events, fy==2020) %>% select(total))
+v3 <- as.numeric(filter(df_bookings_events, fy==2021) %>% select(total))
 nh_bookings_change_19_20 <- (v2 - v1)/v1
 nh_bookings_change_19_20 <- round(nh_bookings_change_19_20*100, 1)
 nh_bookings_change_20_21 <- (v3 - v2)/v2

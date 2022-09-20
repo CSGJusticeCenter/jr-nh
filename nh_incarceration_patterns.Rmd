@@ -119,7 +119,7 @@ nh_bookings_county
 
 ```{r, results='asis'}
 # print header for pc hold section
-cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings from 2019 to 2021.**"," This finding was calculated using data from the following counties: ", pch_counties, ".\n\n", sep = "")
+cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings from 2019 to 2021.**"," This finding was calculated using data from the following counties: ", pch_counties, ". Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this section.\n\n", sep = "")
 ```
 **Although the number of bookings has been decreasing, the proportion of PC holds has remained the same.**
 
@@ -139,7 +139,7 @@ nh_pch_time_highchart %>%
 
 ### By County
 
-The proportion of bookings that were protective custody holds varied greatly by county. The table below shoes the number of and proportion of bookings that included a protective custody hold charge.  
+The proportion of bookings that were protective custody holds varied greatly by county. The table below shows the number of and proportion of bookings that included a protective custody hold charge.  
 
 Belknap had the highest proportion of bookings that were protective custody holds.  
 

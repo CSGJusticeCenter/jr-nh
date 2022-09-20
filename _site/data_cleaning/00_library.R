@@ -34,7 +34,7 @@ library(zoo)
 library(gt)
 library(showtext)
 library(formattable)
-
+library(maditr)
 
 # https://stackoverflow.com/questions/61204259/how-can-i-resolve-the-no-font-name-issue-when-importing-fonts-into-r-using-ext
 # install older version so extrafonts works
@@ -45,7 +45,6 @@ library(extrafont)
 ###################
 # Fonts
 ###################
-
 
 # Import all the .ttf files from your system
 # You will only need to run this once, but it will take a few minutes to finish
