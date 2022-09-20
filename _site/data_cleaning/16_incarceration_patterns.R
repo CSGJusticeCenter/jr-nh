@@ -10,6 +10,10 @@
 # detach plyr to remove issues with dplyr
 detach(package:plyr)
 
+dim(nh_booking)
+length(unique(nh_booking$id))         # 23,740
+length(unique(nh_booking$booking_id)) # 39,348
+
 # save booking dates
 all_booking_dates <- nh_booking %>% select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>% distinct()
 dim(all_booking_dates); length(unique(all_booking_dates$booking_id))
@@ -23,11 +27,12 @@ dim(all_booking_dates); length(unique(all_booking_dates$booking_id))
       ###
 
       df_people_booked_pre <- nh_booking %>%
-        select(id, fy, county) %>%
-        distinct() %>%
-        group_by(fy) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(id, fy, county) %>%
+        dplyr::distinct() %>%
+        dplyr::group_by(fy) %>%
         dplyr::summarise(total = n()) %>%
-        mutate(label = formatC(total, format="d", big.mark=","))
+        dplyr::mutate(label = formatC(total, format="d", big.mark=","))
 
       df_people_booked <- df_people_booked_pre %>%
         select(-label) %>%
@@ -86,9 +91,10 @@ dim(all_booking_dates); length(unique(all_booking_dates$booking_id))
       ###
 
       nh_people_booked_county <- nh_booking %>%
-        select(id, fy, county) %>%
-        distinct() %>%
-        group_by(fy, county) %>%
+        dplyr::ungroup() %>%
+        dplyr::select(id, fy, county) %>%
+        dplyr::distinct() %>%
+        dplyr::group_by(fy, county) %>%
         dplyr::summarise(total = n())
 
       nh_people_booked_county <- nh_people_booked_county %>% spread(fy, total)
@@ -452,7 +458,7 @@ save(nh_bookings_change_19_20,      file=paste0(sp_data_path, "/Data/r_data/nh_b
 save(nh_bookings_change_20_21,      file=paste0(sp_data_path, "/Data/r_data/nh_bookings_change_20_21.Rda",      sep = ""))
 save(nh_bookings_change_19_21,      file=paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_21.Rda",      sep = ""))
 
-save(nh_booking_types,              file=paste0(sp_data_path, "/Data/r_data/nh_booking_types.Rda",              sep = ""))
+# save(nh_booking_types,              file=paste0(sp_data_path, "/Data/r_data/nh_booking_types.Rda",              sep = ""))
 
 save(nh_pch_time_highchart,         file=paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda",         sep = ""))
 save(nh_pch_table,                  file=paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",                  sep = ""))
