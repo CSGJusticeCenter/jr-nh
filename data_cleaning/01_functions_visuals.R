@@ -232,3 +232,39 @@ fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, 
 
   return(fy_table)
 }
+
+# show how PC holds are recorded across columns
+reactable(temp,
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center",
+            footer = function(values, name) {
+              if (name %in% c("count_19", "count_20", "count_21", "total")) {
+                htmltools::div(paste0("", formatC(
+                  x = sum(values),
+                  digits = 0,
+                  big.mark = ",",
+                  format = "f"
+                )))
+              }
+            },
+            footerStyle = list(fontWeight = "bold")
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          pagination = FALSE,
+          columns = list(
+            county = colDef(show = FALSE),
+            charge_desc = colDef(footer = "Charge Desc",
+                                 name = "Booking type",
+                                 align = "left",
+                                 minWidth = 220),
+            booking_type     = colDef(minWidth = 220,
+                                      name = "Booking Type"),
+            sentence_status     = colDef(minWidth = 220,
+                                         name = "Sentence Status"),
+            release_type     = colDef(minWidth = 220,
+                                      name = "Release Type"),
+            total     = colDef(minWidth = 80,
+                               name = "Total")
+          ))

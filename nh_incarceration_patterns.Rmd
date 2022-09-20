@@ -33,6 +33,7 @@ load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_20_21.Rda", sep 
 load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_19_21.Rda", sep = ""))
 
 load(paste0(sp_data_path, "/Data/r_data/nh_bookings.Rda",                   sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_bookings_amt.Rda",               sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_bookings_county.Rda",            sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_bookings_barchart.Rda",          sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_20.Rda",      sep = ""))
@@ -46,11 +47,13 @@ load(paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",                sep 
 load(paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                  sep = ""))
 
 load(paste0(sp_data_path, "/Data/r_data/nh_pc_holds_county.Rda",            sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_pc_hold_recordings.Rda",         sep = ""))
+
 ```
 
 # Jail Admissions
 
-### People Booked By State
+## People Booked By State
 
 Please Note: This section shows the number of individual people booked per fiscal year, regardless of the number of times booked. This does not reflect the total number of bookings, which is a later section.  
 
@@ -69,7 +72,7 @@ cat("**The number of people booked into jails has been decreasing. There was a "
 nh_people_booked
 ```
 
-### People Booked By County
+## People Booked By County
 
 Counties saw variations in the number of people booked into jails but they all saw a decrease in the past three years.
 
@@ -79,7 +82,7 @@ nh_people_booked_county
 
 <br>
 
-### Number of Bookings By State
+## Number of Bookings By State
 
 Please Note: This section reflects the number of bookings per fiscal year, not the number of people. Therefore, people could be counted more than once if they were booked into jail more than once in a fiscal year.    
 
@@ -102,7 +105,7 @@ nh_bookings
 
 <br>
 
-### Number of Bookings By County
+## Number of Bookings By County
 
 Counties saw variations in the number of bookings but they all saw a decrease in the past three years.
 
@@ -115,7 +118,7 @@ nh_bookings_county
 
 # Protective Custody Holds
 
-### By State
+## By State
 
 ```{r, results='asis'}
 # print header for pc hold section
@@ -137,7 +140,7 @@ nh_pch_time_highchart %>%
   hc_caption(text = paste("<em>Counties included: ", toString(pch_counties), "</em>")) 
 ```
 
-### By County
+## By County
 
 The proportion of bookings that were protective custody holds varied greatly by county. The table below shows the number of and proportion of bookings that included a protective custody hold charge.  
 
@@ -147,4 +150,20 @@ Belknap had the highest proportion of bookings that were protective custody hold
 nh_pc_holds_county
 ```
 
-### How Protective Custody Holds Are Recorded
+## How Protective Custody Holds Are Recorded
+
+Each county records PC holds differently. PC holds are recorded in the charge description, booking type, sentence status, or release type, and sometimes across these metrics. See below for how each county records PC holds and the "outcomes" of these holds.  
+
+### Belknap
+
+```{r}
+temp <- nh_pc_hold_recordings %>% filter(county == "Belknap") %>% arrange(-total)
+reactable(temp)
+```
+
+### Carroll
+
+```{r}
+temp <- nh_pc_hold_recordings %>% filter(county == "Carroll") %>% arrange(-total) %>% select(-county)
+
+```

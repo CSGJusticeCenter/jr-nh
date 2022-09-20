@@ -16,6 +16,20 @@
 # Standardize and save data
 ######
 
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions_visuals.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/02_import.R")
+source("data_cleaning/03_belknap.R")
+source("data_cleaning/04_carroll.R")
+source("data_cleaning/05_cheshire.R")
+source("data_cleaning/06_coos.R")
+source("data_cleaning/07_hillsborough.R")
+source("data_cleaning/08_merrimack.R")
+source("data_cleaning/09_rockingham.R")
+source("data_cleaning/10_strafford.R")
+source("data_cleaning/11_sullivan.R")
+
 # custom function that creates the variables we need and relabels codes so they're consistent across counties
 belknap_adm      <- fnc_standardize_counties(belknap_adm_all,      "Belknap")
 carroll_adm      <- fnc_standardize_counties(carroll_adm_all,      "Carroll")
@@ -57,7 +71,7 @@ nh_adm_all <- rbind(belknap_adm,
 # Charges dataframe
 ####################################################
 
-# remove charge codes and duplicates
+# create dataframe that includes charge descriptions
 nh_charges <- nh_adm_all %>%
   dplyr::select(county,
                 id,
@@ -69,6 +83,9 @@ nh_charges <- nh_adm_all %>%
                 booking_date,
                 charge_code,
                 charge_desc,
+                booking_type,
+                release_type,
+                sentence_status,
                 fy,
                 num_bookings,
                 high_utilizer_1_pct,
@@ -79,7 +96,7 @@ nh_charges <- nh_adm_all %>%
                 pc_hold_sentence,
                 pc_hold) %>%
   distinct()
-dim(nh_charges) # 60121
+dim(nh_charges) # 60952
 
 ####################################################
 # Booking type dataframe
@@ -88,6 +105,8 @@ dim(nh_charges) # 60121
 # remove charge codes and duplicates to get picture of cohort
 # remove sentence status
 # create month year variables
+
+### make sure HU variable is correct after finding if PC hold is in booking id?????????????????
 nh_booking <- nh_adm_all %>%
   dplyr::select(county,
                 id,
@@ -110,7 +129,6 @@ nh_booking <- nh_adm_all %>%
   mutate(month_year_text = format(as.Date(booking_date, "%d/%m/%Y"), "%b %Y"),
          month_year      = as.Date(as.yearmon(month_year_text))) %>%
   distinct()
-dim(nh_booking) # 43593
 
 # replace "NA" with actual NA ??????????????????????????????????
 nh_booking <- nh_booking %>%
@@ -122,22 +140,38 @@ nh_booking <- nh_booking %>%
 nh_booking <- nh_booking %>%
   mutate(booking_type = toupper(booking_type))
 
+dim(nh_booking)                       # 43594
+length(unique(nh_booking$booking_id)) # 39348
+
+# determine if PC hold happened in booking event
+detach(package:plyr)
+nh_booking <- nh_booking %>%
+  dplyr::group_by(booking_id) %>%
+  mutate(all_hold_types=paste(sort(unique(pc_hold)), collapse="&")) %>%
+  mutate(pc_hold_in_booking = case_when(all_hold_types == 'Non-PC Hold&PC Hold' | all_hold_types == 'PC Hold' ~ "PC Hold Booking",
+                                        all_hold_types == "Non-PC Hold" ~ "Non-PC Hold Booking")) %>%
+  select(county:high_utilizer_5_pct, month_year_text:pc_hold_in_booking) %>%
+  distinct()
+
+dim(nh_booking)                       # 42587
+length(unique(nh_booking$booking_id)) # 39348
+
 ########################################################################################################
-# Overall NH dataframes separated by fiscal year
+# PC hold data
 ########################################################################################################
 
-# sep by fiscal year
-nh_charges_19 <- nh_charges %>% filter(fy == 2019)
-nh_charges_20 <- nh_charges %>% filter(fy == 2020)
-nh_charges_21 <- nh_charges %>% filter(fy == 2021)
+nh_pch <- nh_booking %>%
+  # filter(county != "Coos") %>%
+  select(county, id, booking_id, pc_hold_in_booking) %>%
+  distinct()
 
-# # sep by fy year
-# nh_booking_19 <- nh_booking %>% filter(fy == 2019)
-# nh_booking_20 <- nh_booking %>% filter(fy == 2020)
-# nh_booking_21 <- nh_booking %>% filter(fy == 2021)
+dim(nh_pch); length(unique(nh_pch$booking_id)) # 39348
+
+########################################################################################################
+# Counties in data
+########################################################################################################
 
 # get list of counties
 counties <- nh_adm_all$county %>%
   unique() %>%
   sort()
-
