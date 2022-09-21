@@ -27,6 +27,7 @@ load(paste0(sp_data_path, "/Data/r_data/coos_adm.Rda",         sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/hillsborough_adm.Rda", sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda",    sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda",   sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda",    sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
 ```
 
@@ -87,6 +88,13 @@ view_df(df)
 
 ```{r}
 df <- rockingham_adm %>% dplyr::select_if(not_all_na)
+view_df(df)
+```
+
+## Strafford
+
+```{r}
+df <- strafford_adm %>% dplyr::select_if(not_all_na)
 view_df(df)
 ```
 

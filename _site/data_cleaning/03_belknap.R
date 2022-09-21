@@ -32,4 +32,4 @@ belknap_adm_all <- belknap_adm.xlsx %>%
                 sentence_status = sentencing_status) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
-         county = "Belknap")
+         county = "Belknap") %>% distinct()

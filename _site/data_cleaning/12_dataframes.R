@@ -38,7 +38,15 @@ coos_adm         <- fnc_standardize_counties(coos_adm_all,         "Coos")
 hillsborough_adm <- fnc_standardize_counties(hillsborough_adm_all, "Hillsborough")
 merrimack_adm    <- fnc_standardize_counties(merrimack_adm_all,    "Merrimack")
 rockingham_adm   <- fnc_standardize_counties(rockingham_adm_all,   "Rockingham")
+strafford_adm    <- fnc_standardize_counties(strafford_adm_all,    "Strafford")
 sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all,     "Sullivan")
+
+# fix booking_id issue with strafford
+# 25 people have two release dates but the same booking date, use the max release date.
+dups <- strafford_adm[duplicated(strafford_adm$booking_id)|duplicated(strafford_adm$booking_id, fromLast=TRUE),]
+temp <- strafford_adm %>% anti_join(dups)
+dups <- dups %>% group_by(booking_id) %>% top_n(1, release_date) %>% filter(!is.na(race)) %>% droplevels() %>% distinct()
+strafford_adm <- rbind(temp, dups)
 
 # save data to SP
 save(belknap_adm,      file=paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",      sep = ""))
@@ -48,12 +56,12 @@ save(coos_adm,         file=paste0(sp_data_path, "/Data/r_data/coos_adm.Rda",   
 save(hillsborough_adm, file=paste0(sp_data_path, "/Data/r_data/hillsborough_adm.Rda", sep = ""))
 save(merrimack_adm,    file=paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda",    sep = ""))
 save(rockingham_adm,   file=paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda",   sep = ""))
+save(strafford_adm,    file=paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda",    sep = ""))
 save(sullivan_adm,     file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
 
 ######
 # STATE-WIDE DATA
 # combine county data or large NH dataframe with all charge descriptions
-# missing strafford, hillsborough for now
 ######
 
 nh_adm_all <- rbind(belknap_adm,
@@ -63,9 +71,8 @@ nh_adm_all <- rbind(belknap_adm,
                     hillsborough_adm,
                     merrimack_adm,
                     rockingham_adm,
-                    #strafford_adm,
-                    sullivan_adm
-                    )
+                    strafford_adm,
+                    sullivan_adm)
 
 ####################################################
 # Charges dataframe
@@ -96,7 +103,7 @@ nh_charges <- nh_adm_all %>%
                 pc_hold_sentence,
                 pc_hold) %>%
   distinct()
-dim(nh_charges) # 60952
+dim(nh_charges) # 73185
 
 ####################################################
 # Booking type dataframe
@@ -140,8 +147,8 @@ nh_booking <- nh_booking %>%
 nh_booking <- nh_booking %>%
   mutate(booking_type = toupper(booking_type))
 
-dim(nh_booking)                       # 43594
-length(unique(nh_booking$booking_id)) # 39348
+dim(nh_booking)                       # 55827
+length(unique(nh_booking$booking_id)) # 51581
 
 # determine if PC hold happened in booking event
 detach(package:plyr)
@@ -153,19 +160,19 @@ nh_booking <- nh_booking %>%
   select(county:high_utilizer_5_pct, month_year_text:pc_hold_in_booking) %>%
   distinct()
 
-dim(nh_booking)                       # 42587
-length(unique(nh_booking$booking_id)) # 39348
+dim(nh_booking)                       # 54820
+length(unique(nh_booking$booking_id)) # 51581
 
 ########################################################################################################
 # PC hold data
 ########################################################################################################
 
 nh_pch <- nh_booking %>%
-  # filter(county != "Coos") %>%
+  # filter(county != "Coos" | county != "Strafford") %>%
   select(county, id, booking_id, pc_hold_in_booking) %>%
   distinct()
 
-dim(nh_pch); length(unique(nh_pch$booking_id)) # 39348
+dim(nh_pch); length(unique(nh_pch$booking_id)) # 51581
 
 ########################################################################################################
 # Counties in data

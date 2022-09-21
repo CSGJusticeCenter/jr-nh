@@ -59,7 +59,7 @@ Please Note: This section shows the number of individual people booked per fisca
 
 ```{r, results='asis'}
 # print header for pc hold section
-cat("**There were ", nh_people_booked_amt, " people were booked into NH jails from FY2019 to FY2021.**"," This finding was calculated using data from the following counties: ", nh_counties, ".\n\n", sep = "")
+cat("**There were ", nh_people_booked_amt, " people booked into NH jails from FY2019 to FY2021.**"," This finding was calculated using data from the following counties: ", nh_counties, ".\n\n", sep = "")
 ```
 ```{r}
 nh_people_booked_barchart
@@ -122,7 +122,7 @@ nh_bookings_county
 
 ```{r, results='asis'}
 # print header for pc hold section
-cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings from 2019 to 2021.**"," This finding was calculated using data from the following counties: ", pch_counties, ". Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this section.\n\n", sep = "")
+cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings from 2019 to 2021.**"," This finding was calculated using data from the following counties: ", pch_counties, ". Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this section. Strafford did not provide data on charges or booking types so they were removed as well (12,233 bookings).\n\n", sep = "")
 ```
 **Although the number of bookings has been decreasing, the proportion of PC holds has remained the same.**
 
@@ -154,16 +154,4 @@ nh_pc_holds_county
 
 Each county records PC holds differently. PC holds are recorded in the charge description, booking type, sentence status, or release type, and sometimes across these metrics. See below for how each county records PC holds and the "outcomes" of these holds.  
 
-### Belknap
-
-```{r}
-temp <- nh_pc_hold_recordings %>% filter(county == "Belknap") %>% arrange(-total)
-reactable(temp)
-```
-
-### Carroll
-
-```{r}
-temp <- nh_pc_hold_recordings %>% filter(county == "Carroll") %>% arrange(-total) %>% select(-county)
-
-```
+Coming soon.

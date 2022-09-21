@@ -62,6 +62,7 @@ rockingham_adm.xlsx   <- read_csv(paste0(sp_data_path, "/Data/Rockingham County/
 # Strafford County
 ###################
 
+strafford_adm.xlsx    <- read_excel(paste0(sp_data_path, "/Data/Strafford County/CSG Data.xlsx"))
 
 ###################
 # Sullivan County

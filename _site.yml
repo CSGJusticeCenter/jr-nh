@@ -6,7 +6,7 @@ favicon: img/favicon.png
 output_dir: "_site"
 navbar:
   right:
-    - text: "Project and Analysis Plan"
+    - text: "Project Overview"
       href: index.html
     - text: "Overall Trends"
       menu:
@@ -25,8 +25,6 @@ navbar:
           href: nh_data_availability.html
         - text: "Data Dictionaries"
           href: nh_data_dictionary.html
-        - text: "Analysis Plan"
-          href: nh_analysis_plan.html
     - icon: fab fa-github
       href: https://github.com/CSGJusticeCenter/jr-nh
 output:

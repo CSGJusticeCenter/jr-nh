@@ -33,4 +33,4 @@ merrimack_adm_all <- merrimack_adm.xlsx %>%
                 sentence_status) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
-         county = "Merrimack")
+         county = "Merrimack") %>% distinct()

@@ -33,4 +33,4 @@ cheshire_adm_all <- cheshire_adm.xlsx %>%
          release_date = format(release_date, format = "%m/%d/%Y"),
          county = "Cheshire") %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
-         release_date = as.Date(release_date, format = "%m/%d/%Y"))
+         release_date = as.Date(release_date, format = "%m/%d/%Y")) %>% distinct()

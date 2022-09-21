@@ -10,13 +10,13 @@
 # detach plyr to remove issues with dplyr
 detach(package:plyr)
 
-dim(nh_booking)
-length(unique(nh_booking$id))         # 23,740
-length(unique(nh_booking$booking_id)) # 39,348
+dim(nh_booking)                       # 54820
+length(unique(nh_booking$id))         # 32189
+length(unique(nh_booking$booking_id)) # 51581
 
 # save booking dates
 all_booking_dates <- nh_booking %>% select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>% distinct()
-dim(all_booking_dates); length(unique(all_booking_dates$booking_id))
+dim(all_booking_dates); length(unique(all_booking_dates$booking_id)) # 51581
 
 ##################
 # How many individual people were booked into New Hampshire jails annually?
@@ -144,12 +144,12 @@ dim(all_booking_dates); length(unique(all_booking_dates$booking_id))
       df_bookings_events_all <- nh_booking %>%
         select(id, booking_id, fy, county, pc_hold_in_booking) %>%
         distinct()
-      dim(df_bookings_events_all); length(unique(df_bookings_events_all$booking_id))           # 39348
+      dim(df_bookings_events_all); length(unique(df_bookings_events_all$booking_id))           # 51581
 
       # smaller df without pc hold variable
       df_bookings_events_distinct <- df_bookings_events_all %>%
         distinct()
-      dim(df_bookings_events_distinct); length(unique(df_bookings_events_distinct$booking_id)) # 39348
+      dim(df_bookings_events_distinct); length(unique(df_bookings_events_distinct$booking_id)) # 51581
 
       # calculate number of booking events per year
       df_bookings_events <- df_bookings_events_distinct %>%
@@ -348,8 +348,8 @@ dim(all_booking_dates); length(unique(all_booking_dates$booking_id))
       #   distinct()
       # dim(df_pch)
 
-      all_booking_dates_no_coos <- all_booking_dates %>% filter(county != "Coos") %>% droplevels()
-      df_pch <- merge(nh_pch, all_booking_dates_no_coos, by = c("id", "booking_id", "county"), all.x = TRUE)
+      all_booking_dates_no_coos_strafford <- all_booking_dates %>% filter(county != "Coos" & county != "Strafford") %>% droplevels()
+      df_pch <- merge(nh_pch, all_booking_dates_no_coos_strafford, by = c("id", "booking_id", "county"), all.x = TRUE)
 
       # get counties included
       pch_counties <- fnc_counties_in_data(df_pch)
@@ -381,7 +381,7 @@ dim(all_booking_dates); length(unique(all_booking_dates$booking_id))
       nh_pch_pct_amt <- round(nh_pch_pct_amt, 1)
 
       # create reactable table for pc holds by fiscal year
-      nh_pch_table <- fnc_reactable_fy(pch_df, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table.")
+      nh_pch_table <- fnc_reactable_fy(pch_df, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table. Strafford did not provide data on charges or booking types so they are also excluded (12,233 bookings).")
 
 ###########
 # Table pc holds by FY by county
@@ -417,11 +417,11 @@ dim(all_booking_dates); length(unique(all_booking_dates$booking_id))
                pct_21   = pc_hold_pct_2021,
                total    = pc_hold_total,
                freq) %>%
-        filter(county != "Coos") %>% droplevels()
+        filter(county != "Coos" & county != "Strafford") %>% droplevels()
 
 
       # format into a reactable table
-      nh_pc_holds_county <- fnc_reactable_fy(nh_pc_holds_county, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table.")
+      nh_pc_holds_county <- fnc_reactable_fy(nh_pc_holds_county, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table. Strafford did not provide data on charges or booking types so they are also excluded (12,233 bookings).")
 
 ###########
 # How protective custody holds are recorded across counties

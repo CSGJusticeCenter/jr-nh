@@ -41,4 +41,3 @@ raw_adm_data_availability_table <- formattable(raw_adm_data_availability,
 ############
 
 save(raw_adm_data_availability_table, file=paste0(sp_data_path, "/Data/r_data/raw_adm_data_availability_table.Rda", sep = ""))
-

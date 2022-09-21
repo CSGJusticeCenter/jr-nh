@@ -52,4 +52,4 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
                 sentence_status = sentencing_status) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
-         county = "Carroll")
+         county = "Carroll") %>% distinct()

@@ -16,7 +16,6 @@ library(readr)
 library(janitor)
 library(lubridate)
 library(tidyverse)
-# library(plyr)
 library(lubridate)
 library(ggplot2)
 library(dplyr)
@@ -43,6 +42,18 @@ library(remotes)
 library(extrafont)
 
 ###################
+# Local and research sharepoint
+###################
+
+# path to data on research div sharepoint
+# make sure SP folder is synced locally
+# https://csgorg.sharepoint.com/:f:/s/Team-JC-Research/EhdvImKN2rdPnmHQ2TrKlooBdYqnnWc0SUXBNuh9C7d41g?e=NCsh8I
+# in your Renviron, set CSG_SP_PATH = "your sharepoint path here" and GITHUB_PAT = "your token here"
+# To generate a github token - usethis::create_github_token()
+# To edit Renviron - usethis::edit_r_environ()
+sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
+
+###################
 # Fonts
 ###################
 
@@ -59,35 +70,10 @@ library(extrafont)
 # device argument also supports "pdf" and "postscript"
 loadfonts(device = "win", quiet = TRUE)
 
-ggplot(mtcars) +
-  geom_point(aes(wt, mpg)) +
-  ggtitle("Hello this is a title") +
-  theme(text = element_text(family = "Franklin Gothic Book"))
-
-##############
-
-# # Check the fonts path of your system
-# font_paths() # "C:\\Windows\\Fonts"
-#
-# # Add a custom font. You will need to run this code every time you restart R
-# # Make sure you download the Franklin Gothic Book font to your computer
-# font_add(family  = "Franklin Gothic Book", # Name you want to use
-#          regular = "FRABK.ttf",
-#          italic  = "FRABKIT.ttf") # Text of the 'General' tab plus the font extension
-# showtext_auto()
-# default_fonts <- c("Franklin Gothic Book")
-
-###################
-# Local and research sharepoint
-###################
-
-# path to data on research div sharepoint
-# make sure SP folder is synced locally
-# https://csgorg.sharepoint.com/:f:/s/Team-JC-Research/EhdvImKN2rdPnmHQ2TrKlooBdYqnnWc0SUXBNuh9C7d41g?e=NCsh8I
-# in your Renviron, set CSG_SP_PATH = "your sharepoint path here" and GITHUB_PAT = "your token here"
-# To generate a github token - usethis::create_github_token()
-# To edit Renviron - usethis::edit_r_environ()
-sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
+# ggplot(mtcars) +
+#   geom_point(aes(wt, mpg)) +
+#   ggtitle("Hello this is a title") +
+#   theme(text = element_text(family = "Franklin Gothic Book"))
 
 ###################
 # Colors
