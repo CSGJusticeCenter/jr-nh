@@ -59,7 +59,7 @@ Please Note: This section shows the number of individual people booked per fisca
 
 ```{r, results='asis'}
 # print header for pc hold section
-cat("**There were ", nh_people_booked_amt, " people booked into NH jails from FY2019 to FY2021.**"," This finding was calculated using data from the following counties: ", nh_counties, ".\n\n", sep = "")
+cat("**There were ", nh_people_booked_amt, " people booked into NH jails from FY2019 to FY2021 (regardless of the number of times booked).**"," This finding was calculated using data from the following counties: ", nh_counties, ".\n\n", sep = "")
 ```
 ```{r}
 nh_people_booked_barchart

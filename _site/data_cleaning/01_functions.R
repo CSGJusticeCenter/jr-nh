@@ -107,10 +107,14 @@ fnc_pc_hold_variables <- function(df){
 
            pc_hold_sentence = case_when(sentence_status == "PROTECTIVE CUSTODY" | sentence_status == "PROTECTIVE CUSTODY HOLD" ~ "PC Hold",
                                         is.na(sentence_status) ~ "NA",
+                                        TRUE ~ "Non-PC Hold"),
+
+           pc_hold_release  = case_when(release_type == "PC Release" ~ "PC Hold",
+                                        is.na(release_type) ~ "NA",
                                         TRUE ~ "Non-PC Hold")) %>%
 
-    mutate(pc_hold          = case_when(pc_hold_booking == "PC Hold" | pc_hold_charge == "PC Hold"| pc_hold_sentence == "PC Hold" ~ "PC Hold",
-                                        pc_hold_booking == "NA" & pc_hold_charge == "NA" & pc_hold_sentence == "NA" ~ "NA",
+    mutate(pc_hold          = case_when(pc_hold_booking == "PC Hold" | pc_hold_charge == "PC Hold"| pc_hold_sentence == "PC Hold" | pc_hold_release == "PC Hold" ~ "PC Hold",
+                                        pc_hold_booking == "NA" & pc_hold_charge == "NA" & pc_hold_sentence == "NA" | pc_hold_release == "NA" ~ "NA",
                                         TRUE ~ "Non-PC Hold"))
 
 }
@@ -181,6 +185,7 @@ fnc_add_data_labels <- function(df){
   df1$pc_hold_booking     <- as.factor(df1$pc_hold_booking)
   df1$pc_hold_charge      <- as.factor(df1$pc_hold_charge)
   df1$pc_hold_sentence    <- as.factor(df1$pc_hold_sentence)
+  df1$pc_hold_release     <- as.factor(df1$pc_hold_release)
   df1$pc_hold             <- as.factor(df1$pc_hold)
   df1$county              <- as.factor(df1$county)
   df1$age                 <- as.numeric(df1$age)
@@ -213,7 +218,8 @@ fnc_add_data_labels <- function(df){
                   pc_hold_booking     = "Protective custody hold (booking type)",
                   pc_hold_charge      = "Protective custody hold (charge type)",
                   pc_hold_sentence    = "Protective custody hold (sentence status)",
-                  pc_hold             = "Protective custody hold (in booking type, charge type, or sentence status)")
+                  pc_hold_release     = "Protective custody hold (release type)",
+                  pc_hold             = "Protective custody hold (in booking type, charge type, sentence status, or release type)")
   # add labels to data
   df1 <- labelled::set_variable_labels(df1, .labels = var.labels)
 

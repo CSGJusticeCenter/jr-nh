@@ -168,11 +168,12 @@ length(unique(nh_booking$booking_id)) # 51581
 ########################################################################################################
 
 nh_pch <- nh_booking %>%
-  # filter(county != "Coos" | county != "Strafford") %>%
+  filter(county != "Coos" & county != "Strafford") %>%
   select(county, id, booking_id, pc_hold_in_booking) %>%
-  distinct()
+  distinct() %>%
+  droplevels()
 
-dim(nh_pch); length(unique(nh_pch$booking_id)) # 51581
+dim(nh_pch); length(unique(nh_pch$booking_id)) # 38677
 
 ########################################################################################################
 # Counties in data

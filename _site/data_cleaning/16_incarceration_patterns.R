@@ -348,7 +348,7 @@ dim(all_booking_dates); length(unique(all_booking_dates$booking_id)) # 51581
       #   distinct()
       # dim(df_pch)
 
-      all_booking_dates_no_coos_strafford <- all_booking_dates %>% filter(county != "Coos" & county != "Strafford") %>% droplevels()
+      all_booking_dates_no_coos_strafford <- all_booking_dates %>% filter(county != "Coos" & county != "Strafford") %>% dplyr::droplevels()
       df_pch <- merge(nh_pch, all_booking_dates_no_coos_strafford, by = c("id", "booking_id", "county"), all.x = TRUE)
 
       # get counties included
