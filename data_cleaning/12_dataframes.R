@@ -45,7 +45,7 @@ sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all,     "Sullivan")
 # 25 people have two release dates but the same booking date, use the max release date.
 dups <- strafford_adm[duplicated(strafford_adm$booking_id)|duplicated(strafford_adm$booking_id, fromLast=TRUE),]
 temp <- strafford_adm %>% anti_join(dups)
-dups <- dups %>% group_by(booking_id) %>% top_n(1, release_date) %>% filter(!is.na(race)) %>% droplevels() %>% distinct()
+dups <- dups %>% group_by(booking_id) %>% filter(!is.na(race)) %>% droplevels() %>% distinct()
 strafford_adm <- rbind(temp, dups)
 
 # save data to SP
@@ -73,6 +73,7 @@ nh_adm_all <- rbind(belknap_adm,
                     rockingham_adm,
                     strafford_adm,
                     sullivan_adm)
+dim(nh_adm_all)
 
 ####################################################
 # Charges dataframe
@@ -93,6 +94,7 @@ nh_charges <- nh_adm_all %>%
                 booking_type,
                 release_type,
                 sentence_status,
+                los = los_max,
                 fy,
                 num_bookings,
                 high_utilizer_1_pct,
@@ -103,7 +105,7 @@ nh_charges <- nh_adm_all %>%
                 pc_hold_sentence,
                 pc_hold) %>%
   distinct()
-dim(nh_charges) # 73185
+dim(nh_charges) # 73186
 
 ####################################################
 # Booking type dataframe
@@ -112,8 +114,8 @@ dim(nh_charges) # 73185
 # remove charge codes and duplicates to get picture of cohort
 # remove sentence status
 # create month year variables
+# there will not be one booking id per row because people can have multiple booking types per booking episode
 
-### make sure HU variable is correct after finding if PC hold is in booking id?????????????????
 nh_booking <- nh_adm_all %>%
   dplyr::select(county,
                 id,
@@ -122,6 +124,7 @@ nh_booking <- nh_adm_all %>%
                 age,
                 gender,
                 booking_id,
+                los = los_max,
                 booking_date,
                 booking_type,
                 fy,
@@ -147,7 +150,7 @@ nh_booking <- nh_booking %>%
 nh_booking <- nh_booking %>%
   mutate(booking_type = toupper(booking_type))
 
-dim(nh_booking)                       # 55827
+dim(nh_booking)                       # 55828
 length(unique(nh_booking$booking_id)) # 51581
 
 # determine if PC hold happened in booking event
@@ -160,8 +163,35 @@ nh_booking <- nh_booking %>%
   select(county:high_utilizer_5_pct, month_year_text:pc_hold_in_booking) %>%
   distinct()
 
-dim(nh_booking)                       # 54820
+dim(nh_booking)                       # 54821
 length(unique(nh_booking$booking_id)) # 51581
+dups <- nh_booking[duplicated(nh_booking$booking_id)|duplicated(nh_booking$booking_id, fromLast=TRUE),] # 5966
+
+# there will not be one booking id per row because people can have multiple booking types per booking episode
+# Belknap      Carroll     Cheshire         Coos Hillsborough    Merrimack   Rockingham    Strafford     Sullivan
+# 4          925          459            0           10         1995         2334            2          237
+
+# combine booking types by booking id
+nh_booking <- nh_booking %>%
+  group_by(booking_id) %>%
+  mutate(all_booking_types=paste(sort(unique(booking_type)), collapse=" & ")) %>%
+  select(county: booking_type, all_booking_types, everything()) %>%
+  distinct()
+
+
+
+
+
+
+# if race is unknown for one booking but is present in another, add the race
+nh_booking <- nh_booking %>%
+  mutate(race = case_when(id == #???????????????????????????
+
+
+
+
+
+
 
 ########################################################################################################
 # PC hold data

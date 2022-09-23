@@ -74,7 +74,7 @@ nh_people_booked
 
 ## People Booked By County
 
-Counties saw variations in the number of people booked into jails but they all saw a decrease in the past three years.
+Counties saw variations in the number of people booked into jails but nearly all saw a decrease in the past three years.
 
 ```{r}
 nh_people_booked_county

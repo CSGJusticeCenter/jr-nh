@@ -86,6 +86,14 @@ fnc_booking_id <- function(df, county){
     select(id, inmate_id, booking_id, everything())
 }
 
+# calculate los
+fnc_los <- function(df){
+  df1 <- df %>%
+    group_by(booking_id) %>%
+    summarise(los_max = max(los, na.rm=TRUE))
+  df1 <- merge(df, df1, by = "booking_id")
+}
+
 ###########
 # Create pc hold variables
 ###########
@@ -114,7 +122,7 @@ fnc_pc_hold_variables <- function(df){
                                         TRUE ~ "Non-PC Hold")) %>%
 
     mutate(pc_hold          = case_when(pc_hold_booking == "PC Hold" | pc_hold_charge == "PC Hold"| pc_hold_sentence == "PC Hold" | pc_hold_release == "PC Hold" ~ "PC Hold",
-                                        pc_hold_booking == "NA" & pc_hold_charge == "NA" & pc_hold_sentence == "NA" | pc_hold_release == "NA" ~ "NA",
+                                        pc_hold_booking == "NA" & pc_hold_charge == "NA" & pc_hold_sentence == "NA" & pc_hold_release == "NA" ~ "NA",
                                         TRUE ~ "Non-PC Hold"))
 
 }
@@ -125,14 +133,16 @@ fnc_pc_hold_variables <- function(df){
 
 # create flag for high utilizer for bookings in the top 1%, 3%, 5% percentile of bookings
 fnc_create_high_utilizer_variables <- function(df){
-  df1 <- df %>%
+  df2 <- df %>%
     dplyr::select(id, booking_id, booking_date, fy) %>%
     dplyr::distinct() %>%
     dplyr::group_by(id, fy) %>%
-    dplyr::summarise(num_bookings = n()) %>%
-    mutate(high_utilizer_1_pct = quantile(num_bookings, 0.99) < num_bookings,
-           high_utilizer_3_pct = quantile(num_bookings, 0.97) < num_bookings,
-           high_utilizer_5_pct = quantile(num_bookings, 0.95) < num_bookings)
+    dplyr::summarise(num_bookings = n())
+  df2 <- df2 %>%
+    select(id, fy, num_bookings) %>% distinct() %>%
+    mutate(high_utilizer_1_pct = quantile(df2$num_bookings, probs = 0.99) < num_bookings) %>%
+    mutate(high_utilizer_3_pct = quantile(df2$num_bookings, probs = 0.97) < num_bookings) %>%
+    mutate(high_utilizer_5_pct = quantile(df2$num_bookings, probs = 0.95) < num_bookings)
 }
 
 ###########
@@ -141,7 +151,7 @@ fnc_create_high_utilizer_variables <- function(df){
 
 # add sex labels depending on sex code
 fnc_sex_labels <- function(df){
-  df <- df %>%
+  df1 <- df %>%
     mutate(gender = case_when(
       gender == "M"      ~ "Male",
       gender == "Male"   ~ "Male",
@@ -164,7 +174,35 @@ fnc_sex_labels <- function(df){
 # add labels to data for data dictionaries
 fnc_add_data_labels <- function(df){
 
-  df1 <- df
+  df1 <- df %>%
+    select(id,
+           inmate_id,
+           booking_id,
+           yob,
+           race_code,
+           race,
+           gender,
+           age,
+           charge_code,
+           charge_desc,
+           booking_date,
+           booking_type,
+           release_date,
+           release_type,
+           sentence_status,
+           los,
+           los_max,
+           county,
+           fy,
+           num_bookings,
+           high_utilizer_1_pct,
+           high_utilizer_3_pct,
+           high_utilizer_5_pct,
+           pc_hold_booking,
+           pc_hold_charge,
+           pc_hold_sentence,
+           pc_hold_release,
+           pc_hold)
 
   # change data types
   df1$id                  <- as.character(df1$id)
@@ -190,6 +228,7 @@ fnc_add_data_labels <- function(df){
   df1$county              <- as.factor(df1$county)
   df1$age                 <- as.numeric(df1$age)
   df1$los                 <- as.numeric(df1$los)
+  df1$los_max             <- as.numeric(df1$los_max)
 
 
   # data labels
@@ -209,6 +248,7 @@ fnc_add_data_labels <- function(df){
                   release_type        = "Release type",
                   sentence_status     = "Sentence status",
                   los                 = "Length of stay (days)",
+                  los_max             = "Maximum length of stay (days) to account for release date errors",
                   county              = "County",
                   fy                  = "Fiscal year",
                   num_bookings        = "Number of booking events in the fiscal year",
@@ -240,6 +280,9 @@ fnc_standardize_counties <- function(df, county){
   # add booking id by id and booking date
   df1 <- fnc_booking_id(df1, county)
 
+  # calculate los
+  df1 <- fnc_los(df1)
+
   # create high utilizer variable
   df_hu <- fnc_create_high_utilizer_variables(df1)
   df1 <- left_join(df1, df_hu, by = c("id", "fy"))
@@ -259,6 +302,14 @@ fnc_standardize_counties <- function(df, county){
   df1 <- df1 %>% distinct()
 }
 
+# some people have two release dates but the same booking date, use the max release date. most of the time the other los is zero
+fnc_max_release_date <- function(df){
+  dups <- df[duplicated(df$booking_id)|duplicated(df$booking_id, fromLast=TRUE),]
+  temp <- df %>% anti_join(dups)
+  dups <- dups %>% group_by(booking_id) %>% top_n(1, release_date) %>% droplevels() %>% distinct()
+  df1 <- rbind(temp, dups)
+  return(df1)
+}
 
 ###########################################################################################################################################
 
