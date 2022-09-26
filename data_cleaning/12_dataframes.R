@@ -48,32 +48,60 @@ temp <- strafford_adm %>% anti_join(dups)
 dups <- dups %>% group_by(booking_id) %>% filter(!is.na(race)) %>% droplevels() %>% distinct()
 strafford_adm <- rbind(temp, dups)
 
+# remove LOS and release date duplicates due to release date issues
+belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct()
+dim(belknap_adm1); dim(belknap_adm)
+
+carroll_adm1 <- carroll_adm %>% select(-c(los, release_date)) %>% distinct()
+dim(carroll_adm1); dim(carroll_adm)
+
+cheshire_adm1 <- cheshire_adm %>% select(-c(los, release_date)) %>% distinct()
+dim(cheshire_adm1); dim(cheshire_adm)
+
+coos_adm1 <- coos_adm %>% select(-c(los, release_date)) %>% distinct()
+dim(coos_adm1); dim(coos_adm)
+
+hillsborough_adm1 <- hillsborough_adm %>% select(-c(los, release_date)) %>% distinct()
+dim(hillsborough_adm1); dim(hillsborough_adm)
+
+merrimack_adm1 <- merrimack_adm %>% select(-c(los, release_date)) %>% distinct()
+dim(merrimack_adm1); dim(merrimack_adm)
+
+rockingham_adm1 <- rockingham_adm %>% select(-c(los, release_date)) %>% distinct()
+dim(rockingham_adm1); dim(rockingham_adm)
+
+strafford_adm1 <- strafford_adm %>% select(-c(los, release_date)) %>% distinct()
+dim(strafford_adm1); dim(strafford_adm)
+
+sullivan_adm1 <- sullivan_adm %>% select(-c(los, release_date)) %>% distinct()
+dim(sullivan_adm1); dim(sullivan_adm)
+
 # save data to SP
-save(belknap_adm,      file=paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",      sep = ""))
-save(carroll_adm,      file=paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda",      sep = ""))
-save(cheshire_adm,     file=paste0(sp_data_path, "/Data/r_data/cheshire_adm.Rda",     sep = ""))
-save(coos_adm,         file=paste0(sp_data_path, "/Data/r_data/coos_adm.Rda",         sep = ""))
-save(hillsborough_adm, file=paste0(sp_data_path, "/Data/r_data/hillsborough_adm.Rda", sep = ""))
-save(merrimack_adm,    file=paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda",    sep = ""))
-save(rockingham_adm,   file=paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda",   sep = ""))
-save(strafford_adm,    file=paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda",    sep = ""))
-save(sullivan_adm,     file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
+save(belknap_adm1,      file=paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",      sep = ""))
+save(carroll_adm1,      file=paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda",      sep = ""))
+save(cheshire_adm1,     file=paste0(sp_data_path, "/Data/r_data/cheshire_adm.Rda",     sep = ""))
+save(coos_adm1,         file=paste0(sp_data_path, "/Data/r_data/coos_adm.Rda",         sep = ""))
+save(hillsborough_adm1, file=paste0(sp_data_path, "/Data/r_data/hillsborough_adm.Rda", sep = ""))
+save(merrimack_adm1,    file=paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda",    sep = ""))
+save(rockingham_adm1,   file=paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda",   sep = ""))
+save(strafford_adm1,    file=paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda",    sep = ""))
+save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
 
 ######
 # STATE-WIDE DATA
 # combine county data or large NH dataframe with all charge descriptions
 ######
 
-nh_adm_all <- rbind(belknap_adm,
-                    carroll_adm,
-                    cheshire_adm,
-                    coos_adm,
-                    hillsborough_adm,
-                    merrimack_adm,
-                    rockingham_adm,
-                    strafford_adm,
-                    sullivan_adm)
-dim(nh_adm_all)
+nh_adm_all <- rbind(belknap_adm1,
+                    carroll_adm1,
+                    cheshire_adm1,
+                    coos_adm1,
+                    hillsborough_adm1,
+                    merrimack_adm1,
+                    rockingham_adm1,
+                    strafford_adm1,
+                    sullivan_adm1)
+dim(nh_adm_all) # 73,188
 
 ####################################################
 # Charges dataframe
@@ -106,6 +134,18 @@ nh_charges <- nh_adm_all %>%
                 pc_hold) %>%
   distinct()
 dim(nh_charges) # 73186
+
+# Some bookings have unknown race but their race was recorded in other bookings, use this race
+# temp <- nh_charges %>% select(booking_id, race) %>% distinct()
+# dim(temp); length(unique(temp$booking_id))
+# temp <- temp %>% group_by(booking_id) %>% summarise(n = n())
+nh_charges <- nh_charges %>%
+  mutate(race = as.character(race)) %>%
+  mutate(race = case_when(booking_id == "Strafford_booking_2169"    ~ "Unknown",
+                          booking_id == "Carroll_booking_3050"      ~ "White",
+                          booking_id == "Hillsborough_booking_6957" ~ "Black",
+                          booking_id == "Hillsborough_booking_7548" ~ "Black",
+         TRUE ~ race)) %>% distinct()
 
 ####################################################
 # Booking type dataframe
@@ -178,20 +218,9 @@ nh_booking <- nh_booking %>%
   select(county: booking_type, all_booking_types, everything()) %>%
   distinct()
 
-
-
-
-
-
-# if race is unknown for one booking but is present in another, add the race
-nh_booking <- nh_booking %>%
-  mutate(race = case_when(id == #???????????????????????????
-
-
-
-
-
-
+# temp <- nh_booking %>% select(booking_id, all_booking_types) %>% distinct()
+# dim(temp); length(unique(temp$booking_id))
+# temp <- temp %>% group_by(booking_id) %>% summarise(n = n())
 
 ########################################################################################################
 # PC hold data

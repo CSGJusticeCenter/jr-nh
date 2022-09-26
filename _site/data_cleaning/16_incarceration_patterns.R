@@ -7,10 +7,17 @@
 # Tables, graphs, and numbers for incarcerarion patterns page
 ############################################
 
+##########
+
+# TO DO:
+# bookings per capita for each county
+
+##########
+
 # detach plyr to remove issues with dplyr
 detach(package:plyr)
 
-dim(nh_booking)                       # 54820
+dim(nh_booking)                       # 54821
 length(unique(nh_booking$id))         # 32189
 length(unique(nh_booking$booking_id)) # 51581
 
@@ -348,7 +355,7 @@ dim(all_booking_dates); length(unique(all_booking_dates$booking_id)) # 51581
       #   distinct()
       # dim(df_pch)
 
-      all_booking_dates_no_coos_strafford <- all_booking_dates %>% filter(county != "Coos" & county != "Strafford") %>% dplyr::droplevels()
+      all_booking_dates_no_coos_strafford <- all_booking_dates %>% filter(county != "Coos" & county != "Strafford") %>% droplevels()
       df_pch <- merge(nh_pch, all_booking_dates_no_coos_strafford, by = c("id", "booking_id", "county"), all.x = TRUE)
 
       # get counties included

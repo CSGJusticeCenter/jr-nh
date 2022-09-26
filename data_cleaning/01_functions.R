@@ -298,7 +298,7 @@ fnc_standardize_counties <- function(df, county){
   # custom function to add data label
   df1 <- fnc_add_data_labels(df1)
 
-  # remove duplicates
+  # remove duplicates bc of release date issues
   df1 <- df1 %>% distinct()
 }
 
