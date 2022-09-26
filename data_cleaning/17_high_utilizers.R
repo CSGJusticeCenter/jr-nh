@@ -43,24 +43,171 @@
 # Avg Bookings
 # Avg LOS
 
-##############
+######
 # 1%
-##############
-
-temp <-
-  mutate(percentile = num_bookings < obs * 0.05)
+######
 
 hu_avg_bookings_1_pct <- nh_booking %>%
   filter(high_utilizer_1_pct == TRUE) %>%
+  select(county, booking_id, num_bookings, high_utilizer_1_pct, fy) %>%
+  distinct() %>%
   group_by(fy) %>%
   summarise_at(vars(num_bookings), list(avg_num_bookings_1_pct = mean))
 
 hu_num_bookings_1_pct <- nh_booking %>%
+  select(county, booking_id, num_bookings, high_utilizer_1_pct, fy) %>%
+  distinct() %>%
   filter(high_utilizer_1_pct == TRUE) %>%
   group_by(fy) %>%
   summarise(num_bookings_1_pct = n())
 
+hu_bookings_fy <- nh_booking %>%
+  select(county, booking_id, num_bookings, high_utilizer_1_pct, fy) %>%
+  distinct() %>%
+  group_by(fy) %>%
+  summarise(total_bookings = n())
+
+######
+# 3%
+######
+
 hu_avg_bookings_3_pct <- nh_booking %>%
   filter(high_utilizer_3_pct == TRUE) %>%
   group_by(fy) %>%
+  summarise_at(vars(num_bookings), list(avg_num_bookings_3_pct = mean))
+
+hu_num_bookings_3_pct <- nh_booking %>%
+  filter(high_utilizer_3_pct == TRUE) %>%
+  group_by(fy) %>%
+  summarise(num_bookings_3_pct = n())
+
+######
+# 5%
+######
+
+hu_avg_bookings_5_pct <- nh_booking %>%
+  filter(high_utilizer_5_pct == TRUE) %>%
+  group_by(fy) %>%
+  summarise_at(vars(num_bookings), list(avg_num_bookings_5_pct = mean))
+
+hu_num_bookings_5_pct <- nh_booking %>%
+  filter(high_utilizer_5_pct == TRUE) %>%
+  group_by(fy) %>%
+  summarise(num_bookings_5_pct = n())
+
+######
+# Combined HU booking characteristics
+######
+
+# hu_bookings_table <-
+#               hu_avg_bookings_1_pct %>%
+#     left_join(hu_num_bookings_1_pct,  by = c("fy")) %>%
+#     left_join(hu_avg_bookings_3_pct,  by = c("fy")) %>%
+#     left_join(hu_num_bookings_3_pct,  by = c("fy")) %>%
+#     left_join(hu_avg_bookings_5_pct,  by = c("fy")) %>%
+#     left_join(hu_num_bookings_5_pct,  by = c("fy")) %>%
+#     left_join(hu_bookings_fy, by = c("fy")) %>%
+#
+#     mutate(prop_bookings_1_pct = num_bookings_1_pct/total_bookings,
+#            prop_bookings_3_pct = num_bookings_3_pct/total_bookings,
+#            prop_bookings_5_pct = num_bookings_5_pct/total_bookings) %>%
+#
+#     select(fy,
+#            num_bookings_1_pct, prop_bookings_1_pct, avg_num_bookings_1_pct,
+#            num_bookings_3_pct, prop_bookings_3_pct, avg_num_bookings_3_pct,
+#            num_bookings_5_pct, prop_bookings_5_pct, avg_num_bookings_5_pct,
+#            total_bookings)
+
+######
+# 1%
+######
+
+hu_avg_bookings_1_pct_3yr <- nh_booking %>%
+  filter(high_utilizer_1_pct == TRUE) %>%
+  select(county, booking_id, num_bookings, high_utilizer_1_pct, fy) %>%
+  distinct() %>%
+  group_by() %>%
   summarise_at(vars(num_bookings), list(avg_num_bookings_1_pct = mean))
+
+hu_num_bookings_1_pct_3yr <- nh_booking %>%
+  select(county, booking_id, num_bookings, high_utilizer_1_pct, fy) %>%
+  distinct() %>%
+  filter(high_utilizer_1_pct == TRUE) %>%
+  group_by() %>%
+  summarise(num_bookings_1_pct = n())
+
+hu_bookings_fy_3yr <- nh_booking %>%
+  select(county, booking_id, num_bookings, high_utilizer_1_pct, fy) %>%
+  distinct() %>%
+  group_by() %>%
+  summarise(total_bookings = n())
+
+######
+# 3%
+######
+
+hu_avg_bookings_3_pct_3yr <- nh_booking %>%
+  filter(high_utilizer_3_pct == TRUE) %>%
+  group_by() %>%
+  summarise_at(vars(num_bookings), list(avg_num_bookings_3_pct = mean))
+
+hu_num_bookings_3_pct_3yr <- nh_booking %>%
+  filter(high_utilizer_3_pct == TRUE) %>%
+  group_by() %>%
+  summarise(num_bookings_3_pct = n())
+
+######
+# 5%
+######
+
+hu_avg_bookings_5_pct_3yr <- nh_booking %>%
+  filter(high_utilizer_5_pct == TRUE) %>%
+  group_by() %>%
+  summarise_at(vars(num_bookings), list(avg_num_bookings_5_pct = mean))
+
+hu_num_bookings_5_pct_3yr <- nh_booking %>%
+  filter(high_utilizer_5_pct == TRUE) %>%
+  group_by() %>%
+  summarise(num_bookings_5_pct = n())
+
+hu_bookings_table_totals <- cbind(hu_avg_bookings_1_pct_3yr, hu_num_bookings_1_pct_3yr, hu_avg_bookings_3_pct_3yr, hu_num_bookings_3_pct_3yr, hu_avg_bookings_5_pct_3yr, hu_num_bookings_5_pct_3yr,  hu_bookings_fy_3yr)
+hu_bookings_table_totals <- hu_bookings_table_totals %>%
+  mutate(fy = "Total",
+         prop_bookings_1_pct = num_bookings_1_pct/total_bookings,
+         prop_bookings_3_pct = num_bookings_3_pct/total_bookings,
+         prop_bookings_5_pct = num_bookings_5_pct/total_bookings) %>%
+  select(fy,
+         num_bookings_1_pct, prop_bookings_1_pct, avg_num_bookings_1_pct,
+         num_bookings_3_pct, prop_bookings_3_pct, avg_num_bookings_3_pct,
+         num_bookings_5_pct, prop_bookings_5_pct, avg_num_bookings_5_pct,
+         total_bookings)
+
+hu_bookings_table <-
+  hu_avg_bookings_1_pct %>%
+  left_join(hu_num_bookings_1_pct,  by = c("fy")) %>%
+  left_join(hu_avg_bookings_3_pct,  by = c("fy")) %>%
+  left_join(hu_num_bookings_3_pct,  by = c("fy")) %>%
+  left_join(hu_avg_bookings_5_pct,  by = c("fy")) %>%
+  left_join(hu_num_bookings_5_pct,  by = c("fy")) %>%
+  left_join(hu_bookings_fy, by = c("fy")) %>%
+
+  mutate(prop_bookings_1_pct = num_bookings_1_pct/total_bookings,
+         prop_bookings_3_pct = num_bookings_3_pct/total_bookings,
+         prop_bookings_5_pct = num_bookings_5_pct/total_bookings) %>%
+
+  select(fy,
+         num_bookings_1_pct, prop_bookings_1_pct, avg_num_bookings_1_pct,
+         num_bookings_3_pct, prop_bookings_3_pct, avg_num_bookings_3_pct,
+         num_bookings_5_pct, prop_bookings_5_pct, avg_num_bookings_5_pct,
+         total_bookings)
+
+hu_bookings_table <- rbind(hu_bookings_table, hu_bookings_table_totals)
+
+hu_bookings_table <- reactable(hu_bookings_table,
+                               pagination = FALSE,
+                               theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                               defaultColDef = reactable::colDef(
+                                 format = colFormat(separators = TRUE), align = "left"),
+                               compact = TRUE,
+                               fullWidth = FALSE)
+hu_bookings_table
