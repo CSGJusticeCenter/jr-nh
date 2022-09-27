@@ -23,11 +23,15 @@ source("data_cleaning/00_library.R")
 load(paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda", sep = ""))
 ```
 
-# High Utilizers Based on Jail Bookings
+# How we define High Utilizers
 
-High utilizers were identified as the top 1%, 3%, or 5% of people booked into jails.
+Using the jail administrative data submitted to CSG, we defined high utilizers as the top 1%, 3%, or 5% of people booked into jails each FY.
 
-The table below shows the number of bookings, proportion of bookings, and average number of bookings per year for the three types of high utilizers.
+
+
+# Jail Bookings
+
+The table below shows the number of HU bookings, proportion of HU bookings out of all bookings, and the average number of bookings per year for the three types of high utilizers.  
 
 ```{r}
 hu_bookings_table

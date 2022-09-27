@@ -434,14 +434,48 @@ dim(all_booking_dates); length(unique(all_booking_dates$booking_id)) # 51581
 # How protective custody holds are recorded across counties
 ###########
 
-    # select PC hold recordings to show how each county records pc holds (charge_desc, booking_type, sentence_status, release_type)
-    # nh_pc_hold_recordings <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>%
-    #   select(county, charge_desc, booking_type, sentence_status, release_type) %>% distinct()
-    nh_pc_hold_recordings <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>% distinct() %>%
-      group_by(county, charge_desc, booking_type, sentence_status, release_type) %>%
-      dplyr::summarise(total = n()) %>%
-      distinct() %>%
-      mutate(total = comma(total, digits = 0))
+# select PC hold recordings to show how each county records pc holds (charge_desc, booking_type, sentence_status, release_type)
+# nh_pc_hold_recordings <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>%
+#   select(county, charge_desc, booking_type, sentence_status, release_type) %>% distinct()
+nh_pc_hold_recordings <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>% distinct() %>%
+  group_by(county, charge_desc, booking_type, sentence_status, release_type) %>%
+  dplyr::summarise(total = n()) %>%
+  distinct() %>%
+  mutate(total = comma(total, digits = 0))
+
+
+
+
+
+
+
+############################################################################################################
+# What was the average length of incarceration in jail?
+#
+# Statistics: First, break up into PC vs. criminal charge admissions
+# Then, calculate the minimum, mean, median, and maximum jails stays
+#
+# Graphic: show distribution (density plot?), with vertical lines for average
+# (we can use median is the data are skewed, or mean if they’re somewhat normally distributed)
+#
+# I wonder if we could potentially have a global distribution density plot,
+# but then have 9 lines showing the average for each county as a visual to compare across counties.
+# This is a low priority though.
+############################################################################################################
+
+# subset to only bookings that are not a PC hold
+# temp <- nh_booking %>% select(county, id, booking_id, los) %>% distinct()
+# dim(temp); length(unique(temp$booking_id)) # 51,581
+
+nh_booking_no_pchs <- nh_booking %>% filter(pc_hold_in_booking == "Non-PC Hold Booking") # 34,632
+nh_booking_no_pchs <- nh_booking_no_pchs %>% select(county, id, booking_id, los) %>% distinct()
+dim(nh_booking_no_pchs); length(unique(nh_booking_no_pchs$booking_id)) # 31,536
+# dups <- nh_booking_no_pchs[duplicated(nh_booking_no_pchs$booking_id)|duplicated(nh_booking_no_pchs$booking_id, fromLast=TRUE),]
+
+library(vtable)
+
+temp <- nh_booking_no_pchs %>% ungroup() %>%  dplyr::select(county, los)
+st(temp, group = 'county', group.test = TRUE)
 
 ############################################################################################################
 # Save to SP

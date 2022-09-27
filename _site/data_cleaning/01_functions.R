@@ -230,7 +230,6 @@ fnc_add_data_labels <- function(df){
   df1$los                 <- as.numeric(df1$los)
   df1$los_max             <- as.numeric(df1$los_max)
 
-
   # data labels
   var.labels <- c(id                  = "Unique ID",
                   inmate_id           = "Inmate ID",

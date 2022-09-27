@@ -216,6 +216,9 @@ hu_bookings_table <- reactable(df_hu_bookings_table,
                                  total_bookings         = colDef(minWidth = 80, name = "Total")))
 
 
+############################################################################################################
+# Save to SP
+############################################################################################################
 
 save(hu_bookings_table, file=paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda", sep = ""))
 

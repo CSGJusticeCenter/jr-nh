@@ -102,6 +102,14 @@ nh_adm_all <- rbind(belknap_adm1,
                     sullivan_adm1)
 dim(nh_adm_all) # 73,188
 
+# fix los_max issues
+# remove negatives because of data entry issues with booking and release dates
+# if release date is missing, then NA
+nh_adm_all <- nh_adm_all %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max))
+dim(nh_adm_all)
+
 ####################################################
 # Charges dataframe
 ####################################################

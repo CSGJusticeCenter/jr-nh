@@ -2367,6 +2367,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.14/header-attrs.js"></script>
+  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+  <script src="site_libs/react-17.0.0/react.min.js"></script>
+  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
+  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+  <script src="site_libs/reactable-binding-0.2.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2447,19 +2453,24 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#high-utilizers-based-on-jail-bookings">High Utilizers
-Based on Jail Bookings</a></li>
-<li><a href="#top-1">Top 1%</a></li>
-<li><a href="#top-3">Top 3%</a></li>
-<li><a href="#top-5">Top 5%</a></li>
+<li><a href="#how-we-define-high-utilizers">How we define High
+Utilizers</a></li>
+<li><a href="#jail-bookings">Jail Bookings</a></li>
 </ul>
 </nav>
 </div>
-<h1 id="high-utilizers-based-on-jail-bookings">High Utilizers Based on
-Jail Bookings</h1>
-<h1 id="top-1">Top 1%</h1>
-<h1 id="top-3">Top 3%</h1>
-<h1 id="top-5">Top 5%</h1>
+<h1 id="how-we-define-high-utilizers">How we define High Utilizers</h1>
+<p>Using the jail administrative data submitted to CSG, we defined high
+utilizers as the top 1%, 3%, or 5% of people booked into jails each
+FY.</p>
+<h1 id="jail-bookings">Jail Bookings</h1>
+<p>The table below shows the number of HU bookings, proportion of HU
+bookings out of all bookings, and the average number of bookings per
+year for the three types of high utilizers.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-29ef78abf2e29d5db19b" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-29ef78abf2e29d5db19b">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"fy":["2019","2020","2021","Total"],"num_bookings_1_pct":[1059,851,602,2512],"prop_bookings_1_pct":[0.0498939929328622,0.0494049346879536,0.0458492003046458,0.0487010469174098],"avg_num_bookings_1_pct":[9.9,12.5,10,10.8],"num_bookings_3_pct":[2376,1775,1275,5426],"prop_bookings_3_pct":[0.111943462897527,0.103047895500726,0.0971058644325971,0.105195812330361],"avg_num_bookings_3_pct":[7.3,8.7,7.4,7.8],"num_bookings_5_pct":[3403,2435,1792,7630],"prop_bookings_5_pct":[0.160329799764429,0.141364296081277,0.136481340441736,0.147925552539744],"avg_num_bookings_5_pct":[6.3,7.4,6.4,6.6],"total_bookings":[21225,17225,13130,51580]},"columns":[{"accessor":"fy","name":"FY","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":80,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"num_bookings_1_pct","name":"#","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":80},{"accessor":"prop_bookings_1_pct","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"left","minWidth":80},{"accessor":"avg_num_bookings_1_pct","name":"Avg/Yr","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"num_bookings_3_pct","name":"#","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":80},{"accessor":"prop_bookings_3_pct","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"left","minWidth":80},{"accessor":"avg_num_bookings_3_pct","name":"Avg/Yr","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"num_bookings_5_pct","name":"#","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":80},{"accessor":"prop_bookings_5_pct","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"left","minWidth":80},{"accessor":"avg_num_bookings_5_pct","name":"Avg/Yr","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total_bookings","name":"Total","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":80}],"columnGroups":[{"name":"Top 1%","columns":["num_bookings_1_pct","prop_bookings_1_pct","avg_num_bookings_1_pct"]},{"name":"Top 3%","columns":["num_bookings_3_pct","prop_bookings_3_pct","avg_num_bookings_3_pct"]},{"name":"Top 5%","columns":["num_bookings_5_pct","prop_bookings_5_pct","avg_num_bookings_5_pct"]}],"defaultPageSize":4,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"rowStyle":[null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"48f4254a03f59b3ea98fc26d1932f338","key":"48f4254a03f59b3ea98fc26d1932f338"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
