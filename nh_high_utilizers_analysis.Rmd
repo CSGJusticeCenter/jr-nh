@@ -15,12 +15,21 @@ knitr::opts_chunk$set(
   #dev = "ragg_png",
   cache = FALSE
   )
+
+# load packages
+source("data_cleaning/00_library.R")
+
+# load data
+load(paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda", sep = ""))
 ```
 
 # High Utilizers Based on Jail Bookings
 
-# Top 1%
+High utilizers were identified as the top 1%, 3%, or 5% of people booked into jails.
 
-# Top 3%
+The table below shows the number of bookings, proportion of bookings, and average number of bookings per year for the three types of high utilizers.
 
-# Top 5%
+```{r}
+hu_bookings_table
+```
+

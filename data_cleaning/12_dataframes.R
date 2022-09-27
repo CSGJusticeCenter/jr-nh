@@ -41,8 +41,7 @@ rockingham_adm   <- fnc_standardize_counties(rockingham_adm_all,   "Rockingham")
 strafford_adm    <- fnc_standardize_counties(strafford_adm_all,    "Strafford")
 sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all,     "Sullivan")
 
-# fix booking_id issue with strafford
-# 25 people have two release dates but the same booking date, use the max release date.
+# fix booking_id issue with strafford where race is indicated in some booking ids but not others
 dups <- strafford_adm[duplicated(strafford_adm$booking_id)|duplicated(strafford_adm$booking_id, fromLast=TRUE),]
 temp <- strafford_adm %>% anti_join(dups)
 dups <- dups %>% group_by(booking_id) %>% filter(!is.na(race)) %>% droplevels() %>% distinct()
