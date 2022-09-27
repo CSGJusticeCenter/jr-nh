@@ -21,6 +21,7 @@ source("data_cleaning/00_library.R")
 
 # load data
 load(paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda", sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/hu_bookings_table_by_county.Rda", sep = ""))
 ```
 
 # How we define High Utilizers
@@ -31,9 +32,20 @@ Using the jail administrative data submitted to CSG, we defined high utilizers a
 
 # Jail Bookings
 
-The table below shows the number of HU bookings, proportion of HU bookings out of all bookings, and the average number of bookings per year for the three types of high utilizers.  
+## By Fiscal Year
+
+The table below shows the number of HU bookings, proportion of HU bookings out of all bookings, and the average number of bookings per year for the three types of high utilizers for each FY and for all three years.  
 
 ```{r}
 hu_bookings_table
 ```
+
+## By County
+
+The table below shows the number of HU bookings, proportion of HU bookings out of all bookings, and the average number of bookings per year for the three types of high utilizers for each county.
+
+```{r}
+hu_bookings_table_by_county
+```
+
 
