@@ -20,13 +20,15 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 
 # load data
-load(paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda", sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/hu_bookings_table_by_county.Rda", sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda",              sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/hu_bookings_table_by_county.Rda",    sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nonhu_bookings_table.Rda",           sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nonhu_bookings_table_by_county.Rda", sep = ""))
 ```
 
 # How we define High Utilizers
 
-Using the jail administrative data submitted to CSG, we defined high utilizers as the top 1%, 3%, or 5% of people booked into jails each FY.
+Using the jail administrative data submitted to CSG, we defined high utilizers (HU) as the top 1%, 3%, or 5% of people booked into jails each FY.
 
 
 
@@ -34,7 +36,7 @@ Using the jail administrative data submitted to CSG, we defined high utilizers a
 
 ## By Fiscal Year
 
-The table below shows the number of HU bookings, proportion of HU bookings out of all bookings, and the average number of bookings per year for the three types of high utilizers for each FY and for all three years.  
+The table below shows the number of HU bookings, proportion of HU bookings out of all bookings, and the average number of bookings per year for the three types of HU's for each FY and for all three years.  
 
 ```{r}
 hu_bookings_table
@@ -42,10 +44,28 @@ hu_bookings_table
 
 ## By County
 
-The table below shows the number of HU bookings, proportion of HU bookings out of all bookings, and the average number of bookings per year for the three types of high utilizers for each county.
+The table below shows the number of HU bookings, proportion of HU bookings out of all bookings, and the average number of bookings per year for the three types of HU's for each county.
 
 ```{r}
 hu_bookings_table_by_county
 ```
 
+## How non-HU's Compare
 
+In the tables below, we define non-HU's as people who are not in the top 1%, 3%, and 5% of people booked into jail.
+
+### By Fiscal Year
+
+The table below shows the number of non-HU bookings, proportion of non-HU bookings out of all bookings, and the average number of bookings per year for the three types of non-HU's for each FY and for all three years.  
+
+```{r}
+nonhu_bookings_table
+```
+
+### By County
+
+The table below shows the number of non-HU bookings, proportion of non-HU bookings out of all bookings, and the average number of bookings per year for the three types of non-HU's for each county.
+
+```{r}
+nonhu_bookings_table_by_county
+```

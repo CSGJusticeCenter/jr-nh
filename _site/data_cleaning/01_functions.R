@@ -426,3 +426,94 @@ fnc_counties_in_data <- function(df){
   counties <- unique(counties$county); counties <- paste(counties,collapse=", ")
 }
 
+###########
+# Get booking pattern info for certain flagged individuals, i.e. HU's
+###########
+
+# calculate the average number of bookings per year (by HU for example)
+fnc_avg_bookings_fy <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    filter(variable_name == logical) %>%
+    select(county, booking_id, num_bookings, variable_name, fy) %>%
+    distinct() %>%
+    group_by(fy) %>%
+    summarise_at(vars(num_bookings), list(new_variable_name = mean))
+}
+
+# calculate the total number of bookings per year (by HU for example)
+fnc_num_bookings_fy <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    select(county, booking_id, num_bookings, variable_name, fy) %>%
+    distinct() %>%
+    filter(variable_name == logical) %>%
+    group_by(fy) %>%
+    summarise(new_variable_name = n())
+}
+
+# calculate the average number of bookings for all three years (by HU for example)
+fnc_avg_bookings_3yr <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    filter(variable_name == logical) %>%
+    select(county, booking_id, num_bookings, variable_name, fy) %>%
+    distinct() %>%
+    group_by() %>%
+    summarise_at(vars(num_bookings), list(new_variable_name = mean))
+}
+
+# calculate the total number of bookings for all three years (by HU for example)
+fnc_num_bookings_3yr <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    select(county, booking_id, num_bookings, variable_name, fy) %>%
+    distinct() %>%
+    filter(variable_name == logical) %>%
+    group_by() %>%
+    summarise(new_variable_name = n())
+}
+
+# calculate the average number of bookings per year (by HU for example)
+fnc_avg_bookings_fy_county <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    filter(variable_name == logical) %>%
+    select(county, booking_id, num_bookings, variable_name, fy) %>%
+    distinct() %>%
+    group_by(fy, county) %>%
+    summarise_at(vars(num_bookings), list(new_variable_name = mean))
+}
+
+# calculate the total number of bookings per year (by HU for example)
+fnc_num_bookings_fy_county <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    select(county, booking_id, num_bookings, variable_name, fy) %>%
+    distinct() %>%
+    filter(variable_name == logical) %>%
+    group_by(fy, county) %>%
+    summarise(new_variable_name = n())
+}
+
+# calculate the average number of bookings for all three years (by HU for example)
+fnc_avg_bookings_3yr_county <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    filter(variable_name == logical) %>%
+    select(county, booking_id, num_bookings, variable_name, fy) %>%
+    distinct() %>%
+    group_by(county) %>%
+    summarise_at(vars(num_bookings), list(new_variable_name = mean))
+}
+
+# calculate the total number of bookings for all three years (by HU for example)
+fnc_num_bookings_3yr_county <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    select(county, booking_id, num_bookings, variable_name, fy) %>%
+    distinct() %>%
+    filter(variable_name == logical) %>%
+    group_by(county) %>%
+    summarise(new_variable_name = n())
+}
