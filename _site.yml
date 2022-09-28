@@ -18,6 +18,8 @@ navbar:
           href: nh_demographics_analysis.html
         - text: "Medicaid"
           href: nh_medicaid_analysis.html
+        - text: "Racial Disparities"
+          href: nh_racial_disparities.html
     - text: "County Reports"
     - text: "Research"
       menu:

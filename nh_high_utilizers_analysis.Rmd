@@ -31,7 +31,6 @@ load(paste0(sp_data_path, "/Data/r_data/nonhu_bookings_table_by_county.Rda", sep
 Using the jail administrative data submitted to CSG, we defined high utilizers (HU) as the top 1%, 3%, or 5% of people booked into jails each FY.
 
 
-
 # Jail Bookings
 
 ## By Fiscal Year
@@ -40,6 +39,15 @@ The table below shows the number of HU bookings, proportion of HU bookings out o
 
 ```{r}
 hu_bookings_table
+```
+### How non-HU's Compare
+
+In the tables below, we define non-HU's as people who are not in the top 1%, 3%, and 5% of people booked into jail.
+
+The table below shows the number of non-HU bookings, proportion of non-HU bookings out of all bookings, and the average number of bookings per year for the three types of non-HU's for each FY and for all three years.  
+
+```{r}
+nonhu_bookings_table
 ```
 
 ## By County
@@ -50,19 +58,9 @@ The table below shows the number of HU bookings, proportion of HU bookings out o
 hu_bookings_table_by_county
 ```
 
-## How non-HU's Compare
+### How non-HU's Compare
 
 In the tables below, we define non-HU's as people who are not in the top 1%, 3%, and 5% of people booked into jail.
-
-### By Fiscal Year
-
-The table below shows the number of non-HU bookings, proportion of non-HU bookings out of all bookings, and the average number of bookings per year for the three types of non-HU's for each FY and for all three years.  
-
-```{r}
-nonhu_bookings_table
-```
-
-### By County
 
 The table below shows the number of non-HU bookings, proportion of non-HU bookings out of all bookings, and the average number of bookings per year for the three types of non-HU's for each county.
 
