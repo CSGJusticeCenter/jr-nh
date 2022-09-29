@@ -8,8 +8,10 @@
 
 # Creates:
 # nh_adm_all
-# nh_charges, nh_charges_19, nh_charges_20, nh_charges_21
-# nh_booking, nh_booking_19, nh_booking_20, nh_booking_21
+# nh_charges
+# nh_booking
+# nh_release_types
+# nh_sentence_statuses
 ############################################
 
 ######
@@ -152,7 +154,7 @@ nh_charges <- nh_charges %>%
                           booking_id == "Carroll_booking_3050"      ~ "White",
                           booking_id == "Hillsborough_booking_6957" ~ "Black",
                           booking_id == "Hillsborough_booking_7548" ~ "Black",
-         TRUE ~ race)) %>% distinct()
+                          TRUE ~ race)) %>% distinct()
 
 ####################################################
 # Booking type dataframe
@@ -228,6 +230,51 @@ nh_booking <- nh_booking %>%
 # temp <- nh_booking %>% select(booking_id, all_booking_types) %>% distinct()
 # dim(temp); length(unique(temp$booking_id))
 # temp <- temp %>% group_by(booking_id) %>% summarise(n = n())
+
+# sep by fy year
+nh_booking_19 <- nh_booking %>%
+  # select(county, id, fy, booking_id, booking_type) %>%
+  distinct() %>% filter(fy == 2019)
+nh_booking_20 <- nh_booking %>%
+  # select(county, id, fy, booking_id, booking_type) %>%
+  distinct() %>% filter(fy == 2020)
+nh_booking_21 <- nh_booking %>%
+  # select(county, id, fy, booking_id, booking_type) %>%
+  distinct() %>% filter(fy == 2021)
+
+########################################################################################################
+# Release types
+########################################################################################################
+
+nh_release_type <- nh_adm_all %>%
+  select(county,
+         id,
+         fy,
+         booking_id,
+         release_type) %>%
+  distinct()
+
+# sep by fy year
+nh_release_type_19 <- nh_release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2019)
+nh_release_type_20 <- nh_release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2020)
+nh_release_type_21 <- nh_release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2021)
+
+########################################################################################################
+# Sentence statuses
+########################################################################################################
+
+nh_sentence_status <- nh_adm_all %>%
+  select(county,
+         id,
+         fy,
+         booking_id,
+         sentence_status) %>%
+  distinct()
+
+# sep by fy year
+nh_sentence_status_19 <- nh_sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2019)
+nh_sentence_status_20 <- nh_sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2020)
+nh_sentence_status_21 <- nh_sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2021)
 
 ########################################################################################################
 # PC hold data

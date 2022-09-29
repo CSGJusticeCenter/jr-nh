@@ -9,7 +9,10 @@
 ############################################
 
 # load packages
+# remove.packages("rmarkdown")
+# install.packages("rmarkdown")
 library("rmarkdown")
+library(yaml)
 
 # save working directory
 wd <- getwd()

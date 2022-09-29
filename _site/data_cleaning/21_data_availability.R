@@ -20,7 +20,7 @@ raw_adm_data_availability <- raw_adm_data_availability.xlsx %>%
          YOB = DOB,
          everything())
 
-yes_no <- formatter(.tag = "span", style = function(x) style(color = ifelse(x == "No" , "red", "green")), x ~ icontext(ifelse(x == "No", "glyphicon glyphicon-remove", "glyphicon glyphicon-ok"), x))
+yes_no <- formattable::formatter(.tag = "span", style = function(x) style(color = ifelse(x == "No" , "red", "green")), x ~ icontext(ifelse(x == "No", "glyphicon glyphicon-remove", "glyphicon glyphicon-ok"), x))
 raw_adm_data_availability_table <- formattable(raw_adm_data_availability,
             align = c("l","l","l","l","l","l","l","l","l","l"),
             list(County = #formatter("span", style = x ~ style("font-weight" = "bold"), width = "200px"),

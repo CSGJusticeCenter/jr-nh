@@ -51,7 +51,7 @@ load(paste0(sp_data_path, "/Data/r_data/nh_pc_hold_recordings.Rda",         sep 
 
 ```
 
-# Jail Admissions
+# Jail Bookings
 
 ## People Booked By State
 
@@ -124,6 +124,7 @@ nh_bookings_county
 # print header for pc hold section
 cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings from 2019 to 2021.**"," This finding was calculated using data from the following counties: ", pch_counties, ". Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this section. Strafford did not provide data on charges or booking types so they were removed as well (12,233 bookings).\n\n", sep = "")
 ```
+
 **Although the number of bookings has been decreasing, the proportion of PC holds has remained the same.**
 
 ```{r}
@@ -152,6 +153,4 @@ nh_pc_holds_county
 
 ## How Protective Custody Holds Are Recorded
 
-Each county records PC holds differently. PC holds are recorded in the charge description, booking type, sentence status, or release type, and sometimes across these metrics. See below for how each county records PC holds and the "outcomes" of these holds.  
-
-Coming soon.
+Each county records PC holds differently. PC holds are recorded in the charge description, booking type, sentence status, or release type, and sometimes across these metrics. See each the **County Reports** in the menu to see how each county records PC holds and the "outcomes" of these holds.  
