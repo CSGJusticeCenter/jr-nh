@@ -21,12 +21,11 @@ navbar:
         - text: "Racial Disparities"
           href: nh_racial_disparities.html
     - text: "County Reports"
+      menu:
         - text: "Belknap"
           href: Belknap_county_report.html
         - text: "Carroll"
           href: Carroll_county_report.html
-        - text: "Cheshire"
-          href: Cheshire_county_report.html
     - text: "Research"
       menu:
         - text: "Data Availability"

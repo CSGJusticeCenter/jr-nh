@@ -1,9 +1,10 @@
 ---
-title: "`r subgroup` County"
+title: "Carroll County"
 output: 
   distill::distill_article:
     toc: true
     toc_depth: 3
+    theme: theme.css
     self_contained: false
 ---
 
@@ -16,6 +17,8 @@ load(paste0(sp_data_path, "/Data/r_data/nh_hu_1_pct_prop.Rda",      sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_hu_3_pct_prop.Rda",      sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_hu_5_pct_prop.Rda",      sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_pc_hold_recordings.Rda", sep = ""))
+
+county_name = "Carroll"
 ```
 
 ```{r setup, include=FALSE}
@@ -26,14 +29,6 @@ knitr::opts_chunk$set(
   #dev = "ragg_png",
   cache = FALSE
   )
-```
-
-```{r comment=NA, results = 'asis'}
-# assign county name being looped in generate_adm_reports.R
-county_name <- subgroup
-
-# print header of county
-cat("#", county_name, "\n")
 ```
 
 # Incarceration Patterns

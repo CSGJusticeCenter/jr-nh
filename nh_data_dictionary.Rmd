@@ -45,62 +45,62 @@ raw_adm_data_availability_table
 
 ```{r}
 not_all_na <- function(x) any(!is.na(x))
-df <- belknap_adm %>% dplyr::select_if(not_all_na)
+df <- belknap_adm1 %>% dplyr::select_if(not_all_na)
 view_df(df)
 ```
 
 ## Carroll  
 
 ```{r}
-df <- carroll_adm %>% dplyr::select_if(not_all_na)
+df <- carroll_adm1 %>% dplyr::select_if(not_all_na)
 view_df(df)
 ```
 
 ## Cheshire  
 
 ```{r}
-df <- cheshire_adm %>% dplyr::select_if(not_all_na)
+df <- cheshire_adm1 %>% dplyr::select_if(not_all_na)
 view_df(df)
 ```
 
 ## Coos
 
 ```{r}
-df <- coos_adm %>% dplyr::select_if(not_all_na)
+df <- coos_adm1 %>% dplyr::select_if(not_all_na)
 view_df(df)
 ```
 
 ## Hillsborough
 
 ```{r warning=FALSE}
-df <-hillsborough_adm %>% dplyr::select_if(not_all_na)
+df <-hillsborough_adm1 %>% dplyr::select_if(not_all_na)
 view_df(df)
 ```
 
 ## Merrimack  
 
 ```{r}
-df <- merrimack_adm %>% dplyr::select_if(not_all_na)
+df <- merrimack_adm1 %>% dplyr::select_if(not_all_na)
 view_df(df)
 ```
 
 ## Rockingham
 
 ```{r}
-df <- rockingham_adm %>% dplyr::select_if(not_all_na)
+df <- rockingham_adm1 %>% dplyr::select_if(not_all_na)
 view_df(df)
 ```
 
 ## Strafford
 
 ```{r}
-df <- strafford_adm %>% dplyr::select_if(not_all_na)
+df <- strafford_adm1 %>% dplyr::select_if(not_all_na)
 view_df(df)
 ```
 
 ## Sullivan
 
 ```{r}
-df <- sullivan_adm %>% dplyr::select_if(not_all_na)
+df <- sullivan_adm1 %>% dplyr::select_if(not_all_na)
 view_df(df)
 ```
