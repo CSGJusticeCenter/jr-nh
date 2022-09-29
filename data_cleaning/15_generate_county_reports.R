@@ -8,12 +8,6 @@
 # based on county_adm_template.Rmd
 ############################################
 
-# load packages
-# remove.packages("rmarkdown")
-# install.packages("rmarkdown")
-library("rmarkdown")
-library(yaml)
-
 # save working directory
 wd <- getwd()
 
@@ -26,4 +20,3 @@ for (county in unique(nh_adm_all$county)){
          output_file = paste0(county, '_county_report', '.html'),
          output_dir = paste0(wd, "/_site"))
 }
-

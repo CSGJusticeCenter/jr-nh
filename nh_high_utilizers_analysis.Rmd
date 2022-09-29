@@ -40,6 +40,7 @@ The table below shows the number of HU bookings, proportion of HU bookings out o
 ```{r}
 hu_bookings_table
 ```
+
 ### How non-HU's Compare
 
 In the tables below, we define non-HU's as people who are not in the top 1%, 3%, and 5% of people booked into jail.
@@ -52,7 +53,7 @@ nonhu_bookings_table
 
 ## By County
 
-The table below shows the number of HU bookings, proportion of HU bookings out of all bookings, and the average number of bookings per year for the three types of HU's for each county.
+The table below shows the number of HU bookings, proportion of HU bookings out of all bookings, and the average number of bookings per year for the three types of HU's for each county between FY2019 - FY2020.
 
 ```{r}
 hu_bookings_table_by_county
@@ -62,8 +63,9 @@ hu_bookings_table_by_county
 
 In the tables below, we define non-HU's as people who are not in the top 1%, 3%, and 5% of people booked into jail.
 
-The table below shows the number of non-HU bookings, proportion of non-HU bookings out of all bookings, and the average number of bookings per year for the three types of non-HU's for each county.
+The table below shows the number of non-HU bookings, proportion of non-HU bookings out of all bookings, and the average number of bookings per year for the three types of non-HU's for each county for each county between FY2019 - FY2020.
 
 ```{r}
 nonhu_bookings_table_by_county
 ```
+

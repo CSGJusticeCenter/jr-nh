@@ -321,7 +321,8 @@ df_nonhu_bookings_table_by_county <- df_nonhu_bookings_table %>% filter(fy == "T
 # reactable of all 3 years, not separated out by FY but by county
 ######
 
-nonhu_bookings_table_by_county <- reactable(df_nonhu_bookings_table_by_county,
+nonhu_bookings_table_by_county <- reactable(elementId = "nonhu_bookings_table_by_county",
+                                            df_nonhu_bookings_table_by_county,
                                             pagination = FALSE,
                                             theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                                             defaultColDef = reactable::colDef(

@@ -35,6 +35,7 @@ library(extrafont)
 library(showtext)
 library(maditr)
 library(formattable)
+library(downloadthis)
 
 # install.packages("rmarkdown")
 # install.packages("knitr")
