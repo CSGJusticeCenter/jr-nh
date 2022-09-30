@@ -52,7 +52,7 @@ cat("**High Utilizers, when defined as the people in the top 1% of bookings per 
 ```
 
 ```{r}
-df <- county_hu_1_pct_prop %>% filter(county == county_name) %>% ungroup() %>% select(-county) %>% droplevels() 
+df <- county_hu_1_pct_prop %>% filter(county == county_name & high_utilizer_1_pct != "Total") %>% ungroup() %>% select(-county) %>% droplevels() 
 reactable(df,
          pagination = FALSE,
          sortable = FALSE,

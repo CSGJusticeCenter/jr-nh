@@ -102,7 +102,7 @@ nh_adm_all <- rbind(belknap_adm1,
                     rockingham_adm1,
                     strafford_adm1,
                     sullivan_adm1)
-dim(nh_adm_all) # 73,188
+dim(nh_adm_all) # 73,180
 
 # fix los_max issues
 # remove negatives because of data entry issues with booking and release dates
@@ -110,7 +110,7 @@ dim(nh_adm_all) # 73,188
 nh_adm_all <- nh_adm_all %>%
   mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
   filter(los_max >= 0 | is.na(los_max))
-dim(nh_adm_all)
+dim(nh_adm_all) # 73,179
 
 ####################################################
 # Charges dataframe
@@ -143,7 +143,7 @@ nh_charges <- nh_adm_all %>%
                 pc_hold_sentence,
                 pc_hold) %>%
   distinct()
-dim(nh_charges) # 73186
+dim(nh_charges) # 73177
 
 # Some bookings have unknown race but their race was recorded in other bookings, use this race
 # temp <- nh_charges %>% select(booking_id, race) %>% distinct()
@@ -201,8 +201,8 @@ nh_booking <- nh_booking %>%
 nh_booking <- nh_booking %>%
   mutate(booking_type = toupper(booking_type))
 
-dim(nh_booking)                       # 55828
-length(unique(nh_booking$booking_id)) # 51581
+dim(nh_booking)                       # 55820
+length(unique(nh_booking$booking_id)) # 51575
 
 # determine if PC hold happened in booking event
 detach(package:plyr)
@@ -214,9 +214,9 @@ nh_booking <- nh_booking %>%
   select(county:high_utilizer_5_pct, month_year_text:pc_hold_in_booking) %>%
   distinct()
 
-dim(nh_booking)                       # 54821
-length(unique(nh_booking$booking_id)) # 51581
-dups <- nh_booking[duplicated(nh_booking$booking_id)|duplicated(nh_booking$booking_id, fromLast=TRUE),] # 5966
+dim(nh_booking)                       # 54813
+length(unique(nh_booking$booking_id)) # 51575
+dups <- nh_booking[duplicated(nh_booking$booking_id)|duplicated(nh_booking$booking_id, fromLast=TRUE),] # 5963
 
 # there will not be one booking id per row because people can have multiple booking types per booking episode
 # Belknap      Carroll     Cheshire         Coos Hillsborough    Merrimack   Rockingham    Strafford     Sullivan
@@ -288,7 +288,7 @@ nh_pch <- nh_booking %>%
   distinct() %>%
   droplevels()
 
-dim(nh_pch); length(unique(nh_pch$booking_id)) # 38677
+dim(nh_pch); length(unique(nh_pch$booking_id)) # 38671
 
 ########################################################################################################
 # Counties in data

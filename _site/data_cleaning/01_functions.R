@@ -370,6 +370,7 @@ fnc_row_totals <- function(df){
 # get prop of variable by FY
 fnc_variable_by_year <- function(df, variable_name){
   df$variable_name <- get(variable_name, df)
+  df <- df %>% select(variable_name, booking_id) %>% distinct()
   df1 <- data.frame(summarytools::freq(df$variable_name, order = "freq", cum.percent = FALSE))
   df1 <- df1 %>% tibble::rownames_to_column("variable_name") %>%
     dplyr::select(variable_name,
@@ -467,16 +468,10 @@ fnc_avg_bookings_fy <- function(df, variable_name, logical){
     dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
 }
 
-# calculate the total number of bookings per year (by HU for example)
+# calculate the total number of bookings per year (by HU for example)#########################
 fnc_num_bookings_fy <- function(df, variable_name, logical){
-  #   df$variable_name <- get(variable_name, df)
-  #   df1 <- df %>%
-  #     select(county, booking_id, num_bookings, variable_name, fy) %>%
-  #     distinct() %>%
-  #     filter(variable_name == logical) %>%
-  #     group_by(fy) %>%
-  #     dplyr::summarise(new_variable_name = n())
   df$variable_name <- get(variable_name, df)
+  df <- df %>% select(variable_name, fy, booking_id) %>% distinct() # NEW, may cause issues
   df1 <- table(df$variable_name, df$fy)
   df1 <- as.data.frame(df1)
   df1 <- df1 %>% select(variable_name = Var1,
@@ -520,17 +515,10 @@ fnc_avg_bookings_fy_county <- function(df, variable_name, logical){
     dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
 }
 
-# calculate the total number of bookings per year (by HU for example)
+# calculate the total number of bookings per year (by HU for example) ############################
 fnc_num_bookings_fy_county <- function(df, variable_name, logical){
-  #   df$variable_name <- get(variable_name, df)
-  #   df1 <- df %>%
-  #     select(county, booking_id, num_bookings, variable_name, fy) %>%
-  #     distinct() %>%
-  #     filter(variable_name == logical) %>%
-  #     droplevels() %>%
-  #     group_by(fy, county) %>%
-  #     dplyr::summarise(new_variable_name = n())
   df$variable_name <- get(variable_name, df)
+  df <- df %>% select(variable_name, fy, county, booking_id) %>% distinct() # NEW, may cause issues
   df1 <- table(df$variable_name, df$fy, df$county)
   df1 <- as.data.frame(df1)
   df1 <- df1 %>% select(variable_name = Var1,
@@ -552,16 +540,10 @@ fnc_avg_bookings_3yr_county <- function(df, variable_name, logical){
     dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
 }
 
-# calculate the total number of bookings for all three years (by HU for example)
+# calculate the total number of bookings for all three years (by HU for example)############################
 fnc_num_bookings_3yr_county <- function(df, variable_name, logical){
-  # df$variable_name <- get(variable_name, df)
-  # df1 <- df %>%
-  #   select(county, booking_id, num_bookings, variable_name, fy) %>%
-  #   distinct() %>%
-  #   filter(variable_name == logical) %>%
-  #   group_by(county) %>%
-  #   dplyr::summarise(new_variable_name = n())
   df$variable_name <- get(variable_name, df)
+  df1 <- df %>% select(variable_name, county, booking_id) %>% distinct()
   df1 <- table(df$variable_name, df$county)
   df1 <- as.data.frame(df1)
   df1 <- df1 %>% select(variable_name = Var1,
