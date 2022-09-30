@@ -153,4 +153,4 @@ nh_pc_holds_county
 
 ## How Protective Custody Holds Are Recorded
 
-Each county records PC holds differently. PC holds are recorded in the charge description, booking type, sentence status, or release type, and sometimes across these metrics. See each the **County Reports** in the menu to see how each county records PC holds and the "outcomes" of these holds.  
+Each county records PC holds differently. PC holds are recorded in the charge description, booking type, sentence status, or release type, and sometimes across these metrics. See each **County Report** in the top menu to see how each county records PC holds and the "outcomes" of these holds.  

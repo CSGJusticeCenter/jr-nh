@@ -2419,8 +2419,15 @@ County Reports
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="Belknap_county_report.html">Belknap</a>
-<a href="Carroll_county_report.html">Carroll</a>
+<a href="county_report_Belknap.html">Belknap</a>
+<a href="county_report_Carroll.html">Carroll</a>
+<a href="county_report_Cheshire.html">Cheshire</a>
+<a href="county_report_Coos.html">Coos</a>
+<a href="county_report_Hillsborough.html">Hillsborough</a>
+<a href="county_report_Merrimack.html">Merrimack</a>
+<a href="county_report_Rockingham.html">Rockingham</a>
+<a href="county_report_Strafford.html">Strafford</a>
+<a href="county_report_Sullivan.html">Sullivan</a>
 </div>
 </div>
 <div class="nav-dropdown">
@@ -3024,7 +3031,7 @@ Race
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 AAPI<br>American Indian Alaska
-Native<br>Black<br>Hispanic<br>Other<br>Unknown<br>White
+Native<br>Black<br>Hispanic<br>Other<br>White
 </td>
 </tr>
 <tr>
@@ -3062,14 +3069,30 @@ Age (years)
 9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+age_category
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Age category
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+18-29 yo<br>30-39 yo<br>40+ yo
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+10
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 charge_desc
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Charge description
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 10 SIMPLE ASSAULT 631:2-A<br>18 POSSESSION N/DRUG 318-B:2<br>19
 POSSESSION C/DRUG 318-B:2<br>1ST DEGREE ASSAULT<br>1ST DEGREE ASSAULT
 631:1<br>2ND DEGREE ASSAULT<br>2ND DEGREE ASSAULT 631:2<br>47 VIOLATION
@@ -3082,35 +3105,18 @@ ASSAULT 631:2<br><span style="omit">&lt;… truncated&gt;</span>
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-10
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-booking_date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Booking date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 11
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-booking_type
+booking_date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Booking type
+Booking date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-ADMIN TRANSFER<br>DUAL<br>NH STATE PRISONER<br>OVERNIGHT
-HOLD<br>PRETRIAL<br>PROTECTIVE CUSTODY<br>SENTENCED
 </td>
 </tr>
 <tr>
@@ -3118,13 +3124,16 @@ HOLD<br>PRETRIAL<br>PROTECTIVE CUSTODY<br>SENTENCED
 12
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-los_max
+booking_type
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Maximum length of stay (days) to account for<br>release date errors
+Booking type
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: NA-729</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+ADMIN TRANSFER<br>DUAL<br>NH STATE PRISONER<br>OVERNIGHT
+HOLD<br>PRETRIAL<br>PROTECTIVE CUSTODY<br>SENTENCED
 </td>
 </tr>
 <tr>
@@ -3132,15 +3141,13 @@ Maximum length of stay (days) to account for<br>release date errors
 13
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-county
+los_max
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-County
+Maximum length of stay (days) to account for<br>release date errors
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Belknap
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: NA-729</em>
 </td>
 </tr>
 <tr>
@@ -3148,15 +3155,15 @@ Belknap
 14
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-fy
+county
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Fiscal year
+County
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-2019<br>2020<br>2021
+Belknap
 </td>
 </tr>
 <tr>
@@ -3164,13 +3171,15 @@ Fiscal year
 15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-num_bookings
+fy
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Number of booking events in the fiscal year
+Fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
-<em>range: 1-21</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+2019<br>2020<br>2021
 </td>
 </tr>
 <tr>
@@ -3178,15 +3187,13 @@ Number of booking events in the fiscal year
 16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_1_pct
+num_bookings
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 1% percentile)
+Number of booking events in the fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-No<br>Yes
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
+<em>range: 1-21</em>
 </td>
 </tr>
 <tr>
@@ -3194,10 +3201,10 @@ No<br>Yes
 17
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_3_pct
+high_utilizer_1_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Is a high utilizer (in top 3% percentile)
+Is a high utilizer (in top 1% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -3210,10 +3217,10 @@ No<br>Yes
 18
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_5_pct
+high_utilizer_3_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 5% percentile)
+Is a high utilizer (in top 3% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -3226,15 +3233,15 @@ No<br>Yes
 19
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_booking
+high_utilizer_5_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (booking type)
+Is a high utilizer (in top 5% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA<br>Non-PC Hold<br>PC Hold
+No<br>Yes
 </td>
 </tr>
 <tr>
@@ -3242,10 +3249,10 @@ NA<br>Non-PC Hold<br>PC Hold
 20
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_charge
+pc_hold_booking
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (charge type)
+Protective custody hold (booking type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -3258,15 +3265,15 @@ NA<br>Non-PC Hold<br>PC Hold
 21
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_sentence
+pc_hold_charge
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (sentence status)
+Protective custody hold (charge type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA
+NA<br>Non-PC Hold<br>PC Hold
 </td>
 </tr>
 <tr>
@@ -3274,10 +3281,10 @@ NA
 22
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_release
+pc_hold_sentence
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (release type)
+Protective custody hold (sentence status)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -3290,15 +3297,31 @@ NA
 23
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold
+pc_hold_release
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Protective custody hold (release type)
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+NA
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+24
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Protective custody hold (in booking type, charge<br>type, sentence
 status, or release type)
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Non-PC Hold<br>PC Hold
 </td>
 </tr>
@@ -3418,7 +3441,7 @@ Race
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-AAPI<br>American Indian Alaska Native<br>Black<br>Unknown<br>White
+AAPI<br>American Indian Alaska Native<br>Black<br>White
 </td>
 </tr>
 <tr>
@@ -3448,7 +3471,7 @@ age
 Age (years)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: 17-86</em>
+<em>range: 18-86</em>
 </td>
 </tr>
 <tr>
@@ -3456,16 +3479,15 @@ Age (years)
 9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-charge_code
+age_category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Charge code
+Age category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-1.9701388888888889<br>10.81875<br>10.902777777777779<br>10.918750000000001<br>10.924999999999999<br>10.927777777777777<br>10.932638888888889<br>10.959027777777777<br>10.959722222222224<br>10.966666666666667<br>10.988888888888889<br>104:28-A<br>11.017361111111112<br>11.019444444444444<br>11.044444444444444<br><span
-style="omit">&lt;… truncated&gt;</span>
+18-29 yo<br>30-39 yo<br>40+ yo
 </td>
 </tr>
 <tr>
@@ -3473,14 +3495,31 @@ style="omit">&lt;… truncated&gt;</span>
 10
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+charge_code
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Charge code
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+1.9701388888888889<br>10.81875<br>10.902777777777779<br>10.918750000000001<br>10.924999999999999<br>10.927777777777777<br>10.932638888888889<br>10.959027777777777<br>10.959722222222224<br>10.966666666666667<br>10.988888888888889<br>104:28-A<br>11.017361111111112<br>11.019444444444444<br>11.044444444444444<br><span
+style="omit">&lt;… truncated&gt;</span>
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+11
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 charge_desc
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 Charge description
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 1ST DEGREE ASSAULT<br>2ND DEGREE ASSAULT<br>A CRIMINAL CONTEMPT<br>A
 CRIMINAL MISCHIEF<br>A DRIVING AFTER REVOCATION OR SUSPENSION<br>A
 DRIVING UNDER INFLUENCE OF DRUGS OR LIQUOR<br>A STALKING<br>ABANDONING A
@@ -3492,36 +3531,18 @@ ROBBERY<br><span style="omit">&lt;… truncated&gt;</span>
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-11
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-booking_date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Booking date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 12
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-booking_type
+booking_date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Booking type
+Booking date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-ADULT ORDER OF COMMITMENT<br>ARREST WARRANT<br>BAIL
-ORDER<br>CAPIAS<br>Converted Document<br>COURT COMMITTED<br>DETAINEE
-REQUEST<br>DETENTION ORDER<br>ELECTRONIC BENCH WARRANT
 </td>
 </tr>
 <tr>
@@ -3529,18 +3550,17 @@ REQUEST<br>DETENTION ORDER<br>ELECTRONIC BENCH WARRANT
 13
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-sentence_status
+booking_type
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Sentence status
+Booking type
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-AWAITING TRIAL<br>BAIL SET<br>BOND
-DENIED<br>DETAINER<br>DISMISSED<br>HELD<br>PRE-TRIAL<br>PROTECTIVE
-CUSTODY<br>SENTENCE SUSPENDED<br>SENTENCED<br>SENTENCED FINES<br>STATE
-PRISONER
+ADULT ORDER OF COMMITMENT<br>ARREST WARRANT<br>BAIL
+ORDER<br>CAPIAS<br>Converted Document<br>COURT COMMITTED<br>DETAINEE
+REQUEST<br>DETENTION ORDER<br>ELECTRONIC BENCH WARRANT
 </td>
 </tr>
 <tr>
@@ -3548,13 +3568,18 @@ PRISONER
 14
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-los_max
+sentence_status
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Maximum length of stay (days) to account for<br>release date errors
+Sentence status
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: NA-857</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+AWAITING TRIAL<br>BAIL SET<br>BOND
+DENIED<br>DETAINER<br>DISMISSED<br>HELD<br>PRE-TRIAL<br>PROTECTIVE
+CUSTODY<br>SENTENCE SUSPENDED<br>SENTENCED<br>SENTENCED FINES<br>STATE
+PRISONER
 </td>
 </tr>
 <tr>
@@ -3562,15 +3587,13 @@ Maximum length of stay (days) to account for<br>release date errors
 15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-county
+los_max
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-County
+Maximum length of stay (days) to account for<br>release date errors
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Carroll
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: NA-857</em>
 </td>
 </tr>
 <tr>
@@ -3578,15 +3601,15 @@ Carroll
 16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-fy
+county
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Fiscal year
+County
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-2019<br>2020<br>2021
+Carroll
 </td>
 </tr>
 <tr>
@@ -3594,13 +3617,15 @@ Fiscal year
 17
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-num_bookings
+fy
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Number of booking events in the fiscal year
+Fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
-<em>range: 1-12</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+2019<br>2020<br>2021
 </td>
 </tr>
 <tr>
@@ -3608,15 +3633,13 @@ Number of booking events in the fiscal year
 18
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_1_pct
+num_bookings
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 1% percentile)
+Number of booking events in the fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-No<br>Yes
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
+<em>range: 1-12</em>
 </td>
 </tr>
 <tr>
@@ -3624,10 +3647,10 @@ No<br>Yes
 19
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_3_pct
+high_utilizer_1_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Is a high utilizer (in top 3% percentile)
+Is a high utilizer (in top 1% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -3640,10 +3663,10 @@ No<br>Yes
 20
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_5_pct
+high_utilizer_3_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 5% percentile)
+Is a high utilizer (in top 3% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -3656,15 +3679,15 @@ No<br>Yes
 21
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_booking
+high_utilizer_5_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (booking type)
+Is a high utilizer (in top 5% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Non-PC Hold
+No<br>Yes
 </td>
 </tr>
 <tr>
@@ -3672,15 +3695,15 @@ Non-PC Hold
 22
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_charge
+pc_hold_booking
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (charge type)
+Protective custody hold (booking type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Non-PC Hold<br>PC Hold
+Non-PC Hold
 </td>
 </tr>
 <tr>
@@ -3688,10 +3711,10 @@ Non-PC Hold<br>PC Hold
 23
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_sentence
+pc_hold_charge
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (sentence status)
+Protective custody hold (charge type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -3704,15 +3727,15 @@ Non-PC Hold<br>PC Hold
 24
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_release
+pc_hold_sentence
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (release type)
+Protective custody hold (sentence status)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA
+Non-PC Hold<br>PC Hold
 </td>
 </tr>
 <tr>
@@ -3720,15 +3743,31 @@ NA
 25
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold
+pc_hold_release
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Protective custody hold (release type)
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+NA
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+26
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Protective custody hold (in booking type, charge<br>type, sentence
 status, or release type)
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Non-PC Hold<br>PC Hold
 </td>
 </tr>
@@ -3848,8 +3887,7 @@ Race
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-AAPI<br>American Indian Alaska
-Native<br>Black<br>Hispanic<br>Unknown<br>White
+AAPI<br>American Indian Alaska Native<br>Black<br>Hispanic<br>White
 </td>
 </tr>
 <tr>
@@ -3887,17 +3925,15 @@ Age (years)
 9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-charge_code
+age_category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Charge code
+Age category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-10.81875<br>10.918750000000001<br>10.932638888888889<br>10.959027777777777<br>10.966666666666667<br>11.017361111111112<br>13.279166666666667<br>13.643055555555556<br>159:3-A<br>172-B:1
-XIII<br>173-B:9<br>179:62<br>2.11<br>207:37-A<br>22.461111111111112<br><span
-style="omit">&lt;… truncated&gt;</span>
+18-29 yo<br>30-39 yo<br>40+ yo
 </td>
 </tr>
 <tr>
@@ -3905,14 +3941,32 @@ style="omit">&lt;… truncated&gt;</span>
 10
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+charge_code
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Charge code
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+10.81875<br>10.918750000000001<br>10.932638888888889<br>10.959027777777777<br>10.966666666666667<br>11.017361111111112<br>13.279166666666667<br>13.643055555555556<br>159:3-A<br>172-B:1
+XIII<br>173-B:9<br>179:62<br>2.11<br>207:37-A<br>22.461111111111112<br><span
+style="omit">&lt;… truncated&gt;</span>
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+11
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 charge_desc
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 Charge description
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 1ST DEGREE ASSAULT<br>2ND DEGREE ASSAULT<br>925 DOMESTIC VIOLENCE
 OFFENSE<br>ACTS PROHIBITED<br>AGG. FEL. SEX. ASSAULT<br>AGGRAVATED
 DRIVING WHILE INTOXICATED<br>AIDING CRIMINAL ACTIVITY<br>ALCOHOL
@@ -3923,37 +3977,18 @@ DEGREE ASSAULT<br><span style="omit">&lt;… truncated&gt;</span>
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-11
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-booking_date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Booking date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 12
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-booking_type
+booking_date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Booking type
+Booking date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-ADULT ORDER OF COMMITMENT<br>Capias<br>DETAINEE
-REQUEST<br>DETAINER<br>ELECTRONIC BENCH WARRANT<br>FEDERAL
-HOLD<br>FELONY FIRST<br>Mittimus<br>PAROLE<br>PROBATION<br>SUPERIOR
-COURT ARREST WARRANT<br>UNKNOWN
 </td>
 </tr>
 <tr>
@@ -3961,14 +3996,33 @@ COURT ARREST WARRANT<br>UNKNOWN
 13
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+booking_type
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Booking type
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+ADULT ORDER OF COMMITMENT<br>Capias<br>DETAINEE
+REQUEST<br>DETAINER<br>ELECTRONIC BENCH WARRANT<br>FEDERAL
+HOLD<br>FELONY FIRST<br>Mittimus<br>PAROLE<br>PROBATION<br>SUPERIOR
+COURT ARREST WARRANT<br>UNKNOWN
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+14
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 sentence_status
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Sentence status
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 DUAL STATUS<br>FEDERAL INMATE<br>HOLD FOR OTHER AGENCY<br>HOLD FOR STATE
 PRISON<br>PRE-TRIAL<br>PRE-TRIAL / DRUG COURT<br>PRE-TRIAL /
 EM<br>PROTECTIVE CUSTODY<br>SENTENCED<br>SENTENCED / DRUG
@@ -3977,33 +4031,17 @@ WEEKENDS<br>SENTENCED / WORK RELEASE
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-14
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-los_max
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Maximum length of stay (days) to account for<br>release date errors
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: NA-971</em>
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-county
+los_max
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-County
+Maximum length of stay (days) to account for<br>release date errors
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Cheshire
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: NA-971</em>
 </td>
 </tr>
 <tr>
@@ -4011,15 +4049,15 @@ Cheshire
 16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-fy
+county
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Fiscal year
+County
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-2019<br>2020<br>2021
+Cheshire
 </td>
 </tr>
 <tr>
@@ -4027,13 +4065,15 @@ Fiscal year
 17
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-num_bookings
+fy
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Number of booking events in the fiscal year
+Fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
-<em>range: 1-25</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+2019<br>2020<br>2021
 </td>
 </tr>
 <tr>
@@ -4041,15 +4081,13 @@ Number of booking events in the fiscal year
 18
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_1_pct
+num_bookings
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 1% percentile)
+Number of booking events in the fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-No<br>Yes
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
+<em>range: 1-25</em>
 </td>
 </tr>
 <tr>
@@ -4057,10 +4095,10 @@ No<br>Yes
 19
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_3_pct
+high_utilizer_1_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Is a high utilizer (in top 3% percentile)
+Is a high utilizer (in top 1% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -4073,10 +4111,10 @@ No<br>Yes
 20
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_5_pct
+high_utilizer_3_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 5% percentile)
+Is a high utilizer (in top 3% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -4089,15 +4127,15 @@ No<br>Yes
 21
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_booking
+high_utilizer_5_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (booking type)
+Is a high utilizer (in top 5% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA<br>Non-PC Hold
+No<br>Yes
 </td>
 </tr>
 <tr>
@@ -4105,15 +4143,15 @@ NA<br>Non-PC Hold
 22
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_charge
+pc_hold_booking
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (charge type)
+Protective custody hold (booking type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA<br>Non-PC Hold<br>PC Hold
+NA<br>Non-PC Hold
 </td>
 </tr>
 <tr>
@@ -4121,10 +4159,10 @@ NA<br>Non-PC Hold<br>PC Hold
 23
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_sentence
+pc_hold_charge
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (sentence status)
+Protective custody hold (charge type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -4137,15 +4175,15 @@ NA<br>Non-PC Hold<br>PC Hold
 24
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_release
+pc_hold_sentence
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (release type)
+Protective custody hold (sentence status)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA
+NA<br>Non-PC Hold<br>PC Hold
 </td>
 </tr>
 <tr>
@@ -4153,15 +4191,31 @@ NA
 25
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold
+pc_hold_release
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Protective custody hold (release type)
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+NA
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+26
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Protective custody hold (in booking type, charge<br>type, sentence
 status, or release type)
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Non-PC Hold<br>PC Hold
 </td>
 </tr>
@@ -4281,8 +4335,7 @@ Race
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-AAPI<br>American Indian Alaska
-Native<br>Black<br>Hispanic<br>Unknown<br>White
+AAPI<br>American Indian Alaska Native<br>Black<br>Hispanic<br>White
 </td>
 </tr>
 <tr>
@@ -4320,17 +4373,15 @@ Age (years)
 9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-charge_code
+age_category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Charge code
+Age category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-10.81875<br>10.924999999999999<br>10.932638888888889<br>10.959027777777777<br>11.017361111111112<br>126-K:4<br>13.279166666666667<br>159:3-A<br>159:3
-I<br>169-C:21-A<br>173-B:9<br>215-A:29<br>24.753472222222225<br>24.759722222222223<br>25.501388888888886<br><span
-style="omit">&lt;… truncated&gt;</span>
+18-29 yo<br>30-39 yo<br>40+ yo
 </td>
 </tr>
 <tr>
@@ -4338,14 +4389,32 @@ style="omit">&lt;… truncated&gt;</span>
 10
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+charge_code
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Charge code
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+10.81875<br>10.924999999999999<br>10.932638888888889<br>10.959027777777777<br>11.017361111111112<br>126-K:4<br>13.279166666666667<br>159:3-A<br>159:3
+I<br>169-C:21-A<br>173-B:9<br>215-A:29<br>24.753472222222225<br>24.759722222222223<br>25.501388888888886<br><span
+style="omit">&lt;… truncated&gt;</span>
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+11
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 charge_desc
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 Charge description
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 1ST DEGREE ASSAULT<br>2ND DEGREE ASSAULT<br>ABANDONING A VEHICLE;
 PENALTY<br>ABUSE OF CORPSE<br>ACTS PROHIBITED<br>ACTS UNLAWFUL/CONSUMER
 PROTECTION<br>AGG. FEL. SEX. ASSAULT<br>AGGRAVATED DRIVING WHILE
@@ -4356,34 +4425,18 @@ A WARRANT<br>ARSON<br><span style="omit">&lt;… truncated&gt;</span>
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-11
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-booking_date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Booking date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 12
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-sentence_status
+booking_date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Sentence status
+Booking date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-DUAL STATUS<br>PRETRIAL<br>SENTENCED
 </td>
 </tr>
 <tr>
@@ -4391,13 +4444,15 @@ DUAL STATUS<br>PRETRIAL<br>SENTENCED
 13
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-los_max
+sentence_status
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Maximum length of stay (days) to account for<br>release date errors
+Sentence status
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
-<em>range: NA-747</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+DUAL STATUS<br>PRETRIAL<br>SENTENCED
 </td>
 </tr>
 <tr>
@@ -4405,15 +4460,13 @@ Maximum length of stay (days) to account for<br>release date errors
 14
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-county
+los_max
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-County
+Maximum length of stay (days) to account for<br>release date errors
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Coos
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
+<em>range: NA-747</em>
 </td>
 </tr>
 <tr>
@@ -4421,15 +4474,15 @@ Coos
 15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-fy
+county
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Fiscal year
+County
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-2019<br>2020<br>2021
+Coos
 </td>
 </tr>
 <tr>
@@ -4437,13 +4490,15 @@ Fiscal year
 16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-num_bookings
+fy
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Number of booking events in the fiscal year
+Fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: 1-10</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+2019<br>2020<br>2021
 </td>
 </tr>
 <tr>
@@ -4451,15 +4506,13 @@ Number of booking events in the fiscal year
 17
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_1_pct
+num_bookings
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Is a high utilizer (in top 1% percentile)
+Number of booking events in the fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-No<br>Yes
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: 1-10</em>
 </td>
 </tr>
 <tr>
@@ -4467,10 +4520,10 @@ No<br>Yes
 18
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_3_pct
+high_utilizer_1_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 3% percentile)
+Is a high utilizer (in top 1% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -4483,10 +4536,10 @@ No<br>Yes
 19
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_5_pct
+high_utilizer_3_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Is a high utilizer (in top 5% percentile)
+Is a high utilizer (in top 3% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -4499,15 +4552,15 @@ No<br>Yes
 20
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_booking
+high_utilizer_5_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (booking type)
+Is a high utilizer (in top 5% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA
+No<br>Yes
 </td>
 </tr>
 <tr>
@@ -4515,42 +4568,10 @@ NA
 21
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_charge
+pc_hold_booking
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (charge type)
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Non-PC Hold
-</td>
-</tr>
-<tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-22
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_sentence
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (sentence status)
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA<br>Non-PC Hold
-</td>
-</tr>
-<tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-23
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_release
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (release type)
+Protective custody hold (booking type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -4560,18 +4581,66 @@ NA
 </tr>
 <tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+22
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+pc_hold_charge
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Protective custody hold (charge type)
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Non-PC Hold
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+23
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+pc_hold_sentence
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Protective custody hold (sentence status)
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+NA<br>Non-PC Hold
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 24
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold
+pc_hold_release
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Protective custody hold (release type)
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+NA
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+25
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 Protective custody hold (in booking type, charge<br>type, sentence
 status, or release type)
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 Non-PC Hold
 </td>
 </tr>
@@ -4692,7 +4761,7 @@ Race
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-AAPI<br>American Indian Alaska Native<br>Black<br>Unknown<br>White
+AAPI<br>American Indian Alaska Native<br>Black<br>White
 </td>
 </tr>
 <tr>
@@ -4708,7 +4777,7 @@ Gender
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Female<br>Male<br>Unknown
+Female<br>Male
 </td>
 </tr>
 <tr>
@@ -4730,14 +4799,30 @@ Age (years)
 9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+age_category
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Age category
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+18-29 yo<br>30-39 yo<br>40+ yo
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+10
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 charge_desc
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Charge description
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 104:28-A - FALSE PERSONATION<br>104:28 A - FALSE PERSONATION; 634:2 -
 CRIMINAL MISCHIEF 634:2; 631:4 - CRIMINAL THREATENING 631:4<br>104:28 A
 - FALSE PERSONATION; 638:1 - FORGERY 638:1; 641:6 - FALSIFYING PHYSICAL
@@ -4761,33 +4846,33 @@ truncated&gt;</span>
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-10
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-booking_date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Booking date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 11
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+booking_date
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Booking date
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+12
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 booking_type
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Booking type
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 ADMINISTRATIVE
 TRANSFER<br>Boarded<br>CAPIAS<br>Detainers,Warrants,Holds<br>DRUG
 COURT<br>From Court-Sentenced<br>From Court-Sentenced Weekends<br>From
@@ -4797,18 +4882,18 @@ IN-Sentenced
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-12
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+13
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 release_type
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 Release type
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 ACCEPTED INTO PROGRAM<br>Administrative Trasnfer<br>Agreement
 Reached<br>BAIL REINSTATED<br>Bond Posted Cash<br>BOOKED IN
 ERROR<br>Conditional Early Release Permit Awarded<br>Court
@@ -4818,18 +4903,18 @@ Court<br><span style="omit">&lt;… truncated&gt;</span>
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-13
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+14
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 sentence_status
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Sentence status
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Convicted<br>Convicted Rock<br>Pre Trial Drug Court (Manch)<br>Pre Trial
 Drug Court (Nashua)<br>Pre Trial Rock SATCO<br>PreTrial<br>PreTrial
 Belknap<br>PreTrial Carroll<br>PreTrial COOS<br>PreTrial Drug Court
@@ -4839,33 +4924,17 @@ truncated&gt;</span>
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-14
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-los_max
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Maximum length of stay (days) to account for<br>release date errors
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: NA-994</em>
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-county
+los_max
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-County
+Maximum length of stay (days) to account for<br>release date errors
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Hillsborough
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: NA-994</em>
 </td>
 </tr>
 <tr>
@@ -4873,15 +4942,15 @@ Hillsborough
 16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-fy
+county
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Fiscal year
+County
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-2019<br>2020<br>2021
+Hillsborough
 </td>
 </tr>
 <tr>
@@ -4889,13 +4958,15 @@ Fiscal year
 17
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-num_bookings
+fy
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Number of booking events in the fiscal year
+Fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
-<em>range: 1-13</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+2019<br>2020<br>2021
 </td>
 </tr>
 <tr>
@@ -4903,15 +4974,13 @@ Number of booking events in the fiscal year
 18
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_1_pct
+num_bookings
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 1% percentile)
+Number of booking events in the fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-No<br>Yes
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
+<em>range: 1-13</em>
 </td>
 </tr>
 <tr>
@@ -4919,10 +4988,10 @@ No<br>Yes
 19
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_3_pct
+high_utilizer_1_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Is a high utilizer (in top 3% percentile)
+Is a high utilizer (in top 1% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -4935,10 +5004,10 @@ No<br>Yes
 20
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_5_pct
+high_utilizer_3_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 5% percentile)
+Is a high utilizer (in top 3% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -4951,15 +5020,15 @@ No<br>Yes
 21
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_booking
+high_utilizer_5_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (booking type)
+Is a high utilizer (in top 5% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA<br>Non-PC Hold
+No<br>Yes
 </td>
 </tr>
 <tr>
@@ -4967,15 +5036,15 @@ NA<br>Non-PC Hold
 22
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_charge
+pc_hold_booking
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (charge type)
+Protective custody hold (booking type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA<br>Non-PC Hold<br>PC Hold
+NA<br>Non-PC Hold
 </td>
 </tr>
 <tr>
@@ -4983,15 +5052,15 @@ NA<br>Non-PC Hold<br>PC Hold
 23
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_sentence
+pc_hold_charge
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (sentence status)
+Protective custody hold (charge type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA<br>Non-PC Hold
+NA<br>Non-PC Hold<br>PC Hold
 </td>
 </tr>
 <tr>
@@ -4999,15 +5068,15 @@ NA<br>Non-PC Hold
 24
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_release
+pc_hold_sentence
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (release type)
+Protective custody hold (sentence status)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA<br>Non-PC Hold<br>PC Hold
+NA<br>Non-PC Hold
 </td>
 </tr>
 <tr>
@@ -5015,15 +5084,31 @@ NA<br>Non-PC Hold<br>PC Hold
 25
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold
+pc_hold_release
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Protective custody hold (release type)
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+NA<br>Non-PC Hold<br>PC Hold
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+26
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Protective custody hold (in booking type, charge<br>type, sentence
 status, or release type)
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Non-PC Hold<br>PC Hold
 </td>
 </tr>
@@ -5144,7 +5229,7 @@ Race
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 AAPI<br>American Indian Alaska
-Native<br>Black<br>Hispanic<br>Other<br>Unknown<br>White
+Native<br>Black<br>Hispanic<br>Other<br>White
 </td>
 </tr>
 <tr>
@@ -5160,7 +5245,7 @@ Gender
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Female<br>Male<br>Transgender<br>Unknown
+Female<br>Male<br>Transgender
 </td>
 </tr>
 <tr>
@@ -5182,14 +5267,30 @@ Age (years)
 9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+age_category
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Age category
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+18-29 yo<br>30-39 yo<br>40+ yo
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+10
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 charge_desc
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Charge description
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 1ST DEGREE ASSAULT<br>2ND DEGREE ASSAULT<br>2ND DEGREE ASSAULT W/ DEADLY
 WEAPON<br>ABANDONING A VEHICLE; PENALTY<br>ACTS PROHIBITED<br>AGG. FEL.
 SEX. ASSAULT<br>AGGRAVATED DRIVING WHILE INTOXICATED<br>AIDING CRIMINAL
@@ -5200,37 +5301,18 @@ A WARRANT<br><span style="omit">&lt;… truncated&gt;</span>
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-10
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-booking_date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Booking date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 11
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-booking_type
+booking_date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Booking type
+Booking date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-ADULT ORDER OF COMMITMENT<br>ARREST WARRANT<br>Capias<br>DETAINEE
-REQUEST<br>DETAINER<br>ELECTRONIC BENCH
-WARRANT<br>INDICTMENT<br>PROBATION<br>PROTECTIVE
-CUSTODY<br>SENTENCING<br>UNKNOWN
 </td>
 </tr>
 <tr>
@@ -5238,18 +5320,18 @@ CUSTODY<br>SENTENCING<br>UNKNOWN
 12
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-sentence_status
+booking_type
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Sentence status
+Booking type
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-24 HOUR HOLD<br>72 HOUR HOLD<br>DUAL STATUS<br>Parole
-Violation<br>PC-IEA<br>Pre-trial Felony<br>Pre-trial
-Misdemeanor<br>PROTECTIVE CUSTODY HOLD<br>Sentenced Felony<br>Sentenced
-Misdemeanor
+ADULT ORDER OF COMMITMENT<br>ARREST WARRANT<br>Capias<br>DETAINEE
+REQUEST<br>DETAINER<br>ELECTRONIC BENCH
+WARRANT<br>INDICTMENT<br>PROBATION<br>PROTECTIVE
+CUSTODY<br>SENTENCING<br>UNKNOWN
 </td>
 </tr>
 <tr>
@@ -5257,13 +5339,18 @@ Misdemeanor
 13
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-los_max
+sentence_status
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Maximum length of stay (days) to account for<br>release date errors
+Sentence status
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
-<em>range: NA-869</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+24 HOUR HOLD<br>72 HOUR HOLD<br>DUAL STATUS<br>Parole
+Violation<br>PC-IEA<br>Pre-trial Felony<br>Pre-trial
+Misdemeanor<br>PROTECTIVE CUSTODY HOLD<br>Sentenced Felony<br>Sentenced
+Misdemeanor
 </td>
 </tr>
 <tr>
@@ -5271,15 +5358,13 @@ Maximum length of stay (days) to account for<br>release date errors
 14
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-county
+los_max
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-County
+Maximum length of stay (days) to account for<br>release date errors
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Merrimack
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
+<em>range: NA-869</em>
 </td>
 </tr>
 <tr>
@@ -5287,15 +5372,15 @@ Merrimack
 15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-fy
+county
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Fiscal year
+County
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-2019<br>2020<br>2021
+Merrimack
 </td>
 </tr>
 <tr>
@@ -5303,13 +5388,15 @@ Fiscal year
 16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-num_bookings
+fy
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Number of booking events in the fiscal year
+Fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: 1-21</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+2019<br>2020<br>2021
 </td>
 </tr>
 <tr>
@@ -5317,15 +5404,13 @@ Number of booking events in the fiscal year
 17
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_1_pct
+num_bookings
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Is a high utilizer (in top 1% percentile)
+Number of booking events in the fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-No<br>Yes
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: 1-21</em>
 </td>
 </tr>
 <tr>
@@ -5333,10 +5418,10 @@ No<br>Yes
 18
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_3_pct
+high_utilizer_1_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 3% percentile)
+Is a high utilizer (in top 1% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -5349,10 +5434,10 @@ No<br>Yes
 19
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_5_pct
+high_utilizer_3_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Is a high utilizer (in top 5% percentile)
+Is a high utilizer (in top 3% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -5365,15 +5450,15 @@ No<br>Yes
 20
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_booking
+high_utilizer_5_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (booking type)
+Is a high utilizer (in top 5% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA<br>Non-PC Hold<br>PC Hold
+No<br>Yes
 </td>
 </tr>
 <tr>
@@ -5381,10 +5466,10 @@ NA<br>Non-PC Hold<br>PC Hold
 21
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_charge
+pc_hold_booking
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (charge type)
+Protective custody hold (booking type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -5397,10 +5482,10 @@ NA<br>Non-PC Hold<br>PC Hold
 22
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_sentence
+pc_hold_charge
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (sentence status)
+Protective custody hold (charge type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -5413,15 +5498,15 @@ NA<br>Non-PC Hold<br>PC Hold
 23
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_release
+pc_hold_sentence
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (release type)
+Protective custody hold (sentence status)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA
+NA<br>Non-PC Hold<br>PC Hold
 </td>
 </tr>
 <tr>
@@ -5429,15 +5514,31 @@ NA
 24
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold
+pc_hold_release
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Protective custody hold (release type)
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+NA
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+25
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 Protective custody hold (in booking type, charge<br>type, sentence
 status, or release type)
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 NA<br>Non-PC Hold<br>PC Hold
 </td>
 </tr>
@@ -5558,7 +5659,7 @@ Race
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 AAPI<br>American Indian Alaska
-Native<br>Black<br>Hispanic<br>Other<br>Unknown<br>White
+Native<br>Black<br>Hispanic<br>Other<br>White
 </td>
 </tr>
 <tr>
@@ -5588,7 +5689,7 @@ age
 Age (years)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: 18-121</em>
+<em>range: 18-87</em>
 </td>
 </tr>
 <tr>
@@ -5596,16 +5697,15 @@ Age (years)
 9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-charge_code
+age_category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Charge code
+Age category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-1<br>100<br>101<br>104:28-A<br>106-F:13<br>106-H:13<br>106-H:15<br>12-G:52<br>123<br>12345<br>124<br>153:16:00<br>158:35:00<br>159:03:00<br>159:07:00<br><span
-style="omit">&lt;… truncated&gt;</span>
+18-29 yo<br>30-39 yo<br>40+ yo
 </td>
 </tr>
 <tr>
@@ -5613,14 +5713,31 @@ style="omit">&lt;… truncated&gt;</span>
 10
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+charge_code
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Charge code
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+1<br>100<br>101<br>104:28-A<br>106-F:13<br>106-H:13<br>106-H:15<br>12-G:52<br>123<br>12345<br>124<br>153:16:00<br>158:35:00<br>159:03:00<br>159:07:00<br><span
+style="omit">&lt;… truncated&gt;</span>
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+11
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 charge_desc
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 Charge description
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 1ST DEGREE ASSAULT<br>2ND DEGREE ASSAULT<br>ABANDONING A VEHICLE;
 PENALTY<br>ACCOMPLICE ACTS PROHIBITED<br>ACCOMPLICE AGG. FEL. SEX.
 ASSAULT<br>ACCOMPLICE BURGLARY<br>ACCOMPLICE CONTROL DRUG
@@ -5632,33 +5749,33 @@ THEFT BY DECEPTION<br><span style="omit">&lt;… truncated&gt;</span>
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-11
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-booking_date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Booking date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 12
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+booking_date
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Booking date
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+13
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 booking_type
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 Booking type
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 ADULT ORDER OF COMMITMENT<br>CIRCUIT COURT BAIL ORDER<br>DIVERSION
 ORDER<br>DRUG COURT SENTENCING ORDER<br>ELECTRONIC BENCH
 WARRANT<br>FEDERAL FORM 41<br>HOLD SHEET<br>IAD AGREEMENT<br>PROBATION
@@ -5667,34 +5784,20 @@ MITTIMUS<br>UNKNOWN
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-13
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-sentence_status
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Sentence status
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-ADMIN TRANSFER<br>DIVERSION<br>DUAL<br>IAD
-INMATE<br>PRETRIAL<br>SENTENCED
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 14
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-los_max
+sentence_status
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Maximum length of stay (days) to account for<br>release date errors
+Sentence status
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: NA-1106</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+ADMIN TRANSFER<br>DIVERSION<br>DUAL<br>IAD
+INMATE<br>PRETRIAL<br>SENTENCED
 </td>
 </tr>
 <tr>
@@ -5702,15 +5805,13 @@ Maximum length of stay (days) to account for<br>release date errors
 15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-county
+los_max
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-County
+Maximum length of stay (days) to account for<br>release date errors
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Rockingham
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: NA-1106</em>
 </td>
 </tr>
 <tr>
@@ -5718,15 +5819,15 @@ Rockingham
 16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-fy
+county
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Fiscal year
+County
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-2019<br>2020<br>2021
+Rockingham
 </td>
 </tr>
 <tr>
@@ -5734,13 +5835,15 @@ Fiscal year
 17
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-num_bookings
+fy
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Number of booking events in the fiscal year
+Fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
-<em>range: 1-19</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+2019<br>2020<br>2021
 </td>
 </tr>
 <tr>
@@ -5748,15 +5851,13 @@ Number of booking events in the fiscal year
 18
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_1_pct
+num_bookings
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 1% percentile)
+Number of booking events in the fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-No<br>Yes
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
+<em>range: 1-19</em>
 </td>
 </tr>
 <tr>
@@ -5764,10 +5865,10 @@ No<br>Yes
 19
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_3_pct
+high_utilizer_1_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Is a high utilizer (in top 3% percentile)
+Is a high utilizer (in top 1% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -5780,10 +5881,10 @@ No<br>Yes
 20
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_5_pct
+high_utilizer_3_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 5% percentile)
+Is a high utilizer (in top 3% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -5796,15 +5897,15 @@ No<br>Yes
 21
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_booking
+high_utilizer_5_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (booking type)
+Is a high utilizer (in top 5% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA<br>Non-PC Hold
+No<br>Yes
 </td>
 </tr>
 <tr>
@@ -5812,15 +5913,15 @@ NA<br>Non-PC Hold
 22
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_charge
+pc_hold_booking
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (charge type)
+Protective custody hold (booking type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA<br>Non-PC Hold<br>PC Hold
+NA<br>Non-PC Hold
 </td>
 </tr>
 <tr>
@@ -5828,15 +5929,15 @@ NA<br>Non-PC Hold<br>PC Hold
 23
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_sentence
+pc_hold_charge
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (sentence status)
+Protective custody hold (charge type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA<br>Non-PC Hold
+NA<br>Non-PC Hold<br>PC Hold
 </td>
 </tr>
 <tr>
@@ -5844,15 +5945,15 @@ NA<br>Non-PC Hold
 24
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_release
+pc_hold_sentence
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (release type)
+Protective custody hold (sentence status)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA
+NA<br>Non-PC Hold
 </td>
 </tr>
 <tr>
@@ -5860,15 +5961,31 @@ NA
 25
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold
+pc_hold_release
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Protective custody hold (release type)
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+NA
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+26
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Protective custody hold (in booking type, charge<br>type, sentence
 status, or release type)
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 NA<br>Non-PC Hold<br>PC Hold
 </td>
 </tr>
@@ -5987,7 +6104,7 @@ race
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 AAPI<br>American Indian Alaska
-Native<br>Black<br>Hispanic<br>Other<br>Unknown<br>White
+Native<br>Black<br>Hispanic<br>Other<br>White
 </td>
 </tr>
 <tr>
@@ -6002,7 +6119,7 @@ gender
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Female<br>Male<br>Unknown
+Female<br>Male
 </td>
 </tr>
 <tr>
@@ -6016,7 +6133,7 @@ age
 Age (years)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: 18-121</em>
+<em>range: 18-81</em>
 </td>
 </tr>
 <tr>
@@ -6024,14 +6141,14 @@ Age (years)
 9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-booking_date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Booking date
+age_category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+18-29 yo<br>30-39 yo<br>40+ yo
 </td>
 </tr>
 <tr>
@@ -6039,13 +6156,14 @@ Booking date
 10
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-los_max
+booking_date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Maximum length of stay (days) to account for<br>release date errors
+Booking date
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: NA-1317</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 </tr>
 <tr>
@@ -6053,14 +6171,13 @@ Maximum length of stay (days) to account for<br>release date errors
 11
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-county
+los_max
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Maximum length of stay (days) to account for<br>release date errors
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Strafford
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: NA-1317</em>
 </td>
 </tr>
 <tr>
@@ -6068,14 +6185,14 @@ Strafford
 12
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-fy
+county
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-2019<br>2020<br>2021
+Strafford
 </td>
 </tr>
 <tr>
@@ -6083,13 +6200,14 @@ fy
 13
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-num_bookings
+fy
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Number of booking events in the fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
-<em>range: 1-43</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+2019<br>2020<br>2021
 </td>
 </tr>
 <tr>
@@ -6097,14 +6215,13 @@ Number of booking events in the fiscal year
 14
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_1_pct
+num_bookings
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Number of booking events in the fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-No<br>Yes
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
+<em>range: 1-43</em>
 </td>
 </tr>
 <tr>
@@ -6112,7 +6229,7 @@ No<br>Yes
 15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_3_pct
+high_utilizer_1_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -6127,7 +6244,7 @@ No<br>Yes
 16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_5_pct
+high_utilizer_3_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -6142,14 +6259,14 @@ No<br>Yes
 17
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_booking
+high_utilizer_5_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA
+No<br>Yes
 </td>
 </tr>
 <tr>
@@ -6157,7 +6274,7 @@ NA
 18
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_charge
+pc_hold_booking
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -6172,7 +6289,7 @@ NA
 19
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_sentence
+pc_hold_charge
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -6187,7 +6304,7 @@ NA
 20
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_release
+pc_hold_sentence
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -6202,13 +6319,28 @@ NA
 21
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+pc_hold_release
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+NA
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+22
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 pc_hold
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 NA
 </td>
 </tr>
@@ -6329,7 +6461,7 @@ Race
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 AAPI<br>American Indian Alaska Native<br>Black<br>Black
-Hispanic<br>Hispanic<br>Unknown<br>White
+Hispanic<br>Hispanic<br>White
 </td>
 </tr>
 <tr>
@@ -6345,7 +6477,7 @@ Gender
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Female<br>Male<br>Unknown
+Female<br>Male
 </td>
 </tr>
 <tr>
@@ -6367,16 +6499,15 @@ Age (years)
 9
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-charge_code
+age_category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Charge code
+Age category
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-000:00<br>000:000<br>10.918750000000001<br>10.932638888888889<br>10.959027777777777<br>11.017361111111112<br>11.044444444444444<br>167:17-B<br>169-B:8<br>172-B:3<br>173-B:8<br>173-B:9<br>207:37-a<br>24.753472222222225<br>24.754861111111111<br><span
-style="omit">&lt;… truncated&gt;</span>
+18-29 yo<br>30-39 yo<br>40+ yo
 </td>
 </tr>
 <tr>
@@ -6384,14 +6515,31 @@ style="omit">&lt;… truncated&gt;</span>
 10
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+charge_code
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+Charge code
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+000:00<br>000:000<br>10.918750000000001<br>10.932638888888889<br>10.959027777777777<br>11.017361111111112<br>11.044444444444444<br>167:17-B<br>169-B:8<br>172-B:3<br>173-B:8<br>173-B:9<br>207:37-a<br>24.753472222222225<br>24.754861111111111<br><span
+style="omit">&lt;… truncated&gt;</span>
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+11
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 charge_desc
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 Charge description
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
 000:00<br>000:00 ELECTRIC BENCH WARRENT<br>000:000<br>000:000 BENCH
 WARRANT<br>10.959027777777777<br>167:17-B<br>173-B:8<br>173-B:8
 VIOLATION DOMESTIC PROTECTION ORDER<br>173-B:8 VIOLATION OF A PROTECTIVE
@@ -6403,36 +6551,18 @@ truncated&gt;</span>
 </td>
 </tr>
 <tr>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-11
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-booking_date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Booking date
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-</tr>
-<tr>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 12
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-booking_type
+booking_date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Booking type
+Booking date
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-24 HOUR DETENTION REQUEST<br>ADULT ORDER OF
-COMMITMENT<br>CAPIAS<br>PROTECTIVE CUSTODY<br>UNKNOWN<br>VIOLATION OF
-PAROLE<br>VIOLATION OF PROBATION<br>WARRANT ARREST
 </td>
 </tr>
 <tr>
@@ -6440,15 +6570,17 @@ PAROLE<br>VIOLATION OF PROBATION<br>WARRANT ARREST
 13
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-sentence_status
+booking_type
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Sentence status
+Booking type
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-DUAL<br>PRE-TRIAL<br>SENTENCED<br>SENTENCED T 1<br>SENTENCED T 5
+24 HOUR DETENTION REQUEST<br>ADULT ORDER OF
+COMMITMENT<br>CAPIAS<br>PROTECTIVE CUSTODY<br>UNKNOWN<br>VIOLATION OF
+PAROLE<br>VIOLATION OF PROBATION<br>WARRANT ARREST
 </td>
 </tr>
 <tr>
@@ -6456,13 +6588,15 @@ DUAL<br>PRE-TRIAL<br>SENTENCED<br>SENTENCED T 1<br>SENTENCED T 5
 14
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-los_max
+sentence_status
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Maximum length of stay (days) to account for<br>release date errors
+Sentence status
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
-<em>range: NA-966</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+DUAL<br>PRE-TRIAL<br>SENTENCED<br>SENTENCED T 1<br>SENTENCED T 5
 </td>
 </tr>
 <tr>
@@ -6470,15 +6604,13 @@ Maximum length of stay (days) to account for<br>release date errors
 15
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-county
+los_max
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-County
+Maximum length of stay (days) to account for<br>release date errors
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Sullivan
+<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
+<em>range: NA-966</em>
 </td>
 </tr>
 <tr>
@@ -6486,15 +6618,15 @@ Sullivan
 16
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-fy
+county
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Fiscal year
+County
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-2019<br>2020<br>2021
+Sullivan
 </td>
 </tr>
 <tr>
@@ -6502,13 +6634,15 @@ Fiscal year
 17
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-num_bookings
+fy
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Number of booking events in the fiscal year
+Fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;" colspan="2">
-<em>range: 1-17</em>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+2019<br>2020<br>2021
 </td>
 </tr>
 <tr>
@@ -6516,15 +6650,13 @@ Number of booking events in the fiscal year
 18
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_1_pct
+num_bookings
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 1% percentile)
+Number of booking events in the fiscal year
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-</td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-No<br>Yes
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee" colspan="2">
+<em>range: 1-17</em>
 </td>
 </tr>
 <tr>
@@ -6532,10 +6664,10 @@ No<br>Yes
 19
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-high_utilizer_3_pct
+high_utilizer_1_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Is a high utilizer (in top 3% percentile)
+Is a high utilizer (in top 1% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
@@ -6548,10 +6680,10 @@ No<br>Yes
 20
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-high_utilizer_5_pct
+high_utilizer_3_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Is a high utilizer (in top 5% percentile)
+Is a high utilizer (in top 3% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -6564,15 +6696,15 @@ No<br>Yes
 21
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_booking
+high_utilizer_5_pct
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (booking type)
+Is a high utilizer (in top 5% percentile)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA<br>Non-PC Hold<br>PC Hold
+No<br>Yes
 </td>
 </tr>
 <tr>
@@ -6580,10 +6712,10 @@ NA<br>Non-PC Hold<br>PC Hold
 22
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_charge
+pc_hold_booking
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (charge type)
+Protective custody hold (booking type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
@@ -6596,15 +6728,15 @@ NA<br>Non-PC Hold<br>PC Hold
 23
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold_sentence
+pc_hold_charge
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-Protective custody hold (sentence status)
+Protective custody hold (charge type)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-NA<br>Non-PC Hold
+NA<br>Non-PC Hold<br>PC Hold
 </td>
 </tr>
 <tr>
@@ -6612,15 +6744,15 @@ NA<br>Non-PC Hold
 24
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-pc_hold_release
+pc_hold_sentence
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-Protective custody hold (release type)
+Protective custody hold (sentence status)
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
-NA
+NA<br>Non-PC Hold
 </td>
 </tr>
 <tr>
@@ -6628,15 +6760,31 @@ NA
 25
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
-pc_hold
+pc_hold_release
 </td>
 <td style="padding:0.2cm; text-align:left; vertical-align:top;">
+Protective custody hold (release type)
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+NA
+</td>
+</tr>
+<tr>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+26
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
+pc_hold
+</td>
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 Protective custody hold (in booking type, charge<br>type, sentence
 status, or release type)
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 </td>
-<td style="padding:0.2cm; text-align:left; vertical-align:top;">
+<td style="padding:0.2cm; text-align:left; vertical-align:top; background-color:#eeeeee">
 NA<br>Non-PC Hold<br>PC Hold
 </td>
 </tr>

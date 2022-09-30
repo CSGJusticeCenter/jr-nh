@@ -1,0 +1,277 @@
+---
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    theme: theme.css
+    self_contained: false
+---
+
+```{r include=FALSE}
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/01_functions_visuals.R")
+
+load(paste0(sp_data_path, "/Data/r_data/county_hu_1_pct_prop.Rda",      sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/county_hu_3_pct_prop.Rda",      sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/county_hu_5_pct_prop.Rda",      sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/county_pc_hold_recordings.Rda", sep = ""))
+
+county_name <- "Coos"
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
+  #dev = "ragg_png",
+  cache = FALSE
+  )
+```
+
+# Incarceration Patterns
+
+# Jail Bookings
+
+Coming soon.
+
+# Demographics
+
+Coming soon.
+
+
+# High Utilizers
+
+## Top 1%
+
+```{r, results='asis'}
+temp <- county_hu_1_pct_prop %>% filter(county == county_name) %>% filter(high_utilizer_1_pct == "Yes") %>% select(freq) 
+temp <- as.vector(temp)
+cat("**High Utilizers, when defined as the people in the top 1% of bookings per FY, accounted for ", round(temp$freq*100, 1), "% of all bookings between FY2019 and FY2021", ".**\n\n", sep = "")
+```
+
+```{r}
+df <- county_hu_1_pct_prop %>% filter(county == county_name) %>% ungroup() %>% select(-county) %>% droplevels() 
+reactable(df,
+         pagination = FALSE,
+         sortable = FALSE,
+         theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+         defaultColDef = reactable::colDef(
+          format = colFormat(separators = TRUE), align = "left",
+          footer = function(values, name) {
+            if (name %in% c("count_19", "count_20", "count_21", "total")) {
+              htmltools::div(paste0("", formatC(
+                x = sum(values),
+                digits = 0,
+                big.mark = ",",
+                format = "f"
+              )))
+            }
+          },
+          footerStyle = list(fontWeight = "bold")
+         ),
+         compact = TRUE,
+         fullWidth = FALSE,
+         rowStyle = function(index) {
+            if (index %in% c(4)) {
+              list(`border-top` = "thin solid")
+            }
+            else if (index %in% c(2)) {
+              list(fontWeight = "bold", background = "rgba(0, 0, 0, 0.05)")
+            }
+          },
+         columnGroups = list(
+           colGroup(name = "FY2019", columns = c("count_19", "pct_19")),
+           colGroup(name = "FY2020", columns = c("count_20", "pct_20")),
+           colGroup(name = "FY2021", columns = c("count_21", "pct_21")),
+           colGroup(name = "3 Years", columns = c("total", "freq"))
+           ),
+         columns = list(
+            high_utilizer_1_pct = colDef(minWidth = 200, name = "High Utilizer (Top 1%)", footer = "Total"),
+            count_19     = colDef(minWidth = 80,
+                                  name = "Count"),
+            pct_19       = colDef(minWidth = 80,
+                                  name = "%",
+                                  format = colFormat(percent = TRUE, digits = 1)),
+            count_20     = colDef(minWidth = 80,
+                                  name = "Count"),
+            pct_20       = colDef(minWidth = 80,
+                                  name = "%",
+                                  format = colFormat(percent = TRUE, digits = 1)),
+            count_21     = colDef(minWidth = 80,
+                                  name = "Count"),
+            pct_21       = colDef(minWidth = 80,
+                                  name = "%",
+                                  style = list(position = "sticky", borderRight = "1px solid #d3d3d3"),
+                                  format = colFormat(percent = TRUE, digits = 1)),
+            total        = colDef(minWidth = 100,
+                                  name = "Count"),
+            freq         = colDef(minWidth = 90,
+                                  name = "%",
+                                  format = colFormat(percent = TRUE, digits = 1))))
+```
+
+## Top 3%
+
+```{r, results='asis'}
+temp <- county_hu_3_pct_prop %>% filter(county == county_name) %>% filter(high_utilizer_3_pct == "Yes") %>% select(freq) 
+temp <- as.vector(temp)
+cat("**High Utilizers, when defined as the people in the top 3% of bookings per FY, accounted for ", round(temp$freq*100, 1), "% of all bookings between FY2019 and FY2021", ".**\n\n", sep = "")
+```
+
+```{r}
+df <- county_hu_3_pct_prop %>% filter(county == county_name) %>% ungroup() %>% select(-county) %>% droplevels() 
+reactable(df,
+         pagination = FALSE,
+         sortable = FALSE,
+         theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+         defaultColDef = reactable::colDef(
+          format = colFormat(separators = TRUE), align = "left",
+          footer = function(values, name) {
+            if (name %in% c("count_19", "count_20", "count_21", "total")) {
+              htmltools::div(paste0("", formatC(
+                x = sum(values),
+                digits = 0,
+                big.mark = ",",
+                format = "f"
+              )))
+            }
+          },
+          footerStyle = list(fontWeight = "bold")
+         ),
+         compact = TRUE,
+         fullWidth = FALSE,
+         rowStyle = function(index) {
+            if (index %in% c(4)) {
+              list(`border-top` = "thin solid")
+            }
+            else if (index %in% c(2)) {
+              list(fontWeight = "bold", background = "rgba(0, 0, 0, 0.05)")
+            }
+          },
+         columnGroups = list(
+           colGroup(name = "FY2019", columns = c("count_19", "pct_19")),
+           colGroup(name = "FY2020", columns = c("count_20", "pct_20")),
+           colGroup(name = "FY2021", columns = c("count_21", "pct_21")),
+           colGroup(name = "3 Years", columns = c("total", "freq"))
+           ),
+         columns = list(
+           high_utilizer_3_pct = colDef(minWidth = 200, name = "High Utilizer (Top 3%)", footer = "Total"),
+            count_19     = colDef(minWidth = 80,
+                                  name = "Count"),
+            pct_19       = colDef(minWidth = 80,
+                                  name = "%",
+                                  format = colFormat(percent = TRUE, digits = 1)),
+            count_20     = colDef(minWidth = 80,
+                                  name = "Count"),
+            pct_20       = colDef(minWidth = 80,
+                                  name = "%",
+                                  format = colFormat(percent = TRUE, digits = 1)),
+            count_21     = colDef(minWidth = 80,
+                                  name = "Count"),
+            pct_21       = colDef(minWidth = 80,
+                                  name = "%",
+                                  style = list(position = "sticky", borderRight = "1px solid #d3d3d3"),
+                                  format = colFormat(percent = TRUE, digits = 1)),
+            total        = colDef(minWidth = 100,
+                                  name = "Count"),
+            freq         = colDef(minWidth = 90,
+                                  name = "%",
+                                  format = colFormat(percent = TRUE, digits = 1))))
+```
+
+## Top 5%
+
+```{r, results='asis'}
+temp <- county_hu_5_pct_prop %>% filter(county == county_name) %>% filter(high_utilizer_5_pct == "Yes") %>% select(freq) 
+temp <- as.vector(temp)
+cat("**High Utilizers, when defined as the people in the top 5% of bookings per FY, accounted for ", round(temp$freq*100, 1), "% of all bookings between FY2019 and FY2021", ".**\n\n", sep = "")
+```
+
+```{r}
+df <- county_hu_5_pct_prop %>% filter(county == county_name) %>% ungroup() %>% select(-county) %>% droplevels() 
+reactable(df,
+          pagination = FALSE,
+          sortable = FALSE,
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left",
+            footer = function(values, name) {
+              if (name %in% c("count_19", "count_20", "count_21", "total")) {
+                htmltools::div(paste0("", formatC(
+                  x = sum(values),
+                  digits = 0,
+                  big.mark = ",",
+                  format = "f"
+                )))
+              }
+            },
+            footerStyle = list(fontWeight = "bold")
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          rowStyle = function(index) {
+            if (index %in% c(4)) {
+              list(`border-top` = "thin solid")
+            }
+            else if (index %in% c(2)) {
+              list(fontWeight = "bold", background = "rgba(0, 0, 0, 0.05)")
+            }
+          },
+          columnGroups = list(
+            colGroup(name = "FY2019", columns = c("count_19", "pct_19")),
+            colGroup(name = "FY2020", columns = c("count_20", "pct_20")),
+            colGroup(name = "FY2021", columns = c("count_21", "pct_21")),
+            colGroup(name = "3 Years", columns = c("total", "freq"))
+          ),
+          columns = list(
+            high_utilizer_5_pct = colDef(minWidth = 200, name = "High Utilizer (Top 5%)", footer = "Total"),
+            count_19     = colDef(minWidth = 80,
+                                  name = "Count"),
+            pct_19       = colDef(minWidth = 80,
+                                  name = "%",
+                                  format = colFormat(percent = TRUE, digits = 1)),
+            count_20     = colDef(minWidth = 80,
+                                  name = "Count"),
+            pct_20       = colDef(minWidth = 80,
+                                  name = "%",
+                                  format = colFormat(percent = TRUE, digits = 1)),
+            count_21     = colDef(minWidth = 80,
+                                  name = "Count"),
+            pct_21       = colDef(minWidth = 80,
+                                  name = "%",
+                                  style = list(position = "sticky", borderRight = "1px solid #d3d3d3"),
+                                  format = colFormat(percent = TRUE, digits = 1)),
+            total        = colDef(minWidth = 100,
+                                  name = "Count"),
+            freq         = colDef(minWidth = 90,
+                                  name = "%",
+                                  format = colFormat(percent = TRUE, digits = 1))))
+```
+
+# Protective Custody Holds
+
+## How Protective Custody Holds Are Recorded
+
+Each county records PC holds differently. PC holds are recorded in the charge description, booking type, sentence status, or release type, and sometimes across these metrics. 
+
+```{r}
+df <- county_pc_hold_recordings %>% filter(county == county_name) %>% ungroup() %>% select(-county) %>% droplevels() %>% arrange(-total)
+reactable(df,
+         pagination = FALSE,
+         theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+         defaultColDef = reactable::colDef(format = colFormat(separators = TRUE), align = "left"),
+         compact = TRUE,
+         fullWidth = FALSE,
+         columns = list(
+           booking_type    = colDef(minWidth = 250, name = "Booking Type"),
+           charge_desc     = colDef(minWidth = 250, name = "Charge Description"),
+           release_type    = colDef(minWidth = 250, name = "Release Type"),
+           sentence_status = colDef(minWidth = 250, name = "Sentence Status"),
+           total           = colDef(minWidth = 75,  name = "Total")))
+```
+
+---
+title: "`county_name` County"
+---

@@ -23,23 +23,23 @@ navbar:
     - text: "County Reports"
       menu:
         - text: "Belknap"
-          href: Belknap_county_report.html
+          href: county_report_Belknap.html
         - text: "Carroll"
-          href: Carroll_county_report.html
+          href: county_report_Carroll.html
         - text: "Cheshire"
-          href: Cheshire_county_report.html
+          href: county_report_Cheshire.html
         - text: "Coos"
-          href: Coos_county_report.html
+          href: county_report_Coos.html
         - text: "Hillsborough"
-          href: Hillsborough_county_report.html
+          href: county_report_Hillsborough.html
         - text: "Merrimack"
-          href: Merrimack_county_report.html
+          href: county_report_Merrimack.html
         - text: "Rockingham"
-          href: Rockingham_county_report.html
+          href: county_report_Rockingham.html
         - text: "Strafford"
-          href: Strafford_county_report.html
+          href: county_report_Strafford.html
         - text: "Sullivan"
-          href: Sullivan_county_report.html
+          href: county_report_Sullivan.html
     - text: "Research"
       menu:
         - text: "Data Availability"

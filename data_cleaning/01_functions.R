@@ -31,27 +31,27 @@ fnc_data_setup <- function(df){
                                   race_code == "P"  ~ "AAPI",
                                   race_code == "K"  ~ "Black Hispanic",
                                   race_code == "Asian/Pacific Islander" ~ "AAPI",
-                                  
-                                  
+
+
                                   race_code == "B"  ~ "Black",
                                   race_code == "Black" ~ "Black",
-                                  
+
                                   race_code == "H"  ~ "Hispanic",
                                   race_code == "L"  ~ "Hispanic",
-                                  
+
                                   race_code == "I"  ~ "American Indian Alaska Native",
                                   race_code == "American Indian/Alaskan Native" ~ "American Indian Alaska Native",
-                                  
+
                                   race_code == "U"  ~ "Unknown",
                                   race_code == "NH" ~ "Unknown",
                                   race_code == "N"  ~ "Unknown",
                                   race_code == "X"  ~ "Unknown",
                                   race_code == "Not Specified" ~ "Unknown",
                                   race_code == "Unknown" ~ "Unknown",
-                                  
+
                                   race_code == "O"  ~ "Other",
                                   race_code == "P"  ~ "Other",
-                                  
+
                                   race_code == "W"  ~ "White",
                                   race_code == "White" ~ "White")) %>%
     filter(fy == 2019 | fy == 2020 | fy == 2021) %>%
@@ -72,6 +72,15 @@ fnc_data_setup <- function(df){
                   los,
                   county,
                   fy)
+  df1 <- df1 %>% mutate(race = ifelse(race == "Unknown", NA, race),
+                        age = as.numeric(age)) %>%
+    filter(age >= 18) %>%
+    mutate(age = ifelse(age > 100, NA, age))
+  #  18–29, 30–39, and 40
+  df1 <- df1 %>% mutate(age_category
+                        = case_when(age <= 29 ~ "18-29 yo",
+                                    age >= 30 & age <= 39 ~ "30-39 yo",
+                                    age >= 40 ~ "40+ yo"))
 }
 
 # create booking id to get a sense of how many booking events occurred
@@ -107,25 +116,25 @@ fnc_pc_hold_variables <- function(df){
     mutate(pc_hold_booking = case_when(booking_type == "PROTECTIVE CUSTODY" ~ "PC Hold",
                                        is.na(booking_type) ~ "NA",
                                        TRUE ~ "Non-PC Hold"),
-           
+
            pc_hold_charge  = case_when(charge_desc == "PROTECTIVE CUSTODY"         | charge_desc == "PROTECTIVE CUSTODY/INTOXICATION" |
                                          charge_desc == "PROTECTIVE CUSTODY - DRUGS" | charge_desc == "Treatment and Services: Protective Custody" |
                                          charge_desc == "172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII" ~ "PC Hold",
                                        is.na(charge_desc) ~ "NA",
                                        TRUE ~ "Non-PC Hold"),
-           
+
            pc_hold_sentence = case_when(sentence_status == "PROTECTIVE CUSTODY" | sentence_status == "PROTECTIVE CUSTODY HOLD" ~ "PC Hold",
                                         is.na(sentence_status) ~ "NA",
                                         TRUE ~ "Non-PC Hold"),
-           
+
            pc_hold_release  = case_when(release_type == "PC Release" ~ "PC Hold",
                                         is.na(release_type) ~ "NA",
                                         TRUE ~ "Non-PC Hold")) %>%
-    
+
     mutate(pc_hold          = case_when(pc_hold_booking == "PC Hold" | pc_hold_charge == "PC Hold"| pc_hold_sentence == "PC Hold" | pc_hold_release == "PC Hold" ~ "PC Hold",
                                         pc_hold_booking == "NA" & pc_hold_charge == "NA" & pc_hold_sentence == "NA" & pc_hold_release == "NA" ~ "NA",
                                         TRUE ~ "Non-PC Hold"))
-  
+
 }
 
 ###########
@@ -152,7 +161,7 @@ fnc_create_high_utilizer_variables <- function(df){
            high_utilizer_5_pct = case_when(high_utilizer_5_pct == TRUE ~ "Yes",
                                            high_utilizer_5_pct == FALSE ~ "No")
     )
-  
+
 }
 
 ###########
@@ -175,6 +184,7 @@ fnc_sex_labels <- function(df){
       is.na(gender)      ~ "Unknown",
       TRUE ~ gender)) %>%
     distinct()
+  df1 <- df1 %>% mutate(gender = ifelse(gender == "Unknown", NA, gender))
 }
 
 ###########
@@ -183,7 +193,7 @@ fnc_sex_labels <- function(df){
 
 # add labels to data for data dictionaries
 fnc_add_data_labels <- function(df){
-  
+
   df1 <- df %>%
     select(id,
            inmate_id,
@@ -193,6 +203,7 @@ fnc_add_data_labels <- function(df){
            race,
            gender,
            age,
+           age_category,
            charge_code,
            charge_desc,
            booking_date,
@@ -213,7 +224,7 @@ fnc_add_data_labels <- function(df){
            pc_hold_sentence,
            pc_hold_release,
            pc_hold)
-  
+
   # change data types
   df1$id                  <- as.character(df1$id)
   df1$inmate_id           <- as.character(df1$inmate_id)
@@ -237,9 +248,10 @@ fnc_add_data_labels <- function(df){
   df1$pc_hold             <- as.factor(df1$pc_hold)
   df1$county              <- as.factor(df1$county)
   df1$age                 <- as.numeric(df1$age)
+  df1$age_category        <- as.factor(df1$age_category)
   df1$los                 <- as.numeric(df1$los)
   df1$los_max             <- as.numeric(df1$los_max)
-  
+
   # data labels
   var.labels <- c(id                  = "Unique ID",
                   inmate_id           = "Inmate ID",
@@ -249,6 +261,7 @@ fnc_add_data_labels <- function(df){
                   race                = "Race",
                   gender              = "Gender",
                   age                 = "Age (years)",
+                  age_category        = "Age category",
                   charge_code         = "Charge code",
                   charge_desc         = "Charge description",
                   booking_date        = "Booking date",
@@ -271,7 +284,7 @@ fnc_add_data_labels <- function(df){
                   pc_hold             = "Protective custody hold (in booking type, charge type, sentence status, or release type)")
   # add labels to data
   df1 <- labelled::set_variable_labels(df1, .labels = var.labels)
-  
+
 }
 
 
@@ -285,28 +298,28 @@ fnc_add_data_labels <- function(df){
 fnc_standardize_counties <- function(df, county){
   # Create fy, age, los, recode race, and order variables
   df1 <- fnc_data_setup(df)
-  
+
   # add booking id by id and booking date
   df1 <- fnc_booking_id(df1, county)
-  
+
   # calculate los
   df1 <- fnc_los(df1)
-  
+
   # create high utilizer variable
   df_hu <- fnc_create_high_utilizer_variables(df1)
   df1 <- left_join(df1, df_hu, by = c("id", "fy"))
-  
+
   # create a PC hold variables
   # some PC holds are indicated in the charge description but labeled as pretrial in the booking type
   # account for this by creating multiple pc hold variables
   df1 <- fnc_pc_hold_variables(df1)
-  
+
   # custom function to add sex code labels
   df1 <- fnc_sex_labels(df1)
-  
+
   # custom function to add data label
   df1 <- fnc_add_data_labels(df1)
-  
+
   # remove duplicates bc of release date issues
   df1 <- df1 %>% distinct()
 }
@@ -346,7 +359,7 @@ fnc_row_totals <- function(df){
     adorn_totals("row") %>%
     select(c(1, "freq"))
   df_freq <- merge(withnas, nonas, by.x = 1, by.y = 1, all.x = TRUE)
-  
+
   return(df_freq)
 }
 
@@ -394,7 +407,7 @@ fnc_variable_table <- function(df_19, df_20, df_21, variable_name){
   df_19_new <- fnc_variable_by_year(df_19, variable_name)
   df_20_new <- fnc_variable_by_year(df_20, variable_name)
   df_21_new <- fnc_variable_by_year(df_21, variable_name)
-  
+
   # rename variables for merging, indicate which year
   df_19_new <- df_19_new %>% dplyr::rename(count_19 = count,
                                            pct_19   = pct)
@@ -402,33 +415,33 @@ fnc_variable_table <- function(df_19, df_20, df_21, variable_name){
                                            pct_20   = pct)
   df_21_new <- df_21_new %>% dplyr::rename(count_21 = count,
                                            pct_21   = pct)
-  
+
   # join data
   df <- merge(df_19_new, df_20_new, by = "variable_name", all.x = TRUE, all.y = TRUE)
   df <- merge(df, df_21_new, by = "variable_name", all.x = TRUE, all.y = TRUE)
-  
+
   # create row totals and frequencies
   df[df == "NA%"] = NA
   df[is.na(df)] = 0
   df <- df %>%
     filter(variable_name != "Total")
   df <- fnc_replace_nas(df)
-  
+
   # get totals and frequencies without including NAs
-  # df <- fnc_row_totals(df)
-  df <- df %>%
-    mutate(total = count_19 + count_20 + count_21) %>%
-    mutate(freq = (total/sum(total, na.rm = TRUE)))
-  
+  df <- fnc_row_totals(df)
+  # df <- df %>%
+  #   mutate(total = count_19 + count_20 + count_21) %>%
+  #   mutate(freq = (total/sum(total, na.rm = TRUE)))
+
   # divide pcts by 100
   df <- df %>% mutate(pct_19 = pct_19/100,
                       pct_20 = pct_20/100,
                       pct_21 = pct_21/100)
-  
+
   # arrange table data
   df <- fnc_variable_table_desc(df)
   df[is.na(df)] = 0
-  
+
   return(df)
 }
 

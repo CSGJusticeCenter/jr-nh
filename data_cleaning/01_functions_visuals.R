@@ -17,19 +17,19 @@ fnc_table_settings <- function(gt_object){
     tab_options(#table.width = px(760),
       table.align = "left",
       heading.align = "left",
-      
+
       # remove row at top
       table.border.top.style = "hidden",
       # table.border.bottom.style = "transparent",
       heading.border.bottom.style = "hidden",
       table.border.bottom.color = "gray",
-      
+
       # need to set this to transparent so that cells_borders of the cells can display properly
       table_body.border.bottom.style = "transparent",
       table_body.border.top.style = "transparent",
       column_labels.border.bottom.width = px(2),
       column_labels.border.bottom.color = "gray",
-      
+
       # font sizes
       heading.title.font.size = px(14),
       heading.subtitle.font.size = px(12),
@@ -37,7 +37,7 @@ fnc_table_settings <- function(gt_object){
       table.font.size = px(12),
       source_notes.font.size = px(12),
       footnotes.font.size = px(12),
-      
+
       # row group label and border options
       row_group.font.size = px(12),
       row_group.border.top.style = "transparent",
@@ -92,18 +92,18 @@ fnc_booking_heatmap <- function(df){
 ###########
 
 fnc_covid_time_highchart <- function(df, yaxis_label, title){
-  
+
   counties <- df %>%
     mutate(county = as.character(county))
   counties <- unique(counties$county)
-  
+
   df1 <- df %>%
     dplyr::group_by(month_year, month_year_text) %>%
     dplyr::summarise(total = n())
   df1 <- df1 %>%
     mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"),
            month_year_text = as.factor(month_year_text))
-  
+
   chart <- df1 %>%
     hchart('line', hcaes(x = month_year_text, y = total), color = jri_dark_blue) %>%
     hc_setup() %>%
@@ -116,9 +116,9 @@ fnc_covid_time_highchart <- function(df, yaxis_label, title){
     hc_caption(
       text = (paste(" ", counties))
     )
-  
+
   return(chart)
-  
+
 }
 
 # custom highcharts theme for plots
@@ -170,12 +170,12 @@ fnc_freq_table <- function(df, title){
 ###########
 
 # show number of bookings by type by fiscal year
-# coos does not have booking type
+# coos, strafford does not have booking type
 fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, note){
-  
+
   df1 <- df %>%
     dplyr::rename(new_variable_name = 1)
-  
+
   # create reactable table of number/freq of booking types by fiscal year and for all 3 years
   fy_table <- reactable(df1,
                         pagination = FALSE,
@@ -229,7 +229,7 @@ fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, 
                                                 name = "%",
                                                 format = colFormat(percent = TRUE, digits = 1)))) %>%
     add_source(paste("Counties included: ", reactable_counties, ". ", note), font_style = "italic", font_size = 14)
-  
+
   return(fy_table)
 }
 
