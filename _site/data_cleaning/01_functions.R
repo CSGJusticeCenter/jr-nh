@@ -478,7 +478,8 @@ fnc_num_bookings_fy <- function(df, variable_name, logical){
                         fy = Var2,
                         new_variable_name = Freq) %>%
     filter(variable_name == logical) %>%
-    select(-variable_name)
+    select(-variable_name) %>%
+    mutate(fy = as.character(fy)) %>% mutate(fy = as.numeric(fy))
 }
 
 # calculate the average number of bookings for all three years (by HU for example)
@@ -526,7 +527,8 @@ fnc_num_bookings_fy_county <- function(df, variable_name, logical){
                         county = Var3,
                         new_variable_name = Freq) %>%
     filter(variable_name == logical) %>%
-    select(-variable_name)
+    select(-variable_name) %>%
+    mutate(fy = as.character(fy)) %>% mutate(fy = as.numeric(fy))
 }
 
 # calculate the average number of bookings for all three years (by HU for example)

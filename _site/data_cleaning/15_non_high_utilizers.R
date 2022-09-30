@@ -31,27 +31,27 @@ bookings_fy <- nh_booking %>%
   dplyr::summarise(total_bookings = n())
 
 # calculate the average number of bookings per year for HU 1%
-nonhu_avg_bookings_1_pct <- fnc_avg_bookings_fy(nh_booking, "high_utilizer_1_pct", "Yes")
+nonhu_avg_bookings_1_pct <- fnc_avg_bookings_fy(nh_booking, "high_utilizer_1_pct", "No")
 nonhu_avg_bookings_1_pct <- nonhu_avg_bookings_1_pct %>% dplyr::rename(avg_num_bookings_1_pct = new_variable_name)
 
 # calculate the number of bookings per year for HU 1%
-nonhu_num_bookings_1_pct <- fnc_num_bookings_fy(nh_booking, "high_utilizer_1_pct", "Yes")
+nonhu_num_bookings_1_pct <- fnc_num_bookings_fy(nh_booking, "high_utilizer_1_pct", "No")
 nonhu_num_bookings_1_pct <- nonhu_num_bookings_1_pct %>% dplyr::rename(num_bookings_1_pct = new_variable_name)
 
 # calculate the average number of bookings per year for HU 3%
-nonhu_avg_bookings_3_pct <- fnc_avg_bookings_fy(nh_booking, "high_utilizer_3_pct", "Yes")
+nonhu_avg_bookings_3_pct <- fnc_avg_bookings_fy(nh_booking, "high_utilizer_3_pct", "No")
 nonhu_avg_bookings_3_pct <- nonhu_avg_bookings_3_pct %>% dplyr::rename(avg_num_bookings_3_pct = new_variable_name)
 
 # calculate the number of bookings per year for HU 3%
-nonhu_num_bookings_3_pct <- fnc_num_bookings_fy(nh_booking, "high_utilizer_3_pct", "Yes")
+nonhu_num_bookings_3_pct <- fnc_num_bookings_fy(nh_booking, "high_utilizer_3_pct", "No")
 nonhu_num_bookings_3_pct <- nonhu_num_bookings_3_pct %>% dplyr::rename(num_bookings_3_pct = new_variable_name)
 
 # calculate the average number of bookings per year for HU 5%
-nonhu_avg_bookings_5_pct <- fnc_avg_bookings_fy(nh_booking, "high_utilizer_5_pct", "Yes")
+nonhu_avg_bookings_5_pct <- fnc_avg_bookings_fy(nh_booking, "high_utilizer_5_pct", "No")
 nonhu_avg_bookings_5_pct <- nonhu_avg_bookings_5_pct %>% dplyr::rename(avg_num_bookings_5_pct = new_variable_name)
 
 # calculate the number of bookings per year for HU 5%
-nonhu_num_bookings_5_pct <- fnc_num_bookings_fy(nh_booking, "high_utilizer_5_pct", "Yes")
+nonhu_num_bookings_5_pct <- fnc_num_bookings_fy(nh_booking, "high_utilizer_5_pct", "No")
 nonhu_num_bookings_5_pct <- nonhu_num_bookings_5_pct %>% dplyr::rename(num_bookings_5_pct = new_variable_name)
 
 ##################
@@ -66,27 +66,27 @@ bookings_fy_3yr <- nh_booking %>%
   summarise(total_bookings = n())
 
 # calculate the average number of bookings for all three years for HU 1%
-nonhu_avg_bookings_1_pct_3yr <- fnc_avg_bookings_3yr(nh_booking, "high_utilizer_1_pct", "Yes")
+nonhu_avg_bookings_1_pct_3yr <- fnc_avg_bookings_3yr(nh_booking, "high_utilizer_1_pct", "No")
 nonhu_avg_bookings_1_pct_3yr <- nonhu_avg_bookings_1_pct_3yr %>% dplyr::rename(avg_num_bookings_1_pct = new_variable_name)
 
 # calculate the number of bookings for all three years for HU 1%
-nonhu_num_bookings_1_pct_3yr <- fnc_num_bookings_3yr(nh_booking, "high_utilizer_1_pct", "Yes")
+nonhu_num_bookings_1_pct_3yr <- fnc_num_bookings_3yr(nh_booking, "high_utilizer_1_pct", "No")
 nonhu_num_bookings_1_pct_3yr <- nonhu_num_bookings_1_pct_3yr %>% dplyr::rename(num_bookings_1_pct = new_variable_name)
 
 # calculate the average number of bookings for all three years for HU 3%
-nonhu_avg_bookings_3_pct_3yr <- fnc_avg_bookings_3yr(nh_booking, "high_utilizer_3_pct", "Yes")
+nonhu_avg_bookings_3_pct_3yr <- fnc_avg_bookings_3yr(nh_booking, "high_utilizer_3_pct", "No")
 nonhu_avg_bookings_3_pct_3yr <- nonhu_avg_bookings_3_pct_3yr %>% dplyr::rename(avg_num_bookings_3_pct = new_variable_name)
 
 # calculate the number of bookings for all three years for HU 3%
-nonhu_num_bookings_3_pct_3yr <- fnc_num_bookings_3yr(nh_booking, "high_utilizer_3_pct", "Yes")
+nonhu_num_bookings_3_pct_3yr <- fnc_num_bookings_3yr(nh_booking, "high_utilizer_3_pct", "No")
 nonhu_num_bookings_3_pct_3yr <- nonhu_num_bookings_3_pct_3yr %>% dplyr::rename(num_bookings_3_pct = new_variable_name)
 
 # calculate the average number of bookings for all three years for HU 5%
-nonhu_avg_bookings_5_pct_3yr <- fnc_avg_bookings_3yr(nh_booking, "high_utilizer_5_pct", "Yes")
+nonhu_avg_bookings_5_pct_3yr <- fnc_avg_bookings_3yr(nh_booking, "high_utilizer_5_pct", "No")
 nonhu_avg_bookings_5_pct_3yr <- nonhu_avg_bookings_5_pct_3yr %>% dplyr::rename(avg_num_bookings_5_pct = new_variable_name)
 
 # calculate the number of bookings for all three years for HU 5%
-nonhu_num_bookings_5_pct_3yr <- fnc_num_bookings_3yr(nh_booking, "high_utilizer_5_pct", "Yes")
+nonhu_num_bookings_5_pct_3yr <- fnc_num_bookings_3yr(nh_booking, "high_utilizer_5_pct", "No")
 nonhu_num_bookings_5_pct_3yr <- nonhu_num_bookings_5_pct_3yr %>% dplyr::rename(num_bookings_5_pct = new_variable_name)
 
 ##################
@@ -126,11 +126,11 @@ df_nonhu_bookings_table <-
   left_join(nonhu_avg_bookings_5_pct,  by = c("fy")) %>%
   left_join(nonhu_num_bookings_5_pct,  by = c("fy")) %>%
   left_join(bookings_fy, by = c("fy")) %>%
-  
+
   mutate(prop_bookings_1_pct = num_bookings_1_pct/total_bookings,
          prop_bookings_3_pct = num_bookings_3_pct/total_bookings,
          prop_bookings_5_pct = num_bookings_5_pct/total_bookings) %>%
-  
+
   select(fy,
          num_bookings_1_pct, prop_bookings_1_pct, avg_num_bookings_1_pct,
          num_bookings_3_pct, prop_bookings_3_pct, avg_num_bookings_3_pct,
@@ -179,7 +179,7 @@ nonhu_bookings_table <- reactable(df_nonhu_bookings_table,
                                     num_bookings_5_pct     = colDef(minWidth = 80, name = "#"),
                                     prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
                                     avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                    
+
                                     total_bookings         = colDef(minWidth = 80, name = "Total")))
 
 
@@ -199,27 +199,27 @@ bookings_fy <- nh_booking %>%
   summarise(total_bookings = n())
 
 # calculate the average number of bookings per county for HU 1%
-nonhu_avg_bookings_1_pct <- fnc_avg_bookings_fy_county(nh_booking, "high_utilizer_1_pct", "Yes")
+nonhu_avg_bookings_1_pct <- fnc_avg_bookings_fy_county(nh_booking, "high_utilizer_1_pct", "No")
 nonhu_avg_bookings_1_pct <- nonhu_avg_bookings_1_pct %>% dplyr::rename(avg_num_bookings_1_pct = new_variable_name)
 
 # calculate the total number of bookings per county for HU 1%
-nonhu_num_bookings_1_pct <- fnc_num_bookings_fy_county(nh_booking, "high_utilizer_1_pct", "Yes")
+nonhu_num_bookings_1_pct <- fnc_num_bookings_fy_county(nh_booking, "high_utilizer_1_pct", "No")
 nonhu_num_bookings_1_pct <- nonhu_num_bookings_1_pct %>% dplyr::rename(num_bookings_1_pct = new_variable_name)
 
 # calculate the average number of bookings per county for HU 3%
-nonhu_avg_bookings_3_pct <- fnc_avg_bookings_fy_county(nh_booking, "high_utilizer_3_pct", "Yes")
+nonhu_avg_bookings_3_pct <- fnc_avg_bookings_fy_county(nh_booking, "high_utilizer_3_pct", "No")
 nonhu_avg_bookings_3_pct <- nonhu_avg_bookings_3_pct %>% dplyr::rename(avg_num_bookings_3_pct = new_variable_name)
 
 # calculate the total number of bookings per county for HU 3%
-nonhu_num_bookings_3_pct <- fnc_num_bookings_fy_county(nh_booking, "high_utilizer_3_pct", "Yes")
+nonhu_num_bookings_3_pct <- fnc_num_bookings_fy_county(nh_booking, "high_utilizer_3_pct", "No")
 nonhu_num_bookings_3_pct <- nonhu_num_bookings_3_pct %>% dplyr::rename(num_bookings_3_pct = new_variable_name)
 
 # calculate the average number of bookings per county for HU 5%
-nonhu_avg_bookings_5_pct <- fnc_avg_bookings_fy_county(nh_booking, "high_utilizer_5_pct", "Yes")
+nonhu_avg_bookings_5_pct <- fnc_avg_bookings_fy_county(nh_booking, "high_utilizer_5_pct", "No")
 nonhu_avg_bookings_5_pct <- nonhu_avg_bookings_5_pct %>% dplyr::rename(avg_num_bookings_5_pct = new_variable_name)
 
 # calculate the total number of bookings per county for HU 5%
-nonhu_num_bookings_5_pct <- fnc_num_bookings_fy_county(nh_booking, "high_utilizer_5_pct", "Yes")
+nonhu_num_bookings_5_pct <- fnc_num_bookings_fy_county(nh_booking, "high_utilizer_5_pct", "No")
 nonhu_num_bookings_5_pct <- nonhu_num_bookings_5_pct %>% dplyr::rename(num_bookings_5_pct = new_variable_name)
 
 ######
@@ -234,27 +234,27 @@ bookings_fy_3yr <- nh_booking %>%
   summarise(total_bookings = n())
 
 # calculate the average number of bookings for all three years for HU 1% by county
-nonhu_avg_bookings_1_pct_3yr <- fnc_avg_bookings_3yr_county(nh_booking, "high_utilizer_1_pct", "Yes")
+nonhu_avg_bookings_1_pct_3yr <- fnc_avg_bookings_3yr_county(nh_booking, "high_utilizer_1_pct", "No")
 nonhu_avg_bookings_1_pct_3yr <- nonhu_avg_bookings_1_pct_3yr %>% dplyr::rename(avg_num_bookings_1_pct = new_variable_name)
 
 # calculate the number of bookings for all three years for HU 1% by county
-nonhu_num_bookings_1_pct_3yr <- fnc_num_bookings_3yr_county(nh_booking, "high_utilizer_1_pct", "Yes")
+nonhu_num_bookings_1_pct_3yr <- fnc_num_bookings_3yr_county(nh_booking, "high_utilizer_1_pct", "No")
 nonhu_num_bookings_1_pct_3yr <- nonhu_num_bookings_1_pct_3yr %>% dplyr::rename(num_bookings_1_pct = new_variable_name)
 
 # calculate the average number of bookings for all three years for HU 3% by county
-nonhu_avg_bookings_3_pct_3yr <- fnc_avg_bookings_3yr_county(nh_booking, "high_utilizer_3_pct", "Yes")
+nonhu_avg_bookings_3_pct_3yr <- fnc_avg_bookings_3yr_county(nh_booking, "high_utilizer_3_pct", "No")
 nonhu_avg_bookings_3_pct_3yr <- nonhu_avg_bookings_3_pct_3yr %>% dplyr::rename(avg_num_bookings_3_pct = new_variable_name)
 
 # calculate the number of bookings for all three years for HU 3% by county
-nonhu_num_bookings_3_pct_3yr <- fnc_num_bookings_3yr_county(nh_booking, "high_utilizer_3_pct", "Yes")
+nonhu_num_bookings_3_pct_3yr <- fnc_num_bookings_3yr_county(nh_booking, "high_utilizer_3_pct", "No")
 nonhu_num_bookings_3_pct_3yr <- nonhu_num_bookings_3_pct_3yr %>% dplyr::rename(num_bookings_3_pct = new_variable_name)
 
 # calculate the average number of bookings for all three years for HU 5% by county
-nonhu_avg_bookings_5_pct_3yr <- fnc_avg_bookings_3yr_county(nh_booking, "high_utilizer_5_pct", "Yes")
+nonhu_avg_bookings_5_pct_3yr <- fnc_avg_bookings_3yr_county(nh_booking, "high_utilizer_5_pct", "No")
 nonhu_avg_bookings_5_pct_3yr <- nonhu_avg_bookings_5_pct_3yr %>% dplyr::rename(avg_num_bookings_5_pct = new_variable_name)
 
 # calculate the number of bookings for all three years for HU 5% by county
-nonhu_num_bookings_5_pct_3yr <- fnc_num_bookings_3yr_county(nh_booking, "high_utilizer_5_pct", "Yes")
+nonhu_num_bookings_5_pct_3yr <- fnc_num_bookings_3yr_county(nh_booking, "high_utilizer_5_pct", "No")
 nonhu_num_bookings_5_pct_3yr <- nonhu_num_bookings_5_pct_3yr %>% dplyr::rename(num_bookings_5_pct = new_variable_name)
 
 ######
@@ -293,11 +293,11 @@ df_nonhu_bookings_table <-
   left_join(nonhu_avg_bookings_5_pct,  by = c("county", "fy")) %>%
   left_join(nonhu_num_bookings_5_pct,  by = c("county", "fy")) %>%
   left_join(bookings_fy, by = c("county", "fy")) %>%
-  
+
   mutate(prop_bookings_1_pct = num_bookings_1_pct/total_bookings,
          prop_bookings_3_pct = num_bookings_3_pct/total_bookings,
          prop_bookings_5_pct = num_bookings_5_pct/total_bookings) %>%
-  
+
   select(county,
          fy,
          num_bookings_1_pct, prop_bookings_1_pct, avg_num_bookings_1_pct,
@@ -307,6 +307,7 @@ df_nonhu_bookings_table <-
 
 # combine data
 # round data
+df_nonhu_bookings_table <- df_nonhu_bookings_table %>% mutate(fy = as.character(fy))
 df_nonhu_bookings_table <- rbind(df_nonhu_bookings_table, df_nonhu_bookings_table_totals)
 df_nonhu_bookings_table <- df_nonhu_bookings_table %>%
   mutate(
@@ -357,7 +358,7 @@ nonhu_bookings_table_by_county <- reactable(elementId = "nonhu_bookings_table_by
                                               num_bookings_5_pct     = colDef(minWidth = 75, name = "#"),
                                               prop_bookings_5_pct    = colDef(minWidth = 75, name = "%", format = colFormat(percent = TRUE, digits = 1)),
                                               avg_num_bookings_5_pct = colDef(minWidth = 75, name = "Avg/Yr", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                              
+
                                               total_bookings         = colDef(minWidth = 75, name = "Total")))
 
 ############################################################################################################
