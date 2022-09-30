@@ -26,6 +26,20 @@ navbar:
           href: Belknap_county_report.html
         - text: "Carroll"
           href: Carroll_county_report.html
+        - text: "Cheshire"
+          href: Cheshire_county_report.html
+        - text: "Coos"
+          href: Coos_county_report.html
+        - text: "Hillsborough"
+          href: Hillsborough_county_report.html
+        - text: "Merrimack"
+          href: Merrimack_county_report.html
+        - text: "Rockingham"
+          href: Rockingham_county_report.html
+        - text: "Strafford"
+          href: Strafford_county_report.html
+        - text: "Sullivan"
+          href: Sullivan_county_report.html
     - text: "Research"
       menu:
         - text: "Data Availability"
