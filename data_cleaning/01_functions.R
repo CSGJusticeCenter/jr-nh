@@ -237,16 +237,16 @@ fnc_add_data_labels <- function(df){
   df1$booking_type        <- as.factor(df1$booking_type)
   df1$release_type        <- as.factor(df1$release_type)
   df1$sentence_status     <- as.factor(df1$sentence_status)
-  df1$fy                  <- as.factor(df1$fy)
-  df1$high_utilizer_1_pct <- as.factor(df1$high_utilizer_1_pct)
-  df1$high_utilizer_3_pct <- as.factor(df1$high_utilizer_3_pct)
-  df1$high_utilizer_5_pct <- as.factor(df1$high_utilizer_5_pct)
+  df1$fy                  <- as.numeric(df1$fy)
+  df1$high_utilizer_1_pct <- as.character(df1$high_utilizer_1_pct)
+  df1$high_utilizer_3_pct <- as.character(df1$high_utilizer_3_pct)
+  df1$high_utilizer_5_pct <- as.character(df1$high_utilizer_5_pct)
   df1$pc_hold_booking     <- as.factor(df1$pc_hold_booking)
   df1$pc_hold_charge      <- as.factor(df1$pc_hold_charge)
   df1$pc_hold_sentence    <- as.factor(df1$pc_hold_sentence)
   df1$pc_hold_release     <- as.factor(df1$pc_hold_release)
   df1$pc_hold             <- as.factor(df1$pc_hold)
-  df1$county              <- as.factor(df1$county)
+  df1$county              <- as.character(df1$county)
   df1$age                 <- as.numeric(df1$age)
   df1$age_category        <- as.factor(df1$age_category)
   df1$los                 <- as.numeric(df1$los)
@@ -543,10 +543,10 @@ fnc_avg_bookings_3yr_county <- function(df, variable_name, logical){
 # calculate the total number of bookings for all three years (by HU for example)############################
 fnc_num_bookings_3yr_county <- function(df, variable_name, logical){
   df$variable_name <- get(variable_name, df)
-  df1 <- df %>% select(variable_name, county, booking_id) %>% distinct()
-  df1 <- table(df$variable_name, df$county)
+  df1 <- df %>% dplyr::select(variable_name, county, booking_id) %>% dplyr::distinct()
+  df1 <- table(df1$variable_name, df1$county)
   df1 <- as.data.frame(df1)
-  df1 <- df1 %>% select(variable_name = Var1,
+  df1 <- df1 %>% dplyr::select(variable_name = Var1,
                         county = Var2,
                         new_variable_name = Freq) %>%
     filter(variable_name == logical) %>%
