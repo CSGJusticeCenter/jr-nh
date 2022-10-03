@@ -421,7 +421,6 @@ nh_pc_holds_county <- nh_pc_holds_county %>%
          freq) %>%
   filter(county != "Coos" & county != "Strafford") %>% droplevels()
 
-
 # format into a reactable table
 nh_pc_holds_county <- fnc_reactable_fy(nh_pc_holds_county, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table. Strafford did not provide data on charges or booking types so they are also excluded (12,233 bookings).")
 

@@ -88,10 +88,10 @@ save(rockingham_adm1,   file=paste0(sp_data_path, "/Data/r_data/rockingham_adm.R
 save(strafford_adm1,    file=paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda",    sep = ""))
 save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
 
-######
+####################################################
 # STATE-WIDE DATA
 # combine county data or large NH dataframe with all charge descriptions
-######
+####################################################
 
 nh_adm_all <- rbind(belknap_adm1,
                     carroll_adm1,
@@ -111,6 +111,28 @@ nh_adm_all <- nh_adm_all %>%
   mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
   filter(los_max >= 0 | is.na(los_max))
 dim(nh_adm_all) # 73,179
+
+# Some instances where PC holds are recorded but shouldn't be flagged as such (e.g. temporary removal or transfer)
+nh_adm_all <- nh_adm_all %>%
+  mutate(pc_hold = ifelse(charge_desc == "TEMPORARY REMOVAL OR TRANSFER" & sentence_status == "PROTECTIVE CUSTODY", "Non-PC Hold", pc_hold))
+dim(nh_adm_all) # 73,179
+View(nh_adm_all)
+
+# replace "NA" with actual NA
+nh_adm_all <- nh_adm_all %>%
+  mutate(pc_hold = ifelse(pc_hold == "NA", NA, pc_hold)) %>%
+  mutate(pc_hold = case_when(pc_hold == 2 ~ "PC Hold",
+                             pc_hold == 1 ~ "Non-PC Hold"))
+
+##########
+# Standardize bookings ???????????????????????????????????
+##########
+
+# nh_adm_all <- nh_adm_all %>%
+#   mutate(booking_type_standard =
+#   case_when(booking_type == "24 HOUR DETENTION REQUEST" ~ "")
+#
+#   )
 
 ####################################################
 # Charges dataframe
@@ -190,12 +212,6 @@ nh_booking <- nh_adm_all %>%
   mutate(month_year_text = format(as.Date(booking_date, "%d/%m/%Y"), "%b %Y"),
          month_year      = as.Date(as.yearmon(month_year_text))) %>%
   distinct()
-
-# replace "NA" with actual NA ??????????????????????????????????
-nh_booking <- nh_booking %>%
-  mutate(pc_hold = ifelse(pc_hold == "NA", NA, pc_hold)) %>%
-  mutate(pc_hold = case_when(pc_hold == 2 ~ "PC Hold",
-                             pc_hold == 1 ~ "Non-PC Hold"))
 
 # make all booking types uppercase to remove differences in case
 nh_booking <- nh_booking %>%
@@ -298,3 +314,4 @@ dim(nh_pch); length(unique(nh_pch$booking_id)) # 38671
 counties <- nh_adm_all$county %>%
   unique() %>%
   sort()
+
