@@ -69,3 +69,7 @@ The table below shows the number of non-HU bookings, proportion of non-HU bookin
 nonhu_bookings_table_by_county
 ```
 
+# What Proportion of HU Bookings are PC Holds?
+
+
+

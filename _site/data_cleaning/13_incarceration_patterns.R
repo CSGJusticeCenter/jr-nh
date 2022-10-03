@@ -25,9 +25,9 @@ length(unique(nh_booking$booking_id)) # 51575
 all_booking_dates <- nh_booking %>% select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>% distinct()
 dim(all_booking_dates); length(unique(all_booking_dates$booking_id)) # 51575
 
-##################
+######################################################
 # How many individual people were booked into New Hampshire jails annually?
-##################
+######################################################
 
 ###
 # by state
@@ -139,9 +139,9 @@ nh_people_booked_county <- reactable(nh_people_booked_county,
                                                         style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
                                        `total` = colDef(minWidth = 80, name = "Total", align = "center")))
 
-##################
+######################################################
 # How bookings does NH have per fiscal year?
-##################
+######################################################
 
 ###
 # by state
@@ -197,7 +197,10 @@ nh_bookings_amt <- format(round(as.numeric(nh_bookings_amt), 0), nsmall=0, big.m
 # get counties included
 nh_counties <- fnc_counties_in_data(nh_booking)
 
-# bar chart showing the number of bookings by FY
+##########
+# Highchart bar chart showing the number of bookings by FY
+##########
+
 showtext_auto()
 nh_bookings_barchart <- df_bookings_events %>%
   hchart('column', hcaes(x = fy, y = total, color = jri_light_blue)) %>%
@@ -337,19 +340,10 @@ nh_booking_types <- reactable(df_booking,
 
 ###########
 # Highchart pc holds over time
-# remove Coos because hthey delete the entire booking if it's a PC hold
+# remove Coos and Strafford because they don't have data on PC holds. Coos deletes the entire entry.
 ###########
 
-# # detach(package:plyr)
-# df_pch <- df_bookings_events_all %>%
-#   filter(county != "Coos") %>%
-#   dplyr::group_by(booking_id) %>%
-#   mutate(all_hold_types=paste(sort(unique(pc_hold)), collapse="&")) %>%
-#   mutate(pc_hold_in_booking = ifelse(all_hold_types == 'Non-PC Hold&PC Hold' | all_hold_types == 'PC Hold', "PC Hold Booking", "Non-PC Hold Booking")) %>%
-#   select(booking_id, pc_hold_in_booking, county, fy) %>%
-#   distinct()
-# dim(df_pch)
-
+# remove Coos and Strafford
 all_booking_dates_no_coos_strafford <- all_booking_dates %>% filter(county != "Coos" & county != "Strafford") %>% droplevels()
 df_pch <- merge(nh_pch, all_booking_dates_no_coos_strafford, by = c("id", "booking_id", "county"), all.x = TRUE)
 
@@ -431,11 +425,11 @@ nh_pc_holds_county <- fnc_reactable_fy(nh_pc_holds_county, metric_label = " ", l
 # select PC hold recordings to show how each county records pc holds (charge_desc, booking_type, sentence_status, release_type)
 # county_pc_hold_recordings <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>%
 #   select(county, charge_desc, booking_type, sentence_status, release_type) %>% distinct()
-county_pc_hold_recordings <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>% distinct() %>%
-  group_by(county, charge_desc, booking_type, sentence_status, release_type) %>%
+county_pc_hold_recordings <- nh_adm_all %>%
+  dplyr::filter(pc_hold == "PC Hold") %>%
+  dplyr::group_by(county, charge_desc, booking_type, sentence_status, release_type) %>%
   dplyr::summarise(total = n()) %>%
-  distinct() %>%
-  mutate(total = formattable::comma(total, digits = 0))
+  dplyr::mutate(total = formattable::comma(total, digits = 0))
 
 ############################################################################################################
 # What was the average length of incarceration in jail?
@@ -455,9 +449,9 @@ county_pc_hold_recordings <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>% dis
 # temp <- nh_booking %>% select(county, id, booking_id, los) %>% distinct()
 # dim(temp); length(unique(temp$booking_id)) # 51,581
 
-nh_booking_no_pchs <- nh_booking %>% filter(pc_hold_in_booking == "Non-PC Hold Booking") # 34,632
+nh_booking_no_pchs <- nh_booking %>% filter(pc_hold_in_booking == "Non-PC Hold Booking") # 34294
 nh_booking_no_pchs <- nh_booking_no_pchs %>% select(county, id, booking_id, los) %>% distinct()
-dim(nh_booking_no_pchs); length(unique(nh_booking_no_pchs$booking_id)) # 31,536
+dim(nh_booking_no_pchs); length(unique(nh_booking_no_pchs$booking_id)) # 31200
 # dups <- nh_booking_no_pchs[duplicated(nh_booking_no_pchs$booking_id)|duplicated(nh_booking_no_pchs$booking_id, fromLast=TRUE),]
 
 library(vtable)

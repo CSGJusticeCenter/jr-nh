@@ -14,9 +14,9 @@
 # nh_sentence_statuses
 ############################################
 
-######
-# Standardize and save data
-######
+##########
+# Standardize data
+##########
 
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions_visuals.R")
@@ -49,35 +49,102 @@ temp <- strafford_adm %>% anti_join(dups)
 dups <- dups %>% group_by(booking_id) %>% filter(!is.na(race)) %>% droplevels() %>% distinct()
 strafford_adm <- rbind(temp, dups)
 
+##################################################
 # remove LOS and release date duplicates due to release date issues
-belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct()
+# fix PC hold recordings if needed
+##################################################
+
+##########
+# Belknap
+##########
+
+# if charge is present then it was a mistake to book them as a PC hold
+belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
+  mutate(pc_hold = ifelse((charge_desc == "TEMPORARY REMOVAL OR TRANSFER" |
+                           charge_desc == "RESIST ARREST OR DETENTION 642:2" |
+                           charge_desc == "DISORDERLY CONDUCT 644:2" |
+                           charge_desc == "DRIVING OR OPERATING UNDER THE INFLUENCE OF DRUGSOR LIQUOR 265-A:2" |
+                           charge_desc == "RESISTING ARREST 594:5"|
+                           charge_desc == "VIOLATION OF PROTECTIVE ORDER")
+                          & booking_type == "PROTECTIVE CUSTODY", "Non-PC Hold", pc_hold))
+table(belknap_adm1$pc_hold)
+belknap_adm1 <- belknap_adm1 %>%
+  mutate(pc_hold = as.character(pc_hold)) %>%
+  mutate(pc_hold = case_when(pc_hold == "2" ~ "PC Hold",
+                             pc_hold == "1" ~ "Non-PC Hold",
+                             pc_hold == "Non-PC Hold" ~ "Non-PC Hold"))
+table(belknap_adm1$pc_hold)
 dim(belknap_adm1); dim(belknap_adm)
+
+##########
+# Carroll
+##########
 
 carroll_adm1 <- carroll_adm %>% select(-c(los, release_date)) %>% distinct()
 dim(carroll_adm1); dim(carroll_adm)
 
-cheshire_adm1 <- cheshire_adm %>% select(-c(los, release_date)) %>% distinct()
-dim(cheshire_adm1); dim(cheshire_adm)
+##########
+# Cheshire
+##########
+
+# if charge is temporary removal or transfer and sentence status indicates PC hold then it isn't a PC hold
+cheshire_adm1 <- cheshire_adm %>% select(-c(los, release_date)) %>% distinct() %>%
+  mutate(pc_hold = ifelse(charge_desc == "TEMPORARY REMOVAL OR TRANSFER" & sentence_status == "PROTECTIVE CUSTODY", "Non-PC Hold", pc_hold))
+table(cheshire_adm1$pc_hold)
+cheshire_adm1 <- cheshire_adm1 %>%
+  mutate(pc_hold = as.character(pc_hold)) %>%
+  mutate(pc_hold = case_when(pc_hold == "2" ~ "PC Hold",
+                             pc_hold == "1" ~ "Non-PC Hold",
+                             pc_hold == "Non-PC Hold" ~ "Non-PC Hold"))
+table(cheshire_adm1$pc_hold)
+dim(cheshire_adm1); dim(belknap_adm)
+
+##########
+# Coos
+##########
 
 coos_adm1 <- coos_adm %>% select(-c(los, release_date)) %>% distinct()
 dim(coos_adm1); dim(coos_adm)
 
+##########
+# Hillsborough
+##########
+
 hillsborough_adm1 <- hillsborough_adm %>% select(-c(los, release_date)) %>% distinct()
 dim(hillsborough_adm1); dim(hillsborough_adm)
+
+##########
+# Merrimack
+##########
 
 merrimack_adm1 <- merrimack_adm %>% select(-c(los, release_date)) %>% distinct()
 dim(merrimack_adm1); dim(merrimack_adm)
 
+##########
+# Rockingham
+##########
+
 rockingham_adm1 <- rockingham_adm %>% select(-c(los, release_date)) %>% distinct()
 dim(rockingham_adm1); dim(rockingham_adm)
+
+##########
+# Strafford
+##########
 
 strafford_adm1 <- strafford_adm %>% select(-c(los, release_date)) %>% distinct()
 dim(strafford_adm1); dim(strafford_adm)
 
+##########
+# Sullivan
+##########
+
 sullivan_adm1 <- sullivan_adm %>% select(-c(los, release_date)) %>% distinct()
 dim(sullivan_adm1); dim(sullivan_adm)
 
+##########
 # save data to SP
+##########
+
 save(belknap_adm1,      file=paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",      sep = ""))
 save(carroll_adm1,      file=paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda",      sep = ""))
 save(cheshire_adm1,     file=paste0(sp_data_path, "/Data/r_data/cheshire_adm.Rda",     sep = ""))
@@ -112,17 +179,11 @@ nh_adm_all <- nh_adm_all %>%
   filter(los_max >= 0 | is.na(los_max))
 dim(nh_adm_all) # 73,179
 
-# Some instances where PC holds are recorded but shouldn't be flagged as such (e.g. temporary removal or transfer)
-nh_adm_all <- nh_adm_all %>%
-  mutate(pc_hold = ifelse(charge_desc == "TEMPORARY REMOVAL OR TRANSFER" & sentence_status == "PROTECTIVE CUSTODY", "Non-PC Hold", pc_hold))
-dim(nh_adm_all) # 73,179
-View(nh_adm_all)
-
-# replace "NA" with actual NA
-nh_adm_all <- nh_adm_all %>%
-  mutate(pc_hold = ifelse(pc_hold == "NA", NA, pc_hold)) %>%
-  mutate(pc_hold = case_when(pc_hold == 2 ~ "PC Hold",
-                             pc_hold == 1 ~ "Non-PC Hold"))
+# # replace "NA" with actual NA
+# nh_adm_all <- nh_adm_all %>%
+#   mutate(pc_hold = ifelse(pc_hold == "NA", NA, pc_hold)) %>%
+#   mutate(pc_hold = case_when(pc_hold == 2 ~ "PC Hold",
+#                              pc_hold == 1 ~ "Non-PC Hold"))
 
 ##########
 # Standardize bookings ???????????????????????????????????
@@ -234,10 +295,6 @@ dim(nh_booking)                       # 54813
 length(unique(nh_booking$booking_id)) # 51575
 dups <- nh_booking[duplicated(nh_booking$booking_id)|duplicated(nh_booking$booking_id, fromLast=TRUE),] # 5963
 
-# there will not be one booking id per row because people can have multiple booking types per booking episode
-# Belknap      Carroll     Cheshire         Coos Hillsborough    Merrimack   Rockingham    Strafford     Sullivan
-# 4          925          459            0           10         1995         2334            2          237
-
 # combine booking types by booking id
 nh_booking <- nh_booking %>%
   group_by(booking_id) %>%
@@ -245,20 +302,10 @@ nh_booking <- nh_booking %>%
   select(county: booking_type, all_booking_types, everything()) %>%
   distinct()
 
-# temp <- nh_booking %>% select(booking_id, all_booking_types) %>% distinct()
-# dim(temp); length(unique(temp$booking_id))
-# temp <- temp %>% group_by(booking_id) %>% summarise(n = n())
-
 # sep by fy year
-nh_booking_19 <- nh_booking %>%
-  # select(county, id, fy, booking_id, booking_type) %>%
-  distinct() %>% filter(fy == 2019)
-nh_booking_20 <- nh_booking %>%
-  # select(county, id, fy, booking_id, booking_type) %>%
-  distinct() %>% filter(fy == 2020)
-nh_booking_21 <- nh_booking %>%
-  # select(county, id, fy, booking_id, booking_type) %>%
-  distinct() %>% filter(fy == 2021)
+nh_booking_19 <- nh_booking %>% distinct() %>% filter(fy == 2019)
+nh_booking_20 <- nh_booking %>% distinct() %>% filter(fy == 2020)
+nh_booking_21 <- nh_booking %>% distinct() %>% filter(fy == 2021)
 
 ########################################################################################################
 # Release types
@@ -314,4 +361,3 @@ dim(nh_pch); length(unique(nh_pch$booking_id)) # 38671
 counties <- nh_adm_all$county %>%
   unique() %>%
   sort()
-

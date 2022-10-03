@@ -113,15 +113,15 @@ fnc_los <- function(df){
 # create an overall pc_hold variable depending on any indication of pc hold in bookings, charges, and sentence statuses
 fnc_pc_hold_variables <- function(df){
   df1 <- df %>%
-    mutate(pc_hold_booking = case_when(booking_type == "PROTECTIVE CUSTODY" ~ "PC Hold",
-                                       is.na(booking_type) ~ "NA",
-                                       TRUE ~ "Non-PC Hold"),
+    mutate(pc_hold_booking  = case_when(booking_type == "PROTECTIVE CUSTODY" ~ "PC Hold",
+                                        is.na(booking_type) ~ "NA",
+                                        TRUE ~ "Non-PC Hold"),
 
-           pc_hold_charge  = case_when(charge_desc == "PROTECTIVE CUSTODY"         | charge_desc == "PROTECTIVE CUSTODY/INTOXICATION" |
-                                         charge_desc == "PROTECTIVE CUSTODY - DRUGS" | charge_desc == "Treatment and Services: Protective Custody" |
-                                         charge_desc == "172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII" ~ "PC Hold",
-                                       is.na(charge_desc) ~ "NA",
-                                       TRUE ~ "Non-PC Hold"),
+           pc_hold_charge   = case_when(charge_desc == "PROTECTIVE CUSTODY"         | charge_desc == "PROTECTIVE CUSTODY/INTOXICATION" |
+                                        charge_desc == "PROTECTIVE CUSTODY - DRUGS" | charge_desc == "Treatment and Services: Protective Custody" |
+                                        charge_desc == "172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII" ~ "PC Hold",
+                                        is.na(charge_desc) ~ "NA",
+                                        TRUE ~ "Non-PC Hold"),
 
            pc_hold_sentence = case_when(sentence_status == "PROTECTIVE CUSTODY" | sentence_status == "PROTECTIVE CUSTODY HOLD" ~ "PC Hold",
                                         is.na(sentence_status) ~ "NA",
@@ -129,10 +129,15 @@ fnc_pc_hold_variables <- function(df){
 
            pc_hold_release  = case_when(release_type == "PC Release" ~ "PC Hold",
                                         is.na(release_type) ~ "NA",
-                                        TRUE ~ "Non-PC Hold")) %>%
+                                        TRUE ~ "Non-PC Hold"))
 
+  df1 <- df1 %>%
     mutate(pc_hold          = case_when(pc_hold_booking == "PC Hold" | pc_hold_charge == "PC Hold"| pc_hold_sentence == "PC Hold" | pc_hold_release == "PC Hold" ~ "PC Hold",
                                         pc_hold_booking == "NA" & pc_hold_charge == "NA" & pc_hold_sentence == "NA" & pc_hold_release == "NA" ~ "NA",
+
+                                        (pc_hold_booking == "Non-PC Hold" | pc_hold_charge == "Non-PC Hold"| pc_hold_sentence == "Non-PC Hold" | pc_hold_release == "Non-PC Hold") &
+                                          (pc_hold_booking != "PC Hold" | pc_hold_charge != "PC Hold" | pc_hold_sentence != "PC Hold" | pc_hold_release != "PC Hold") ~ "Non-PC Hold",
+
                                         TRUE ~ "Non-PC Hold"))
 
 }

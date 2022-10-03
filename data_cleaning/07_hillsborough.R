@@ -34,13 +34,3 @@ hillsborough_adm_all <- hillsborough_adm.xlsx %>%
          release_date = as.Date(release_date, format = "%m/%d/%y"),
          county = "Hillsborough") %>%
   distinct()
-
-# # separate charge code from description
-# library(data.table)
-# hillsborough_adm_all$charge_code <- strsplit(hillsborough_adm_all$charge_desc, " - ")[[1]][1]
-#
-# hillsborough_adm <- fnc_standardize_counties(hillsborough_adm_all)
-# hills_2019 <- hillsborough_adm %>% filter(fy == 2019)
-# hills_2020 <- hillsborough_adm %>% filter(fy == 2020)
-# hills_2021 <- hillsborough_adm %>% filter(fy == 2021)
-
