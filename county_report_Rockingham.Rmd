@@ -273,5 +273,5 @@ reactable(df,
 ```
 
 ---
-title: "`county_name` County"
+title: "`r county_name` County"
 ---
