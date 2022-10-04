@@ -87,6 +87,67 @@ fnc_booking_heatmap <- function(df){
     theme_bw() + theme_minimal()
 }
 
+# ggplot theme
+theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    plot.title = element_text(
+      family = "Franklin Gothic Book",
+      face = "bold",
+      size = 24, # 18,
+      color = "black",
+      margin = margin(0, 0, 15, 0)
+    ),
+    plot.subtitle = element_text(
+      family = "Arial",
+      size = 22, #15,
+      color = "black",
+      margin = margin(-10, 0, 15, 0)
+    ),
+     #axis.text = element_text(size = 22),
+     axis.text.x = element_text(size = 22, color = "black"),
+     axis.title = element_text(color = "black"),
+     axis.title.y = element_text(size = 22, color = "black"),
+     axis.title.x = element_blank(),
+     axis.text.y = element_blank(),
+
+     panel.grid.minor = element_blank(),
+     panel.grid.major = element_blank(),
+     panel.border = element_blank(),
+     legend.position = "top",
+     legend.justification = c(0, 0),
+     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
+    )
+# ggplot theme
+theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    plot.title = element_text(
+      family = "Franklin Gothic Book",
+      face = "bold",
+      size = 24, # 18,
+      color = "black",
+      margin = margin(0, 0, 15, 0)
+    ),
+    plot.subtitle = element_text(
+      family = "Franklin Gothic Book",
+      size = 22, #15,
+      color = "black",
+      margin = margin(-10, 0, 15, 0)
+    ),
+    #axis.text = element_text(size = 22),
+    axis.text.x = element_text(size = 22, color = "black"),
+    axis.text.y = element_text(size = 22, color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+
+    panel.grid.minor = element_blank(),
+    #panel.grid.major = element_blank(),
+    panel.border = element_blank(),
+    legend.position = "top",
+    legend.justification = c(0, 0),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
+  )
+
 ###########
 # highcharts
 ###########

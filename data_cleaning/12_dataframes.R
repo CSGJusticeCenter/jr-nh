@@ -278,7 +278,7 @@ nh_booking <- nh_adm_all %>%
 nh_booking <- nh_booking %>%
   mutate(booking_type = toupper(booking_type))
 
-dim(nh_booking)                       # 55820
+dim(nh_booking)                       # 55821
 length(unique(nh_booking$booking_id)) # 51575
 
 # determine if PC hold happened in booking event

@@ -4,18 +4,8 @@
 # Last updated: August 22, 2022
 # Author: Mari Roberts
 
-# Tables, graphs, and numbers for incarcerarion patterns page
+# Tables, graphs, and numbers for incarceration patterns page
 ############################################
-
-##########
-
-# TO DO:
-# bookings per capita for each county
-
-##########
-
-# detach plyr to remove issues with dplyr
-# detach(package:plyr)
 
 dim(nh_booking)                       # 54813
 length(unique(nh_booking$id))         # 32186
@@ -198,6 +188,12 @@ nh_bookings_amt <- format(round(as.numeric(nh_bookings_amt), 0), nsmall=0, big.m
 nh_counties <- fnc_counties_in_data(nh_booking)
 
 ##########
+# ggplot bar chart showing the number of bookings by FY
+##########
+
+# in november_presentation.R
+
+##########
 # Highchart bar chart showing the number of bookings by FY
 ##########
 
@@ -225,20 +221,20 @@ nh_bookings_change_19_21 <- round(nh_bookings_change_19_21*100, 1)
 # by county
 ###
 
-nh_bookings_county <- nh_booking %>%
+df_nh_bookings_county <- nh_booking %>%
   select(id, booking_id, fy, county) %>%
   distinct() %>%
   group_by(fy, county) %>%
   dplyr::summarise(total = n())
 
-nh_bookings_county <- nh_bookings_county %>% spread(fy, total)
-nh_bookings_county <- nh_bookings_county %>%
+df_nh_bookings_county <- df_nh_bookings_county %>% spread(fy, total)
+df_nh_bookings_county <- df_nh_bookings_county %>%
   mutate(`2019` = as.numeric(`2019`),
          `2020` = as.numeric(`2020`),
          `2021` = as.numeric(`2021`)) %>%
   mutate(total = `2019` + `2020` + `2021`)
 
-nh_bookings_county <- reactable(nh_bookings_county,
+nh_bookings_county <- reactable(df_nh_bookings_county,
                                 pagination = FALSE,
                                 theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                                 defaultColDef = reactable::colDef(
@@ -267,11 +263,13 @@ nh_bookings_county <- reactable(nh_bookings_county,
                                   `total` = colDef(minWidth = 80, name = "Total", align = "center")))
 
 ############################################################################################################
+
 # Booking Types
 
 # What are the most common booking types?
 # try to find a way to explain how protective custody holds are labeled as numerous
 # things in the booking type, charge description, etc.
+
 ############################################################################################################
 
 # custom functions to find the number of booking types by fiscal year
@@ -335,7 +333,9 @@ nh_booking_types <- reactable(df_booking,
 
 
 ############################################################################################################
+
 # PC HOLDS
+
 ############################################################################################################
 
 ###########
@@ -383,21 +383,21 @@ nh_pch_table <- fnc_reactable_fy(pch_df, metric_label = " ", label_width = 150, 
 # Table pc holds by FY by county
 ###########
 
-detach(package:plyr)
+# detach(package:plyr)
 # select variables
 # count number of pc holds vs non-pc holds by county by fiscal year
-nh_pc_holds_county <- df_pch %>%
+df_nh_pc_holds_county <- df_pch %>%
   select(id, booking_id, fy, county, pc_hold_in_booking) %>%
   distinct() %>%
   group_by(fy, county, pc_hold_in_booking) %>%
   dplyr::summarise(total = n())
 
 # reshape table for viewing
-nh_pc_holds_county <- nh_pc_holds_county %>% spread(pc_hold_in_booking, total) %>% clean_names()
-nh_pc_holds_county <- dcast(setDT(nh_pc_holds_county), county~fy, value.var=c('non_pc_hold_booking', 'pc_hold_booking'))
+df_nh_pc_holds_county <- df_nh_pc_holds_county %>% spread(pc_hold_in_booking, total) %>% clean_names()
+df_nh_pc_holds_county <- dcast(setDT(df_nh_pc_holds_county), county~fy, value.var=c('non_pc_hold_booking', 'pc_hold_booking'))
 
 # calculate % of bookings that pc holds by county by fiscal year
-nh_pc_holds_county <- nh_pc_holds_county %>%
+df_nh_pc_holds_county <- df_nh_pc_holds_county %>%
   mutate(pc_hold_pct_2019 = pc_hold_booking_2019/(non_pc_hold_booking_2019 + pc_hold_booking_2019),
          pc_hold_pct_2020 = pc_hold_booking_2020/(non_pc_hold_booking_2020 + pc_hold_booking_2020),
          pc_hold_pct_2021 = pc_hold_booking_2021/(non_pc_hold_booking_2021 + pc_hold_booking_2021),
@@ -416,7 +416,7 @@ nh_pc_holds_county <- nh_pc_holds_county %>%
   filter(county != "Coos" & county != "Strafford") %>% droplevels()
 
 # format into a reactable table
-nh_pc_holds_county <- fnc_reactable_fy(nh_pc_holds_county, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table. Strafford did not provide data on charges or booking types so they are also excluded (12,233 bookings).")
+nh_pc_holds_county <- fnc_reactable_fy(df_nh_pc_holds_county, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table. Strafford did not provide data on charges or booking types so they are also excluded (12,233 bookings).")
 
 ###########
 # How protective custody holds are recorded across counties
@@ -432,6 +432,9 @@ county_pc_hold_recordings <- nh_adm_all %>%
   dplyr::mutate(total = formattable::comma(total, digits = 0))
 
 ############################################################################################################
+
+# LOS
+
 # What was the average length of incarceration in jail?
 #
 # Statistics: First, break up into PC vs. criminal charge admissions
@@ -445,19 +448,6 @@ county_pc_hold_recordings <- nh_adm_all %>%
 # This is a low priority though.
 ############################################################################################################
 
-# subset to only bookings that are not a PC hold
-# temp <- nh_booking %>% select(county, id, booking_id, los) %>% distinct()
-# dim(temp); length(unique(temp$booking_id)) # 51,581
-
-nh_booking_no_pchs <- nh_booking %>% filter(pc_hold_in_booking == "Non-PC Hold Booking") # 34294
-nh_booking_no_pchs <- nh_booking_no_pchs %>% select(county, id, booking_id, los) %>% distinct()
-dim(nh_booking_no_pchs); length(unique(nh_booking_no_pchs$booking_id)) # 31200
-# dups <- nh_booking_no_pchs[duplicated(nh_booking_no_pchs$booking_id)|duplicated(nh_booking_no_pchs$booking_id, fromLast=TRUE),]
-
-library(vtable)
-
-temp <- nh_booking_no_pchs %>% ungroup() %>%  dplyr::select(county, los)
-st(temp, group = 'county', group.test = TRUE)
 
 ############################################################################################################
 # Save to SP
@@ -489,4 +479,15 @@ save(nh_pch_pct_amt,                file=paste0(sp_data_path, "/Data/r_data/nh_p
 save(pch_counties,                  file=paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                  sep = ""))
 
 save(nh_pc_holds_county,            file=paste0(sp_data_path, "/Data/r_data/nh_pc_holds_county.Rda",            sep = ""))
-save(county_pc_hold_recordings,     file=paste0(sp_data_path, "/Data/r_data/county_pc_hold_recordings.Rda",         sep = ""))
+save(county_pc_hold_recordings,     file=paste0(sp_data_path, "/Data/r_data/county_pc_hold_recordings.Rda",     sep = ""))
+
+
+
+# subset to only bookings that are not a PC hold
+# temp <- nh_booking %>% select(county, id, booking_id, los) %>% distinct()
+# dim(temp); length(unique(temp$booking_id)) # 51,581
+
+# nh_booking_no_pchs <- nh_booking %>% filter(pc_hold_in_booking == "Non-PC Hold Booking") # 34294
+# nh_booking_no_pchs <- nh_booking_no_pchs %>% select(county, id, booking_id, los) %>% distinct()
+# dim(nh_booking_no_pchs); length(unique(nh_booking_no_pchs$booking_id)) # 31200
+# # dups <- nh_booking_no_pchs[duplicated(nh_booking_no_pchs$booking_id)|duplicated(nh_booking_no_pchs$booking_id, fromLast=TRUE),]
