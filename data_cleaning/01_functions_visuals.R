@@ -87,6 +87,26 @@ fnc_booking_heatmap <- function(df){
     theme_bw() + theme_minimal()
 }
 
+# percent grouped bar chart
+fnc_pct_grouped_bar_chart <- function(df, color1, color2){
+  # df$variable_name <- get(variable_name, df)
+  df1 <- group_by(df, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
+  df1 <- as.data.frame(df1)
+  df1 <- df1 %>% mutate(pct = comma(pct, digits = 1)) %>% mutate(pct = paste0(pct, "%"))
+  ggplot(df1, aes(x = fy, y = total, fill = pc_hold_in_booking)) +
+    geom_col(colour = NA, position = "fill") +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(values=c(color1,color2), labels = c("Non-PC      ","PC")) +
+    geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
+              size = 7.5, family = "Franklin Gothic Book",
+              color = ifelse(df1$pc_hold_in_booking == "Non-PC Hold Booking", "black", "white")) +
+    theme_axes +
+    theme(legend.position = "top",
+          legend.justification = c(0, 0),
+          legend.title=element_blank(),
+          axis.title.y = element_blank())
+}
+
 # ggplot theme
 theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
   theme(
@@ -140,9 +160,11 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     axis.title.y = element_blank(),
     axis.title.x = element_blank(),
 
-    panel.grid.minor = element_blank(),
-    #panel.grid.major = element_blank(),
-    panel.border = element_blank(),
+    # panel.grid.minor = element_blank(),
+    # panel.grid.major = element_blank(),
+    # panel.border = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
     legend.position = "top",
     legend.justification = c(0, 0),
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")

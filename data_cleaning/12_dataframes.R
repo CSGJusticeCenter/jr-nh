@@ -18,6 +18,7 @@
 # Standardize data
 ##########
 
+# load R files to prepare county data
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions_visuals.R")
 source("data_cleaning/01_functions.R")
@@ -33,6 +34,10 @@ source("data_cleaning/10_strafford.R")
 source("data_cleaning/11_sullivan.R")
 
 # custom function that creates the variables we need and relabels codes so they're consistent across counties
+# creates booking_id, los, fy, num_bookings,
+# high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct,
+# pc_hold_booking, pc_hold_charge, pc_hold_sentence, pc_hold_release, pc_hold
+
 belknap_adm      <- fnc_standardize_counties(belknap_adm_all,      "Belknap")
 carroll_adm      <- fnc_standardize_counties(carroll_adm_all,      "Carroll")
 cheshire_adm     <- fnc_standardize_counties(cheshire_adm_all,     "Cheshire")
@@ -47,7 +52,7 @@ sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all,     "Sullivan")
 dups <- strafford_adm[duplicated(strafford_adm$booking_id)|duplicated(strafford_adm$booking_id, fromLast=TRUE),]
 temp <- strafford_adm %>% anti_join(dups)
 dups <- dups %>% group_by(booking_id) %>% filter(!is.na(race)) %>% droplevels() %>% distinct()
-strafford_adm <- rbind(temp, dups)
+strafford_adm_pre <- rbind(temp, dups)
 
 ##################################################
 # remove LOS and release date duplicates due to release date issues
@@ -67,13 +72,13 @@ belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
                            charge_desc == "RESISTING ARREST 594:5"|
                            charge_desc == "VIOLATION OF PROTECTIVE ORDER")
                           & booking_type == "PROTECTIVE CUSTODY", "Non-PC Hold", pc_hold))
-table(belknap_adm1$pc_hold)
+
 belknap_adm1 <- belknap_adm1 %>%
   mutate(pc_hold = as.character(pc_hold)) %>%
   mutate(pc_hold = case_when(pc_hold == "2" ~ "PC Hold",
                              pc_hold == "1" ~ "Non-PC Hold",
                              pc_hold == "Non-PC Hold" ~ "Non-PC Hold"))
-table(belknap_adm1$pc_hold)
+table(belknap_adm1$pc_hold)  # 4780, 1479
 dim(belknap_adm1); dim(belknap_adm)
 
 ##########
@@ -131,8 +136,8 @@ dim(rockingham_adm1); dim(rockingham_adm)
 # Strafford
 ##########
 
-strafford_adm1 <- strafford_adm %>% select(-c(los, release_date)) %>% distinct()
-dim(strafford_adm1); dim(strafford_adm)
+strafford_adm1 <- strafford_adm_pre %>% select(-c(los, release_date)) %>% distinct()
+dim(strafford_adm1); dim(strafford_adm_pre)
 
 ##########
 # Sullivan
@@ -177,13 +182,19 @@ dim(nh_adm_all) # 73,180
 nh_adm_all <- nh_adm_all %>%
   mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
   filter(los_max >= 0 | is.na(los_max))
-dim(nh_adm_all) # 73,179
 
-# # replace "NA" with actual NA
-# nh_adm_all <- nh_adm_all %>%
-#   mutate(pc_hold = ifelse(pc_hold == "NA", NA, pc_hold)) %>%
-#   mutate(pc_hold = case_when(pc_hold == 2 ~ "PC Hold",
-#                              pc_hold == 1 ~ "Non-PC Hold"))
+# Some bookings have unknown race but their race was recorded in other bookings, use this race
+# temp <- nh_charges %>% select(booking_id, race) %>% distinct()
+# dim(temp); length(unique(temp$booking_id))
+# temp <- temp %>% group_by(booking_id) %>% summarise(n = n())
+nh_adm_all <- nh_adm_all %>%
+  mutate(race = as.character(race)) %>%
+  mutate(race = case_when(booking_id == "Strafford_booking_2169"    ~ "Unknown",
+                          booking_id == "Carroll_booking_3050"      ~ "White",
+                          booking_id == "Hillsborough_booking_6957" ~ "Black",
+                          booking_id == "Hillsborough_booking_7548" ~ "Black",
+                          TRUE ~ race)) %>% distinct()
+dim(nh_adm_all) # 73,179
 
 ##########
 # Standardize bookings ???????????????????????????????????
@@ -226,19 +237,7 @@ nh_charges <- nh_adm_all %>%
                 pc_hold_sentence,
                 pc_hold) %>%
   distinct()
-dim(nh_charges) # 73177
-
-# Some bookings have unknown race but their race was recorded in other bookings, use this race
-# temp <- nh_charges %>% select(booking_id, race) %>% distinct()
-# dim(temp); length(unique(temp$booking_id))
-# temp <- temp %>% group_by(booking_id) %>% summarise(n = n())
-nh_charges <- nh_charges %>%
-  mutate(race = as.character(race)) %>%
-  mutate(race = case_when(booking_id == "Strafford_booking_2169"    ~ "Unknown",
-                          booking_id == "Carroll_booking_3050"      ~ "White",
-                          booking_id == "Hillsborough_booking_6957" ~ "Black",
-                          booking_id == "Hillsborough_booking_7548" ~ "Black",
-                          TRUE ~ race)) %>% distinct()
+dim(nh_charges) # 73176
 
 ####################################################
 # Booking type dataframe
@@ -282,7 +281,7 @@ dim(nh_booking)                       # 55821
 length(unique(nh_booking$booking_id)) # 51575
 
 # determine if PC hold happened in booking event
-detach(package:plyr)
+# detach(package:plyr)
 nh_booking <- nh_booking %>%
   dplyr::group_by(booking_id) %>%
   mutate(all_hold_types=paste(sort(unique(pc_hold)), collapse="&")) %>%
@@ -291,7 +290,7 @@ nh_booking <- nh_booking %>%
   select(county:high_utilizer_5_pct, month_year_text:pc_hold_in_booking) %>%
   distinct()
 
-dim(nh_booking)                       # 54813
+dim(nh_booking)                       # 54810
 length(unique(nh_booking$booking_id)) # 51575
 dups <- nh_booking[duplicated(nh_booking$booking_id)|duplicated(nh_booking$booking_id, fromLast=TRUE),] # 5963
 
@@ -352,6 +351,9 @@ nh_pch <- nh_booking %>%
   droplevels()
 
 dim(nh_pch); length(unique(nh_pch$booking_id)) # 38671
+
+# temp <- nh_booking %>% filter(county == "Belknap") %>% droplevels() %>%  distinct()
+# table(temp$pc_hold_in_booking)
 
 ########################################################################################################
 # Counties in data
