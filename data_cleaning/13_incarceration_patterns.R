@@ -134,13 +134,13 @@ nh_people_booked_county <- reactable(df_nh_people_booked_county,
 
 # data for ggplot showing the number of people booked by FY
 df_people_booked_long <- df_people_booked %>% select(-total)
-df_people_booked_long <- gather(df_people_booked, year, total, `2019`:`2021`, factor_key=TRUE)
-df_people_booked_long <- df_people_booked_long %>% mutate(year = as.numeric(year)) %>%
-  mutate(year = case_when(year == 1 ~ "2019", year == 2 ~ "2020", year == 3 ~ "2021"))
+df_people_booked_long <- gather(df_people_booked, fy, total, `2019`:`2021`, factor_key=TRUE)
+df_people_booked_long <- df_people_booked_long %>% mutate(fy = as.numeric(fy)) %>%
+  mutate(fy = case_when(fy == 1 ~ "2019", fy == 2 ~ "2020", fy == 3 ~ "2021"))
 
 # gg plot showing the number of people booked by FY
 pres_nh_people_booked_barchart_gg <-
-  ggplot(data=df_people_booked_long, aes(x=year, y=total)) +
+  ggplot(data=df_people_booked_long, aes(x=fy, y=total)) +
   geom_bar(stat="identity", width = 0.74, fill = jri_orange) +
   xlab("") + ylab("People Booked") +
   geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
@@ -162,7 +162,7 @@ df_bookings_events <- nh_booking %>%
   select(id, booking_id, fy, county, pc_hold_in_booking) %>%
   distinct()
 
-# calculate number of booking events per year
+# calculate number of booking events per fy
 df_bookings_events <- df_bookings_events %>%
   distinct() %>%
   group_by(fy) %>%
@@ -209,13 +209,13 @@ nh_counties <- fnc_counties_in_data(nh_booking)
 
 # data for ggplot showing the number of bookings by FY
 df_bookings_long <- df_bookings %>% select(-total)
-df_bookings_long <- gather(df_bookings_long, year, total, `2019`:`2021`, factor_key=TRUE) %>%
-  mutate(year = as.numeric(year)) %>%
-  mutate(year = case_when(year == 1 ~ "2019", year == 2 ~ "2020", year == 3 ~ "2021"))
+df_bookings_long <- gather(df_bookings_long, fy, total, `2019`:`2021`, factor_key=TRUE) %>%
+  mutate(fy = as.numeric(fy)) %>%
+  mutate(fy = case_when(fy == 1 ~ "2019", fy == 2 ~ "2020", fy == 3 ~ "2021"))
 
 # gg plot showing the number of bookings by FY
 pres_nh_bookings_barchart_gg <-
-  ggplot(data=df_bookings_long, aes(x=year, y=total)) +
+  ggplot(data=df_bookings_long, aes(x=fy, y=total)) +
   geom_bar(stat="identity", width = 0.74, fill = jri_green) +
   xlab("") + ylab("Number of Bookings") +
   geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
@@ -557,12 +557,52 @@ pres_nh_pch_pct_barchart_gg <- fnc_pct_grouped_bar_chart(temp2, "gray", jri_red)
 # keep coos because all the data we were given was non-pc hold bookings
 df_los <- nh_booking %>%
   filter(county != "Strafford") %>%
-  select(fy, county, booking_id, pc_hold_in_booking, los,
+  select(fy, county, booking_id,
+         pc_hold_in_booking,
+         los,
          high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct) %>%
   filter(pc_hold_in_booking == "Non-PC Hold Booking") %>%
   select(-pc_hold_in_booking) %>%
   distinct() %>%
   filter(!is.na(los))
+dim(df_los); length(unique(df_los$booking_id))
+
+# df_los <- nh_charges %>%
+#   filter(county != "Strafford") %>% # remove strafford bc we don't know which are PC holds
+#   select(fy, county, booking_id,
+#          #charge_desc,
+#          pc_hold,
+#          los,
+#          high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct) %>%
+#   filter(pc_hold == "Non-PC Hold") %>%
+#   filter(!is.na(los)) %>%
+#   distinct()
+# dim(df_los); length(unique(df_los$booking_id))
+
+# add LOS category
+df_los <- df_los %>%
+  mutate(los_category =
+           case_when(los == 0 ~ "0",
+                     los == 1 ~ "1",
+                     los == 2 ~ "2",
+                     los == 3 ~ "3",
+                     los >= 4   & los <= 10   ~ "4-10",
+                     los >= 11  & los <= 30  ~ "11-30",
+                     los >= 31  & los <= 50  ~ "31-50",
+                     los >= 50  & los <= 100 ~ "50-100",
+                     los >= 101 & los <= 180 ~ "101-180",
+                     los >  180              ~ "Over 180")) %>%
+  mutate(los_category = factor(los_category,
+                               levels = c("0",
+                                          "1",
+                                          "2",
+                                          "3",
+                                          "4-10",
+                                          "11-30",
+                                          "31-50",
+                                          "50-100",
+                                          "101-180",
+                                          "Over 180")))
 
 # average lOS for non-PC bookings
 avg_los_no_pchs <- df_los %>%

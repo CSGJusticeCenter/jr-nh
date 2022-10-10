@@ -465,6 +465,44 @@ pres_non_hu_bookings_table <- reactable(temp,
                                           prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
                                           avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3"))))
 
+##########
+# LOS by non-HU
+##########
+
+# overall LOS for all non-PC hold bookings for non-1% HU's
+temp <- df_los %>% filter(high_utilizer_1_pct == "No") %>% select(los)
+df_los_summary_non1_pct <- fnc_los_summary(temp)
+df_los_summary_non1_pct <- df_los_summary_non1_pct %>% mutate(hu = "Not in Top 1%") %>% select(hu, everything())
+
+# overall LOS for all non-PC hold bookings for non-3% HU's
+temp <- df_los %>% filter(high_utilizer_3_pct == "No") %>% select(los)
+df_los_summary_non3_pct <- fnc_los_summary(temp)
+df_los_summary_non3_pct <- df_los_summary_non3_pct %>% mutate(hu = "Not in Top 3%") %>% select(hu, everything())
+
+# overall LOS for all non-PC hold bookings for non-5% HU's
+temp <- df_los %>% filter(high_utilizer_5_pct == "No") %>% select(los)
+df_los_summary_non5_pct <- fnc_los_summary(temp)
+df_los_summary_non5_pct <- df_los_summary_non5_pct %>% mutate(hu = "Not in Top 5%") %>% select(hu, everything())
+
+# add data together
+df_los_summary_non135_pct <- rbind(df_los_summary_non1_pct, df_los_summary_non3_pct, df_los_summary_non5_pct)
+
+# reactable table for LOS summary statistics by HU type
+los_summary_non135_pct <- reactable(df_los_summary_non135_pct,
+                                 pagination = FALSE,
+                                 style = list(fontFamily = "Franklin Gothic Book"),
+                                 theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                                 defaultColDef = reactable::colDef(
+                                   format = colFormat(separators = TRUE), align = "left"),
+                                 compact = TRUE,
+                                 fullWidth = FALSE,
+                                 columns = list(
+                                   hu     = colDef(minWidth = 190, name = "Non-HU",
+                                                   style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                   min    = colDef(minWidth = 90, name = "Minimum"),
+                                   median = colDef(minWidth = 90, name = "Median"),
+                                   mean   = colDef(minWidth = 90, name = "Mean"),
+                                   max    = colDef(minWidth = 90, name = "Maximum")))
 
 ############################################################################################################
 # Save to SP

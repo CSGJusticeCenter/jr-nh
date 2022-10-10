@@ -87,15 +87,115 @@ fnc_booking_heatmap <- function(df){
     theme_bw() + theme_minimal()
 }
 
+# percent grouped bar chart
+fnc_pct_grouped_bar_chart <- function(df, color1, color2){
+  # df$variable_name <- get(variable_name, df)
+  df1 <- group_by(df, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
+  df1 <- as.data.frame(df1)
+  df1 <- df1 %>% mutate(pct = comma(pct, digits = 1)) %>% mutate(pct = paste0(pct, "%"))
+  ggplot(df1, aes(x = fy, y = total, fill = pc_hold_in_booking)) +
+    geom_col(colour = NA, position = "fill") +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(values=c(color1,color2), labels = c("Non-PC      ","PC")) +
+    geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
+              size = 7.5, family = "Franklin Gothic Book",
+              color = ifelse(df1$pc_hold_in_booking == "Non-PC Hold Booking", "black", "white")) +
+    theme_axes +
+    theme(legend.position = "top",
+          legend.justification = c(0, 0),
+          legend.title=element_blank(),
+          axis.title.y = element_blank())
+}
+
+# percent bar chart showing the proportion over time for HU's and non-HU's bookings
+fnc_hu_pct_grouped_bar_chart <- function(df, color1, color2){
+  df1 <- group_by(df, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
+  df1 <- as.data.frame(df1)
+  df1 <- df1 %>% mutate(pct = round(pct, 1))
+
+  ggplot(df1, aes(x = fy, y = total, fill = type  )) +
+    geom_col(colour = NA, position = "fill") +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(values=c(color1, color2), labels = c("Non-HU      ","HU")) +
+    geom_text(data=subset(df1, pct > 3), aes(label = paste0(pct, "%"), fontface = 'bold'), position = position_fill(vjust = 0.5),
+              size = 7.5, family = "Franklin Gothic Book",
+              color = ifelse(df1$type == "No", "black", "white")) +
+    theme_axes +
+    theme(legend.position = "top",
+          legend.justification = c(0, 0),
+          legend.title=element_blank(),
+          axis.title.y = element_blank())
+
+}
+
+# ggplot theme
+theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    plot.title = element_text(
+      family = "Franklin Gothic Book",
+      face = "bold",
+      size = 24, # 18,
+      color = "black",
+      margin = margin(0, 0, 15, 0)
+    ),
+    plot.subtitle = element_text(
+      family = "Arial",
+      size = 22, #15,
+      color = "black",
+      margin = margin(-10, 0, 15, 0)
+    ),
+     #axis.text = element_text(size = 22),
+     axis.text.x = element_text(size = 22, color = "black"),
+     axis.title = element_text(color = "black"),
+     axis.title.y = element_text(size = 22, color = "black"),
+     axis.title.x = element_blank(),
+     axis.text.y = element_blank(),
+
+     panel.grid.minor = element_blank(),
+     panel.grid.major = element_blank(),
+     panel.border = element_blank(),
+     legend.position = "top",
+     legend.justification = c(0, 0),
+     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
+    )
+# ggplot theme
+theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    plot.title = element_text(
+      family = "Franklin Gothic Book",
+      face = "bold",
+      size = 24, # 18,
+      color = "black",
+      margin = margin(0, 0, 15, 0)
+    ),
+    plot.subtitle = element_text(
+      family = "Franklin Gothic Book",
+      size = 22, #15,
+      color = "black",
+      margin = margin(-10, 0, 15, 0)
+    ),
+    #axis.text = element_text(size = 22),
+    axis.text.x = element_text(size = 22, color = "black"),
+    axis.text.y = element_text(size = 22, color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+
+    # panel.grid.minor = element_blank(),
+    # panel.grid.major = element_blank(),
+    # panel.border = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.position = "top",
+    legend.justification = c(0, 0),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
+  )
+
 ###########
 # highcharts
 ###########
 
 fnc_covid_time_highchart <- function(df, yaxis_label, title){
-
-  counties <- df %>%
-    mutate(county = as.character(county))
-  counties <- unique(counties$county)
 
   df1 <- df %>%
     dplyr::group_by(month_year, month_year_text) %>%
@@ -112,26 +212,22 @@ fnc_covid_time_highchart <- function(df, yaxis_label, title){
       plotLines = list(list(label = list(text = "Start of COVID-19 Pandemic"), color = jri_red, width = 2, value = 20, zIndex = 1))
     ) %>%
     hc_yAxis(title = list(text = yaxis_label, style = list(color =  "#000000", fontWeight = "bold"))) %>%
-    hc_title(text = title) %>%
-    hc_caption(
-      text = (paste(" ", counties))
-    )
-
+    hc_title(text = title)
   return(chart)
 
 }
 
 # custom highcharts theme for plots
-hc_theme_jc <- hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "#D6C246", "#dcdcdc"),
-                        chart = list(style = list(#fontFamily = "Franklin Gothic Book",
-                          color = "#666666")),
-                        title = list(align = "left", style = list(#fontFamily = "Franklin Gothic Book",
+hc_theme_jc <- hc_theme(colors = c(jri_light_blue, jri_green, jri_orange),
+                        chart = list(style = list(fontFamily = "Franklin Gothic Book",
+                          color = "#000000")),
+                        title = list(align = "left", style = list(fontFamily = "Franklin Gothic Book",
                           fontSize = "24px")),
-                        subtitle = list(align = "left", style = list(#fontFamily = "Franklin Gothic Book",
+                        subtitle = list(align = "left", style = list(fontFamily = "Franklin Gothic Book",
                           fontSize = "16px")),
-                        legend = list(align = "left", verticalAlign = "top"),
+                        legend = list(align = "center", verticalAlign = "top"),
                         xAxis = list(gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
-                        yAxis = list(labels = list(enabled = FALSE), gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
+                        #yAxis = list(labels = list(enabled = FALSE), gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
                         plotOptions = list(line = list(marker = list(enabled = FALSE)),
                                            spline = list(marker = list(enabled = FALSE)),
                                            area = list(marker = list(enabled = FALSE)),

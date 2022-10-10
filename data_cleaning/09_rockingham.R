@@ -37,8 +37,3 @@ rockingham_adm_all <- rockingham_adm.xlsx %>%
          county = "Rockingham") %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y")) %>% distinct()
-
-temp <- rockingham_adm_all %>% group_by(booking_type) %>% summarise(total = n())
-temp <- rockingham_adm_all %>% group_by(sentence_status) %>% summarise(total = n())
-temp <- rockingham_adm_all %>% group_by(release_type) %>% summarise(total = n())
-View(temp)

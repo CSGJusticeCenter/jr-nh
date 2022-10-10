@@ -28,7 +28,7 @@
 
 # calculate the number of bookings by FY, will use for proportions
 bookings_fy <- nh_booking %>%
-  select(county, booking_id, num_bookings, high_utilizer_1_pct, fy) %>%
+  select(county, booking_id, num_bookings, fy) %>%
   distinct() %>%
   group_by(fy) %>%
   dplyr::summarise(total_bookings = n())
@@ -63,7 +63,7 @@ hu_num_bookings_5_pct <- hu_num_bookings_5_pct  %>% dplyr::rename(num_bookings_5
 
 # calculate the number of bookings total, will use for proportions
 bookings_fy_3yr <- nh_booking %>%
-  select(county, booking_id, num_bookings, high_utilizer_1_pct, fy) %>%
+  select(county, booking_id, num_bookings, fy) %>%
   distinct() %>%
   group_by() %>%
   dplyr::summarise(total_bookings = n())
@@ -148,10 +148,73 @@ df_hu_bookings_table <- df_hu_bookings_table %>%
     avg_num_bookings_3_pct = round(avg_num_bookings_3_pct, 1),
     avg_num_bookings_5_pct = round(avg_num_bookings_5_pct, 1))
 
+# get totals
+df_hu_bookings_table_total_row <- df_hu_bookings_table %>% filter(fy == "Total") %>% select(county = fy, everything())
+
 #######
-# create reactable table
+# create highcharter of HU bookings over time
 #######
 
+df_hu_bookings_month_year <- nh_booking %>%
+  select(fy, county, booking_id, month_year, month_year_text,
+         high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct) %>%
+  distinct()
+df_hu_bookings_month_year <- gather(df_hu_bookings_month_year, hu, type, high_utilizer_1_pct:high_utilizer_5_pct, factor_key=TRUE)
+df_hu_bookings_month_year <- df_hu_bookings_month_year %>%
+  group_by(month_year, month_year_text,
+           hu, type) %>%
+  summarise(total = n()) %>%
+  filter(type == "Yes") %>%
+  mutate(hu = case_when(hu == "high_utilizer_1_pct" ~ "Top 1%",
+                        hu == "high_utilizer_3_pct" ~ "Top 3%",
+                        hu == "high_utilizer_5_pct" ~ "Top 5%"))
+
+hu_bookings_month_year <- hchart(df_hu_bookings_month_year, "line", hcaes(x = month_year_text, y = total, group = hu)) %>%
+  hc_setup() %>%
+  hc_xAxis(
+    title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
+    plotLines = list(list(label = list(text = "COVID-19 Start"), color = "gray", width = 1, value = 20, zIndex = 1))
+  ) %>%
+  hc_yAxis(
+    title = list(text = "Number of Bookings", style = list(color =  "#000000", fontWeight = "bold"))
+  ) %>%
+  hc_add_theme(hc_theme_jc)
+
+
+#######
+# create percent bar charts of HU bookings over time
+#######
+
+# data
+df_hu_bookings_fy <- nh_booking %>%
+  select(fy, county, booking_id,
+         high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct) %>%
+  distinct()
+df_hu_bookings_fy <- gather(df_hu_bookings_fy, hu, type, high_utilizer_1_pct:high_utilizer_5_pct, factor_key=TRUE)
+df_hu_bookings_fy <- df_hu_bookings_fy %>%
+  group_by(fy, hu, type) %>%
+  summarise(total = n()) %>%
+  mutate(hu = case_when(hu == "high_utilizer_1_pct" ~ "Top 1%",
+                        hu == "high_utilizer_3_pct" ~ "Top 3%",
+                        hu == "high_utilizer_5_pct" ~ "Top 5%"))
+
+# top 1% proportion of bookings that are HU's by FY
+temp <- df_hu_bookings_fy %>% filter(hu == "Top 1%")
+hu_bookings_fy_1_pct <- fnc_hu_pct_grouped_bar_chart(temp, "gray", jri_light_blue)
+
+# top 3% proportion of bookings that are HU's by FY
+temp <- df_hu_bookings_fy %>% filter(hu == "Top 3%")
+hu_bookings_fy_3_pct <- fnc_hu_pct_grouped_bar_chart(temp, "gray", jri_green)
+
+# top 5% proportion of bookings that are HU's by FY
+temp <- df_hu_bookings_fy %>% filter(hu == "Top 5%")
+hu_bookings_fy_5_pct <- fnc_hu_pct_grouped_bar_chart(temp, "gray", jri_orange)
+
+#######
+# create reactable table of number of HU bookings, % HU bookings, and avg bookings/yr by FY
+#######
+
+# reactable table
 hu_bookings_table <- reactable(df_hu_bookings_table,
                                pagination = FALSE,
                                theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
@@ -263,8 +326,6 @@ hu_num_bookings_5_pct_3yr <- hu_num_bookings_5_pct_3yr  %>% dplyr::rename(num_bo
 # combine data together - 1%, 3%, 5% by FY by county
 ######
 
-########################################## ISSUES HERE
-
 df_hu_bookings_table_totals <-
   hu_avg_bookings_1_pct_3yr %>%
   left_join(hu_num_bookings_1_pct_3yr,  by = c("county")) %>%
@@ -289,7 +350,7 @@ df_hu_bookings_table_totals <- df_hu_bookings_table_totals %>%
 
 # combine data
 # calculate prop of bookings that are HU's
-df_hu_bookings_table <-
+df_hu_bookings_table_county <-
   hu_avg_bookings_1_pct %>%
   left_join(hu_num_bookings_1_pct,  by = c("county", "fy")) %>%
   left_join(hu_avg_bookings_3_pct,  by = c("county", "fy")) %>%
@@ -311,16 +372,14 @@ df_hu_bookings_table <-
 
 # combine data
 # round data
-df_hu_bookings_table <- rbind(df_hu_bookings_table, df_hu_bookings_table_totals)
-df_hu_bookings_table <- df_hu_bookings_table %>%
+df_hu_bookings_table_county <- rbind(df_hu_bookings_table_county, df_hu_bookings_table_totals)
+df_hu_bookings_table_county <- df_hu_bookings_table_county %>%
   mutate(
     avg_num_bookings_1_pct = round(avg_num_bookings_1_pct, 1),
     avg_num_bookings_3_pct = round(avg_num_bookings_3_pct, 1),
     avg_num_bookings_5_pct = round(avg_num_bookings_5_pct, 1))
 
-# get totals
-df_hu_bookings_table_by_county <- df_hu_bookings_table %>% #filter(fy == "Total") %>%
-  ungroup() %>%  dplyr::select(-fy)
+df_hu_bookings_table_totals <- rbind(df_hu_bookings_table_totals, df_hu_bookings_table_total_row)
 
 ######
 # reactable of all 3 years, not separated out by FY but by county
@@ -330,19 +389,25 @@ hu_bookings_table_by_county <- reactable(df_hu_bookings_table_totals,
                                          pagination = FALSE,
                                          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                                          defaultColDef = reactable::colDef(
-                                           format = colFormat(separators = TRUE), align = "left",
-                                           footer = function(values, name) {
-                                             if (name %in% c("num_bookings_1_pct", "num_bookings_3_pct", "num_bookings_5_pct", "total_bookings")) {
-                                               htmltools::div(paste0("", formatC(
-                                                 x = sum(values),
-                                                 digits = 0,
-                                                 big.mark = ",",
-                                                 format = "f"
-                                               )))
-                                             }
-                                           },
-                                           footerStyle = list(fontWeight = "bold")
+                                           format = colFormat(separators = TRUE), align = "left"
+                                           # footer = function(values, name) {
+                                           #   if (name %in% c("num_bookings_1_pct", "num_bookings_3_pct", "num_bookings_5_pct", "total_bookings")) {
+                                           #     htmltools::div(paste0("", formatC(
+                                           #       x = sum(values),
+                                           #       digits = 0,
+                                           #       big.mark = ",",
+                                           #       format = "f"
+                                           #     )))
+                                           #   }
+                                           # },
+                                           # footerStyle = list(fontWeight = "bold")
                                          ),
+                                         rowStyle = function(index) {
+                                           if (index %in% c(10)) {
+                                             list(`border-top` = "thin solid",
+                                                  fontWeight = "bold")
+                                           }
+                                         },
                                          compact = TRUE,
                                          fullWidth = FALSE,
                                          columnGroups = list(
@@ -351,7 +416,8 @@ hu_bookings_table_by_county <- reactable(df_hu_bookings_table_totals,
                                            colGroup(name = "Top 5%", columns = c("num_bookings_5_pct", "prop_bookings_5_pct", "avg_num_bookings_5_pct"))
                                          ),
                                          columns = list(
-                                           county                 = colDef(footer = "Total", minWidth = 150, name = "County", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                           county                 = colDef(minWidth = 150, name = "County", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                           #county                 = colDef(minWidth = 150, name = "County", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
                                            num_bookings_1_pct     = colDef(minWidth = 75, name = "#"),
                                            prop_bookings_1_pct    = colDef(minWidth = 75, name = "%", format = colFormat(percent = TRUE, digits = 1)),
                                            avg_num_bookings_1_pct = colDef(minWidth = 75, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
@@ -364,9 +430,228 @@ hu_bookings_table_by_county <- reactable(df_hu_bookings_table_totals,
 
                                            total_bookings         = colDef(minWidth = 75, name = "Total")))
 
+##################
+# Proportion of HU bookings that are PC holds
+##################
+
+# select variables
+df_hu_pc_holds <- nh_booking %>%
+  filter(county != "Coos" & county != "Strafford") %>%
+  select(county, fy, booking_id, high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct, pc_hold_in_booking) %>%
+  distinct() %>%
+  filter(!is.na(pc_hold_in_booking))
+
+# get bookings of high utilizers
+df_hu_pc_holds_fy_1_pct <- df_hu_pc_holds %>% filter(high_utilizer_1_pct == "Yes") %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n())
+df_hu_pc_holds_fy_3_pct <- df_hu_pc_holds %>% filter(high_utilizer_3_pct == "Yes") %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n())
+df_hu_pc_holds_fy_5_pct <- df_hu_pc_holds %>% filter(high_utilizer_5_pct == "Yes") %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n())
+
+# gg plots of proportion of bookings that are PC holds by FY
+hu_pc_holds_fy_1_pct_gg <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_1_pct, "gray", jri_red)
+hu_pc_holds_fy_3_pct_gg <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_3_pct, "gray", jri_red)
+hu_pc_holds_fy_5_pct_gg <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_5_pct, "gray", jri_red)
+
+# get bookings of high utilizers
+df_hu_pc_holds_1_pct <- df_hu_pc_holds %>% filter(high_utilizer_1_pct == "Yes") %>%
+  group_by(pc_hold_in_booking) %>% summarise(total = n()) %>%
+  mutate(hu = "Top 1%")
+df_hu_pc_holds_1_pct <- group_by(df_hu_pc_holds_1_pct) %>% mutate(pct = round(total/sum(total)*100, 1))
+df_hu_pc_holds_1_pct <- as.data.frame(df_hu_pc_holds_1_pct)
+
+df_hu_pc_holds_3_pct <- df_hu_pc_holds %>% filter(high_utilizer_3_pct == "Yes") %>%
+  group_by(pc_hold_in_booking) %>% summarise(total = n()) %>%
+  mutate(hu = "Top 3%")
+df_hu_pc_holds_3_pct <- group_by(df_hu_pc_holds_3_pct) %>% mutate(pct = round(total/sum(total)*100, 1))
+df_hu_pc_holds_3_pct <- as.data.frame(df_hu_pc_holds_3_pct)
+
+df_hu_pc_holds_5_pct <- df_hu_pc_holds %>% filter(high_utilizer_5_pct == "Yes") %>%
+  group_by(pc_hold_in_booking) %>% summarise(total = n()) %>%
+  mutate(hu = "Top 5%")
+df_hu_pc_holds_5_pct <- group_by(df_hu_pc_holds_5_pct) %>% mutate(pct = round(total/sum(total)*100, 1))
+df_hu_pc_holds_5_pct <- as.data.frame(df_hu_pc_holds_5_pct)
+
+df_hu_pc_holds_135_pct <- rbind(df_hu_pc_holds_1_pct, df_hu_pc_holds_3_pct, df_hu_pc_holds_5_pct)
+
+# gg plots of proportion of bookings that are PC holds by FY
+temp <- df_hu_pc_holds_135_pct %>% mutate(pct = comma(pct, digits = 1)) %>% mutate(pct = paste0(pct, "%"))
+hu_pc_holds_135_pct_gg <- ggplot(temp, aes(x = hu, y = total, fill = pc_hold_in_booking)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_red), labels = c("Non-PC      ","PC")) +
+  geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
+            size = 7.5, family = "Franklin Gothic Book",
+            color = ifelse(temp$pc_hold_in_booking == "Non-PC Hold Booking", "black", "white")) +
+  theme_axes +
+  theme(legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank(),
+        axis.title.y = element_blank())
+
+##########
+# reactable tables with top 1%, 3%, 5% details - data in high_utilizers.R
+##########
+
+temp <- df_hu_bookings_table %>% select(-total_bookings)
+temp <- temp %>% mutate(fy = ifelse(fy == "Total", "FY2019-FY2021", fy)) %>% filter(fy == "FY2019-FY2021")
+pres_hu_bookings_table <- reactable(temp,
+                                    pagination = FALSE,
+                                    style = list(fontFamily = "Franklin Gothic Book"),
+                                    theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                                    defaultColDef = reactable::colDef(
+                                      format = colFormat(separators = TRUE), align = "left"),
+                                    compact = TRUE,
+                                    fullWidth = FALSE,
+                                    rowStyle = function(index) {
+                                      if (index %in% c(4)) {
+                                        list(`border-top` = "thin solid",
+                                             fontWeight = "bold")
+                                      }
+                                    },
+                                    columnGroups = list(
+                                      colGroup(name = "Top 1%", columns = c("num_bookings_1_pct", "prop_bookings_1_pct", "avg_num_bookings_1_pct")),
+                                      colGroup(name = "Top 3%", columns = c("num_bookings_3_pct", "prop_bookings_3_pct", "avg_num_bookings_3_pct")),
+                                      colGroup(name = "Top 5%", columns = c("num_bookings_5_pct", "prop_bookings_5_pct", "avg_num_bookings_5_pct"))
+                                    ),
+                                    columns = list(
+                                      fy                     = colDef(minWidth = 150, name = "", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                      num_bookings_1_pct     = colDef(minWidth = 80, name = "#"),
+                                      prop_bookings_1_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                      avg_num_bookings_1_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                      num_bookings_3_pct     = colDef(minWidth = 80, name = "#"),
+                                      prop_bookings_3_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                      avg_num_bookings_3_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                      num_bookings_5_pct     = colDef(minWidth = 80, name = "#"),
+                                      prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                      avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3"))))
+
+temp <- df_hu_bookings_table_totals %>% select(-c(num_bookings_1_pct, num_bookings_3_pct, num_bookings_5_pct, total_bookings))
+pres_hu_bookings_county_table <- reactable(temp,
+                                           pagination = FALSE,
+                                           style = list(fontFamily = "Franklin Gothic Book"),
+                                           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                                           defaultColDef = reactable::colDef(
+                                             format = colFormat(separators = TRUE), align = "left"),
+                                           rowStyle = function(index) {
+                                             if (index %in% c(10)) {
+                                               list(`border-top` = "thin solid",
+                                                    fontWeight = "bold")
+                                             }
+                                           },
+                                           compact = TRUE,
+                                           fullWidth = FALSE,
+                                           columnGroups = list(
+                                             colGroup(name = "Top 1%", columns = c("prop_bookings_1_pct", "avg_num_bookings_1_pct")),
+                                             colGroup(name = "Top 3%", columns = c("prop_bookings_3_pct", "avg_num_bookings_3_pct")),
+                                             colGroup(name = "Top 5%", columns = c("prop_bookings_5_pct", "avg_num_bookings_5_pct"))
+                                           ),
+                                           columns = list(
+                                             county                 = colDef(minWidth = 150, name = "County", style = list(fontWeight = "bold")),
+                                             prop_bookings_1_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                             avg_num_bookings_1_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                             prop_bookings_3_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                             avg_num_bookings_3_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                             prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                             avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1))))
+
+##########
+# Reactable table showing LOS by HU type
+##########
+
+# overall LOS for all non-PC hold bookings for 1% HU's
+temp <- df_los %>% filter(high_utilizer_1_pct == "Yes") %>% select(los)
+df_los_summary_1_pct <- fnc_los_summary(temp)
+df_los_summary_1_pct <- df_los_summary_1_pct %>% mutate(hu = "Top 1%") %>% select(hu, everything())
+
+# overall LOS for all non-PC hold bookings for 3% HU's
+temp <- df_los %>% filter(high_utilizer_3_pct == "Yes") %>% select(los)
+df_los_summary_3_pct <- fnc_los_summary(temp)
+df_los_summary_3_pct <- df_los_summary_3_pct %>% mutate(hu = "Top 3%") %>% select(hu, everything())
+
+# overall LOS for all non-PC hold bookings for 5% HU's
+temp <- df_los %>% filter(high_utilizer_5_pct == "Yes") %>% select(los)
+df_los_summary_5_pct <- fnc_los_summary(temp)
+df_los_summary_5_pct <- df_los_summary_5_pct %>% mutate(hu = "Top 5%") %>% select(hu, everything())
+
+# add data together
+df_los_summary_135_pct <- rbind(df_los_summary_1_pct, df_los_summary_3_pct, df_los_summary_5_pct)
+
+# reactable table for LOS summary statistics by HU type
+los_summary_135_pct <- reactable(df_los_summary_135_pct,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book"),
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu     = colDef(minWidth = 190, name = "HU",
+                            style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+            min    = colDef(minWidth = 90, name = "Minimum"),
+            median = colDef(minWidth = 90, name = "Median"),
+            mean   = colDef(minWidth = 90, name = "Mean"),
+            max    = colDef(minWidth = 90, name = "Maximum")))
+
+##########
+# ggplot showing histogram of LOS
+##########
+
+df_los_1_pct <- df_los %>%
+  filter(high_utilizer_1_pct == "Yes") %>% group_by(los_category) %>% summarise(total = n()) %>%
+  mutate(hu = "Top 1%")
+df_los_3_pct <- df_los %>%
+  filter(high_utilizer_3_pct == "Yes") %>% group_by(los_category) %>% summarise(total = n()) %>%
+  mutate(hu = "Top 3%")
+df_los_5_pct <- df_los %>%
+  filter(high_utilizer_5_pct == "Yes") %>% group_by(los_category) %>% summarise(total = n()) %>%
+  mutate(hu = "Top 5%")
+df_los_pct <- rbind(df_los_1_pct, df_los_3_pct, df_los_5_pct)
+
+los_category_by_hu_gg <- ggplot(df_los_pct, aes(los_category, total)) +
+  geom_bar(aes(fill = hu), position = "dodge", stat="identity", width = 0.75) +
+  scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange),
+                    labels = c("Top 1%      ","Top 3%      ", "Top 5%")) +
+  scale_y_continuous(labels = label_number(big.mark = ",")) +
+  xlab("Length of Stay (Days)") + ylab("Count") +
+  theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
+    axis.text.y = element_text(size = 18, color = "black"),
+    axis.title.x = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(size = 18, color = "black"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.position = "top",
+    legend.justification = c(0, 0),
+    legend.title=element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 18, color = "black")
+  )
+
+# get % of bookings that are 0-10 days
+pct_los_between_0_10_days <- df_los %>% group_by(los_category) %>%
+  filter(high_utilizer_5_pct == "Yes") %>%
+  summarise(total = n()) %>%
+  mutate(pct = round(total/sum(total)*100, 1)) %>%
+  mutate(los_category = as.character(los_category))
+pct_los_between_0_10_days = pct_los_between_0_10_days[-c(6:10),]
+sum(pct_los_between_0_10_days$pct)
+
+##########
+# What is interesting about people cycling through for 1 day?
+##########
+
+df_one_day_los <- nh_booking %>%
+  filter(los == 1) %>%
+  filter(county != "Strafford") %>%
+  filter(pc_hold_in_booking == "Non-PC Hold Booking") %>%
+  distinct() %>%
+  filter(!is.na(los))
+
 ############################################################################################################
 # Save to SP
 ############################################################################################################
 
-save(hu_bookings_table,           file=paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda",           sep = ""))
-save(hu_bookings_table_by_county, file=paste0(sp_data_path, "/Data/r_data/hu_bookings_table_by_county.Rda", sep = ""))
+save(hu_bookings_table,             file=paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda",             sep = ""))
+save(hu_bookings_table_by_county,   file=paste0(sp_data_path, "/Data/r_data/hu_bookings_table_by_county.Rda",   sep = ""))
+save(pres_hu_bookings_table,        file=paste0(sp_data_path, "/Data/r_data/pres_hu_bookings_table.Rda",        sep = ""))
+save(pres_hu_bookings_county_table, file=paste0(sp_data_path, "/Data/r_data/pres_hu_bookings_county_table.Rda", sep = ""))

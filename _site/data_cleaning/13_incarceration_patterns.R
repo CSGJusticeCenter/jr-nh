@@ -1,29 +1,16 @@
 ############################################
 # Project: JRI New Hampshire
 # File: incarceration_patterns.R
-# Last updated: August 22, 2022
+# Last updated: October 6, 2022
 # Author: Mari Roberts
 
-# Tables, graphs, and numbers for incarcerarion patterns page
+# Tables, graphs, and numbers for incarceration patterns page
 ############################################
 
-##########
-
-# TO DO:
-# bookings per capita for each county
-
-##########
-
-# detach plyr to remove issues with dplyr
-# detach(package:plyr)
-
-dim(nh_booking)                       # 54813
-length(unique(nh_booking$id))         # 32186
-length(unique(nh_booking$booking_id)) # 51575
-
 # save booking dates
-all_booking_dates <- nh_booking %>% select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>% distinct()
-dim(all_booking_dates); length(unique(all_booking_dates$booking_id)) # 51575
+all_booking_dates <- nh_booking %>%
+  select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>%
+  distinct()
 
 ######################################################
 # How many individual people were booked into New Hampshire jails annually?
@@ -33,6 +20,7 @@ dim(all_booking_dates); length(unique(all_booking_dates$booking_id)) # 51575
 # by state
 ###
 
+# table of total number of people booked by FY
 df_people_booked_pre <- nh_booking %>%
   dplyr::ungroup() %>%
   dplyr::select(id, fy, county) %>%
@@ -41,6 +29,7 @@ df_people_booked_pre <- nh_booking %>%
   dplyr::summarise(total = n()) %>%
   dplyr::mutate(label = formatC(total, format="d", big.mark=","))
 
+# transpose and format
 df_people_booked <- df_people_booked_pre %>%
   select(-label) %>%
   t %>% as.data.frame() %>%
@@ -50,6 +39,7 @@ df_people_booked <- df_people_booked_pre %>%
          `2021` = as.numeric(`2021`)) %>%
   mutate(total = `2019` + `2020` + `2021`)
 
+# create reactable table
 df_people_booked <- tibble::rownames_to_column(df_people_booked, "variable_name")
 df_people_booked <- df_people_booked %>% mutate(variable_name = ifelse(variable_name == "total", "# People Booked into Jail", ""))
 nh_people_booked <- reactable(df_people_booked,
@@ -66,14 +56,14 @@ nh_people_booked <- reactable(df_people_booked,
                                                  style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
                                 `total` = colDef(minWidth = 80, name = "Total")))
 
-# count number of bookings for three years
+# count number of people booked for all three years
 nh_people_booked_amt <- df_people_booked$total
 nh_people_booked_amt <- format(round(as.numeric(nh_people_booked_amt), 0), nsmall=0, big.mark=",")
 
 # get counties included
 nh_counties <- fnc_counties_in_data(nh_booking)
 
-showtext_auto()
+# bar chart of number of people booked by FY
 nh_people_booked_barchart <- df_people_booked_pre %>%
   hchart('column', hcaes(x = fy, y = total, color = jri_light_blue)) %>%
   hc_xAxis(title = list(text = "Fiscal Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
@@ -97,21 +87,20 @@ nh_people_booked_change_19_21 <- round(nh_people_booked_change_19_21*100, 1)
 # by county
 ###
 
-nh_people_booked_county <- nh_booking %>%
+# table of total number of people booked by FY
+df_nh_people_booked_county <- nh_booking %>%
   dplyr::ungroup() %>%
   dplyr::select(id, fy, county) %>%
   dplyr::distinct() %>%
   dplyr::group_by(fy, county) %>%
-  dplyr::summarise(total = n())
-
-nh_people_booked_county <- nh_people_booked_county %>% spread(fy, total)
-nh_people_booked_county <- nh_people_booked_county %>%
+  dplyr::summarise(total = n()) %>%
+  spread(fy, total) %>%
   mutate(`2019` = as.numeric(`2019`),
          `2020` = as.numeric(`2020`),
          `2021` = as.numeric(`2021`)) %>%
   mutate(total = `2019` + `2020` + `2021`)
 
-nh_people_booked_county <- reactable(nh_people_booked_county,
+nh_people_booked_county <- reactable(df_nh_people_booked_county,
                                      pagination = FALSE,
                                      theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                                      defaultColDef = reactable::colDef(
@@ -139,6 +128,27 @@ nh_people_booked_county <- reactable(nh_people_booked_county,
                                                         style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
                                        `total` = colDef(minWidth = 80, name = "Total", align = "center")))
 
+##########
+# ggplot bar chart showing the number of people booked by FY - data in incarceration_patterns.R
+##########
+
+# data for ggplot showing the number of people booked by FY
+df_people_booked_long <- df_people_booked %>% select(-total)
+df_people_booked_long <- gather(df_people_booked, fy, total, `2019`:`2021`, factor_key=TRUE)
+df_people_booked_long <- df_people_booked_long %>% mutate(fy = as.numeric(fy)) %>%
+  mutate(fy = case_when(fy == 1 ~ "2019", fy == 2 ~ "2020", fy == 3 ~ "2021"))
+
+# gg plot showing the number of people booked by FY
+pres_nh_people_booked_barchart_gg <-
+  ggplot(data=df_people_booked_long, aes(x=fy, y=total)) +
+  geom_bar(stat="identity", width = 0.74, fill = jri_orange) +
+  xlab("") + ylab("People Booked") +
+  geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
+  scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
+                     expand = c(0,0),
+                     limits = c(0,24000)) +
+  theme_no_axes
+
 ######################################################
 # How bookings does NH have per fiscal year?
 ######################################################
@@ -147,23 +157,19 @@ nh_people_booked_county <- reactable(nh_people_booked_county,
 # by state
 ###
 
-# larger df with pc hold variable
-df_bookings_events_all <- nh_booking %>%
+# larger df with pc_hold_in_booking variable
+df_bookings_events <- nh_booking %>%
   select(id, booking_id, fy, county, pc_hold_in_booking) %>%
   distinct()
-dim(df_bookings_events_all); length(unique(df_bookings_events_all$booking_id))           # 51575
 
-# smaller df without pc hold variable
-df_bookings_events_distinct <- df_bookings_events_all %>%
-  distinct()
-dim(df_bookings_events_distinct); length(unique(df_bookings_events_distinct$booking_id)) # 51575
-
-# calculate number of booking events per year
-df_bookings_events <- df_bookings_events_distinct %>%
+# calculate number of booking events per fy
+df_bookings_events <- df_bookings_events %>%
+  distinct() %>%
   group_by(fy) %>%
   dplyr::summarise(total = n()) %>%
   mutate(label = formatC(total, format="d", big.mark=","))
 
+# transposed version
 df_bookings <- df_bookings_events %>%
   select(-label) %>%
   t %>% as.data.frame() %>%
@@ -173,7 +179,7 @@ df_bookings <- df_bookings_events %>%
          `2021` = as.numeric(`2021`)) %>%
   mutate(total = `2019` + `2020` + `2021`)
 
-# create dataframe showing number of bookings by fiscal year
+# create table showing number of bookings by fiscal year
 df_bookings <- tibble::rownames_to_column(df_bookings, "variable_name")
 df_bookings <- df_bookings %>% mutate(variable_name = ifelse(variable_name == "total", "# of Bookings", ""))
 nh_bookings <- reactable(df_bookings,
@@ -198,10 +204,31 @@ nh_bookings_amt <- format(round(as.numeric(nh_bookings_amt), 0), nsmall=0, big.m
 nh_counties <- fnc_counties_in_data(nh_booking)
 
 ##########
+# ggplot bar chart showing the number of bookings by FY
+##########
+
+# data for ggplot showing the number of bookings by FY
+df_bookings_long <- df_bookings %>% select(-total)
+df_bookings_long <- gather(df_bookings_long, fy, total, `2019`:`2021`, factor_key=TRUE) %>%
+  mutate(fy = as.numeric(fy)) %>%
+  mutate(fy = case_when(fy == 1 ~ "2019", fy == 2 ~ "2020", fy == 3 ~ "2021"))
+
+# gg plot showing the number of bookings by FY
+pres_nh_bookings_barchart_gg <-
+  ggplot(data=df_bookings_long, aes(x=fy, y=total)) +
+  geom_bar(stat="identity", width = 0.74, fill = jri_green) +
+  xlab("") + ylab("Number of Bookings") +
+  geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
+  scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
+                     expand = c(0,0),
+                     limits = c(0,24000)) +
+  theme_no_axes
+
+##########
 # Highchart bar chart showing the number of bookings by FY
 ##########
 
-showtext_auto()
+# highchart bar chart showing the number of bookings by FY
 nh_bookings_barchart <- df_bookings_events %>%
   hchart('column', hcaes(x = fy, y = total, color = jri_light_blue)) %>%
   hc_xAxis(title = list(text = "Fiscal Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
@@ -225,20 +252,20 @@ nh_bookings_change_19_21 <- round(nh_bookings_change_19_21*100, 1)
 # by county
 ###
 
-nh_bookings_county <- nh_booking %>%
+# data table of number of bookings by FY and county
+df_nh_bookings_county <- nh_booking %>%
   select(id, booking_id, fy, county) %>%
   distinct() %>%
   group_by(fy, county) %>%
-  dplyr::summarise(total = n())
-
-nh_bookings_county <- nh_bookings_county %>% spread(fy, total)
-nh_bookings_county <- nh_bookings_county %>%
+  dplyr::summarise(total = n()) %>%
+  spread(fy, total) %>%
   mutate(`2019` = as.numeric(`2019`),
          `2020` = as.numeric(`2020`),
          `2021` = as.numeric(`2021`)) %>%
   mutate(total = `2019` + `2020` + `2021`)
 
-nh_bookings_county <- reactable(nh_bookings_county,
+# reactable of number of bookings by FY and county
+nh_bookings_county <- reactable(df_nh_bookings_county,
                                 pagination = FALSE,
                                 theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                                 defaultColDef = reactable::colDef(
@@ -267,11 +294,13 @@ nh_bookings_county <- reactable(nh_bookings_county,
                                   `total` = colDef(minWidth = 80, name = "Total", align = "center")))
 
 ############################################################################################################
+
 # Booking Types
 
 # What are the most common booking types?
 # try to find a way to explain how protective custody holds are labeled as numerous
 # things in the booking type, charge description, etc.
+
 ############################################################################################################
 
 # custom functions to find the number of booking types by fiscal year
@@ -335,7 +364,9 @@ nh_booking_types <- reactable(df_booking,
 
 
 ############################################################################################################
+
 # PC HOLDS
+
 ############################################################################################################
 
 ###########
@@ -351,10 +382,10 @@ df_pch <- merge(nh_pch, all_booking_dates_no_coos_strafford, by = c("id", "booki
 pch_counties <- fnc_counties_in_data(df_pch)
 
 # filter to PC holds
-df1 <- df_pch %>% filter(pc_hold_in_booking == "PC Hold Booking")
+temp <- df_pch %>% filter(pc_hold_in_booking == "PC Hold Booking")
 
 # generate high chart using custom function
-nh_pch_time_highchart <- fnc_covid_time_highchart(df1, yaxis_label = "Number of PC Holds", title = NULL)
+nh_pch_time_highchart <- fnc_covid_time_highchart(temp, yaxis_label = "Number of PC Holds", title = NULL)
 
 ###########
 # Table pc holds by FY
@@ -383,21 +414,21 @@ nh_pch_table <- fnc_reactable_fy(pch_df, metric_label = " ", label_width = 150, 
 # Table pc holds by FY by county
 ###########
 
-detach(package:plyr)
+# detach(package:plyr)
 # select variables
 # count number of pc holds vs non-pc holds by county by fiscal year
-nh_pc_holds_county <- df_pch %>%
+df_nh_pc_holds_county <- df_pch %>%
   select(id, booking_id, fy, county, pc_hold_in_booking) %>%
   distinct() %>%
   group_by(fy, county, pc_hold_in_booking) %>%
   dplyr::summarise(total = n())
 
 # reshape table for viewing
-nh_pc_holds_county <- nh_pc_holds_county %>% spread(pc_hold_in_booking, total) %>% clean_names()
-nh_pc_holds_county <- dcast(setDT(nh_pc_holds_county), county~fy, value.var=c('non_pc_hold_booking', 'pc_hold_booking'))
+df_nh_pc_holds_county <- df_nh_pc_holds_county %>% spread(pc_hold_in_booking, total) %>% clean_names()
+df_nh_pc_holds_county <- dcast(setDT(df_nh_pc_holds_county), county~fy, value.var=c('non_pc_hold_booking', 'pc_hold_booking'))
 
 # calculate % of bookings that pc holds by county by fiscal year
-nh_pc_holds_county <- nh_pc_holds_county %>%
+df_nh_pc_holds_county <- df_nh_pc_holds_county %>%
   mutate(pc_hold_pct_2019 = pc_hold_booking_2019/(non_pc_hold_booking_2019 + pc_hold_booking_2019),
          pc_hold_pct_2020 = pc_hold_booking_2020/(non_pc_hold_booking_2020 + pc_hold_booking_2020),
          pc_hold_pct_2021 = pc_hold_booking_2021/(non_pc_hold_booking_2021 + pc_hold_booking_2021),
@@ -416,7 +447,7 @@ nh_pc_holds_county <- nh_pc_holds_county %>%
   filter(county != "Coos" & county != "Strafford") %>% droplevels()
 
 # format into a reactable table
-nh_pc_holds_county <- fnc_reactable_fy(nh_pc_holds_county, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table. Strafford did not provide data on charges or booking types so they are also excluded (12,233 bookings).")
+nh_pc_holds_county <- fnc_reactable_fy(df_nh_pc_holds_county, metric_label = " ", label_width = 150, reactable_counties = pch_counties, note = "Coos removes bookings that are PC holds so Coos's administrative data (671 bookings) is not included in this table. Strafford did not provide data on charges or booking types so they are also excluded (12,233 bookings).")
 
 ###########
 # How protective custody holds are recorded across counties
@@ -431,7 +462,83 @@ county_pc_hold_recordings <- nh_adm_all %>%
   dplyr::summarise(total = n()) %>%
   dplyr::mutate(total = formattable::comma(total, digits = 0))
 
+##########
+# reactable table with number of bookings and proportion that are PC holds
+##########
+
+# data for reactable table showing number of bookings and proportion of PC holds
+df_nh_bookings_with_pc_holds <- df_nh_pc_holds_county %>%
+  select(county, total_pc_holds = total, freq)
+df_nh_bookings_county1 <- df_nh_bookings_county %>%
+  select(county, total_bookings = total)
+df_nh_bookings_with_pc_holds <- df_nh_bookings_with_pc_holds %>%
+  left_join(df_nh_bookings_county1, by = "county") %>%
+  select(county, total_bookings, everything()) %>%
+  arrange(county)
+df_nh_bookings_with_pc_holds <- df_nh_bookings_with_pc_holds %>%
+  adorn_totals("row")
+df_nh_bookings_with_pc_holds <- df_nh_bookings_with_pc_holds %>%
+  mutate(freq = case_when(county == "Total" ~ (filter(df_nh_bookings_with_pc_holds, county=='Total')$total_pc_holds)/(filter(df_nh_bookings_with_pc_holds, county=='Total')$total_bookings),
+                          TRUE ~ freq)) %>%
+  full_join(df_nh_bookings_county1, by = c("county", "total_bookings")) %>%
+  arrange(county) %>%
+  mutate(total_bookings = case_when(county == "Total" ~ sum(total_bookings) - filter(df_nh_bookings_with_pc_holds, county=='Total')$total_bookings,
+                                    TRUE ~ total_bookings))
+
+pres_nh_bookings_with_pc_holds_table <-
+  reactable(df_nh_bookings_with_pc_holds,
+            pagination = FALSE,
+            style = list(fontFamily = "Franklin Gothic Book"),
+            theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+            compact = TRUE,
+            fullWidth = FALSE,
+            rowStyle = function(index) {
+              if (index %in% c(10)) {
+                list(`border-top` = "thin solid",
+                     fontWeight = "bold")
+              }
+            },
+            defaultColDef = reactable::colDef(
+              format = colFormat(separators = TRUE), align = "left"),
+            columns = list(
+              county          = colDef(minWidth = 120, name = "County", style = list(fontWeight = "bold")),
+              total_bookings  = colDef(minWidth = 80, name = "Total Bookings", align = "center"),
+              total_pc_holds  = colDef(minWidth = 80, name = "# PC Holds", align = "center"),
+              freq            = colDef(style = list(fontWeight = "bold"), name = "% PC Holds", format = colFormat(percent = TRUE, digits = 1), minWidth = 80, align = "center"))) %>%
+  add_source("Coos and Strafford bookings were not included when calculating the proportion of bookings that are PC holds.", font_style = "italic", font_size = 14)
+
+##########
+# ggplots showing the number of bookings and proportion of PC holds by FY - data in incarceration_patterns.R
+##########
+
+# data for ggplots showing the number of bookings and proportion of PC holds by FY
+temp <- df_pch %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n()) %>% filter(!is.na(pc_hold_in_booking))
+
+# ggplot grouped chart showing the number of bookings and proportion of PC holds by FY
+pres_nh_pch_grouped_barchart_gg <-
+  ggplot(temp, aes(fill=pc_hold_in_booking, y=total, x=fy)) +
+  geom_bar(position="dodge", stat="identity") +
+  geom_text(aes(label = comma(total)), color = "black", position = position_dodge(0.9), vjust = -0.5,
+            size = 7.5, family = "Franklin Gothic Book") +
+  scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
+                     expand = c(0,0),
+                     limits = c(0,14000)) +
+  scale_fill_manual(values=c(jri_light_blue,jri_orange), labels = c("Non-PC","PC")) +
+  theme_no_axes +
+  theme(legend.position = c(0.75,0.85),
+        legend.title=element_blank(),
+        axis.title.y = element_blank())
+
+temp2 <- group_by(temp, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
+temp2 <- as.data.frame(temp2)
+temp2 <- temp2 %>% mutate(pct = comma(pct, digits = 1)) %>% mutate(pct = paste0(pct, "%"))
+
+pres_nh_pch_pct_barchart_gg <- fnc_pct_grouped_bar_chart(temp2, "gray", jri_red)
+
 ############################################################################################################
+
+# LOS
+
 # What was the average length of incarceration in jail?
 #
 # Statistics: First, break up into PC vs. criminal charge admissions
@@ -445,19 +552,83 @@ county_pc_hold_recordings <- nh_adm_all %>%
 # This is a low priority though.
 ############################################################################################################
 
-# subset to only bookings that are not a PC hold
-# temp <- nh_booking %>% select(county, id, booking_id, los) %>% distinct()
-# dim(temp); length(unique(temp$booking_id)) # 51,581
+# count freq of los for non-pc hold bookings
+# remove strafford because they don't have pc data
+# keep coos because all the data we were given was non-pc hold bookings
+df_los <- nh_booking %>%
+  filter(county != "Strafford") %>%
+  select(fy, county, booking_id,
+         pc_hold_in_booking,
+         los,
+         high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct) %>%
+  filter(pc_hold_in_booking == "Non-PC Hold Booking") %>%
+  select(-pc_hold_in_booking) %>%
+  distinct() %>%
+  filter(!is.na(los))
+dim(df_los); length(unique(df_los$booking_id))
 
-nh_booking_no_pchs <- nh_booking %>% filter(pc_hold_in_booking == "Non-PC Hold Booking") # 34294
-nh_booking_no_pchs <- nh_booking_no_pchs %>% select(county, id, booking_id, los) %>% distinct()
-dim(nh_booking_no_pchs); length(unique(nh_booking_no_pchs$booking_id)) # 31200
-# dups <- nh_booking_no_pchs[duplicated(nh_booking_no_pchs$booking_id)|duplicated(nh_booking_no_pchs$booking_id, fromLast=TRUE),]
+# df_los <- nh_charges %>%
+#   filter(county != "Strafford") %>% # remove strafford bc we don't know which are PC holds
+#   select(fy, county, booking_id,
+#          #charge_desc,
+#          pc_hold,
+#          los,
+#          high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct) %>%
+#   filter(pc_hold == "Non-PC Hold") %>%
+#   filter(!is.na(los)) %>%
+#   distinct()
+# dim(df_los); length(unique(df_los$booking_id))
 
-library(vtable)
+# add LOS category
+df_los <- df_los %>%
+  mutate(los_category =
+           case_when(los == 0 ~ "0",
+                     los == 1 ~ "1",
+                     los == 2 ~ "2",
+                     los == 3 ~ "3",
+                     los >= 4   & los <= 10   ~ "4-10",
+                     los >= 11  & los <= 30  ~ "11-30",
+                     los >= 31  & los <= 50  ~ "31-50",
+                     los >= 50  & los <= 100 ~ "50-100",
+                     los >= 101 & los <= 180 ~ "101-180",
+                     los >  180              ~ "Over 180")) %>%
+  mutate(los_category = factor(los_category,
+                               levels = c("0",
+                                          "1",
+                                          "2",
+                                          "3",
+                                          "4-10",
+                                          "11-30",
+                                          "31-50",
+                                          "50-100",
+                                          "101-180",
+                                          "Over 180")))
 
-temp <- nh_booking_no_pchs %>% ungroup() %>%  dplyr::select(county, los)
-st(temp, group = 'county', group.test = TRUE)
+# average lOS for non-PC bookings
+avg_los_no_pchs <- df_los %>%
+  group_by() %>%
+  dplyr::summarize(mean = mean(los, na.rm=TRUE))
+
+# overall LOS for all non-PC hold bookings
+df_los_summary <- fnc_los_summary(df_los)
+df_los_summary <- df_los_summary %>% mutate(type = "All (HU's and non-HU's)") %>% select(type, everything())
+
+# reactable table for LOS summary statistics by HU type
+los_summary <- reactable(df_los_summary,
+                         pagination = FALSE,
+                         style = list(fontFamily = "Franklin Gothic Book"),
+                         theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                         defaultColDef = reactable::colDef(
+                           format = colFormat(separators = TRUE), align = "left"),
+                         compact = TRUE,
+                         fullWidth = FALSE,
+                         columns = list(
+                           type   = colDef(minWidth = 190, name = "",
+                                           style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                           min    = colDef(minWidth = 90, name = "Minimum"),
+                           median = colDef(minWidth = 90, name = "Median"),
+                           mean   = colDef(minWidth = 90, name = "Mean"),
+                           max    = colDef(minWidth = 90, name = "Maximum")))
 
 ############################################################################################################
 # Save to SP
@@ -489,4 +660,15 @@ save(nh_pch_pct_amt,                file=paste0(sp_data_path, "/Data/r_data/nh_p
 save(pch_counties,                  file=paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                  sep = ""))
 
 save(nh_pc_holds_county,            file=paste0(sp_data_path, "/Data/r_data/nh_pc_holds_county.Rda",            sep = ""))
-save(county_pc_hold_recordings,     file=paste0(sp_data_path, "/Data/r_data/county_pc_hold_recordings.Rda",         sep = ""))
+save(county_pc_hold_recordings,     file=paste0(sp_data_path, "/Data/r_data/county_pc_hold_recordings.Rda",     sep = ""))
+
+save(avg_los_no_pchs,               file=paste0(sp_data_path, "/Data/r_data/avg_los_no_pchs.Rda",               sep = ""))
+save(los_summary,                   file=paste0(sp_data_path, "/Data/r_data/los_summary.Rda",                   sep = ""))
+
+# presentation graphs
+
+save(pres_nh_people_booked_barchart_gg,    file=paste0(sp_data_path, "/Data/r_data/pres_nh_people_booked_barchart_gg.Rda",    sep = ""))
+save(pres_nh_bookings_barchart_gg,         file=paste0(sp_data_path, "/Data/r_data/pres_nh_bookings_barchart_gg.Rda",         sep = ""))
+save(pres_nh_bookings_with_pc_holds_table, file=paste0(sp_data_path, "/Data/r_data/pres_nh_bookings_with_pc_holds_table.Rda", sep = ""))
+save(pres_nh_pch_grouped_barchart_gg,      file=paste0(sp_data_path, "/Data/r_data/pres_nh_pch_grouped_barchart_gg.Rda",      sep = ""))
+save(pres_nh_pch_pct_barchart_gg,          file=paste0(sp_data_path, "/Data/r_data/pres_nh_pch_pct_barchart_gg.Rda",          sep = ""))

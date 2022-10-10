@@ -36,6 +36,9 @@ library(showtext)
 library(maditr)
 library(formattable)
 library(downloadthis)
+library(scales)
+library(officer)
+library(rvg)
 
 # install.packages("rmarkdown")
 # install.packages("knitr")
@@ -77,8 +80,10 @@ sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
 ###################
 
 # official jri colors
-jri_light_blue <- "#167a9c"
-jri_dark_blue  <- "#293e5c"
-jri_red        <- "#b95826"
-jri_green      <- "#557e39"
+jri_light_blue <- "#4095B1"
+jri_dark_blue  <- "#273C4C"
+jri_red        <- "#E25449"
+jri_green      <- "#61C280"
+jri_off_green  <- "#779F38"
+jri_orange     <- "#E17619"
 

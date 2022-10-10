@@ -152,9 +152,69 @@ df_hu_bookings_table <- df_hu_bookings_table %>%
 df_hu_bookings_table_total_row <- df_hu_bookings_table %>% filter(fy == "Total") %>% select(county = fy, everything())
 
 #######
-# create reactable table
+# create highcharter of HU bookings over time
 #######
 
+df_hu_bookings_month_year <- nh_booking %>%
+  select(fy, county, booking_id, month_year, month_year_text,
+         high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct) %>%
+  distinct()
+df_hu_bookings_month_year <- gather(df_hu_bookings_month_year, hu, type, high_utilizer_1_pct:high_utilizer_5_pct, factor_key=TRUE)
+df_hu_bookings_month_year <- df_hu_bookings_month_year %>%
+  group_by(month_year, month_year_text,
+           hu, type) %>%
+  summarise(total = n()) %>%
+  filter(type == "Yes") %>%
+  mutate(hu = case_when(hu == "high_utilizer_1_pct" ~ "Top 1%",
+                        hu == "high_utilizer_3_pct" ~ "Top 3%",
+                        hu == "high_utilizer_5_pct" ~ "Top 5%"))
+
+hu_bookings_month_year <- hchart(df_hu_bookings_month_year, "line", hcaes(x = month_year_text, y = total, group = hu)) %>%
+  hc_setup() %>%
+  hc_xAxis(
+    title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
+    plotLines = list(list(label = list(text = "COVID-19 Start"), color = "gray", width = 1, value = 20, zIndex = 1))
+  ) %>%
+  hc_yAxis(
+    title = list(text = "Number of Bookings", style = list(color =  "#000000", fontWeight = "bold"))
+  ) %>%
+  hc_add_theme(hc_theme_jc)
+
+
+#######
+# create percent bar charts of HU bookings over time
+#######
+
+# data
+df_hu_bookings_fy <- nh_booking %>%
+  select(fy, county, booking_id,
+         high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct) %>%
+  distinct()
+df_hu_bookings_fy <- gather(df_hu_bookings_fy, hu, type, high_utilizer_1_pct:high_utilizer_5_pct, factor_key=TRUE)
+df_hu_bookings_fy <- df_hu_bookings_fy %>%
+  group_by(fy, hu, type) %>%
+  summarise(total = n()) %>%
+  mutate(hu = case_when(hu == "high_utilizer_1_pct" ~ "Top 1%",
+                        hu == "high_utilizer_3_pct" ~ "Top 3%",
+                        hu == "high_utilizer_5_pct" ~ "Top 5%"))
+
+# top 1% proportion of bookings that are HU's by FY
+temp <- df_hu_bookings_fy %>% filter(hu == "Top 1%")
+hu_bookings_fy_1_pct <- fnc_hu_pct_grouped_bar_chart(temp, "gray", jri_light_blue)
+
+# top 3% proportion of bookings that are HU's by FY
+temp <- df_hu_bookings_fy %>% filter(hu == "Top 3%")
+hu_bookings_fy_3_pct <- fnc_hu_pct_grouped_bar_chart(temp, "gray", jri_green)
+
+# top 5% proportion of bookings that are HU's by FY
+temp <- df_hu_bookings_fy %>% filter(hu == "Top 5%")
+hu_bookings_fy_5_pct <- fnc_hu_pct_grouped_bar_chart(temp, "gray", jri_orange)
+
+#######
+# create reactable table of number of HU bookings, % HU bookings, and avg bookings/yr by FY
+#######
+
+# reactable table
 hu_bookings_table <- reactable(df_hu_bookings_table,
                                pagination = FALSE,
                                theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
@@ -494,7 +554,7 @@ pres_hu_bookings_county_table <- reactable(temp,
                                              avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1))))
 
 ##########
-# LOS by HU
+# Reactable table showing LOS by HU type
 ##########
 
 # overall LOS for all non-PC hold bookings for 1% HU's
@@ -525,12 +585,67 @@ los_summary_135_pct <- reactable(df_los_summary_135_pct,
           compact = TRUE,
           fullWidth = FALSE,
           columns = list(
-            hu     = colDef(minWidth = 190, name = "High Utilizer",
+            hu     = colDef(minWidth = 190, name = "HU",
                             style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
             min    = colDef(minWidth = 90, name = "Minimum"),
             median = colDef(minWidth = 90, name = "Median"),
             mean   = colDef(minWidth = 90, name = "Mean"),
             max    = colDef(minWidth = 90, name = "Maximum")))
+
+##########
+# ggplot showing histogram of LOS
+##########
+
+df_los_1_pct <- df_los %>%
+  filter(high_utilizer_1_pct == "Yes") %>% group_by(los_category) %>% summarise(total = n()) %>%
+  mutate(hu = "Top 1%")
+df_los_3_pct <- df_los %>%
+  filter(high_utilizer_3_pct == "Yes") %>% group_by(los_category) %>% summarise(total = n()) %>%
+  mutate(hu = "Top 3%")
+df_los_5_pct <- df_los %>%
+  filter(high_utilizer_5_pct == "Yes") %>% group_by(los_category) %>% summarise(total = n()) %>%
+  mutate(hu = "Top 5%")
+df_los_pct <- rbind(df_los_1_pct, df_los_3_pct, df_los_5_pct)
+
+los_category_by_hu_gg <- ggplot(df_los_pct, aes(los_category, total)) +
+  geom_bar(aes(fill = hu), position = "dodge", stat="identity", width = 0.75) +
+  scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange),
+                    labels = c("Top 1%      ","Top 3%      ", "Top 5%")) +
+  scale_y_continuous(labels = label_number(big.mark = ",")) +
+  xlab("Length of Stay (Days)") + ylab("Count") +
+  theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
+    axis.text.y = element_text(size = 18, color = "black"),
+    axis.title.x = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(size = 18, color = "black"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.position = "top",
+    legend.justification = c(0, 0),
+    legend.title=element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 18, color = "black")
+  )
+
+# get % of bookings that are 0-10 days
+pct_los_between_0_10_days <- df_los %>% group_by(los_category) %>%
+  filter(high_utilizer_5_pct == "Yes") %>%
+  summarise(total = n()) %>%
+  mutate(pct = round(total/sum(total)*100, 1)) %>%
+  mutate(los_category = as.character(los_category))
+pct_los_between_0_10_days = pct_los_between_0_10_days[-c(6:10),]
+sum(pct_los_between_0_10_days$pct)
+
+##########
+# What is interesting about people cycling through for 1 day?
+##########
+
+df_one_day_los <- nh_booking %>%
+  filter(los == 1) %>%
+  filter(county != "Strafford") %>%
+  filter(pc_hold_in_booking == "Non-PC Hold Booking") %>%
+  distinct() %>%
+  filter(!is.na(los))
 
 ############################################################################################################
 # Save to SP

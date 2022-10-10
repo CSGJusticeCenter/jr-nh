@@ -53,13 +53,3 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
          county = "Carroll") %>% distinct()
-
-########
-# Booking types
-########
-
-# PC holds are in the sentence status and charge description
-temp <- as.data.frame(table(carroll_adm_all$booking_type))
-temp <- as.data.frame(table(carroll_adm_all$release_type))
-temp <- as.data.frame(table(carroll_adm_all$sentence_status))
-temp <- as.data.frame(table(carroll_adm_all$charge_desc))

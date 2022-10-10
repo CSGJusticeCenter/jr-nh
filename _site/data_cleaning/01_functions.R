@@ -17,7 +17,7 @@ source("data_cleaning/00_library.R")
 ###########
 
 # add code to check for hispanic vs non hispanic variables by county????????????????????????????
-# create fy, age, los, and race variabe
+# create fy, age, los, and race variable
 # organize variables
 fnc_data_setup <- function(df){
   df1 <- df %>%
@@ -237,11 +237,11 @@ fnc_add_data_labels <- function(df){
   df1$race_code           <- as.factor(df1$race_code)
   df1$race                <- as.factor(df1$race)
   df1$gender              <- as.factor(df1$gender)
-  df1$charge_code         <- as.factor(df1$charge_code)
-  df1$charge_desc         <- as.factor(df1$charge_desc)
-  df1$booking_type        <- as.factor(df1$booking_type)
-  df1$release_type        <- as.factor(df1$release_type)
-  df1$sentence_status     <- as.factor(df1$sentence_status)
+  df1$charge_code         <- as.character(df1$charge_code)
+  df1$charge_desc         <- as.character(df1$charge_desc)
+  df1$booking_type        <- as.character(df1$booking_type)
+  df1$release_type        <- as.character(df1$release_type)
+  df1$sentence_status     <- as.character(df1$sentence_status)
   df1$fy                  <- as.numeric(df1$fy)
   df1$high_utilizer_1_pct <- as.character(df1$high_utilizer_1_pct)
   df1$high_utilizer_3_pct <- as.character(df1$high_utilizer_3_pct)
@@ -470,7 +470,8 @@ fnc_avg_bookings_fy <- function(df, variable_name, logical){
     select(county, booking_id, num_bookings, variable_name, fy) %>%
     distinct() %>%
     group_by(fy) %>%
-    dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
+    # dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
+    dplyr::summarize(new_variable_name = mean(num_bookings, na.rm=TRUE))
 }
 
 # calculate the total number of bookings per year (by HU for example)#########################
@@ -495,7 +496,8 @@ fnc_avg_bookings_3yr <- function(df, variable_name, logical){
     select(county, booking_id, num_bookings, variable_name, fy) %>%
     distinct() %>%
     group_by() %>%
-    dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
+    # dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
+    dplyr::summarize(new_variable_name = mean(num_bookings, na.rm=TRUE))
 }
 
 # calculate the total number of bookings for all three years (by HU for example)
@@ -518,7 +520,8 @@ fnc_avg_bookings_fy_county <- function(df, variable_name, logical){
     select(county, booking_id, num_bookings, variable_name, fy) %>%
     distinct() %>%
     group_by(fy, county) %>%
-    dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
+    # dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
+    dplyr::summarize(new_variable_name = mean(num_bookings, na.rm=TRUE))
 }
 
 # calculate the total number of bookings per year (by HU for example) ############################
@@ -544,7 +547,8 @@ fnc_avg_bookings_3yr_county <- function(df, variable_name, logical){
     select(county, booking_id, num_bookings, variable_name, fy) %>%
     distinct() %>%
     group_by(county) %>%
-    dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
+    # dplyr::summarise_at(vars(num_bookings), list(new_variable_name = mean))
+    dplyr::summarize(new_variable_name = mean(num_bookings, na.rm=TRUE))
 }
 
 # calculate the total number of bookings for all three years (by HU for example)############################
@@ -558,4 +562,15 @@ fnc_num_bookings_3yr_county <- function(df, variable_name, logical){
                         new_variable_name = Freq) %>%
     filter(variable_name == logical) %>%
     select(-variable_name)
+}
+
+# LOS summary info
+fnc_los_summary <- function(df){
+  df1 <- df %>% ungroup() %>% select(los)
+  df1 <- t(sapply(df1, function(x) c(min = min(df1$los), mean = mean(df1$los), median = median(df1$los), max = max(df1$los))))
+  df1 <- as.data.frame(df1); rownames(df1)<-NULL
+  df1 <- df1 %>% ungroup() %>%
+    select(min, median, mean, max) %>%
+    distinct() %>%
+    mutate(mean = round(mean, 1))
 }
