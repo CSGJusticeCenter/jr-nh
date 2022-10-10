@@ -176,10 +176,11 @@ cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings 
 **Although the number of bookings has been decreasing, the proportion of PC holds has remained the same.**
 
 ```{r}
-nh_pch_table 
-```
-```{r}
 nh_pch_pct_barchart_gg
+```
+
+```{r}
+nh_pch_table 
 ```
 
 <br>

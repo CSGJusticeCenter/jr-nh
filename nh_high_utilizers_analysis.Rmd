@@ -36,6 +36,8 @@ load(paste0(sp_data_path, "/Data/r_data/hu_pc_holds_135_pct_gg.Rda",          se
 load(paste0(sp_data_path, "/Data/r_data/los_summary_135_pct.Rda",             sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/los_category_by_hu_gg.Rda",           sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/one_day_booking_types_135_pct.Rda",   sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/pct_los_between_0_10_days.Rda",       sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/pct_los_between_0_1_days.Rda",        sep = ""))
 ```
 
 # How we define High Utilizers
@@ -46,6 +48,8 @@ Using the jail administrative data submitted to CSG, we defined high utilizers (
 # Jail Bookings
 
 ## By Fiscal Year
+
+<br>
 
 ```{r}
 hu_bookings_month_year
@@ -67,18 +71,18 @@ The table below shows the number of non-HU bookings, proportion of non-HU bookin
 nonhu_bookings_table
 ```
 
-**Top 1% - Proportion of Bookings That Were High Utilizers**
+**Proportion of Bookings That Were Top 1% High Utilizers**
 
 ```{r}
 hu_bookings_fy_1_pct
 ```
-**Top 3% - Proportion of Bookings That Were High Utilizers**
+**Proportion of Bookings That Were Top 3% High Utilizers**
 
 ```{r}
 hu_bookings_fy_3_pct
 ```
 
-**Top 5% - Proportion of Bookings That Were High Utilizers**
+**Proportion of Bookings That Were Top 5% High Utilizers**
 
 ```{r}
 hu_bookings_fy_5_pct
@@ -104,8 +108,6 @@ nonhu_bookings_table_by_county
 
 # What Proportion of HU Bookings are PC Holds?
 
-**Overall**
-
 ```{r, results='asis'}
 temp <- hu_pc_holds_135_pct_gg$data %>% 
   filter(pc_hold_in_booking == "PC Hold Booking" & hu == "Top 5%")
@@ -120,9 +122,9 @@ cat("**", temp, " of top 5% high utilizer bookings were PC holds. This increases
 ```{r}
 hu_pc_holds_135_pct_gg
 ```
+<br>
 
-
-**Top 1%**
+## Top 1%
 
 ```{r, results='asis'}
 temp <- hu_pc_holds_fy_1_pct_gg$data %>% 
@@ -144,7 +146,9 @@ cat("**The proportion of top 1% high utilizer bookings that were PC holds increa
 ```{r}
 hu_pc_holds_fy_1_pct_gg
 ```
-**Top 3%**
+<br>
+
+## Top 3%
 
 ```{r, results='asis'}
 temp <- hu_pc_holds_fy_3_pct_gg$data %>% 
@@ -166,8 +170,9 @@ cat("**The proportion of top 3% high utilizer bookings that were PC holds increa
 ```{r}
 hu_pc_holds_fy_3_pct_gg
 ```
+<br>
 
-**Top 5%**
+## Top 5%
 
 ```{r, results='asis'}
 temp <- hu_pc_holds_fy_5_pct_gg$data %>% 
@@ -195,10 +200,16 @@ hu_pc_holds_fy_5_pct_gg
 ```{r}
 los_summary_135_pct
 ```
+```{r, results='asis'}
+cat("**", pct_los_between_0_1_days, "% of top 5 % jail high utilizers are incarcerated for 0-1 days. " , pct_los_between_0_10_days, "% of top 5% jail high utilizers are incarcerated for 0-10 days**.\n\n", sep = "")
+```
 
 ```{r}
 los_category_by_hu_gg
 ```
+
+## Booking Types for LOS of 0-1 days
+
 ```{r}
 one_day_booking_types_135_pct
 ```

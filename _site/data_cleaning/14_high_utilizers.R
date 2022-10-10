@@ -638,7 +638,7 @@ pct_los_between_0_10_days <- df_los %>% group_by(los_category) %>%
   mutate(pct = round(total/sum(total)*100, 1)) %>%
   mutate(los_category = as.character(los_category))
 pct_los_between_0_10_days = pct_los_between_0_10_days[-c(6:10),]
-sum(pct_los_between_0_10_days$pct)
+pct_los_between_0_10_days <- sum(pct_los_between_0_10_days$pct)
 
 # get % of bookings that are 0-1 days
 pct_los_between_0_1_days <- df_los %>% group_by(los_category) %>%
@@ -647,7 +647,7 @@ pct_los_between_0_1_days <- df_los %>% group_by(los_category) %>%
   mutate(pct = round(total/sum(total)*100, 1)) %>%
   mutate(los_category = as.character(los_category))
 pct_los_between_0_1_days = pct_los_between_0_1_days[-c(3:10),]
-sum(pct_los_between_0_1_days$pct)
+pct_los_between_0_1_days <- sum(pct_los_between_0_1_days$pct)
 
 ################################################################################
 
@@ -796,3 +796,5 @@ save(hu_pc_holds_135_pct_gg,          file=paste0(sp_data_path, "/Data/r_data/hu
 save(los_summary_135_pct,             file=paste0(sp_data_path, "/Data/r_data/los_summary_135_pct.Rda",             sep = ""))
 save(los_category_by_hu_gg,           file=paste0(sp_data_path, "/Data/r_data/los_category_by_hu_gg.Rda",           sep = ""))
 save(one_day_booking_types_135_pct,   file=paste0(sp_data_path, "/Data/r_data/one_day_booking_types_135_pct.Rda",   sep = ""))
+save(pct_los_between_0_10_days,       file=paste0(sp_data_path, "/Data/r_data/pct_los_between_0_10_days.Rda",       sep = ""))
+save(pct_los_between_0_1_days,        file=paste0(sp_data_path, "/Data/r_data/pct_los_between_0_1_days.Rda",        sep = ""))
