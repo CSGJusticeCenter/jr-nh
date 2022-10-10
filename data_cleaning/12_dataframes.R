@@ -57,7 +57,7 @@ strafford_adm <- rbind(temp, dups)
 
 ##################################################
 # remove LOS and release date duplicates due to release date issues
-# fix PC hold recordings if needed
+# manually fix PC hold recordings if needed - based off of jail discussions
 ##################################################
 
 ##########
@@ -72,6 +72,7 @@ belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
                            charge_desc == "DISORDERLY CONDUCT 644:2" |
                            charge_desc == "DRIVING OR OPERATING UNDER THE INFLUENCE OF DRUGSOR LIQUOR 265-A:2" |
                            charge_desc == "RESISTING ARREST 594:5"|
+                           charge_desc == "SIMPLE ASSAULT 631:2-A" |
                            charge_desc == "VIOLATION OF PROTECTIVE ORDER")
                           & booking_type == "PROTECTIVE CUSTODY", "Non-PC Hold", pc_hold)) %>%
 
@@ -162,10 +163,13 @@ save(strafford_adm1,    file=paste0(sp_data_path, "/Data/r_data/strafford_adm.Rd
 save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
 
 ####################################################
+
 # STATE-WIDE DATA
-# combine county data or large NH dataframe with all charge descriptions
+# combine county data for large NH dataframe with all charge descriptions, booking types, etc.
+
 ####################################################
 
+# combine jail data
 nh_adm_all <- rbind(belknap_adm1,
                     carroll_adm1,
                     cheshire_adm1,
@@ -183,7 +187,10 @@ nh_adm_all <- rbind(belknap_adm1,
 nh_adm_all <- nh_adm_all %>%
   mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
   filter(los_max >= 0 | is.na(los_max)) %>%
-  mutate(booking_type = toupper(booking_type),
+  mutate(charge_desc     = toupper(charge_desc),
+         booking_type    = toupper(booking_type),
+         release_type    = toupper(release_type),
+         sentence_status = toupper(sentence_status),
          charge_desc = as.character(charge_desc))
 
 # Some bookings have unknown race but their race was recorded in other bookings, use this race
@@ -210,25 +217,48 @@ nh_adm_all <- nh_adm_all %>%
 
             county == "Carroll"      & str_detect("PROTECTIVE CUSTODY", charge_desc)                                 ~ "PROTECTIVE CUSTODY",
 
+            county == "Carroll"      & str_detect("DETAINEE REQUEST", booking_type) &
+                                       str_detect("PROTECTIVE CUSTODY", sentence_status)                             ~ "PROTECTIVE CUSTODY",
+
             county == "Carroll"      & str_detect("INVOLUNTARY EMERGENCY ADMISSION", charge_desc) &
                                        str_detect("PROTECTIVE CUSTODY", sentence_status)                             ~ "PROTECTIVE CUSTODY",
 
+            county == "Carroll"      & str_detect("DOMESTIC VIOLENCE OFFENSE", charge_desc) &
+                                       str_detect("PROTECTIVE CUSTODY", sentence_status)                             ~ "PROTECTIVE CUSTODY",
+
             county == "Cheshire"     & str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY - DRUGS", charge_desc)      ~ "PROTECTIVE CUSTODY",
+
+            county == "Cheshire"     & str_detect("DETAINEE REQUEST", booking_type) &
+                                       str_detect("PROTECTIVE CUSTODY", sentence_status)                        ~ "PROTECTIVE CUSTODY",
 
             #county == "Coos"        no info
 
             county == "Hillsborough" & str_detect("172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII", charge_desc)      ~ "PROTECTIVE CUSTODY",
 
+            county == "Hillsborough" & str_detect("TREATMENT AND SERVICES", booking_type) &
+                                       str_detect("PC RELEASE", release_type)                                        ~ "PROTECTIVE CUSTODY",
+
+            county == "Hillsborough" & str_detect("NEW ARREST", booking_type) &
+                                       str_detect("PC RELEASE", release_type)                                        ~ "PROTECTIVE CUSTODY",
+
             county == "Merrimack"    & str_detect("PROTECTIVE CUSTODY", charge_desc)                                 ~ "PROTECTIVE CUSTODY",
+
+            county == "Merrimack"    & str_detect("DETAINEE REQUEST", booking_type) &
+                                       str_detect("PROTECTIVE CUSTODY HOLD", sentence_status)                        ~ "PROTECTIVE CUSTODY",
+
+            county == "Merrimack"    & str_detect("ARREST WARRANT", booking_type) &
+                                       str_detect("PROTECTIVE CUSTODY HOLD", sentence_status)                        ~ "PROTECTIVE CUSTODY",
 
             county == "Rockingham"   & str_detect("PROTECTIVE CUSTODY", charge_desc)                                 ~ "PROTECTIVE CUSTODY",
 
             #county == "Strafford"   no data
 
-            county == "Sullivan"     & str_detect("Treatment and Services: Protective Custody", charge_desc)         ~ "PROTECTIVE CUSTODY",
+            county == "Sullivan"     & str_detect("TREATMENT AND SERVICES: PROTECTIVE CUSTODY", charge_desc)         ~ "PROTECTIVE CUSTODY",
 
             TRUE ~ booking_type)) %>%
   select(id, booking_id, county, charge_desc, booking_type, booking_type_withpcs, sentence_status, release_type, everything())
+
+# temp <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>% group_by(county, charge_desc, booking_type, booking_type_withpcs, sentence_status, release_type, pc_hold) %>% summarise(total = n())
 
 # combine some booking types together (some are the same or it makes sense to group them)
 nh_adm_all <- nh_adm_all %>%
@@ -274,6 +304,13 @@ nh_adm_all <- nh_adm_all %>%
 
   select(id, booking_id, county, charge_desc, booking_type, booking_type_withpcs, booking_type_standard, sentence_status, release_type, everything())
 
+# Change all "Unknown" to NA
+nh_adm_all$booking_type_standard[nh_adm_all$booking_type_standard == "UNKNOWN"] <- NA
+nh_adm_all$sentence_status[nh_adm_all$sentence_status             == "UNKNOWN"] <- NA
+nh_adm_all$release_type[nh_adm_all$release_type                   == "UNKNOWN"] <- NA
+
+# temp <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>% group_by(county, charge_desc, booking_type, booking_type_withpcs, sentence_status, release_type, pc_hold) %>% summarise(total = n())
+
 ####################################################
 # Charges dataframe
 ####################################################
@@ -306,7 +343,7 @@ nh_charges <- nh_adm_all %>%
                 pc_hold_sentence,
                 pc_hold) %>%
   distinct()
-dim(nh_charges) # 73176
+dim(nh_charges) # 73124
 
 ####################################################
 # Booking type dataframe
@@ -327,6 +364,7 @@ nh_booking <- nh_adm_all %>%
                 los = los_max,
                 booking_date,
                 booking_type,
+                booking_type_standard,
                 fy,
                 num_bookings,
                 high_utilizer_1_pct,
@@ -350,7 +388,7 @@ nh_booking <- nh_booking %>%
   select(county:high_utilizer_5_pct, month_year_text:pc_hold_in_booking) %>%
   distinct()
 
-dim(nh_booking)                       # 54813
+dim(nh_booking)                       # 53658 = booking_type_standard, 54813 = booking_type, 55126 = booking_type_standard/booking_type
 length(unique(nh_booking$booking_id)) # 51575
 dups <- nh_booking[duplicated(nh_booking$booking_id)|duplicated(nh_booking$booking_id, fromLast=TRUE),] # 5963
 

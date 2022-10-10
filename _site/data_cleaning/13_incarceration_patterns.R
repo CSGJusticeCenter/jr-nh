@@ -12,9 +12,11 @@ all_booking_dates <- nh_booking %>%
   select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>%
   distinct()
 
-######################################################
+####################################################################################################
+
 # How many individual people were booked into New Hampshire jails annually?
-######################################################
+
+####################################################################################################
 
 ###
 # by state
@@ -149,9 +151,11 @@ pres_nh_people_booked_barchart_gg <-
                      limits = c(0,24000)) +
   theme_no_axes
 
-######################################################
-# How bookings does NH have per fiscal year?
-######################################################
+####################################################################################################
+
+# How bookings does NH have annually?
+
+####################################################################################################
 
 ###
 # by state
@@ -295,16 +299,12 @@ nh_bookings_county <- reactable(df_nh_bookings_county,
 
 ############################################################################################################
 
-# Booking Types
-
-# What are the most common booking types?
-# try to find a way to explain how protective custody holds are labeled as numerous
-# things in the booking type, charge description, etc.
+# Common Booking Types
 
 ############################################################################################################
 
 # custom functions to find the number of booking types by fiscal year
-df_booking <- fnc_variable_table(nh_booking_19, nh_booking_20, nh_booking_21, "booking_type")
+df_booking <- fnc_variable_table(nh_booking_19, nh_booking_20, nh_booking_21, "booking_type_standard")
 df_booking <- fnc_variable_table_desc(df_booking)
 df_booking <- df_booking %>% filter(variable_name != "Total") %>%
   select(booking_type = variable_name, everything())
@@ -567,18 +567,6 @@ df_los <- nh_booking %>%
   filter(!is.na(los))
 dim(df_los); length(unique(df_los$booking_id))
 
-# df_los <- nh_charges %>%
-#   filter(county != "Strafford") %>% # remove strafford bc we don't know which are PC holds
-#   select(fy, county, booking_id,
-#          #charge_desc,
-#          pc_hold,
-#          los,
-#          high_utilizer_1_pct, high_utilizer_3_pct, high_utilizer_5_pct) %>%
-#   filter(pc_hold == "Non-PC Hold") %>%
-#   filter(!is.na(los)) %>%
-#   distinct()
-# dim(df_los); length(unique(df_los$booking_id))
-
 # add LOS category
 df_los <- df_los %>%
   mutate(los_category =
@@ -665,8 +653,8 @@ save(county_pc_hold_recordings,     file=paste0(sp_data_path, "/Data/r_data/coun
 save(avg_los_no_pchs,               file=paste0(sp_data_path, "/Data/r_data/avg_los_no_pchs.Rda",               sep = ""))
 save(los_summary,                   file=paste0(sp_data_path, "/Data/r_data/los_summary.Rda",                   sep = ""))
 
-# presentation graphs
 
+# presentation graphs
 save(pres_nh_people_booked_barchart_gg,    file=paste0(sp_data_path, "/Data/r_data/pres_nh_people_booked_barchart_gg.Rda",    sep = ""))
 save(pres_nh_bookings_barchart_gg,         file=paste0(sp_data_path, "/Data/r_data/pres_nh_bookings_barchart_gg.Rda",         sep = ""))
 save(pres_nh_bookings_with_pc_holds_table, file=paste0(sp_data_path, "/Data/r_data/pres_nh_bookings_with_pc_holds_table.Rda", sep = ""))

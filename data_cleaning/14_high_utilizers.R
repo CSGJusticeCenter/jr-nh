@@ -637,15 +637,17 @@ pct_los_between_0_10_days = pct_los_between_0_10_days[-c(6:10),]
 sum(pct_los_between_0_10_days$pct)
 
 ##########
-# What is interesting about people cycling through for 1 day?
+# What is interesting about people cycling through for 0-1 day?
 ##########
 
 df_one_day_los <- nh_booking %>%
-  filter(los == 1) %>%
+  filter(los == 1 | los == 0) %>%
   filter(county != "Strafford") %>%
   filter(pc_hold_in_booking == "Non-PC Hold Booking") %>%
   distinct() %>%
   filter(!is.na(los))
+
+temp <- df_one_day_los %>% group_by(booking_type_standard) %>% summarise(total = n()) %>% arrange(-total)
 
 ############################################################################################################
 # Save to SP
