@@ -31,6 +31,7 @@ load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_barchart.Rda",     sep 
 load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_19_20.Rda", sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_20_21.Rda", sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_19_21.Rda", sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_barchart_gg.Rda",  sep = ""))
 
 load(paste0(sp_data_path, "/Data/r_data/nh_bookings.Rda",                   sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_bookings_amt.Rda",               sep = ""))
@@ -39,16 +40,22 @@ load(paste0(sp_data_path, "/Data/r_data/nh_bookings_barchart.Rda",          sep 
 load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_20.Rda",      sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_20_21.Rda",      sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_21.Rda",      sep = ""))
-
+load(paste0(sp_data_path, "/Data/r_data/nh_bookings_barchart_gg.Rda",       sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_booking_by_fy.Rda",              sep = ""))
+
+load(paste0(sp_data_path, "/Data/r_data/nh_booking_types.Rda",              sep = ""))
+
+load(paste0(sp_data_path, "/Data/r_data/avg_los_no_pchs.Rda",               sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/los_summary.Rda",                   sep = ""))
+
 load(paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda",         sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",                  sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",                sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                  sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/nh_pch_pct_barchart_gg.Rda",        sep = ""))
 
 load(paste0(sp_data_path, "/Data/r_data/nh_pc_holds_county.Rda",            sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/nh_pc_hold_recordings.Rda",         sep = ""))
-
 ```
 
 # Jail Bookings
@@ -62,7 +69,7 @@ Please Note: This section shows the number of individual people booked per fisca
 cat("**There were ", nh_people_booked_amt, " people booked into NH jails from FY2019 to FY2021 (regardless of the number of times booked).**"," This finding was calculated using data from the following counties: ", nh_counties, ".\n\n", sep = "")
 ```
 ```{r}
-nh_people_booked_barchart
+nh_people_booked_barchart_gg
 ```
 
 ```{r, results='asis'}
@@ -79,7 +86,6 @@ Counties saw variations in the number of people booked into jails but nearly all
 ```{r}
 nh_people_booked_county
 ```
-
 <br>
 
 ## Number of Bookings By State
@@ -92,7 +98,7 @@ cat("**There were ", nh_bookings_amt, " bookings across New Hampshire from FY201
 ```
 
 ```{r}
-nh_bookings_barchart
+nh_bookings_barchart_gg
 ```
 
 ```{r, results='asis'}
@@ -112,9 +118,51 @@ Counties saw variations in the number of bookings but they all saw a decrease in
 ```{r}
 nh_bookings_county
 ```
+## Booking Types
 
+```{r}
+nh_booking_types
+```
 <br>
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Length of Stay
+
+```{r, results='asis'}
+# print header for pc hold section
+cat("**People had an average of ", round(avg_los_no_pchs, 1), " bed days between FY2019 and FY2021.**\n\n", sep = "")
+```
+```{r}
+los_summary
+```
+
+
+
+
+
+
+
+
+
+
+
+
+<br>
 
 # Protective Custody Holds
 
@@ -130,8 +178,11 @@ cat("**Protective custody holds accounted for ", nh_pch_pct_amt, "% of bookings 
 ```{r}
 nh_pch_table 
 ```
-<br>
+```{r}
+nh_pch_pct_barchart_gg
+```
 
+<br>
 
 **Protective custody holds tend to occur most frequently during summer months. There was a decline in protective custody holds at the start of the pandemic but they began climbing again shortly after.**  
 

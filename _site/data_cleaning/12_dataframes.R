@@ -14,9 +14,11 @@
 # nh_sentence_statuses
 ############################################
 
-##########
+################################################################################
+
 # Standardize data
-##########
+
+################################################################################
 
 # load R files and standardize county data variables
 source("data_cleaning/00_library.R")
@@ -55,10 +57,12 @@ temp <- strafford_adm %>% anti_join(dups)
 dups <- dups %>% group_by(booking_id) %>% filter(!is.na(race)) %>% droplevels() %>% distinct()
 strafford_adm <- rbind(temp, dups)
 
-##################################################
+################################################################################
+
 # remove LOS and release date duplicates due to release date issues
 # manually fix PC hold recordings if needed - based off of jail discussions
-##################################################
+
+################################################################################
 
 ##########
 # Belknap
@@ -81,6 +85,7 @@ belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
                                 charge_desc == "DISORDERLY CONDUCT 644:2" |
                                 charge_desc == "DRIVING OR OPERATING UNDER THE INFLUENCE OF DRUGSOR LIQUOR 265-A:2" |
                                 charge_desc == "RESISTING ARREST 594:5"|
+                                charge_desc == "SIMPLE ASSAULT 631:2-A" |
                                 charge_desc == "VIOLATION OF PROTECTIVE ORDER")
                                & booking_type == "PROTECTIVE CUSTODY", "Unknown", booking_type))
 
@@ -162,12 +167,12 @@ save(rockingham_adm1,   file=paste0(sp_data_path, "/Data/r_data/rockingham_adm.R
 save(strafford_adm1,    file=paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda",    sep = ""))
 save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
 
-####################################################
+################################################################################
 
 # STATE-WIDE DATA
 # combine county data for large NH dataframe with all charge descriptions, booking types, etc.
 
-####################################################
+################################################################################
 
 # combine jail data
 nh_adm_all <- rbind(belknap_adm1,
@@ -311,9 +316,11 @@ nh_adm_all$release_type[nh_adm_all$release_type                   == "UNKNOWN"] 
 
 # temp <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>% group_by(county, charge_desc, booking_type, booking_type_withpcs, sentence_status, release_type, pc_hold) %>% summarise(total = n())
 
-####################################################
+################################################################################
+
 # Charges dataframe
-####################################################
+
+################################################################################
 
 # create dataframe that includes charge descriptions
 nh_charges <- nh_adm_all %>%
@@ -345,9 +352,11 @@ nh_charges <- nh_adm_all %>%
   distinct()
 dim(nh_charges) # 73124
 
-####################################################
+################################################################################
+
 # Booking type dataframe
-####################################################
+
+################################################################################
 
 # remove charges, relese types, and sentence statuses to get booking events/less rows
 # create month year variables
@@ -404,9 +413,11 @@ nh_booking_19 <- nh_booking %>% distinct() %>% filter(fy == 2019)
 nh_booking_20 <- nh_booking %>% distinct() %>% filter(fy == 2020)
 nh_booking_21 <- nh_booking %>% distinct() %>% filter(fy == 2021)
 
-########################################################################################################
-# Release types
-########################################################################################################
+################################################################################
+
+# Release types data frame
+
+################################################################################
 
 nh_release_type <- nh_adm_all %>%
   select(county,
@@ -421,9 +432,11 @@ nh_release_type_19 <- nh_release_type %>% select(county, id, fy, booking_id, rel
 nh_release_type_20 <- nh_release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2020)
 nh_release_type_21 <- nh_release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2021)
 
-########################################################################################################
-# Sentence statuses
-########################################################################################################
+################################################################################
+
+# Sentence statuses data frame
+
+################################################################################
 
 nh_sentence_status <- nh_adm_all %>%
   select(county,
@@ -438,9 +451,11 @@ nh_sentence_status_19 <- nh_sentence_status %>% select(county, id, fy, booking_i
 nh_sentence_status_20 <- nh_sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2020)
 nh_sentence_status_21 <- nh_sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2021)
 
-########################################################################################################
-# PC hold data
-########################################################################################################
+################################################################################
+
+# PC hold data frame
+
+################################################################################
 
 nh_pch <- nh_booking %>%
   filter(county != "Coos" & county != "Strafford") %>%
@@ -450,9 +465,11 @@ nh_pch <- nh_booking %>%
 
 dim(nh_pch); length(unique(nh_pch$booking_id)) # 38671
 
-########################################################################################################
+################################################################################
+
 # Counties in data
-########################################################################################################
+
+################################################################################
 
 # get list of counties
 counties <- nh_adm_all$county %>%

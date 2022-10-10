@@ -18,13 +18,11 @@
 # What percent of the standing jail population did high utilizers account for?
 ############################################
 
-############################################################################################################
-# High Utilizers: Booking patterns by FY
-############################################################################################################
+################################################################################
 
-##################
-# 1%, 3%, 5% by FY
-##################
+# Bookings 1%, 3%, 5% by FY
+
+################################################################################
 
 # calculate the number of bookings by FY, will use for proportions
 bookings_fy <- nh_booking %>%
@@ -248,9 +246,11 @@ hu_bookings_table <- reactable(df_hu_bookings_table,
                                  total_bookings         = colDef(minWidth = 80, name = "Total")))
 
 
-############################################################################################################
+################################################################################
+
 # High Utilizers: Booking patterns by fiscal year by county
-############################################################################################################
+
+################################################################################
 
 ######
 # 1%, 3%, 5% by FY and county
@@ -430,9 +430,11 @@ hu_bookings_table_by_county <- reactable(df_hu_bookings_table_totals,
 
                                            total_bookings         = colDef(minWidth = 75, name = "Total")))
 
-##################
+################################################################################
+
 # Proportion of HU bookings that are PC holds
-##################
+
+################################################################################
 
 # select variables
 df_hu_pc_holds <- nh_booking %>%
@@ -493,7 +495,7 @@ hu_pc_holds_135_pct_gg <- ggplot(temp, aes(x = hu, y = total, fill = pc_hold_in_
 
 temp <- df_hu_bookings_table %>% select(-total_bookings)
 temp <- temp %>% mutate(fy = ifelse(fy == "Total", "FY2019-FY2021", fy)) %>% filter(fy == "FY2019-FY2021")
-pres_hu_bookings_table <- reactable(temp,
+hu_bookings_table_total <- reactable(temp,
                                     pagination = FALSE,
                                     style = list(fontFamily = "Franklin Gothic Book"),
                                     theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
@@ -525,7 +527,7 @@ pres_hu_bookings_table <- reactable(temp,
                                       avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3"))))
 
 temp <- df_hu_bookings_table_totals %>% select(-c(num_bookings_1_pct, num_bookings_3_pct, num_bookings_5_pct, total_bookings))
-pres_hu_bookings_county_table <- reactable(temp,
+hu_booking_summary_county_table <- reactable(temp,
                                            pagination = FALSE,
                                            style = list(fontFamily = "Franklin Gothic Book"),
                                            theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
@@ -553,9 +555,11 @@ pres_hu_bookings_county_table <- reactable(temp,
                                              prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
                                              avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1))))
 
-##########
+################################################################################
+
 # Reactable table showing LOS by HU type
-##########
+
+################################################################################
 
 # overall LOS for all non-PC hold bookings for 1% HU's
 temp <- df_los %>% filter(high_utilizer_1_pct == "Yes") %>% select(los)
@@ -636,24 +640,159 @@ pct_los_between_0_10_days <- df_los %>% group_by(los_category) %>%
 pct_los_between_0_10_days = pct_los_between_0_10_days[-c(6:10),]
 sum(pct_los_between_0_10_days$pct)
 
-##########
+# get % of bookings that are 0-1 days
+pct_los_between_0_1_days <- df_los %>% group_by(los_category) %>%
+  filter(high_utilizer_5_pct == "Yes") %>%
+  summarise(total = n()) %>%
+  mutate(pct = round(total/sum(total)*100, 1)) %>%
+  mutate(los_category = as.character(los_category))
+pct_los_between_0_1_days = pct_los_between_0_1_days[-c(3:10),]
+sum(pct_los_between_0_1_days$pct)
+
+################################################################################
+
 # What is interesting about people cycling through for 0-1 day?
+
+################################################################################
+
+##########
+# Booking types for 1% by FY
 ##########
 
-df_one_day_los <- nh_booking %>%
+df_one_day_booking_types_1_pct <- nh_booking %>%
   filter(los == 1 | los == 0) %>%
   filter(county != "Strafford") %>%
   filter(pc_hold_in_booking == "Non-PC Hold Booking") %>%
-  distinct() %>%
-  filter(!is.na(los))
+  filter(high_utilizer_1_pct == "Yes") %>%
+  filter(!is.na(los)) %>%
+  select(county, fy, booking_id, booking_type_standard, los) %>%
+  distinct()
 
-temp <- df_one_day_los %>% group_by(booking_type_standard) %>% summarise(total = n()) %>% arrange(-total)
+# custom functions to find the number of booking types by fiscal year
+df_19 <- df_one_day_booking_types_1_pct %>% filter(fy == 2019)
+df_20 <- df_one_day_booking_types_1_pct %>% filter(fy == 2020)
+df_21 <- df_one_day_booking_types_1_pct %>% filter(fy == 2021)
+df_one_day_booking_types_1_pct <- fnc_variable_table(df_19, df_20, df_21, "booking_type_standard")
+df_one_day_booking_types_1_pct <- fnc_variable_table_desc(df_one_day_booking_types_1_pct)
+df_one_day_booking_types_1_pct <- df_one_day_booking_types_1_pct %>% filter(variable_name != "Total") %>%
+  select(booking_type_standard = variable_name, everything())
+
+##########
+# Booking types for 3% by FY
+##########
+
+df_one_day_booking_types_3_pct <- nh_booking %>%
+  filter(los == 1 | los == 0) %>%
+  filter(county != "Strafford") %>%
+  filter(pc_hold_in_booking == "Non-PC Hold Booking") %>%
+  filter(high_utilizer_3_pct == "Yes") %>%
+  filter(!is.na(los)) %>%
+  select(county, fy, booking_id, booking_type_standard, los) %>%
+  distinct()
+
+# custom functions to find the number of booking types by fiscal year
+df_19 <- df_one_day_booking_types_3_pct %>% filter(fy == 2019)
+df_20 <- df_one_day_booking_types_3_pct %>% filter(fy == 2020)
+df_21 <- df_one_day_booking_types_3_pct %>% filter(fy == 2021)
+df_one_day_booking_types_3_pct <- fnc_variable_table(df_19, df_20, df_21, "booking_type_standard")
+df_one_day_booking_types_3_pct <- fnc_variable_table_desc(df_one_day_booking_types_3_pct)
+df_one_day_booking_types_3_pct <- df_one_day_booking_types_3_pct %>% filter(variable_name != "Total") %>%
+  select(booking_type_standard = variable_name, everything())
+
+##########
+# Booking types for 5% by FY
+##########
+
+df_one_day_booking_types_5_pct <- nh_booking %>%
+  filter(los == 1 | los == 0) %>%
+  filter(county != "Strafford") %>%
+  filter(pc_hold_in_booking == "Non-PC Hold Booking") %>%
+  filter(high_utilizer_5_pct == "Yes") %>%
+  filter(!is.na(los)) %>%
+  select(county, fy, booking_id, booking_type_standard, los) %>%
+  distinct()
+
+# custom functions to find the number of booking types by fiscal year
+df_19 <- df_one_day_booking_types_5_pct %>% filter(fy == 2019)
+df_20 <- df_one_day_booking_types_5_pct %>% filter(fy == 2020)
+df_21 <- df_one_day_booking_types_5_pct %>% filter(fy == 2021)
+df_one_day_booking_types_5_pct <- fnc_variable_table(df_19, df_20, df_21, "booking_type_standard")
+df_one_day_booking_types_5_pct <- fnc_variable_table_desc(df_one_day_booking_types_5_pct)
+df_one_day_booking_types_5_pct <- df_one_day_booking_types_5_pct %>% filter(variable_name != "Total") %>%
+  select(booking_type_standard = variable_name, everything())
+
+##########
+# Booking types for 1%, 3%, 5% for FY2019-FY2021
+##########
+
+temp_1_pct <- df_one_day_booking_types_1_pct %>% select(booking_type_standard, total_1_pct = total, freq_1_pct = freq)
+temp_3_pct <- df_one_day_booking_types_3_pct %>% select(booking_type_standard, total_3_pct = total, freq_3_pct = freq)
+temp_5_pct <- df_one_day_booking_types_5_pct %>% select(booking_type_standard, total_5_pct = total, freq_5_pct = freq)
+df_one_day_booking_types_135_pct <- temp_1_pct %>%
+  left_join(temp_3_pct, by = "booking_type_standard") %>%
+  left_join(temp_5_pct, by = "booking_type_standard")
+
+# reactable table
+one_day_booking_types_135_pct <-
+  reactable(df_one_day_booking_types_135_pct,
+             pagination = FALSE,
+             theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+             defaultColDef = reactable::colDef(
+               format = colFormat(separators = TRUE), align = "center",
+               footer = function(values, name) {
+                 if (name %in% c("total_1_pct", "total_3_pct", "total_5_pct")) {
+                   htmltools::div(paste0("", formatC(
+                     x = sum(values),
+                     digits = 0,
+                     big.mark = ",",
+                     format = "f"
+                   )))
+                 }
+               },
+               footerStyle = list(fontWeight = "bold")
+             ),
+             compact = TRUE,
+             fullWidth = FALSE,
+             rowStyle = function(index) {
+               if (index %in% c(16)) {
+                 list(`border-top` = "thin solid",
+                      fontWeight = "bold")
+               }
+             },
+             columnGroups = list(
+               colGroup(name = "Top 1%", columns = c("total_1_pct", "freq_1_pct")),
+               colGroup(name = "Top 3%", columns = c("total_3_pct", "freq_3_pct")),
+               colGroup(name = "Top 5%", columns = c("total_5_pct", "freq_5_pct"))
+             ),
+             columns = list(
+               booking_type_standard = colDef(footer = "Total", name = "Booking Type", align = "left", minWidth = 275),
+               total_1_pct           = colDef(minWidth = 80, name = "#"),
+               freq_1_pct            = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+
+               total_3_pct           = colDef(minWidth = 80, name = "#"),
+               freq_3_pct            = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+
+               total_5_pct           = colDef(minWidth = 80, name = "#"),
+               freq_5_pct            = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1))
+               ))
 
 ############################################################################################################
 # Save to SP
 ############################################################################################################
 
-save(hu_bookings_table,             file=paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda",             sep = ""))
-save(hu_bookings_table_by_county,   file=paste0(sp_data_path, "/Data/r_data/hu_bookings_table_by_county.Rda",   sep = ""))
-save(pres_hu_bookings_table,        file=paste0(sp_data_path, "/Data/r_data/pres_hu_bookings_table.Rda",        sep = ""))
-save(pres_hu_bookings_county_table, file=paste0(sp_data_path, "/Data/r_data/pres_hu_bookings_county_table.Rda", sep = ""))
+save(hu_bookings_table,               file=paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda",               sep = ""))
+save(hu_bookings_table_by_county,     file=paste0(sp_data_path, "/Data/r_data/hu_bookings_table_by_county.Rda",     sep = ""))
+save(hu_bookings_month_year,          file=paste0(sp_data_path, "/Data/r_data/hu_bookings_month_year.Rda",          sep = ""))
+save(hu_bookings_table_total,         file=paste0(sp_data_path, "/Data/r_data/hu_bookings_table_total.Rda",         sep = ""))
+save(hu_booking_summary_county_table, file=paste0(sp_data_path, "/Data/r_data/hu_booking_summary_county_table.Rda", sep = ""))
+
+save(hu_bookings_fy_1_pct,            file=paste0(sp_data_path, "/Data/r_data/hu_bookings_fy_1_pct.Rda",            sep = ""))
+save(hu_bookings_fy_3_pct,            file=paste0(sp_data_path, "/Data/r_data/hu_bookings_fy_3_pct.Rda",            sep = ""))
+save(hu_bookings_fy_5_pct,            file=paste0(sp_data_path, "/Data/r_data/hu_bookings_fy_5_pct.Rda",            sep = ""))
+save(hu_pc_holds_fy_1_pct_gg,         file=paste0(sp_data_path, "/Data/r_data/hu_pc_holds_fy_1_pct_gg.Rda",         sep = ""))
+save(hu_pc_holds_fy_3_pct_gg,         file=paste0(sp_data_path, "/Data/r_data/hu_pc_holds_fy_3_pct_gg.Rda",         sep = ""))
+save(hu_pc_holds_fy_5_pct_gg,         file=paste0(sp_data_path, "/Data/r_data/hu_pc_holds_fy_5_pct_gg.Rda",         sep = ""))
+save(hu_pc_holds_135_pct_gg,          file=paste0(sp_data_path, "/Data/r_data/hu_pc_holds_135_pct_gg.Rda",          sep = ""))
+save(los_summary_135_pct,             file=paste0(sp_data_path, "/Data/r_data/los_summary_135_pct.Rda",             sep = ""))
+save(los_category_by_hu_gg,           file=paste0(sp_data_path, "/Data/r_data/los_category_by_hu_gg.Rda",           sep = ""))
+save(one_day_booking_types_135_pct,   file=paste0(sp_data_path, "/Data/r_data/one_day_booking_types_135_pct.Rda",   sep = ""))

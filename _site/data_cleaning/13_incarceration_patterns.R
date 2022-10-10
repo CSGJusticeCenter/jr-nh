@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: incarceration_patterns.R
-# Last updated: October 6, 2022
+# Last updated: October 10, 2022
 # Author: Mari Roberts
 
 # Tables, graphs, and numbers for incarceration patterns page
@@ -12,15 +12,15 @@ all_booking_dates <- nh_booking %>%
   select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>%
   distinct()
 
-####################################################################################################
+################################################################################
 
 # How many individual people were booked into New Hampshire jails annually?
 
-####################################################################################################
+################################################################################
 
-###
+##########
 # by state
-###
+##########
 
 # table of total number of people booked by FY
 df_people_booked_pre <- nh_booking %>%
@@ -65,7 +65,7 @@ nh_people_booked_amt <- format(round(as.numeric(nh_people_booked_amt), 0), nsmal
 # get counties included
 nh_counties <- fnc_counties_in_data(nh_booking)
 
-# bar chart of number of people booked by FY
+# highcharter bar chart of number of people booked by FY
 nh_people_booked_barchart <- df_people_booked_pre %>%
   hchart('column', hcaes(x = fy, y = total, color = jri_light_blue)) %>%
   hc_xAxis(title = list(text = "Fiscal Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
@@ -85,9 +85,9 @@ nh_people_booked_change_20_21 <- round(nh_people_booked_change_20_21*100, 1)
 nh_people_booked_change_19_21 <- (v3 - v1)/v1
 nh_people_booked_change_19_21 <- round(nh_people_booked_change_19_21*100, 1)
 
-###
+##########
 # by county
-###
+##########
 
 # table of total number of people booked by FY
 df_nh_people_booked_county <- nh_booking %>%
@@ -141,7 +141,7 @@ df_people_booked_long <- df_people_booked_long %>% mutate(fy = as.numeric(fy)) %
   mutate(fy = case_when(fy == 1 ~ "2019", fy == 2 ~ "2020", fy == 3 ~ "2021"))
 
 # gg plot showing the number of people booked by FY
-pres_nh_people_booked_barchart_gg <-
+nh_people_booked_barchart_gg <-
   ggplot(data=df_people_booked_long, aes(x=fy, y=total)) +
   geom_bar(stat="identity", width = 0.74, fill = jri_orange) +
   xlab("") + ylab("People Booked") +
@@ -151,15 +151,15 @@ pres_nh_people_booked_barchart_gg <-
                      limits = c(0,24000)) +
   theme_no_axes
 
-####################################################################################################
+################################################################################
 
 # How bookings does NH have annually?
 
-####################################################################################################
+################################################################################
 
-###
+##########
 # by state
-###
+##########
 
 # larger df with pc_hold_in_booking variable
 df_bookings_events <- nh_booking %>%
@@ -218,7 +218,7 @@ df_bookings_long <- gather(df_bookings_long, fy, total, `2019`:`2021`, factor_ke
   mutate(fy = case_when(fy == 1 ~ "2019", fy == 2 ~ "2020", fy == 3 ~ "2021"))
 
 # gg plot showing the number of bookings by FY
-pres_nh_bookings_barchart_gg <-
+nh_bookings_barchart_gg <-
   ggplot(data=df_bookings_long, aes(x=fy, y=total)) +
   geom_bar(stat="identity", width = 0.74, fill = jri_green) +
   xlab("") + ylab("Number of Bookings") +
@@ -252,9 +252,9 @@ nh_bookings_change_20_21 <- round(nh_bookings_change_20_21*100, 1)
 nh_bookings_change_19_21 <- (v3 - v1)/v1
 nh_bookings_change_19_21 <- round(nh_bookings_change_19_21*100, 1)
 
-###
+##########
 # by county
-###
+##########
 
 # data table of number of bookings by FY and county
 df_nh_bookings_county <- nh_booking %>%
@@ -297,11 +297,11 @@ nh_bookings_county <- reactable(df_nh_bookings_county,
                                                    style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
                                   `total` = colDef(minWidth = 80, name = "Total", align = "center")))
 
-############################################################################################################
+################################################################################
 
 # Common Booking Types
 
-############################################################################################################
+################################################################################
 
 # custom functions to find the number of booking types by fiscal year
 df_booking <- fnc_variable_table(nh_booking_19, nh_booking_20, nh_booking_21, "booking_type_standard")
@@ -363,11 +363,11 @@ nh_booking_types <- reactable(df_booking,
                                                       format = colFormat(percent = TRUE, digits = 1))))
 
 
-############################################################################################################
+################################################################################
 
 # PC HOLDS
 
-############################################################################################################
+################################################################################
 
 ###########
 # Highchart pc holds over time
@@ -485,7 +485,7 @@ df_nh_bookings_with_pc_holds <- df_nh_bookings_with_pc_holds %>%
   mutate(total_bookings = case_when(county == "Total" ~ sum(total_bookings) - filter(df_nh_bookings_with_pc_holds, county=='Total')$total_bookings,
                                     TRUE ~ total_bookings))
 
-pres_nh_bookings_with_pc_holds_table <-
+nh_bookings_with_pc_holds_table <-
   reactable(df_nh_bookings_with_pc_holds,
             pagination = FALSE,
             style = list(fontFamily = "Franklin Gothic Book"),
@@ -515,7 +515,7 @@ pres_nh_bookings_with_pc_holds_table <-
 temp <- df_pch %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n()) %>% filter(!is.na(pc_hold_in_booking))
 
 # ggplot grouped chart showing the number of bookings and proportion of PC holds by FY
-pres_nh_pch_grouped_barchart_gg <-
+nh_pch_grouped_barchart_gg <-
   ggplot(temp, aes(fill=pc_hold_in_booking, y=total, x=fy)) +
   geom_bar(position="dodge", stat="identity") +
   geom_text(aes(label = comma(total)), color = "black", position = position_dodge(0.9), vjust = -0.5,
@@ -533,9 +533,9 @@ temp2 <- group_by(temp, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
 temp2 <- as.data.frame(temp2)
 temp2 <- temp2 %>% mutate(pct = comma(pct, digits = 1)) %>% mutate(pct = paste0(pct, "%"))
 
-pres_nh_pch_pct_barchart_gg <- fnc_pct_grouped_bar_chart(temp2, "gray", jri_red)
+nh_pch_pct_barchart_gg <- fnc_pct_grouped_bar_chart(temp2, "gray", jri_red)
 
-############################################################################################################
+################################################################################
 
 # LOS
 
@@ -550,7 +550,8 @@ pres_nh_pch_pct_barchart_gg <- fnc_pct_grouped_bar_chart(temp2, "gray", jri_red)
 # I wonder if we could potentially have a global distribution density plot,
 # but then have 9 lines showing the average for each county as a visual to compare across counties.
 # This is a low priority though.
-############################################################################################################
+
+################################################################################
 
 # count freq of los for non-pc hold bookings
 # remove strafford because they don't have pc data
@@ -596,6 +597,7 @@ df_los <- df_los %>%
 avg_los_no_pchs <- df_los %>%
   group_by() %>%
   dplyr::summarize(mean = mean(los, na.rm=TRUE))
+avg_los_no_pchs <- as.numeric(avg_los_no_pchs)
 
 # overall LOS for all non-PC hold bookings
 df_los_summary <- fnc_los_summary(df_los)
@@ -618,12 +620,16 @@ los_summary <- reactable(df_los_summary,
                            mean   = colDef(minWidth = 90, name = "Mean"),
                            max    = colDef(minWidth = 90, name = "Maximum")))
 
-############################################################################################################
-# Save to SP
-############################################################################################################
+################################################################################
 
+# Save to SP
+
+################################################################################
+
+# counties in study
 save(nh_counties,                   file=paste0(sp_data_path, "/Data/r_data/nh_counties.Rda",                   sep = ""))
 
+# people booked
 save(nh_people_booked_amt,          file=paste0(sp_data_path, "/Data/r_data/nh_people_booked_amt.Rda",          sep = ""))
 save(nh_people_booked,              file=paste0(sp_data_path, "/Data/r_data/nh_people_booked.Rda",              sep = ""))
 save(nh_people_booked_county,       file=paste0(sp_data_path, "/Data/r_data/nh_people_booked_county.Rda",       sep = ""))
@@ -631,32 +637,32 @@ save(nh_people_booked_barchart,     file=paste0(sp_data_path, "/Data/r_data/nh_p
 save(nh_people_booked_change_19_20, file=paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_19_20.Rda", sep = ""))
 save(nh_people_booked_change_20_21, file=paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_20_21.Rda", sep = ""))
 save(nh_people_booked_change_19_21, file=paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_19_21.Rda", sep = ""))
+save(nh_people_booked_barchart_gg,  file=paste0(sp_data_path, "/Data/r_data/nh_people_booked_barchart_gg.Rda",    sep = ""))
 
-save(nh_bookings_amt,               file=paste0(sp_data_path, "/Data/r_data/nh_bookings_amt.Rda",               sep = ""))
-save(nh_bookings,                   file=paste0(sp_data_path, "/Data/r_data/nh_bookings.Rda",                   sep = ""))
-save(nh_bookings_county,            file=paste0(sp_data_path, "/Data/r_data/nh_bookings_county.Rda",            sep = ""))
-save(nh_bookings_barchart,          file=paste0(sp_data_path, "/Data/r_data/nh_bookings_barchart.Rda",          sep = ""))
-save(nh_bookings_change_19_20,      file=paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_20.Rda",      sep = ""))
-save(nh_bookings_change_20_21,      file=paste0(sp_data_path, "/Data/r_data/nh_bookings_change_20_21.Rda",      sep = ""))
-save(nh_bookings_change_19_21,      file=paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_21.Rda",      sep = ""))
+# bookings
+save(nh_bookings_amt,                 file=paste0(sp_data_path, "/Data/r_data/nh_bookings_amt.Rda",               sep = ""))
+save(nh_bookings,                     file=paste0(sp_data_path, "/Data/r_data/nh_bookings.Rda",                   sep = ""))
+save(nh_bookings_county,              file=paste0(sp_data_path, "/Data/r_data/nh_bookings_county.Rda",            sep = ""))
+save(nh_bookings_barchart,            file=paste0(sp_data_path, "/Data/r_data/nh_bookings_barchart.Rda",          sep = ""))
+save(nh_bookings_change_19_20,        file=paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_20.Rda",      sep = ""))
+save(nh_bookings_change_20_21,        file=paste0(sp_data_path, "/Data/r_data/nh_bookings_change_20_21.Rda",      sep = ""))
+save(nh_bookings_change_19_21,        file=paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_21.Rda",      sep = ""))
+save(nh_bookings_barchart_gg,         file=paste0(sp_data_path, "/Data/r_data/nh_bookings_barchart_gg.Rda",         sep = ""))
 
-# save(nh_booking_types,              file=paste0(sp_data_path, "/Data/r_data/nh_booking_types.Rda",              sep = ""))
+# booking types
+save(nh_booking_types,              file=paste0(sp_data_path, "/Data/r_data/nh_booking_types.Rda",              sep = ""))
 
-save(nh_pch_time_highchart,         file=paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda",         sep = ""))
-save(nh_pch_table,                  file=paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",                  sep = ""))
-save(nh_pch_pct_amt,                file=paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",                sep = ""))
-save(pch_counties,                  file=paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                  sep = ""))
+# protective custody holds
+save(nh_pch_time_highchart,           file=paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda",         sep = ""))
+save(nh_pch_table,                    file=paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",                  sep = ""))
+save(nh_pch_pct_amt,                  file=paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",                sep = ""))
+save(pch_counties,                    file=paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                  sep = ""))
+save(nh_pc_holds_county,              file=paste0(sp_data_path, "/Data/r_data/nh_pc_holds_county.Rda",            sep = ""))
+save(county_pc_hold_recordings,       file=paste0(sp_data_path, "/Data/r_data/county_pc_hold_recordings.Rda",     sep = ""))
+save(nh_pch_grouped_barchart_gg,      file=paste0(sp_data_path, "/Data/r_data/nh_pch_grouped_barchart_gg.Rda",      sep = ""))
+save(nh_pch_pct_barchart_gg,          file=paste0(sp_data_path, "/Data/r_data/nh_pch_pct_barchart_gg.Rda",          sep = ""))
+save(nh_bookings_with_pc_holds_table, file=paste0(sp_data_path, "/Data/r_data/nh_bookings_with_pc_holds_table.Rda", sep = ""))
 
-save(nh_pc_holds_county,            file=paste0(sp_data_path, "/Data/r_data/nh_pc_holds_county.Rda",            sep = ""))
-save(county_pc_hold_recordings,     file=paste0(sp_data_path, "/Data/r_data/county_pc_hold_recordings.Rda",     sep = ""))
-
-save(avg_los_no_pchs,               file=paste0(sp_data_path, "/Data/r_data/avg_los_no_pchs.Rda",               sep = ""))
-save(los_summary,                   file=paste0(sp_data_path, "/Data/r_data/los_summary.Rda",                   sep = ""))
-
-
-# presentation graphs
-save(pres_nh_people_booked_barchart_gg,    file=paste0(sp_data_path, "/Data/r_data/pres_nh_people_booked_barchart_gg.Rda",    sep = ""))
-save(pres_nh_bookings_barchart_gg,         file=paste0(sp_data_path, "/Data/r_data/pres_nh_bookings_barchart_gg.Rda",         sep = ""))
-save(pres_nh_bookings_with_pc_holds_table, file=paste0(sp_data_path, "/Data/r_data/pres_nh_bookings_with_pc_holds_table.Rda", sep = ""))
-save(pres_nh_pch_grouped_barchart_gg,      file=paste0(sp_data_path, "/Data/r_data/pres_nh_pch_grouped_barchart_gg.Rda",      sep = ""))
-save(pres_nh_pch_pct_barchart_gg,          file=paste0(sp_data_path, "/Data/r_data/pres_nh_pch_pct_barchart_gg.Rda",          sep = ""))
+# length of stay
+save(avg_los_no_pchs,                 file=paste0(sp_data_path, "/Data/r_data/avg_los_no_pchs.Rda",               sep = ""))
+save(los_summary,                     file=paste0(sp_data_path, "/Data/r_data/los_summary.Rda",                   sep = ""))
