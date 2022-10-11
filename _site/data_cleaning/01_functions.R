@@ -123,7 +123,7 @@ fnc_pc_hold_variables <- function(df){
                                         is.na(charge_desc) ~ "NA",
                                         TRUE ~ "Non-PC Hold"),
 
-           pc_hold_sentence = case_when(sentence_status == "PROTECTIVE CUSTODY" | sentence_status == "PROTECTIVE CUSTODY HOLD" ~ "PC Hold",
+           pc_hold_sentence = case_when(sentence_status == "PROTECTIVE CUSTODY" | sentence_status == "PROTECTIVE CUSTODY HOLD" | sentence_status == "PC-IEA" ~ "PC Hold",
                                         is.na(sentence_status) ~ "NA",
                                         TRUE ~ "Non-PC Hold"),
 
