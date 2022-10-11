@@ -493,7 +493,7 @@ hu_pc_holds_135_pct_gg <- ggplot(temp, aes(x = hu, y = total, fill = pc_hold_in_
 # reactable tables with top 1%, 3%, 5% details - data in high_utilizers.R
 ##########
 
-temp <- df_hu_bookings_table %>% select(-total_bookings)
+temp <- df_hu_bookings_table
 temp <- temp %>% mutate(fy = ifelse(fy == "Total", "FY2019-FY2021", fy)) %>% filter(fy == "FY2019-FY2021")
 hu_bookings_table_total <- reactable(temp,
                                     pagination = FALSE,
@@ -515,16 +515,18 @@ hu_bookings_table_total <- reactable(temp,
                                       colGroup(name = "Top 5%", columns = c("num_bookings_5_pct", "prop_bookings_5_pct", "avg_num_bookings_5_pct"))
                                     ),
                                     columns = list(
+                                      total_bookings         = colDef(minWidth = 150, name = "Total NH Bookings"),
                                       fy                     = colDef(minWidth = 150, name = "", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                      num_bookings_1_pct     = colDef(minWidth = 80, name = "#"),
+                                      num_bookings_1_pct     = colDef(minWidth = 80, name = "N"),
                                       prop_bookings_1_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
                                       avg_num_bookings_1_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                      num_bookings_3_pct     = colDef(minWidth = 80, name = "#"),
+                                      num_bookings_3_pct     = colDef(minWidth = 80, name = "N"),
                                       prop_bookings_3_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
                                       avg_num_bookings_3_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                      num_bookings_5_pct     = colDef(minWidth = 80, name = "#"),
+                                      num_bookings_5_pct     = colDef(minWidth = 80, name = "N"),
                                       prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                      avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3"))))
+                                      avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3"))
+                                      ))
 
 temp <- df_hu_bookings_table_totals %>% select(-c(num_bookings_1_pct, num_bookings_3_pct, num_bookings_5_pct, total_bookings))
 hu_booking_summary_county_table <- reactable(temp,

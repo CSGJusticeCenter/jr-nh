@@ -1,13 +1,13 @@
 ############################################
 # Project: JRI New Hampshire
 # File: dataframes.R
-# Last updated: August 31, 2022
+# Last updated: October 11, 2022
 # Author: Mari Roberts
 
 # Generate tables for state overview
 
 # Creates data frames:
-# nh_adm_all
+# nh_adm_all - this is broken down into the tables below
 # nh_charges
 # nh_booking - used the most, booking events
 # nh_release_types
@@ -20,7 +20,7 @@
 
 ################################################################################
 
-# load R files and standardize county data variables
+# load R files that import and standardize each jail file so the variables are the same
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions_visuals.R")
 source("data_cleaning/01_functions.R")
@@ -215,8 +215,11 @@ nh_adm_all <- nh_adm_all %>%
 # gets a more accurate count of other booking types
 nh_adm_all <- nh_adm_all %>%
   mutate(booking_type_withpcs =
+            ###########
 
             # Change booking type to PC Hold
+
+            ###########
   case_when(county == "Belknap"      & str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY/INTOXICATION", charge_desc) ~ "PROTECTIVE CUSTODY",
 
             county == "Carroll"      & str_detect("PROTECTIVE CUSTODY", charge_desc)                                 ~ "PROTECTIVE CUSTODY",
@@ -247,6 +250,8 @@ nh_adm_all <- nh_adm_all %>%
 
             county == "Merrimack"    & str_detect("PROTECTIVE CUSTODY", charge_desc)                                 ~ "PROTECTIVE CUSTODY",
 
+            county == "Merrimack"    & str_detect("PC-IEA", sentence_status)                             ~ "PROTECTIVE CUSTODY",
+
             county == "Merrimack"    & str_detect("DETAINEE REQUEST", booking_type) &
                                        str_detect("PROTECTIVE CUSTODY HOLD", sentence_status)                        ~ "PROTECTIVE CUSTODY",
 
@@ -257,10 +262,21 @@ nh_adm_all <- nh_adm_all %>%
 
             #county == "Strafford"   no data
 
-            county == "Sullivan"     & str_detect("TREATMENT AND SERVICES: PROTECTIVE CUSTODY", charge_desc)         ~ "PROTECTIVE CUSTODY"
+            county == "Sullivan"     & str_detect("TREATMENT AND SERVICES: PROTECTIVE CUSTODY", charge_desc)         ~ "PROTECTIVE CUSTODY",
+
+            ###########
 
             # Change booking type
 
+            ###########
+            county == "Hillsborough" & str_detect("BOARDED", booking_type)
+                                     & str_detect("CONVICTED|CONVICTED ROCK", sentence_status)                                              ~ "CONVICTED",
+
+            county == "Hillsborough" & str_detect("BOARDED", booking_type)
+                                     & str_detect("PRE TRIAL ROCK SATCO|PRETRIAL|PRETRIAL ROCK|PRETRIAL SULLIVAN", sentence_status)         ~ "PRETRIAL",
+
+            county == "Hillsborough" & str_detect("BOARDED", booking_type)
+                                     & str_detect("SENTENCED|SENTENCED ROCK|SENTENCED ROCK SATCO|SENTENCED W/HOLD MERRIMACK|SENTENCED W/HOLD ROCK", sentence_status) ~ "SENTENCED",
 
             TRUE ~ booking_type)) %>%
   select(id, booking_id, county, charge_desc, booking_type, booking_type_withpcs, sentence_status, release_type, everything())
@@ -303,6 +319,8 @@ nh_adm_all <- nh_adm_all %>%
             booking_type_withpcs == "VIOLATION OF PAROLE" |
             booking_type_withpcs == "VIOLATION OF PROBATION"          ~ "PROBATION/PAROLE (VIOLATION/DETENTION ORDER)",
 
+            booking_type_withpcs == "CONVICTED" | # not sure if this should be here
+            booking_type_withpcs == "CONVICTED ROCK" | # not sure if this should be here
             booking_type_withpcs == "SENTENCED" |
             booking_type_withpcs == "SENTENCING" |
             booking_type_withpcs == "WALK IN-SENTENCED"               ~ "SENTENCED/SENTENCING",
@@ -315,8 +333,6 @@ nh_adm_all <- nh_adm_all %>%
 nh_adm_all$booking_type_standard[nh_adm_all$booking_type_standard == "UNKNOWN"] <- NA
 nh_adm_all$sentence_status[nh_adm_all$sentence_status             == "UNKNOWN"] <- NA
 nh_adm_all$release_type[nh_adm_all$release_type                   == "UNKNOWN"] <- NA
-
-# temp <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>% group_by(county, charge_desc, booking_type, booking_type_withpcs, sentence_status, release_type, pc_hold) %>% summarise(total = n())
 
 ################################################################################
 
