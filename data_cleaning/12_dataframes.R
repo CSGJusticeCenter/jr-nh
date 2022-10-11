@@ -60,7 +60,7 @@ strafford_adm <- rbind(temp, dups)
 ################################################################################
 
 # remove LOS and release date duplicates due to release date issues
-# manually fix PC hold recordings if needed - based off of jail discussions
+# manually fix PC hold recordings and booking types if needed - based off of jail discussions
 
 ################################################################################
 
@@ -87,10 +87,7 @@ belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
                                 charge_desc == "RESISTING ARREST 594:5"|
                                 charge_desc == "SIMPLE ASSAULT 631:2-A" |
                                 charge_desc == "VIOLATION OF PROTECTIVE ORDER")
-                               & booking_type == "PROTECTIVE CUSTODY", "Unknown", booking_type))
-
-# fix coding for pc holds
-belknap_adm1 <- belknap_adm1 %>%
+                               & booking_type == "PROTECTIVE CUSTODY", "Unknown", booking_type)) %>%
   mutate(pc_hold = as.character(pc_hold)) %>%
   mutate(pc_hold = case_when(pc_hold == "2" ~ "PC Hold",
                              pc_hold == "1" ~ "Non-PC Hold",
@@ -110,8 +107,7 @@ carroll_adm1 <- carroll_adm %>% select(-c(los, release_date)) %>% distinct()
 # change sentence status to unknown for these since they aren't PC holds
 cheshire_adm1 <- cheshire_adm %>% select(-c(los, release_date)) %>% distinct() %>%
   mutate(pc_hold         = ifelse(charge_desc == "TEMPORARY REMOVAL OR TRANSFER" & sentence_status == "PROTECTIVE CUSTODY", "Non-PC Hold", pc_hold)) %>%
-  mutate(sentence_status = ifelse(charge_desc == "TEMPORARY REMOVAL OR TRANSFER" & sentence_status == "PROTECTIVE CUSTODY", "Unknown", sentence_status))
-cheshire_adm1 <- cheshire_adm1 %>%
+  mutate(sentence_status = ifelse(charge_desc == "TEMPORARY REMOVAL OR TRANSFER" & sentence_status == "PROTECTIVE CUSTODY", "Unknown", sentence_status)) %>%
   mutate(pc_hold = as.character(pc_hold)) %>%
   mutate(pc_hold = case_when(pc_hold == "2" ~ "PC Hold",
                              pc_hold == "1" ~ "Non-PC Hold",
@@ -188,7 +184,7 @@ nh_adm_all <- rbind(belknap_adm1,
 # fix los_max issues
 # remove negatives because of data entry issues with booking and release dates
 # if release date is missing, then change to NA
-# make all booking types uppercase
+# make all charges, booking types, release types, and sentence statuses uppercase
 nh_adm_all <- nh_adm_all %>%
   mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
   filter(los_max >= 0 | is.na(los_max)) %>%
@@ -215,9 +211,12 @@ nh_adm_all <- nh_adm_all %>%
 ##########
 
 # if PC hold is in charge description and it has been confirmed that the booking type is a PC hold,
-# change the booking_type to a PC hold - gets a more accurate count of other booking types
+# change the booking_type (new variable, booking_type_withpcs, to preserve raw booking type) to a PC hold
+# gets a more accurate count of other booking types
 nh_adm_all <- nh_adm_all %>%
   mutate(booking_type_withpcs =
+
+            # Change booking type to PC Hold
   case_when(county == "Belknap"      & str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY/INTOXICATION", charge_desc) ~ "PROTECTIVE CUSTODY",
 
             county == "Carroll"      & str_detect("PROTECTIVE CUSTODY", charge_desc)                                 ~ "PROTECTIVE CUSTODY",
@@ -234,7 +233,7 @@ nh_adm_all <- nh_adm_all %>%
             county == "Cheshire"     & str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY - DRUGS", charge_desc)      ~ "PROTECTIVE CUSTODY",
 
             county == "Cheshire"     & str_detect("DETAINEE REQUEST", booking_type) &
-                                       str_detect("PROTECTIVE CUSTODY", sentence_status)                        ~ "PROTECTIVE CUSTODY",
+                                       str_detect("PROTECTIVE CUSTODY", sentence_status)                             ~ "PROTECTIVE CUSTODY",
 
             #county == "Coos"        no info
 
@@ -260,10 +259,15 @@ nh_adm_all <- nh_adm_all %>%
 
             county == "Sullivan"     & str_detect("TREATMENT AND SERVICES: PROTECTIVE CUSTODY", charge_desc)         ~ "PROTECTIVE CUSTODY",
 
+            # Change booking type to violation or probation and parole
+
+            county == "Belknap" & str_detect("PRETRIAL|SENTENCED", booking_type) &
+              str_detect("PROBATION VIOLATION|172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII|VIOLATION OF TERMS OF PROBATION OR PAROLE|47  VIOLATION OF TERMS OF PROBATION OR PAROLE 504-A:4", charge_desc)
+            ~ "PROBATION/PAROLE VIOLATION",
+
+
             TRUE ~ booking_type)) %>%
   select(id, booking_id, county, charge_desc, booking_type, booking_type_withpcs, sentence_status, release_type, everything())
-
-# temp <- nh_adm_all %>% filter(pc_hold == "PC Hold") %>% group_by(county, charge_desc, booking_type, booking_type_withpcs, sentence_status, release_type, pc_hold) %>% summarise(total = n())
 
 # combine some booking types together (some are the same or it makes sense to group them)
 nh_adm_all <- nh_adm_all %>%
