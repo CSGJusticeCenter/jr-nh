@@ -257,13 +257,9 @@ nh_adm_all <- nh_adm_all %>%
 
             #county == "Strafford"   no data
 
-            county == "Sullivan"     & str_detect("TREATMENT AND SERVICES: PROTECTIVE CUSTODY", charge_desc)         ~ "PROTECTIVE CUSTODY",
+            county == "Sullivan"     & str_detect("TREATMENT AND SERVICES: PROTECTIVE CUSTODY", charge_desc)         ~ "PROTECTIVE CUSTODY"
 
-            # Change booking type to violation or probation and parole
-
-            county == "Belknap" & str_detect("PRETRIAL|SENTENCED", booking_type) &
-              str_detect("PROBATION VIOLATION|172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII|VIOLATION OF TERMS OF PROBATION OR PAROLE|47  VIOLATION OF TERMS OF PROBATION OR PAROLE 504-A:4", charge_desc)
-            ~ "PROBATION/PAROLE VIOLATION",
+            # Change booking type
 
 
             TRUE ~ booking_type)) %>%
@@ -281,7 +277,9 @@ nh_adm_all <- nh_adm_all %>%
             booking_type_withpcs == "ELECTRONIC BENCH WARRANT" |
             booking_type_withpcs == "SUPERIOR COURT ARREST WARRANT" |
             booking_type_withpcs == "WARRANT ARREST" |
+            booking_type_withpcs == "CAPIAS" |
 
+            booking_type_withpcs == "24 HOUR DETENTION REQUEST" |
             booking_type_withpcs == "FEDERAL HOLD" |
             booking_type_withpcs == "HOLD FOR ANOTHER AGENCY" |
             booking_type_withpcs == "HOLD SHEET" |

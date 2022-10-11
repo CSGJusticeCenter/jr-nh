@@ -208,9 +208,13 @@ cat("**", pct_los_between_0_1_days, "% of top 5 % jail high utilizers are incarc
 los_category_by_hu_gg
 ```
 
+## Charges for LOS of 0-1 days
+
+Coming soon.
+
 ## Booking Types for LOS of 0-1 days
 
 ```{r}
-one_day_booking_types_135_pct
+# one_day_booking_types_135_pct
 ```
-
+Coming soon.

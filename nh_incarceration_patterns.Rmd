@@ -121,8 +121,11 @@ nh_bookings_county
 ## Booking Types
 
 ```{r}
-nh_booking_types
+#nh_booking_types
 ```
+
+Coming soon. 
+
 <br>
 
 
