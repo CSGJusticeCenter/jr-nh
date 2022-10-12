@@ -1,15 +1,17 @@
 ############################################
 # Project: JRI New Hampshire
 # File: dataframes.R
-# Last updated: October 11, 2022
+# Last updated: October 12, 2022
 # Author: Mari Roberts
 
 # Generate tables for state overview
 
 # Creates data frames:
+
 # nh_adm_all            - this is broken down into the tables below
-# nh_booking            - used the most, admissions events
-# nh_booking_no_pc_hold - bookings without pc holds
+# nh_booking_entrances  - used the most, admissions events (includes Coos and Strafford)
+# nh_booking_no_pc_hold - bookings without pc holds (no Strafford)
+# nh_entrances          - bookings with pc holds (no Coos at first but add back in)
 
 # nh_charges            - individual charges
 # nh_release_types      - individual release types
@@ -383,7 +385,7 @@ dim(nh_charges) # 73124
 # create month year variables
 # there will not be one booking id per row because people can have multiple booking types per booking episode
 # this includes pc holds
-nh_booking <- nh_adm_all %>%
+nh_booking_entrances <- nh_adm_all %>%
   dplyr::select(county,
                 id,
                 race,
@@ -410,7 +412,7 @@ nh_booking <- nh_adm_all %>%
          month_year      = as.Date(as.yearmon(month_year_text))) %>%
   distinct()
 
-dim(nh_booking); length(unique(nh_booking$booking_id)) # 55817, 51575
+dim(nh_booking_entrances); length(unique(nh_booking_entrances$booking_id)) # 55817, 51575
 
 ##########
 
@@ -418,12 +420,16 @@ dim(nh_booking); length(unique(nh_booking$booking_id)) # 55817, 51575
 
 ##########
 
-nh_booking_no_pc_hold <- nh_booking %>% filter(pc_hold == "Non-PC Hold") %>%
+# remove Strafford, all Coos are non-PC holds??????????????????????????????????????????????????????????????????????????????????
+nh_booking_no_pc_hold <- nh_booking_entrances %>%
+  filter(pc_hold == "Non-PC Hold") %>%
   select(county, fy, id, booking_id, num_bookings, los,
          high_utilizer_4_times, high_utilizer_1_pct, high_utilizer_5_pct, high_utilizer_10_pct,
          month_year_text, month_year) %>%
+  filter(county != "Strafford") %>%
+  droplevels() %>%
   distinct()
-dim(nh_booking_no_pc_hold); length(unique(nh_booking_no_pc_hold$booking_id)) # 31,909, 31,909
+dim(nh_booking_no_pc_hold); length(unique(nh_booking_no_pc_hold$booking_id)) # 31909, 31909
 
 ##########
 
@@ -431,9 +437,26 @@ dim(nh_booking_no_pc_hold); length(unique(nh_booking_no_pc_hold$booking_id)) # 3
 
 ##########
 
+# remove Coos??????????????????????????????????????????????????????????????????????????????????
+nh_entrances <- nh_booking_entrances %>%
+  select(county, fy, id, booking_id, num_bookings, los,
+         high_utilizer_4_times, high_utilizer_1_pct, high_utilizer_5_pct, high_utilizer_10_pct,
+         month_year_text, month_year) %>%
+  #filter(county != "Coos") %>%
+  droplevels() %>%
+  distinct()
+# dim(nh_entrances); length(unique(nh_entrances$booking_id)) # without Coos 50904, 50904
+dim(nh_entrances); length(unique(nh_entrances$booking_id))   # with Coos    51575, 51575
+
+##########
+
+# NH BOOKINGS WITHOUT PC HOLDS
+
+##########
+
 # determine if PC hold happened in booking event
 # detach(package:plyr)
-nh_booking <- nh_booking %>%
+nh_booking_entrances <- nh_booking_entrances %>%
   dplyr::group_by(booking_id) %>%
   mutate(all_hold_types=paste(sort(unique(pc_hold)), collapse="&")) %>%
   mutate(pc_hold_in_booking = case_when(all_hold_types == 'Non-PC Hold&PC Hold' | all_hold_types == 'PC Hold' ~ "PC Hold",
@@ -441,21 +464,29 @@ nh_booking <- nh_booking %>%
   select(county:high_utilizer_10_pct, month_year_text:pc_hold_in_booking) %>%
   distinct()
 
-dim(nh_booking)                       # 53658 = booking_type_standard, 54813 = booking_type, 55126 = booking_type_standard/booking_type
-length(unique(nh_booking$booking_id)) # 51575
-dups <- nh_booking[duplicated(nh_booking$booking_id)|duplicated(nh_booking$booking_id, fromLast=TRUE),] # 5963
+dim(nh_booking_entrances)                       # 53658 = booking_type_standard, 54813 = booking_type, 55126 = booking_type_standard/booking_type
+length(unique(nh_booking_entrances$booking_id)) # 51575
+dups <- nh_booking_entrances[duplicated(nh_booking_entrances$booking_id)|duplicated(nh_booking_entrances$booking_id, fromLast=TRUE),] # 5963
 
 # combine booking types by booking id
-nh_booking <- nh_booking %>%
+nh_booking_entrances <- nh_booking_entrances %>%
   group_by(booking_id) %>%
   mutate(all_booking_types=paste(sort(unique(booking_type)), collapse=" & ")) %>%
   select(county: booking_type, all_booking_types, everything()) %>%
   distinct()
 
+# remove Strafford??????????????????????????????????????????????????????????????????????????????????
+nh_booking_entrances <- nh_booking_entrances %>%
+  #filter(county != "Strafford") %>%
+  droplevels() %>%
+  distinct()
+dim(nh_booking_entrances)                       # 53658 = booking_type_standard, 54813 = booking_type, 55126 = booking_type_standard/booking_type
+length(unique(nh_booking_entrances$booking_id)) # 51575
+
 # sep by fy year
-nh_booking_19 <- nh_booking %>% distinct() %>% filter(fy == 2019)
-nh_booking_20 <- nh_booking %>% distinct() %>% filter(fy == 2020)
-nh_booking_21 <- nh_booking %>% distinct() %>% filter(fy == 2021)
+nh_booking_entrances_19 <- nh_booking_entrances %>% distinct() %>% filter(fy == 2019)
+nh_booking_entrances_20 <- nh_booking_entrances %>% distinct() %>% filter(fy == 2020)
+nh_booking_entrances_21 <- nh_booking_entrances %>% distinct() %>% filter(fy == 2021)
 
 ################################################################################
 
@@ -501,9 +532,9 @@ nh_sentence_status_21 <- nh_sentence_status %>% select(county, id, fy, booking_i
 
 ################################################################################
 
-nh_pch <- nh_booking %>%
+nh_pch <- nh_booking_entrances %>%
   filter(county != "Coos" & county != "Strafford") %>%
-  select(county, id, booking_id, pc_hold_in_booking) %>%
+  select(fy, county, id, booking_id, booking_date, pc_hold_in_booking) %>%
   distinct() %>%
   droplevels()
 

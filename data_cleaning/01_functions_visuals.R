@@ -329,6 +329,46 @@ fnc_reactable_fy <- function(df, metric_label, label_width, note){
   return(fy_table)
 }
 
+fnc_reactable_county_fy <- function(df){
+
+  county_fy_table <-
+    reactable(df,
+              pagination = FALSE,
+              style = list(fontFamily = "Franklin Gothic Book"),
+              # rowStyle = function(index) {
+              #   if (index %in% c(9)) {
+              #     list(`border-top` = "thin solid",
+              #          fontWeight = "bold")
+              #   }
+              # },
+              theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+              defaultColDef = reactable::colDef(
+                format = colFormat(separators = TRUE), align = "left",
+                footer = function(values, name) {
+                  if (name %in% c("2019", "2020", "2021", "total")) {
+                    htmltools::div(paste0("", formatC(
+                      x = sum(values),
+                      digits = 0,
+                      big.mark = ",",
+                      format = "f"
+                    )))
+                  }
+                },
+                footerStyle = list(fontWeight = "bold")
+              ),
+              compact = TRUE,
+              fullWidth = FALSE,
+              columns = list(
+                `county` = colDef(footer = "Total",
+                                  minWidth = 140, name = "County"),
+                `2019`  = colDef(minWidth = 80, name = "2019", align = "center"),
+                `2020`  = colDef(minWidth = 80, name = "2020", align = "center"),
+                `2021`  = colDef(minWidth = 80, name = "2021", align = "center",
+                                 style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                `total` = colDef(minWidth = 80, name = "Total", align = "center")))
+
+}
+
 # # show how PC holds are recorded across columns
 # reactable(temp,
 #           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),

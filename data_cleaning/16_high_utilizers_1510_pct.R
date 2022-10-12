@@ -1,21 +1,15 @@
 ############################################
 # Project: JRI New Hampshire
-# File: high_utilizers.R
-# Last updated: August 31, 2022
+# File: high_utilizers_1510_pct.R
+# Last updated: October 12, 2022
 # Author: Mari Roberts
 
-# Tables, graphs, and numbers for high utilizers analysis page
-############################################
-
-############################################
 # High Utilizers Based on Jail Bookings by State
 
 # Explore top 1%, 5%, and 10% (i.e. 99th percentile, etc.) of all bookings
-#     For each of these definitions, what is the average # of bookings per year and per 3 years?
+# For each of these definitions, what is the average # of bookings per year and per 3 years?
 
-# We could do a stacked bar plot with % HU vs. non-HU bookings, per year, and an average percentage for the 3 year period
-
-# What percent of the standing jail population did high utilizers account for?
+# Tables, graphs, and numbers for high utilizers analysis page
 ############################################
 
 ################################################################################
@@ -30,6 +24,10 @@ bookings_fy <- nh_booking_no_pc_hold %>%
   distinct() %>%
   group_by(fy) %>%
   dplyr::summarise(total_bookings = n())
+
+##########
+# 1%, 5%, 10%
+##########
 
 # calculate the average number of bookings per year for HU 1%
 hu_avg_bookings_1_pct <- fnc_avg_bookings_fy(nh_booking_no_pc_hold, "high_utilizer_1_pct", "Yes")
@@ -66,6 +64,10 @@ bookings_fy_3yr <- nh_booking_no_pc_hold %>%
   group_by() %>%
   dplyr::summarise(total_bookings = n())
 
+##########
+# HU defined as 1%, 5%, 10%
+##########
+
 # calculate the average number of bookings for all three years for HU 1%
 hu_avg_bookings_1_pct_3yr <- fnc_avg_bookings_3yr(nh_booking_no_pc_hold, "high_utilizer_1_pct", "Yes")
 hu_avg_bookings_1_pct_3yr <- hu_avg_bookings_1_pct_3yr  %>% dplyr::rename(avg_num_bookings_1_pct = new_variable_name)
@@ -96,13 +98,12 @@ hu_num_bookings_10_pct_3yr <- hu_num_bookings_10_pct_3yr  %>% dplyr::rename(num_
 
 # combine all data together - totals
 df_hu_bookings_totals <- cbind(hu_avg_bookings_1_pct_3yr,
-                                     hu_num_bookings_1_pct_3yr,
-                                     hu_avg_bookings_5_pct_3yr,
-                                     hu_num_bookings_5_pct_3yr,
-                                     hu_avg_bookings_10_pct_3yr,
-                                     hu_num_bookings_10_pct_3yr,
-                                     bookings_fy_3yr
-)
+                               hu_num_bookings_1_pct_3yr,
+                               hu_avg_bookings_5_pct_3yr,
+                               hu_num_bookings_5_pct_3yr,
+                               hu_avg_bookings_10_pct_3yr,
+                               hu_num_bookings_10_pct_3yr,
+                               bookings_fy_3yr)
 
 df_hu_bookings_totals <- df_hu_bookings_totals %>%
   mutate(fy = "Total",
@@ -153,12 +154,12 @@ df_hu_bookings_total_row <- df_hu_bookings_fy %>% filter(fy == "Total") %>% sele
 # create highcharter of HU bookings over time
 #######
 
-df_hc_hu_bookings_month_year <- nh_booking_no_pc_hold %>%
+df_hu_bookings_month_year <- nh_booking_no_pc_hold %>%
   select(fy, county, booking_id, month_year, month_year_text,
          high_utilizer_1_pct, high_utilizer_5_pct, high_utilizer_10_pct) %>%
   distinct()
-df_hc_hu_bookings_month_year <- gather(df_hc_hu_bookings_month_year, hu, type, high_utilizer_1_pct:high_utilizer_10_pct, factor_key=TRUE)
-df_hc_hu_bookings_month_year <- df_hc_hu_bookings_month_year %>%
+df_hu_bookings_month_year <- gather(df_hu_bookings_month_year, hu, type, high_utilizer_1_pct:high_utilizer_10_pct, factor_key=TRUE)
+df_hu_bookings_month_year <- df_hu_bookings_month_year %>%
   group_by(month_year, month_year_text,
            hu, type) %>%
   summarise(total = n()) %>%
@@ -168,7 +169,7 @@ df_hc_hu_bookings_month_year <- df_hc_hu_bookings_month_year %>%
                         hu == "high_utilizer_10_pct" ~ "Top 10%")) %>%
   mutate(hu = factor(hu, levels = c("Top 1%",  "Top 5%",  "Top 10%")))
 
-hc_hu_bookings_month_year <-
+hc_hu_bookings_1510_month_year <-
   hchart(df_hu_bookings_month_year, "line", hcaes(x = month_year_text, y = total, group = (hu))) %>%
   hc_setup() %>%
   hc_xAxis(
@@ -428,28 +429,28 @@ table_hu_bookings_county <- reactable(df_hu_bookings_totals,
 
 ################################################################################
 
-# Proportion of HU bookings that are PC holds
+# Proportion of HU entrances that are PC holds
 
 ################################################################################
 
 # select variables
-df_hu_pc_holds <- nh_booking %>%
+df_hu_pc_holds <- nh_booking_entrances %>%
   filter(county != "Coos" & county != "Strafford") %>%
   select(county, fy, booking_id, high_utilizer_1_pct, high_utilizer_5_pct, high_utilizer_10_pct, pc_hold_in_booking) %>%
   distinct() %>%
   filter(!is.na(pc_hold_in_booking))
 
-# get bookings of high utilizers
+# get entrances of high utilizers
 df_hu_pc_holds_fy_1_pct <- df_hu_pc_holds %>% filter(high_utilizer_1_pct == "Yes") %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n())
 df_hu_pc_holds_fy_5_pct <- df_hu_pc_holds %>% filter(high_utilizer_5_pct == "Yes") %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n())
 df_hu_pc_holds_fy_10_pct <- df_hu_pc_holds %>% filter(high_utilizer_10_pct == "Yes") %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n())
 
-# gg plots of proportion of bookings that are PC holds by FY
+# gg plots of proportion of entrances that are PC holds by FY
 gg_hu_pc_holds_fy_1_pct <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_1_pct, "gray", jri_red)
 gg_hu_pc_holds_fy_5_pct <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_5_pct, "gray", jri_red)
 gg_hu_pc_holds_fy_10_pct <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_10_pct, "gray", jri_red)
 
-# get bookings of high utilizers
+# get entrances of high utilizers
 df_hu_pc_holds_1_pct <- df_hu_pc_holds %>% filter(high_utilizer_1_pct == "Yes") %>%
   group_by(pc_hold_in_booking) %>% summarise(total = n()) %>%
   mutate(hu = "Top 1%")
@@ -662,7 +663,7 @@ pct_los_between_0_1_days <- sum(pct_los_between_0_1_days$pct)
 # Booking types for 1% by FY
 ##########
 
-df_one_day_booking_types_1_pct <- nh_booking %>%
+df_one_day_booking_types_1_pct <- nh_booking_entrances %>%
   filter(los == 1 | los == 0) %>%
   filter(county != "Strafford") %>%
   filter(pc_hold_in_booking == "Non-PC Hold") %>%
@@ -684,7 +685,7 @@ df_one_day_booking_types_1_pct <- df_one_day_booking_types_1_pct %>% filter(vari
 # Booking types for 5% by FY
 ##########
 
-df_one_day_booking_types_5_pct <- nh_booking %>%
+df_one_day_booking_types_5_pct <- nh_booking_entrances %>%
   filter(los == 1 | los == 0) %>%
   filter(county != "Strafford") %>%
   filter(pc_hold_in_booking == "Non-PC Hold") %>%
@@ -706,7 +707,7 @@ df_one_day_booking_types_5_pct <- df_one_day_booking_types_5_pct %>% filter(vari
 # Booking types for 10% by FY
 ##########
 
-df_one_day_booking_types_10_pct <- nh_booking %>%
+df_one_day_booking_types_10_pct <- nh_booking_entrances %>%
   filter(los == 1 | los == 0) %>%
   filter(county != "Strafford") %>%
   filter(pc_hold_in_booking == "Non-PC Hold") %>%
@@ -786,7 +787,7 @@ table_one_day_booking_types_1510_pct <-
 # HU overview
 save(table_hu_bookings_fy,            file=paste0(sp_data_path, "/Data/r_data/table_hu_bookings_fy.Rda",               sep = ""))
 save(table_hu_bookings_county,        file=paste0(sp_data_path, "/Data/r_data/table_hu_bookings_county.Rda",     sep = ""))
-save(hc_hu_bookings_month_year,       file=paste0(sp_data_path, "/Data/r_data/hc_hc_hu_bookings_month_year.Rda",          sep = ""))
+save(hc_hu_bookings_1510_month_year,       file=paste0(sp_data_path, "/Data/r_data/hc_hc_hu_bookings_1510_month_year.Rda",          sep = ""))
 save(table_hu_bookings_total,         file=paste0(sp_data_path, "/Data/r_data/table_hu_bookings_total.Rda",         sep = ""))
 save(table_hu_booking_summary_county, file=paste0(sp_data_path, "/Data/r_data/table_hu_booking_summary_county.Rda", sep = ""))
 

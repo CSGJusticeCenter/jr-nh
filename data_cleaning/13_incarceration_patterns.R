@@ -8,13 +8,16 @@
 ############################################
 
 # save booking dates
-all_booking_dates <- nh_booking %>%
+all_booking_dates <- nh_booking_entrances %>%
   select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>%
   distinct()
 
 ################################################################################
 
 # How many individual people were booked into New Hampshire jails annually?
+
+# Use nh_booking_no_pc_hold because it is bookings that do not include PC holds
+# Does not include Strafford
 
 ################################################################################
 
@@ -54,7 +57,12 @@ df_people_booked <- df_people_booked_pre %>%
          `2021` = as.numeric(`2021`)) %>%
   mutate(total = `2019` + `2020` + `2021`)
 
+##########
+
 # create reactable table
+
+##########
+
 df_people_booked <- tibble::rownames_to_column(df_people_booked, "variable_name")
 df_people_booked <- df_people_booked %>% mutate(variable_name = ifelse(variable_name == "total", "# People Booked into Jail", ""))
 table_nh_people_booked <-
@@ -76,10 +84,12 @@ table_nh_people_booked <-
 amt_nh_people_booked_fy_total <- df_people_booked$total
 amt_nh_people_booked_fy_total <- format(round(as.numeric(amt_nh_people_booked_fy_total), 0), nsmall=0, big.mark=",")
 
-# get counties included
-nh_counties <- fnc_counties_in_data(nh_booking)
+##########
 
 # highcharter bar chart of number of people booked by FY
+
+##########
+
 hc_nh_people_booked <- df_people_booked_pre %>%
   hchart('column', hcaes(x = fy, y = total, color = jri_light_blue)) %>%
   hc_xAxis(title = list(text = "Fiscal Year", style = list(color =  "#000000", fontWeight = "bold"))) %>%
@@ -116,6 +126,12 @@ df_nh_people_booked_county <- nh_booking_no_pc_hold %>%
          `2021` = as.numeric(`2021`)) %>%
   mutate(total = `2019` + `2020` + `2021`)
 
+##########
+
+# Reactable table
+
+##########
+
 table_nh_people_booked_fy_county <- reactable(df_nh_people_booked_county,
                                      pagination = FALSE,
                                      theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
@@ -137,7 +153,7 @@ table_nh_people_booked_fy_county <- reactable(df_nh_people_booked_county,
                                      fullWidth = FALSE,
                                      columns = list(
                                        `county` = colDef(footer = "Total",
-                                                         minWidth = 200, name = "County"),
+                                                         minWidth = 120, name = "County"),
                                        `2019`  = colDef(minWidth = 80, name = "2019", align = "center"),
                                        `2020`  = colDef(minWidth = 80, name = "2020", align = "center"),
                                        `2021`  = colDef(minWidth = 80, name = "2021", align = "center",
@@ -145,7 +161,9 @@ table_nh_people_booked_fy_county <- reactable(df_nh_people_booked_county,
                                        `total` = colDef(minWidth = 80, name = "Total", align = "center")))
 
 ##########
+
 # ggplot bar chart showing the number of people booked by FY
+
 ##########
 
 # data for ggplot showing the number of people booked by FY
@@ -169,6 +187,9 @@ gg_nh_people_booked <-
 
 # How bookings does NH have annually?
 
+# Use nh_booking_no_pc_hold because it is bookings that do not include PC holds
+# Does not include Strafford
+
 ################################################################################
 
 ##########
@@ -176,7 +197,9 @@ gg_nh_people_booked <-
 ##########
 
 ##########
+
 # ggplot bar chart showing the number of bookings by FY
+
 ##########
 
 # select variables
@@ -204,6 +227,13 @@ df_bookings <- df_bookings_events %>%
 # create table showing number of bookings by fiscal year
 df_bookings <- tibble::rownames_to_column(df_bookings, "variable_name")
 df_bookings <- df_bookings %>% mutate(variable_name = ifelse(variable_name == "total", "# of Bookings", ""))
+
+##########
+
+# Reactable table
+
+##########
+
 table_nh_bookings_fy <-
    reactable(df_bookings,
              pagination = FALSE,
@@ -223,16 +253,18 @@ table_nh_bookings_fy <-
 amt_nh_bookings <- df_bookings$total
 amt_nh_bookings <- format(round(as.numeric(amt_nh_bookings), 0), nsmall=0, big.mark=",")
 
-# get counties included
-nh_counties <- fnc_counties_in_data(nh_booking)
-
 # data for ggplot showing the number of bookings by FY
 df_bookings_long <- df_bookings %>% select(-total)
 df_bookings_long <- gather(df_bookings_long, fy, total, `2019`:`2021`, factor_key=TRUE) %>%
   mutate(fy = as.numeric(fy)) %>%
   mutate(fy = case_when(fy == 1 ~ "2019", fy == 2 ~ "2020", fy == 3 ~ "2021"))
 
-# gg plot showing the number of bookings by FY
+##########
+
+# # ggplot showing the number of bookings by FY
+
+##########
+
 gg_nh_bookings <-
   ggplot(data=df_bookings_long, aes(x=fy, y=total)) +
   geom_bar(stat="identity", width = 0.74, fill = jri_green) +
@@ -243,9 +275,10 @@ gg_nh_bookings <-
                      limits = c(0,24000)) +
   theme_no_axes
 
-
 ##########
+
 # Highchart bar chart showing the number of bookings by FY
+
 ##########
 
 # highchart bar chart showing the number of bookings by FY
@@ -272,14 +305,27 @@ change_19_21_nh_bookings <- round(change_19_21_nh_bookings*100, 1)
 
 # How many entrances does NH have annually?
 
+# Use nh_entrances which includes Coos and Strafford. Including Coos so we can get an actual picture of the number, even if its undershot
+
 ################################################################################
 
+# table of total number of people booked (no duplicates for counting by FY)
+df_people_entered_total <- nh_entrances %>%
+  dplyr::ungroup() %>%
+  dplyr::select(id, county) %>%
+  dplyr::distinct() %>%
+  dplyr::group_by() %>%
+  dplyr::summarise(total = n()) %>%
+  dplyr::mutate(label = formatC(total, format="d", big.mark=","))
+
 ##########
+
 # ggplot bar chart showing the number of entrances by FY
+
 ##########
 
 # select variables
-df_entrances_events <- nh_booking %>%
+df_entrances_events <- nh_entrances %>%
   select(id, booking_id, fy, county) %>%
   distinct()
 
@@ -303,6 +349,13 @@ df_entrances <- df_entrances_events %>%
 # create table showing number of entrances by fiscal year
 df_entrances <- tibble::rownames_to_column(df_entrances, "variable_name")
 df_entrances <- df_entrances %>% mutate(variable_name = ifelse(variable_name == "total", "# of entrances", ""))
+
+##########
+
+# Reactable table
+
+##########
+
 table_nh_entrances_fy <-
   reactable(df_entrances,
             pagination = FALSE,
@@ -323,7 +376,9 @@ amt_nh_entrances <- df_entrances$total
 amt_nh_entrances <- format(round(as.numeric(amt_nh_entrances), 0), nsmall=0, big.mark=",")
 
 ##########
+
 # ggplot bar chart showing the number of entrances by FY
+
 ##########
 
 # data for ggplot showing the number of entrances by FY
@@ -358,8 +413,8 @@ change_19_21_nh_entrances <- round(change_19_21_nh_entrances*100, 1)
 # by county
 ##########
 
-# data table of number of bookings by FY and county
-df_nh_entrances_county <- nh_booking %>%
+# data table of number of entrances by FY and county
+df_nh_entrances_county <- nh_entrances %>%
   select(id, booking_id, fy, county) %>%
   distinct() %>%
   group_by(fy, county) %>%
@@ -382,132 +437,59 @@ df_nh_bookings_county <- nh_booking_no_pc_hold %>%
          `2021` = as.numeric(`2021`)) %>%
   mutate(total = `2019` + `2020` + `2021`)
 
+# data table of number of bookings for Coos, since we dont have the number of entrances
+df_nh_bookings_coos <- nh_booking_no_pc_hold %>%
+  select(id, booking_id, fy, county) %>%
+  distinct() %>%
+  group_by(fy, county) %>%
+  dplyr::summarise(total = n()) %>%
+  spread(fy, total) %>%
+  mutate(`2019` = as.numeric(`2019`),
+         `2020` = as.numeric(`2020`),
+         `2021` = as.numeric(`2021`)) %>%
+  mutate(total = `2019` + `2020` + `2021`) %>%
+  filter(county == "Coos")
+
+##########
+
 # reactable of number of bookings by FY and county
-table_nh_bookings_fy_county <-
-  reactable(df_nh_bookings_county,
-            pagination = FALSE,
-            style = list(fontFamily = "Franklin Gothic Book"),
-            theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-            defaultColDef = reactable::colDef(
-              format = colFormat(separators = TRUE), align = "left",
-              footer = function(values, name) {
-                if (name %in% c("2019", "2020", "2021", "total")) {
-                  htmltools::div(paste0("", formatC(
-                    x = sum(values),
-                    digits = 0,
-                    big.mark = ",",
-                    format = "f"
-                  )))
-                }
-              },
-              footerStyle = list(fontWeight = "bold")
-            ),
-            compact = TRUE,
-            fullWidth = FALSE,
-            columns = list(
-              `county` = colDef(footer = "Total",
-                                minWidth = 140, name = "County"),
-              `2019`  = colDef(minWidth = 80, name = "2019", align = "center"),
-              `2020`  = colDef(minWidth = 80, name = "2020", align = "center"),
-              `2021`  = colDef(minWidth = 80, name = "2021", align = "center",
-                               style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-              `total` = colDef(minWidth = 80, name = "Total", align = "center")))
+
+##########
+
+table_nh_bookings_fy_county <- fnc_reactable_county_fy(df_nh_bookings_county)
+
+##########
 
 # reactable of number of entrances by FY and county
-table_nh_entrances_fy_county <-
-  reactable(df_nh_entrances_county,
-            pagination = FALSE,
-            style = list(fontFamily = "Franklin Gothic Book"),
-            theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-            defaultColDef = reactable::colDef(
-              format = colFormat(separators = TRUE), align = "left",
-              footer = function(values, name) {
-                if (name %in% c("2019", "2020", "2021", "total")) {
-                  htmltools::div(paste0("", formatC(
-                    x = sum(values),
-                    digits = 0,
-                    big.mark = ",",
-                    format = "f"
-                  )))
-                }
-              },
-              footerStyle = list(fontWeight = "bold")
-            ),
-            compact = TRUE,
-            fullWidth = FALSE,
-            columns = list(
-              `county` = colDef(footer = "Total",
-                                minWidth = 140, name = "County"),
-              `2019`  = colDef(minWidth = 80, name = "2019", align = "center"),
-              `2020`  = colDef(minWidth = 80, name = "2020", align = "center"),
-              `2021`  = colDef(minWidth = 80, name = "2021", align = "center",
-                               style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-              `total` = colDef(minWidth = 80, name = "Total", align = "center")))
+
+##########
+
+table_nh_entrances_fy_county <- fnc_reactable_county_fy(df_nh_entrances_county)
+table_nh_bookings_fy_coos    <- fnc_reactable_county_fy(df_nh_bookings_coos)
 
 ################################################################################
 
-# Common Booking Types
+# Common Booking Types ????????????????????????? which data frame?
 
 ################################################################################
 
 # custom functions to find the number of booking types by fiscal year
-df_booking <- fnc_variable_table(nh_booking_19, nh_booking_20, nh_booking_21, "booking_type_standard")
+df_booking <- fnc_variable_table(nh_booking_entrances_19, nh_booking_entrances_20, nh_booking_entrances_21, "booking_type_standard")
 df_booking <- fnc_variable_table_desc(df_booking)
 df_booking <- df_booking %>% filter(variable_name != "Total") %>%
   select(booking_type = variable_name, everything())
 
+##########
+
+# Reactable table
+
+##########
+
 # create reactable table of number/freq of booking types by fiscal year and for all 3 years
-table_nh_booking_types <- reactable(df_booking,
-                              pagination = FALSE,
-                              theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-                              defaultColDef = reactable::colDef(
-                                format = colFormat(separators = TRUE), align = "center",
-                                footer = function(values, name) {
-                                  if (name %in% c("count_19", "count_20", "count_21", "total")) {
-                                    htmltools::div(paste0("", formatC(
-                                      x = sum(values),
-                                      digits = 0,
-                                      big.mark = ",",
-                                      format = "f"
-                                    )))
-                                  }
-                                },
-                                footerStyle = list(fontWeight = "bold")
-                              ),
-                              compact = TRUE,
-                              fullWidth = FALSE,
-                              columnGroups = list(
-                                colGroup(name = "2019", columns = c("count_19", "pct_19")),
-                                colGroup(name = "2020", columns = c("count_20", "pct_20")),
-                                colGroup(name = "2021", columns = c("count_21", "pct_21")),
-                                colGroup(name = "3 Years", columns = c("total", "freq"))
-                              ),
-                              columns = list(
-                                booking_type = colDef(footer = "Total",
-                                                      name = "Booking Type",
-                                                      align = "left",
-                                                      minWidth = 275),
-                                count_19     = colDef(minWidth = 80,
-                                                      name = "Count"),
-                                pct_19       = colDef(minWidth = 80,
-                                                      name = "%",
-                                                      format = colFormat(percent = TRUE, digits = 1)),
-                                count_20     = colDef(minWidth = 80,
-                                                      name = "Count"),
-                                pct_20       = colDef(minWidth = 80,
-                                                      name = "%",
-                                                      format = colFormat(percent = TRUE, digits = 1)),
-                                count_21     = colDef(minWidth = 80,
-                                                      name = "Count"),
-                                pct_21       = colDef(minWidth = 80,
-                                                      name = "%",
-                                                      style = list(position = "sticky", borderRight = "1px solid #d3d3d3"),
-                                                      format = colFormat(percent = TRUE, digits = 1)),
-                                total        = colDef(minWidth = 100,
-                                                      name = "Count"),
-                                freq         = colDef(minWidth = 90,
-                                                      name = "%",
-                                                      format = colFormat(percent = TRUE, digits = 1))))
+table_nh_booking_types <- fnc_reactable_fy(df_booking,
+                                           metric_label = "Booking Type",
+                                           label_width = 275,
+                                           note = "")
 
 ################################################################################
 
@@ -530,14 +512,14 @@ table_nh_booking_types <- reactable(df_booking,
 # count freq of los for non-PC Holds
 # remove strafford because they don't have pc data
 # keep coos because all the data we were given was non-PC Holds
-df_los <- nh_booking %>%
-  filter(county != "Strafford") %>%
+df_los <- nh_booking_no_pc_hold %>%
+  #filter(county != "Strafford") %>%
   select(fy, county, booking_id,
-         pc_hold_in_booking,
+         #pc_hold_in_booking,
          los,
          high_utilizer_1_pct, high_utilizer_5_pct, high_utilizer_10_pct) %>%
-  filter(pc_hold_in_booking == "Non-PC Hold") %>%
-  select(-pc_hold_in_booking) %>%
+  # filter(pc_hold_in_booking == "Non-PC Hold") %>%
+  # select(-pc_hold_in_booking) %>%
   distinct() %>%
   filter(!is.na(los))
 dim(df_los); length(unique(df_los$booking_id))
@@ -577,6 +559,12 @@ avg_los_no_pchs <- as.numeric(avg_los_no_pchs)
 df_los_summary <- fnc_los_summary(df_los)
 df_los_summary <- df_los_summary %>% mutate(type = "All (HU's and non-HU's)") %>% select(type, everything())
 
+##########
+
+# Reactable table
+
+##########
+
 # reactable table for LOS summary statistics by HU type
 table_los_summary <- reactable(df_los_summary,
                          pagination = FALSE,
@@ -601,18 +589,18 @@ table_los_summary <- reactable(df_los_summary,
 ################################################################################
 
 # counties in study
-save(nh_counties,                      file=paste0(sp_data_path, "/Data/r_data/nh_counties.Rda",                     sep = ""))
+# save(nh_counties,                      file=paste0(sp_data_path, "/Data/r_data/nh_counties.Rda",                     sep = ""))
 
 # people booked
-save(amt_nh_people_booked,             file=paste0(sp_data_path, "/Data/r_data/amt_nh_people_booked.Rda",            sep = ""))
-save(amt_nh_people_booked_fy_total,    file=paste0(sp_data_path, "/Data/r_data/amt_nh_people_booked_fy_total.Rda",   sep = ""))
-save(table_nh_people_booked,           file=paste0(sp_data_path, "/Data/r_data/table_nh_people_booked.Rda",          sep = ""))
-save(table_nh_people_booked_fy_county, file=paste0(sp_data_path, "/Data/r_data/table_nh_people_booked_fy_county.Rda",   sep = ""))
-save(hc_nh_people_booked,              file=paste0(sp_data_path, "/Data/r_data/hc_nh_people_booked.Rda",             sep = ""))
-save(gg_nh_people_booked,              file=paste0(sp_data_path, "/Data/r_data/gg_nh_people_booked.Rda",             sep = ""))
-save(change_19_20_nh_people_booked,    file=paste0(sp_data_path, "/Data/r_data/change_19_20_nh_people_booked.Rda",   sep = ""))
-save(change_20_21_nh_people_booked,    file=paste0(sp_data_path, "/Data/r_data/change_20_21_nh_people_booked.Rda",   sep = ""))
-save(change_19_21_nh_people_booked,    file=paste0(sp_data_path, "/Data/r_data/change_19_21_nh_people_booked.Rda",   sep = ""))
+save(amt_nh_people_booked,             file=paste0(sp_data_path, "/Data/r_data/amt_nh_people_booked.Rda",             sep = ""))
+save(amt_nh_people_booked_fy_total,    file=paste0(sp_data_path, "/Data/r_data/amt_nh_people_booked_fy_total.Rda",    sep = ""))
+save(table_nh_people_booked,           file=paste0(sp_data_path, "/Data/r_data/table_nh_people_booked.Rda",           sep = ""))
+save(table_nh_people_booked_fy_county, file=paste0(sp_data_path, "/Data/r_data/table_nh_people_booked_fy_county.Rda", sep = ""))
+save(hc_nh_people_booked,              file=paste0(sp_data_path, "/Data/r_data/hc_nh_people_booked.Rda",              sep = ""))
+save(gg_nh_people_booked,              file=paste0(sp_data_path, "/Data/r_data/gg_nh_people_booked.Rda",              sep = ""))
+save(change_19_20_nh_people_booked,    file=paste0(sp_data_path, "/Data/r_data/change_19_20_nh_people_booked.Rda",    sep = ""))
+save(change_20_21_nh_people_booked,    file=paste0(sp_data_path, "/Data/r_data/change_20_21_nh_people_booked.Rda",    sep = ""))
+save(change_19_21_nh_people_booked,    file=paste0(sp_data_path, "/Data/r_data/change_19_21_nh_people_booked.Rda",    sep = ""))
 
 # bookings
 save(amt_nh_bookings,               file=paste0(sp_data_path, "/Data/r_data/amt_nh_bookings.Rda",                 sep = ""))

@@ -9,8 +9,11 @@
 
 # remove Coos and Strafford for pch data
 # Coos and Strafford do not have pc data; coos deletes the entry and strafford has no booking type info
-all_booking_dates_no_coos_strafford <- all_booking_dates %>% filter(county != "Coos" & county != "Strafford") %>% droplevels()
-df_pch <- merge(nh_pch, all_booking_dates_no_coos_strafford, by = c("id", "booking_id", "county"), all.x = TRUE)
+df_pch <- nh_pch %>%
+  mutate(month_year_text = format(as.Date(booking_date, "%d/%m/%Y"), "%b %Y"),
+         month_year      = as.Date(as.yearmon(month_year_text))) %>%
+  distinct()
+dim(df_pch) # 38671
 
 ###########
 # Highchart pc holds over time
@@ -102,31 +105,31 @@ df_county_pc_hold_recordings <- nh_adm_all %>%
   dplyr::mutate(total = formattable::comma(total, digits = 0))
 
 ##########
-# reactable table with number of bookings and proportion that are PC holds
+# reactable table with number of entrances and proportion that are PC holds
 ##########
 
 # data for reactable table showing number of entrances and proportion of PC holds
-df_nh_bookings_with_pc_holds <- df_nh_pc_holds_fy_county %>%
+df_nh_entrances_with_pc_holds <- df_nh_pc_holds_fy_county %>%
   select(county, total_pc_holds = total, freq)
 df_nh_bookings_county1 <- df_nh_entrances_county %>%
   select(county, total_bookings = total)
-df_nh_bookings_with_pc_holds <- df_nh_bookings_with_pc_holds %>%
+df_nh_entrances_with_pc_holds <- df_nh_entrances_with_pc_holds %>%
   left_join(df_nh_bookings_county1, by = "county") %>%
   select(county, total_bookings, everything()) %>%
   arrange(county)
-df_nh_bookings_with_pc_holds <- df_nh_bookings_with_pc_holds %>%
+df_nh_entrances_with_pc_holds <- df_nh_entrances_with_pc_holds %>%
   adorn_totals("row")
-df_nh_bookings_with_pc_holds <- df_nh_bookings_with_pc_holds %>%
-  mutate(freq = case_when(county == "Total" ~ (filter(df_nh_bookings_with_pc_holds, county=='Total')$total_pc_holds)/(filter(df_nh_bookings_with_pc_holds, county=='Total')$total_bookings),
+df_nh_entrances_with_pc_holds <- df_nh_entrances_with_pc_holds %>%
+  mutate(freq = case_when(county == "Total" ~ (filter(df_nh_entrances_with_pc_holds, county=='Total')$total_pc_holds)/(filter(df_nh_entrances_with_pc_holds, county=='Total')$total_bookings),
                           TRUE ~ freq)) %>%
   full_join(df_nh_bookings_county1, by = c("county", "total_bookings")) %>%
   arrange(county) %>%
-  mutate(total_bookings = case_when(county == "Total" ~ sum(total_bookings) - filter(df_nh_bookings_with_pc_holds, county=='Total')$total_bookings,
+  mutate(total_bookings = case_when(county == "Total" ~ sum(total_bookings) - filter(df_nh_entrances_with_pc_holds, county=='Total')$total_bookings,
                                     TRUE ~ total_bookings))
 
 # reactable table showing the total number of entrances and prop of PC holds
-table_nh_bookings_with_pc_holds <-
-  reactable(df_nh_bookings_with_pc_holds,
+table_nh_entrances_with_pc_holds <-
+  reactable(df_nh_entrances_with_pc_holds,
             pagination = FALSE,
             style = list(fontFamily = "Franklin Gothic Book"),
             theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
@@ -148,13 +151,13 @@ table_nh_bookings_with_pc_holds <-
   add_source("Coos and Strafford bookings were not included when calculating the proportion of bookings that are PC holds.", font_style = "italic", font_size = 14)
 
 ##########
-# ggplots showing the number of bookings and proportion of PC holds by FY - data in incarceration_patterns.R
+# ggplots showing the number of entrances and proportion of PC holds by FY
 ##########
 
-# data for ggplots showing the number of bookings and proportion of PC holds by FY
+# data for ggplots showing the number of entrances and proportion of PC holds by FY
 temp <- df_pch %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n()) %>% filter(!is.na(pc_hold_in_booking))
 
-# ggplot grouped chart showing the number of bookings and proportion of PC holds by FY
+# ggplot grouped chart showing the number of entrances and proportion of PC holds by FY
 gg_nh_pch_grouped_barchart <-
   ggplot(temp, aes(fill=pc_hold_in_booking, y=total, x=fy)) +
   geom_bar(position="dodge", stat="identity") +
@@ -182,12 +185,12 @@ gg_nh_pch_pct_barchart <- fnc_pct_grouped_bar_chart(temp2, "gray", jri_red)
 ################################################################################
 
 # protective custody holds
-save(hc_nh_pch_time,                  file=paste0(sp_data_path, "/Data/r_data/hc_nh_pch_time.Rda",                  sep = ""))
-save(table_nh_pch,                    file=paste0(sp_data_path, "/Data/r_data/table_nh_pch.Rda",                    sep = ""))
-save(amt_nh_pch_pct,                  file=paste0(sp_data_path, "/Data/r_data/amt_nh_pch_pct.Rda",                  sep = ""))
-save(pch_counties,                    file=paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                    sep = ""))
-save(table_nh_pc_holds_fy_county,     file=paste0(sp_data_path, "/Data/r_data/table_nh_pc_holds_fy_county.Rda",     sep = ""))
-save(df_county_pc_hold_recordings,    file=paste0(sp_data_path, "/Data/r_data/df_county_pc_hold_recordings.Rda",    sep = ""))
-save(gg_nh_pch_grouped_barchart,      file=paste0(sp_data_path, "/Data/r_data/gg_nh_pch_grouped_barchart.Rda",      sep = ""))
-save(gg_nh_pch_pct_barchart,          file=paste0(sp_data_path, "/Data/r_data/gg_nh_pch_pct_barchart.Rda",          sep = ""))
-save(table_nh_bookings_with_pc_holds, file=paste0(sp_data_path, "/Data/r_data/table_nh_bookings_with_pc_holds.Rda", sep = ""))
+save(hc_nh_pch_time,                   file=paste0(sp_data_path, "/Data/r_data/hc_nh_pch_time.Rda",                   sep = ""))
+save(table_nh_pch,                     file=paste0(sp_data_path, "/Data/r_data/table_nh_pch.Rda",                     sep = ""))
+save(amt_nh_pch_pct,                   file=paste0(sp_data_path, "/Data/r_data/amt_nh_pch_pct.Rda",                   sep = ""))
+save(pch_counties,                     file=paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                     sep = ""))
+save(table_nh_pc_holds_fy_county,      file=paste0(sp_data_path, "/Data/r_data/table_nh_pc_holds_fy_county.Rda",      sep = ""))
+save(df_county_pc_hold_recordings,     file=paste0(sp_data_path, "/Data/r_data/df_county_pc_hold_recordings.Rda",     sep = ""))
+save(gg_nh_pch_grouped_barchart,       file=paste0(sp_data_path, "/Data/r_data/gg_nh_pch_grouped_barchart.Rda",       sep = ""))
+save(gg_nh_pch_pct_barchart,           file=paste0(sp_data_path, "/Data/r_data/gg_nh_pch_pct_barchart.Rda",           sep = ""))
+save(table_nh_entrances_with_pc_holds, file=paste0(sp_data_path, "/Data/r_data/table_nh_entrances_with_pc_holds.Rda", sep = ""))

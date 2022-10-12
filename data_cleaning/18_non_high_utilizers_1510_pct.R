@@ -1,21 +1,10 @@
 ############################################
 # Project: JRI New Hampshire
-# File: high_utilizers.R
-# Last updated: August 31, 2022
+# File:  non_high_utilizers_1510_pct.R
+# Last updated: October 12, 2022
 # Author: Mari Roberts
 
 # Tables, graphs, and numbers for high utilizers analysis page
-############################################
-
-############################################
-# High Utilizers Based on Jail Bookings by State
-
-# Explore Notin Top 1%, 5%, and 10% (i.e. 99th percentile, etc.) of all bookings
-#     For each of these definitions, what is the average # of bookings per year and per 3 years?
-
-# We could do a stacked bar plot with % HU vs. non-HU bookings, per year, and an average percentage for the 3 year period
-
-# What percent of the standing jail population did high utilizers account for?
 ############################################
 
 ################################################################################
