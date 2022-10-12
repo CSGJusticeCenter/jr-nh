@@ -99,7 +99,7 @@ fnc_pct_grouped_bar_chart <- function(df, color1, color2){
     scale_fill_manual(values=c(color1,color2), labels = c("Non-PC      ","PC")) +
     geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
               size = 7.5, family = "Franklin Gothic Book",
-              color = ifelse(df1$pc_hold_in_booking == "Non-PC Hold Booking", "black", "white")) +
+              color = ifelse(df1$pc_hold_in_booking == "Non-PC Hold", "black", "white")) +
     theme_axes +
     theme(legend.position = "top",
           legend.justification = c(0, 0),
@@ -267,7 +267,7 @@ fnc_freq_table <- function(df, title){
 
 # show number of bookings by type by fiscal year
 # coos, strafford does not have booking type
-fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, note){
+fnc_reactable_fy <- function(df, metric_label, label_width, note){
 
   df1 <- df %>%
     dplyr::rename(new_variable_name = 1)
@@ -324,7 +324,7 @@ fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, 
                           freq         = colDef(minWidth = 90,
                                                 name = "%",
                                                 format = colFormat(percent = TRUE, digits = 1)))) %>%
-    add_source(paste("Counties included: ", reactable_counties, ". ", note), font_style = "italic", font_size = 14)
+    add_source(paste(note), font_style = "italic", font_size = 14)
 
   return(fy_table)
 }

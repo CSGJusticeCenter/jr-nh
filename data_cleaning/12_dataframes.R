@@ -7,11 +7,13 @@
 # Generate tables for state overview
 
 # Creates data frames:
-# nh_adm_all - this is broken down into the tables below
-# nh_charges
-# nh_booking - used the most, booking events
-# nh_release_types
-# nh_sentence_statuses
+# nh_adm_all            - this is broken down into the tables below
+# nh_booking            - used the most, admissions events
+# nh_booking_no_pc_hold - bookings without pc holds
+
+# nh_charges            - individual charges
+# nh_release_types      - individual release types
+# nh_sentence_statuses  - sentence statuses
 ############################################
 
 ################################################################################
@@ -37,7 +39,7 @@ source("data_cleaning/11_sullivan.R")
 
 # custom function that creates the variables we need and relabels codes so they're consistent across counties
 # creates booking_id, los, fy, num_bookings,
-# high_utilizer_1_pct(y/n), high_utilizer_3_pct(y/n), high_utilizer_5_pct(y/n),
+# high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
 # pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
 # pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other variables)
 
@@ -319,7 +321,7 @@ nh_adm_all <- nh_adm_all %>%
             booking_type_withpcs == "VIOLATION OF PAROLE" |
             booking_type_withpcs == "VIOLATION OF PROBATION"          ~ "PROBATION/PAROLE (VIOLATION/DETENTION ORDER)",
 
-            booking_type_withpcs == "CONVICTED" | # not sure if this should be here
+            booking_type_withpcs == "CONVICTED" |      # not sure if this should be here
             booking_type_withpcs == "CONVICTED ROCK" | # not sure if this should be here
             booking_type_withpcs == "SENTENCED" |
             booking_type_withpcs == "SENTENCING" |
@@ -360,9 +362,10 @@ nh_charges <- nh_adm_all %>%
                 los = los_max,
                 fy,
                 num_bookings,
+                high_utilizer_4_times,
                 high_utilizer_1_pct,
-                high_utilizer_3_pct,
                 high_utilizer_5_pct,
+                high_utilizer_10_pct,
                 pc_hold_booking,
                 pc_hold_charge,
                 pc_hold_sentence,
@@ -376,9 +379,10 @@ dim(nh_charges) # 73124
 
 ################################################################################
 
-# remove charges, relese types, and sentence statuses to get booking events/less rows
+# remove charges, release types, and sentence statuses to get booking events/less rows
 # create month year variables
 # there will not be one booking id per row because people can have multiple booking types per booking episode
+# this includes pc holds
 nh_booking <- nh_adm_all %>%
   dplyr::select(county,
                 id,
@@ -394,9 +398,10 @@ nh_booking <- nh_adm_all %>%
                 booking_type_standard,
                 fy,
                 num_bookings,
+                high_utilizer_4_times,
                 high_utilizer_1_pct,
-                high_utilizer_3_pct,
                 high_utilizer_5_pct,
+                high_utilizer_10_pct,
                 pc_hold_booking,
                 pc_hold_charge,
                 pc_hold_sentence,
@@ -405,14 +410,35 @@ nh_booking <- nh_adm_all %>%
          month_year      = as.Date(as.yearmon(month_year_text))) %>%
   distinct()
 
+dim(nh_booking); length(unique(nh_booking$booking_id)) # 55817, 51575
+
+##########
+
+# REMOVE PC HOLDS FROM BOOKINGS TO GET ACTUAL BOOKING NUMBERS
+
+##########
+
+nh_booking_no_pc_hold <- nh_booking %>% filter(pc_hold == "Non-PC Hold") %>%
+  select(county, fy, id, booking_id, num_bookings, los,
+         high_utilizer_4_times, high_utilizer_1_pct, high_utilizer_5_pct, high_utilizer_10_pct,
+         month_year_text, month_year) %>%
+  distinct()
+dim(nh_booking_no_pc_hold); length(unique(nh_booking_no_pc_hold$booking_id)) # 31,909, 31,909
+
+##########
+
+# BOOKINGS WITH PC HOLDS - ADMISSIONS, basically
+
+##########
+
 # determine if PC hold happened in booking event
 # detach(package:plyr)
 nh_booking <- nh_booking %>%
   dplyr::group_by(booking_id) %>%
   mutate(all_hold_types=paste(sort(unique(pc_hold)), collapse="&")) %>%
-  mutate(pc_hold_in_booking = case_when(all_hold_types == 'Non-PC Hold&PC Hold' | all_hold_types == 'PC Hold' ~ "PC Hold Booking",
-                                        all_hold_types == "Non-PC Hold" ~ "Non-PC Hold Booking")) %>%
-  select(county:high_utilizer_5_pct, month_year_text:pc_hold_in_booking) %>%
+  mutate(pc_hold_in_booking = case_when(all_hold_types == 'Non-PC Hold&PC Hold' | all_hold_types == 'PC Hold' ~ "PC Hold",
+                                        all_hold_types == "Non-PC Hold" ~ "Non-PC Hold")) %>%
+  select(county:high_utilizer_10_pct, month_year_text:pc_hold_in_booking) %>%
   distinct()
 
 dim(nh_booking)                       # 53658 = booking_type_standard, 54813 = booking_type, 55126 = booking_type_standard/booking_type

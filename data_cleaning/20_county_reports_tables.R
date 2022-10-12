@@ -24,18 +24,6 @@ county_hu_1_pct_prop <- map(.x = counties,  .f = function(x) {
 
 county_hu_1_pct_prop <- bind_rows(county_hu_1_pct_prop)
 
-# 3%
-county_hu_3_pct_prop <- map(.x = counties,  .f = function(x) {
-  df_19 <- nh_booking_19 %>% filter(county == x)
-  df_20 <- nh_booking_20 %>% filter(county == x)
-  df_21 <- nh_booking_21 %>% filter(county == x)
-  df <- fnc_variable_table(df_19, df_20, df_21, "high_utilizer_3_pct")
-  df <- df %>% mutate(county = x) %>% select(high_utilizer_3_pct = variable_name, everything()) %>%
-    filter(high_utilizer_3_pct != "Total")
-})
-
-county_hu_3_pct_prop <- bind_rows(county_hu_3_pct_prop)
-
 # 5%
 county_hu_5_pct_prop <- map(.x = counties,  .f = function(x) {
   df_19 <- nh_booking_19 %>% filter(county == x)
@@ -47,6 +35,18 @@ county_hu_5_pct_prop <- map(.x = counties,  .f = function(x) {
 })
 
 county_hu_5_pct_prop <- bind_rows(county_hu_5_pct_prop)
+
+# 10%
+county_hu_10_pct_prop <- map(.x = counties,  .f = function(x) {
+  df_19 <- nh_booking_19 %>% filter(county == x)
+  df_20 <- nh_booking_20 %>% filter(county == x)
+  df_21 <- nh_booking_21 %>% filter(county == x)
+  df <- fnc_variable_table(df_19, df_20, df_21, "high_utilizer_10_pct")
+  df <- df %>% mutate(county = x) %>% select(high_utilizer_10_pct = variable_name, everything()) %>%
+    filter(high_utilizer_10_pct != "Total")
+})
+
+county_hu_10_pct_prop <- bind_rows(county_hu_10_pct_prop)
 
 ######
 # Race
@@ -144,8 +144,8 @@ county_release_type <- bind_rows(county_release_type)
 ##################
 
 save(county_hu_1_pct_prop,   file=paste0(sp_data_path, "/Data/r_data/county_hu_1_pct_prop.Rda",   sep = ""))
-save(county_hu_3_pct_prop,   file=paste0(sp_data_path, "/Data/r_data/county_hu_3_pct_prop.Rda",   sep = ""))
 save(county_hu_5_pct_prop,   file=paste0(sp_data_path, "/Data/r_data/county_hu_5_pct_prop.Rda",   sep = ""))
+save(county_hu_10_pct_prop,  file=paste0(sp_data_path, "/Data/r_data/county_hu_10_pct_prop.Rda",  sep = ""))
 
 save(county_race,            file=paste0(sp_data_path, "/Data/r_data/county_race.Rda",            sep = ""))
 save(county_age_category,    file=paste0(sp_data_path, "/Data/r_data/county_age_category.Rda",    sep = ""))

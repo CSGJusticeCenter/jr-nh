@@ -146,7 +146,7 @@ fnc_pc_hold_variables <- function(df){
 # Add high utilizer variables
 ###########
 
-# create flag for high utilizer for bookings in the top 1%, 3%, 5% percentile of bookings
+# create flag for high utilizer for bookings in the top 1%, 5%, 10% percentile of bookings
 fnc_create_high_utilizer_variables <- function(df){
   df2 <- df %>%
     dplyr::select(id, booking_id, booking_date, fy) %>%
@@ -155,18 +155,20 @@ fnc_create_high_utilizer_variables <- function(df){
     dplyr::summarise(num_bookings = n())
   df2 <- df2 %>%
     select(id, fy, num_bookings) %>% distinct() %>%
-    mutate(high_utilizer_1_pct = quantile(df2$num_bookings, probs = 0.99) < num_bookings) %>%
-    mutate(high_utilizer_3_pct = quantile(df2$num_bookings, probs = 0.97) < num_bookings) %>%
-    mutate(high_utilizer_5_pct = quantile(df2$num_bookings, probs = 0.95) < num_bookings)
+    mutate(high_utilizer_4_times = num_bookings >= 4) %>%
+    mutate(high_utilizer_1_pct   = quantile(df2$num_bookings, probs = 0.99) < num_bookings) %>%
+    mutate(high_utilizer_5_pct   = quantile(df2$num_bookings, probs = 0.95) < num_bookings) %>%
+    mutate(high_utilizer_10_pct  = quantile(df2$num_bookings, probs = 0.90) < num_bookings)
   df2 <- df2 %>%
-    mutate(high_utilizer_1_pct = case_when(high_utilizer_1_pct == TRUE ~ "Yes",
-                                           high_utilizer_1_pct == FALSE ~ "No"),
-           high_utilizer_3_pct = case_when(high_utilizer_3_pct == TRUE ~ "Yes",
-                                           high_utilizer_3_pct == FALSE ~ "No"),
-           high_utilizer_5_pct = case_when(high_utilizer_5_pct == TRUE ~ "Yes",
-                                           high_utilizer_5_pct == FALSE ~ "No")
+    mutate(high_utilizer_4_times = case_when(high_utilizer_4_times == TRUE ~ "Yes",
+                                             high_utilizer_4_times == FALSE ~ "No"),
+           high_utilizer_1_pct  = case_when(high_utilizer_1_pct == TRUE ~ "Yes",
+                                            high_utilizer_1_pct == FALSE ~ "No"),
+           high_utilizer_5_pct  = case_when(high_utilizer_5_pct == TRUE ~ "Yes",
+                                            high_utilizer_5_pct == FALSE ~ "No"),
+           high_utilizer_10_pct = case_when(high_utilizer_10_pct == TRUE ~ "Yes",
+                                            high_utilizer_10_pct == FALSE ~ "No")
     )
-
 }
 
 ###########
@@ -221,9 +223,10 @@ fnc_add_data_labels <- function(df){
            county,
            fy,
            num_bookings,
+           high_utilizer_4_times,
            high_utilizer_1_pct,
-           high_utilizer_3_pct,
            high_utilizer_5_pct,
+           high_utilizer_10_pct,
            pc_hold_booking,
            pc_hold_charge,
            pc_hold_sentence,
@@ -243,9 +246,10 @@ fnc_add_data_labels <- function(df){
   df1$release_type        <- as.character(df1$release_type)
   df1$sentence_status     <- as.character(df1$sentence_status)
   df1$fy                  <- as.numeric(df1$fy)
-  df1$high_utilizer_1_pct <- as.character(df1$high_utilizer_1_pct)
-  df1$high_utilizer_3_pct <- as.character(df1$high_utilizer_3_pct)
-  df1$high_utilizer_5_pct <- as.character(df1$high_utilizer_5_pct)
+  df1$high_utilizer_4_times <- as.character(df1$high_utilizer_4_times)
+  df1$high_utilizer_1_pct  <- as.character(df1$high_utilizer_1_pct)
+  df1$high_utilizer_5_pct  <- as.character(df1$high_utilizer_5_pct)
+  df1$high_utilizer_10_pct <- as.character(df1$high_utilizer_10_pct)
   df1$pc_hold_booking     <- as.factor(df1$pc_hold_booking)
   df1$pc_hold_charge      <- as.factor(df1$pc_hold_charge)
   df1$pc_hold_sentence    <- as.factor(df1$pc_hold_sentence)
@@ -279,9 +283,10 @@ fnc_add_data_labels <- function(df){
                   county              = "County",
                   fy                  = "Fiscal year",
                   num_bookings        = "Number of booking events in the fiscal year",
-                  high_utilizer_1_pct = "Is a high utilizer (in top 1% percentile)",
-                  high_utilizer_3_pct = "Is a high utilizer (in top 3% percentile)",
-                  high_utilizer_5_pct = "Is a high utilizer (in top 5% percentile)",
+                  high_utilizer_4_times = "Is a high utilizer (entered jail 4 or more times a FY)",
+                  high_utilizer_1_pct = "Is a high utilizer (in top 1% percentile of jail entrances)",
+                  high_utilizer_5_pct = "Is a high utilizer (in top 5% percentile of jail entrances)",
+                  high_utilizer_10_pct = "Is a high utilizer (in top 10% percentile of jail entrances)",
                   pc_hold_booking     = "Protective custody hold (booking type)",
                   pc_hold_charge      = "Protective custody hold (charge type)",
                   pc_hold_sentence    = "Protective custody hold (sentence status)",
