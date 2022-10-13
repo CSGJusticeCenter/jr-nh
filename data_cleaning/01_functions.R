@@ -155,7 +155,7 @@ fnc_create_high_utilizer_variables <- function(df){
     dplyr::summarise(num_bookings = n())
   df2 <- df2 %>%
     select(id, fy, num_bookings) %>% distinct() %>%
-    mutate(high_utilizer_4_times = num_bookings >= 4) %>%
+    mutate(high_utilizer_4_times = num_bookings >= 3) %>%
     mutate(high_utilizer_1_pct   = quantile(df2$num_bookings, probs = 0.99) < num_bookings) %>%
     mutate(high_utilizer_5_pct   = quantile(df2$num_bookings, probs = 0.95) < num_bookings) %>%
     mutate(high_utilizer_10_pct  = quantile(df2$num_bookings, probs = 0.90) < num_bookings)
@@ -569,13 +569,106 @@ fnc_num_bookings_3yr_county <- function(df, variable_name, logical){
     select(-variable_name)
 }
 
-# LOS summary info
-fnc_los_summary <- function(df){
-  df1 <- df %>% ungroup() %>% select(los)
-  df1 <- t(sapply(df1, function(x) c(min = min(df1$los), mean = mean(df1$los), median = median(df1$los), max = max(df1$los))))
-  df1 <- as.data.frame(df1); rownames(df1)<-NULL
-  df1 <- df1 %>% ungroup() %>%
-    select(min, median, mean, max) %>%
+# summary info
+fnc_summary <- function(df, variable_name){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    group_by() %>%
+    summarise(
+      total  = n(),
+      min    = min(variable_name, na.rm = T),
+      median = median(variable_name, na.rm = T),
+      mean   = mean(variable_name, na.rm = T),
+      max    = max(variable_name, na.rm = T)
+    ) %>%
+    mutate(mean = round(mean, 2))
+}
+
+# summary info by county
+fnc_summary_county <- function(df, variable_name){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    group_by(county) %>%
+    summarise(
+      total  = n(),
+      min    = min(variable_name, na.rm = T),
+      median = median(variable_name, na.rm = T),
+      mean   = mean(variable_name, na.rm = T),
+      max    = max(variable_name, na.rm = T)
+    ) %>%
+    arrange(county) %>%
+    mutate(mean = round(mean, 2))
+}
+
+# min, median, mean, and max of bookings/entrances
+fnc_hus_descriptive_summary <- function(df, variable_name, yesno, county_exclusion_text){
+
+  df$variable_name <- get(variable_name, df)
+  # min, median, mean, and max of df
+  # select variables
+  # all counties included
+  df_hu_df <- df %>%
+    ungroup() %>%
+    filter(variable_name == yesno) %>%
+    select(fy,
+           county,
+           id,
+           booking_id,
+           num_bookings,
+           los,
+           los_category,
+           high_utilizer_4_times,
+           high_utilizer_1_pct,
+           high_utilizer_5_pct,
+           high_utilizer_10_pct
+    ) %>%
     distinct() %>%
-    mutate(mean = round(mean, 1))
+    mutate(county = case_when(county == "Coos" ~ county_exclusion_text, TRUE ~ county))
+
+  # summary table showing min, median, mean, and max of df
+  df_summary <- fnc_summary_county(df_hu_df, "num_bookings")
+  df_total                     <- fnc_summary(df_hu_df, "num_bookings")
+  df_total                     <- df_total %>% mutate(county = "State")
+  df_summary <- rbind(df_summary, df_total)
+
+  ##########
+
+  # Min med mean max df for bookings and entrances of all people
+
+  ##########
+
+  # min, median, mean, and max of df
+  # all people, not just HU's
+  # select variables
+  # all counties included
+  df_df <- df %>%
+    ungroup() %>%
+    select(fy,
+           county,
+           id,
+           booking_id,
+           num_bookings,
+           los,
+           los_category,
+           high_utilizer_4_times,
+           high_utilizer_1_pct,
+           high_utilizer_5_pct,
+           high_utilizer_10_pct
+    ) %>%
+    distinct() %>%
+    mutate(county = case_when(county == "Coos" ~ county_exclusion_text, TRUE ~ county))
+
+  # summary table showing min, median, mean, and max of df
+  df_num_summary <- fnc_summary_county(df_df, "num_bookings")
+  df_total                  <- fnc_summary(df_df, "num_bookings")
+  df_total                  <- df_total %>% mutate(county = "State")
+  df_num_summary <- rbind(df_num_summary, df_total)
+
+  # get total bookings and entrances by county
+  temp <- df_num_summary %>% select(county, total_df = total, mean_all = mean)
+  df_summary <- df_summary %>%
+    left_join(temp, by = "county") %>%
+    mutate(freq = total/total_df) %>%
+    select(county, total_df, mean_all, total_hus = total, mean, min, max, freq)
+
 }

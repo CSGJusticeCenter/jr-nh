@@ -14,9 +14,9 @@
 
 # 1%
 county_hu_1_pct_prop <- map(.x = counties,  .f = function(x) {
-  df_19 <- nh_booking_19 %>% filter(county == x)
-  df_20 <- nh_booking_20 %>% filter(county == x)
-  df_21 <- nh_booking_21 %>% filter(county == x)
+  df_19 <- booking_19 %>% filter(county == x)
+  df_20 <- booking_20 %>% filter(county == x)
+  df_21 <- booking_21 %>% filter(county == x)
   df <- fnc_variable_table(df_19, df_20, df_21, "high_utilizer_1_pct")
   df <- df %>% mutate(county = x) %>% select(high_utilizer_1_pct = variable_name, everything()) %>%
     filter(high_utilizer_1_pct != "Total")
@@ -26,9 +26,9 @@ county_hu_1_pct_prop <- bind_rows(county_hu_1_pct_prop)
 
 # 5%
 county_hu_5_pct_prop <- map(.x = counties,  .f = function(x) {
-  df_19 <- nh_booking_19 %>% filter(county == x)
-  df_20 <- nh_booking_20 %>% filter(county == x)
-  df_21 <- nh_booking_21 %>% filter(county == x)
+  df_19 <- booking_19 %>% filter(county == x)
+  df_20 <- booking_20 %>% filter(county == x)
+  df_21 <- booking_21 %>% filter(county == x)
   df <- fnc_variable_table(df_19, df_20, df_21, "high_utilizer_5_pct")
   df <- df %>% mutate(county = x) %>% select(high_utilizer_5_pct = variable_name, everything()) %>%
     filter(high_utilizer_5_pct != "Total")
@@ -38,9 +38,9 @@ county_hu_5_pct_prop <- bind_rows(county_hu_5_pct_prop)
 
 # 10%
 county_hu_10_pct_prop <- map(.x = counties,  .f = function(x) {
-  df_19 <- nh_booking_19 %>% filter(county == x)
-  df_20 <- nh_booking_20 %>% filter(county == x)
-  df_21 <- nh_booking_21 %>% filter(county == x)
+  df_19 <- booking_19 %>% filter(county == x)
+  df_20 <- booking_20 %>% filter(county == x)
+  df_21 <- booking_21 %>% filter(county == x)
   df <- fnc_variable_table(df_19, df_20, df_21, "high_utilizer_10_pct")
   df <- df %>% mutate(county = x) %>% select(high_utilizer_10_pct = variable_name, everything()) %>%
     filter(high_utilizer_10_pct != "Total")
@@ -53,9 +53,9 @@ county_hu_10_pct_prop <- bind_rows(county_hu_10_pct_prop)
 ######
 
 county_race <- map(.x = counties,  .f = function(x) {
-  df_19 <- nh_booking_19 %>% filter(county == x)
-  df_20 <- nh_booking_20 %>% filter(county == x)
-  df_21 <- nh_booking_21 %>% filter(county == x)
+  df_19 <- booking_19 %>% filter(county == x)
+  df_20 <- booking_20 %>% filter(county == x)
+  df_21 <- booking_21 %>% filter(county == x)
   df <- fnc_variable_table(df_19, df_20, df_21, "race")
   df <- df %>% mutate(county = x) %>% select(race = variable_name, everything()) %>%
     filter(race != "Total")
@@ -68,9 +68,9 @@ county_race <- bind_rows(county_race)
 ######
 
 county_age_category <- map(.x = counties,  .f = function(x) {
-  df_19 <- nh_booking_19 %>% filter(county == x)
-  df_20 <- nh_booking_20 %>% filter(county == x)
-  df_21 <- nh_booking_21 %>% filter(county == x)
+  df_19 <- booking_19 %>% filter(county == x)
+  df_20 <- booking_20 %>% filter(county == x)
+  df_21 <- booking_21 %>% filter(county == x)
   df <- fnc_variable_table(df_19, df_20, df_21, "age_category")
   df <- df %>% mutate(county = x) %>% select(age_category = variable_name, everything()) %>%
     arrange(age_category) %>%
@@ -84,9 +84,9 @@ county_age_category <- bind_rows(county_age_category)
 ######
 
 county_gender <- map(.x = counties,  .f = function(x) {
-  df_19 <- nh_booking_19 %>% filter(county == x)
-  df_20 <- nh_booking_20 %>% filter(county == x)
-  df_21 <- nh_booking_21 %>% filter(county == x)
+  df_19 <- booking_19 %>% filter(county == x)
+  df_20 <- booking_20 %>% filter(county == x)
+  df_21 <- booking_21 %>% filter(county == x)
   df <- fnc_variable_table(df_19, df_20, df_21, "gender")
   df <- df %>% mutate(county = x) %>% select(gender = variable_name, everything())%>%
     filter(gender != "Total")
@@ -99,9 +99,9 @@ county_gender <- bind_rows(county_gender)
 ######
 
 county_booking_type <- map(.x = counties,  .f = function(x) {
-  df_19 <- nh_booking_19 %>% filter(county == x)
-  df_20 <- nh_booking_20 %>% filter(county == x)
-  df_21 <- nh_booking_21 %>% filter(county == x)
+  df_19 <- booking_19 %>% filter(county == x)
+  df_20 <- booking_20 %>% filter(county == x)
+  df_21 <- booking_21 %>% filter(county == x)
   df <- fnc_variable_table(df_19, df_20, df_21, "booking_type")
   df <- df %>% mutate(county = x) %>% select(booking_type = variable_name, everything()) %>%
     filter(booking_type != "Total")
@@ -114,9 +114,9 @@ county_booking_type <- bind_rows(county_booking_type)
 ######
 
 county_sentence_status <- map(.x = counties,  .f = function(x) {
-  df_19 <- nh_sentence_status_19 %>% filter(county == x)
-  df_20 <- nh_sentence_status_20 %>% filter(county == x)
-  df_21 <- nh_sentence_status_21 %>% filter(county == x)
+  df_19 <- sentence_status_19 %>% filter(county == x)
+  df_20 <- sentence_status_20 %>% filter(county == x)
+  df_21 <- sentence_status_21 %>% filter(county == x)
   df <- fnc_variable_table(df_19, df_20, df_21, "sentence_status")
   df <- df %>% mutate(county = x) %>% select(sentence_status = variable_name, everything())%>%
     filter(sentence_status != "Total")
@@ -129,9 +129,9 @@ county_sentence_status <- bind_rows(county_sentence_status)
 ######
 
 county_release_type <- map(.x = counties,  .f = function(x) {
-  df_19 <- nh_release_type_19 %>% filter(county == x)
-  df_20 <- nh_release_type_20 %>% filter(county == x)
-  df_21 <- nh_release_type_21 %>% filter(county == x)
+  df_19 <- release_type_19 %>% filter(county == x)
+  df_20 <- release_type_20 %>% filter(county == x)
+  df_21 <- release_type_21 %>% filter(county == x)
   df <- fnc_variable_table(df_19, df_20, df_21, "release_type")
   df <- df %>% mutate(county = x) %>% select(release_type = variable_name, everything()) %>%
     filter(release_type != "Total")

@@ -11,11 +11,7 @@ output:
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/01_functions_visuals.R")
-
-load(paste0(sp_data_path, "/Data/r_data/county_hu_1_pct_prop.Rda",      sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/county_hu_3_pct_prop.Rda",      sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/county_hu_5_pct_prop.Rda",      sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/county_pc_hold_recordings.Rda", sep = ""))
+source("data_cleaning/rdas.R")
 
 county_name <- "change_me"
 ```

@@ -565,7 +565,7 @@ fnc_num_bookings_3yr_county <- function(df, variable_name, logical){
 }
 
 # LOS summary info
-fnc_los_summary <- function(df){
+fnc_summary <- function(df){
   df1 <- df %>% ungroup() %>% select(los)
   df1 <- t(sapply(df1, function(x) c(min = min(df1$los), mean = mean(df1$los), median = median(df1$los), max = max(df1$los))))
   df1 <- as.data.frame(df1); rownames(df1)<-NULL
@@ -573,4 +573,18 @@ fnc_los_summary <- function(df){
     select(min, median, mean, max) %>%
     distinct() %>%
     mutate(mean = round(mean, 1))
+}
+
+fnc_summary_county <- function(df, variable_name){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    group_by(county) %>%
+    summarise(
+      min    = min(variable_name, na.rm = T),
+      median = median(variable_name, na.rm = T),
+      mean   = mean(variable_name, na.rm = T),
+      max    = max(variable_name, na.rm = T)
+    ) %>%
+    arrange(county) %>%
+    mutate(mean = format(round(mean), nsmall = 1))
 }

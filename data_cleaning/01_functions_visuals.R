@@ -335,72 +335,61 @@ fnc_reactable_county_fy <- function(df){
     reactable(df,
               pagination = FALSE,
               style = list(fontFamily = "Franklin Gothic Book"),
-              # rowStyle = function(index) {
-              #   if (index %in% c(9)) {
-              #     list(`border-top` = "thin solid",
-              #          fontWeight = "bold")
-              #   }
-              # },
+              rowStyle = function(index) {
+                if (index %in% c(10)) {
+                  list(`border-top` = "thin solid",
+                       fontWeight = "bold")
+                }
+              },
               theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
               defaultColDef = reactable::colDef(
-                format = colFormat(separators = TRUE), align = "left",
-                footer = function(values, name) {
-                  if (name %in% c("2019", "2020", "2021", "total")) {
-                    htmltools::div(paste0("", formatC(
-                      x = sum(values),
-                      digits = 0,
-                      big.mark = ",",
-                      format = "f"
-                    )))
-                  }
-                },
-                footerStyle = list(fontWeight = "bold")
+                format = colFormat(separators = TRUE), align = "left"
               ),
               compact = TRUE,
               fullWidth = FALSE,
               columns = list(
-                `county` = colDef(footer = "Total",
-                                  minWidth = 140, name = "County"),
-                `2019`  = colDef(minWidth = 80, name = "2019", align = "center"),
-                `2020`  = colDef(minWidth = 80, name = "2020", align = "center"),
-                `2021`  = colDef(minWidth = 80, name = "2021", align = "center",
-                                 style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                `total` = colDef(minWidth = 80, name = "Total", align = "center")))
+                `county`     = colDef(minWidth = 180, name = "County"),
+                `2019`       = colDef(minWidth = 80,  name = "2019",  align = "center"),
+                `2020`       = colDef(minWidth = 80,  name = "2020",  align = "center"),
+                `2021`       = colDef(minWidth = 80,  name = "2021",  align = "center", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                total        = colDef(minWidth = 80,  name = "Total", align = "center"),
+                change_19_21 = colDef(minWidth = 120,  name = "Change from 2019-2021", format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"))
+                ))
 
 }
 
-# # show how PC holds are recorded across columns
-# reactable(temp,
-#           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-#           defaultColDef = reactable::colDef(
-#             format = colFormat(separators = TRUE), align = "center",
-#             footer = function(values, name) {
-#               if (name %in% c("count_19", "count_20", "count_21", "total")) {
-#                 htmltools::div(paste0("", formatC(
-#                   x = sum(values),
-#                   digits = 0,
-#                   big.mark = ",",
-#                   format = "f"
-#                 )))
-#               }
-#             },
-#             footerStyle = list(fontWeight = "bold")
-#           ),
-#           compact = TRUE,
-#           fullWidth = FALSE,
-#           pagination = FALSE,
-#           columns = list(
-#             county = colDef(show = FALSE),
-#             charge_desc = colDef(footer = "Charge Desc",
-#                                  name = "Booking type",
-#                                  align = "left",
-#                                  minWidth = 220),
-#             booking_type     = colDef(minWidth = 220,
-#                                       name = "Booking Type"),
-#             sentence_status     = colDef(minWidth = 220,
-#                                          name = "Sentence Status"),
-#             release_type     = colDef(minWidth = 220,
-#                                       name = "Release Type"),
-#             total     = colDef(minWidth = 80,
-#                                name = "Total")
-#           ))
+
+fnc_reactable_summary <- function(df, header_name, total1_name, total2_name, freq1_name, mean1_name, max1_name){
+
+  df1 <- df %>%
+    dplyr::rename(new_variable_name = 1,
+                  total1 = 2,
+                  total2 = 3)
+
+  table1 <- reactable(df1,
+                      pagination = FALSE,
+                      style = list(fontFamily = "Franklin Gothic Book"),
+                      rowStyle = function(index) {
+                        if (index %in% c(10)) {
+                          list(`border-top` = "thin solid",
+                               fontWeight = "bold")
+                        }
+                      },
+                      theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                      defaultColDef = reactable::colDef(
+                        format = colFormat(separators = TRUE), align = "center"),
+                      compact = TRUE,
+                      fullWidth = FALSE,
+                      columns = list(
+                        new_variable_name = colDef(minWidth = 190, name = header_name, align = "left",
+                                                   style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                        total1  = colDef(minWidth = 100, name = total1_name),
+                        total2  = colDef(minWidth = 100, name = total2_name),
+                        freq    = colDef(minWidth = 130,  name = freq1_name, format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                        min     = colDef(minWidth = 100, name = "Minimum", show = F),
+                        median  = colDef(minWidth = 100, name = "Median", show = F),
+                        mean    = colDef(minWidth = 130, name = mean1_name,
+                                        style = list(fontWeight = "bold")),
+                        max     = colDef(minWidth = 130, name = max1_name)))
+}
+

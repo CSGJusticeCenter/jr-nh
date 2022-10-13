@@ -17,7 +17,7 @@ wd <- getwd()
 # loop through each county and general an html document based
 # off of county_report_template.Rmd. These html files can be called
 # in the _site.yml file which sets up the menu items on netlify
-# for (county in unique(nh_adm_all$county)){
+# for (county in unique(adm_all$county)){
 #   subgroup <- county
 #   render("county_report_template.Rmd",
 #          output_file = paste0(county, '_county_report', '.html'),

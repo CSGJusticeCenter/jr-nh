@@ -16,28 +16,10 @@ knitr::opts_chunk$set(
   cache = FALSE
   )
 
-# load packages
 source("data_cleaning/00_library.R")
-
-# load data
-load(paste0(sp_data_path, "/Data/r_data/hu_bookings_table.Rda",               sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/hu_bookings_table_by_county.Rda",     sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nonhu_bookings_table.Rda",            sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nonhu_bookings_table_by_county.Rda",  sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/hu_bookings_month_year.Rda",          sep = ""))
-
-load(paste0(sp_data_path, "/Data/r_data/hu_bookings_fy_1_pct.Rda",            sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/hu_bookings_fy_3_pct.Rda",            sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/hu_bookings_fy_5_pct.Rda",            sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/hu_pc_holds_fy_1_pct_gg.Rda",         sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/hu_pc_holds_fy_3_pct_gg.Rda",         sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/hu_pc_holds_fy_5_pct_gg.Rda",         sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/hu_pc_holds_135_pct_gg.Rda",          sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/los_summary_135_pct.Rda",             sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/los_category_by_hu_gg.Rda",           sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/one_day_booking_types_135_pct.Rda",   sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/pct_los_between_0_10_days.Rda",       sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/pct_los_between_0_1_days.Rda",        sep = ""))
+source("data_cleaning/01_functions.R")
+source("data_cleaning/01_functions_visuals.R")
+source("data_cleaning/rdas.R")
 ```
 
 # How we define High Utilizers

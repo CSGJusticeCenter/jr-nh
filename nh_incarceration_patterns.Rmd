@@ -18,44 +18,10 @@ knitr::opts_chunk$set(
   cache = FALSE
   )
 
-# load packages
 source("data_cleaning/00_library.R")
-
-# load data
-load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_amt.Rda",          sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_counties.Rda",                   sep = ""))
-
-load(paste0(sp_data_path, "/Data/r_data/nh_people_booked.Rda",              sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_county.Rda",       sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_barchart.Rda",     sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_19_20.Rda", sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_20_21.Rda", sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_change_19_21.Rda", sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_people_booked_barchart_gg.Rda",  sep = ""))
-
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings.Rda",                   sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_amt.Rda",               sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_county.Rda",            sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_barchart.Rda",          sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_20.Rda",      sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_20_21.Rda",      sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_change_19_21.Rda",      sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_bookings_barchart_gg.Rda",       sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_booking_by_fy.Rda",              sep = ""))
-
-load(paste0(sp_data_path, "/Data/r_data/nh_booking_types.Rda",              sep = ""))
-
-load(paste0(sp_data_path, "/Data/r_data/avg_los_no_pchs.Rda",               sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/los_summary.Rda",                   sep = ""))
-
-load(paste0(sp_data_path, "/Data/r_data/nh_pch_time_highchart.Rda",         sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_pch_table.Rda",                  sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_pch_pct_amt.Rda",                sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/pch_counties.Rda",                  sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_pch_pct_barchart_gg.Rda",        sep = ""))
-
-load(paste0(sp_data_path, "/Data/r_data/nh_pc_holds_county.Rda",            sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/nh_pc_hold_recordings.Rda",         sep = ""))
+source("data_cleaning/01_functions.R")
+source("data_cleaning/01_functions_visuals.R")
+source("data_cleaning/rdas.R")
 ```
 
 # Jail Bookings
