@@ -197,35 +197,24 @@ gg_hu_pc_holds_fy_1_pct   <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_1_pct, 
 gg_hu_pc_holds_fy_5_pct   <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_5_pct,   "gray", jri_green)
 gg_hu_pc_holds_fy_10_pct  <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_10_pct,  "gray", jri_orange)
 
-
-
-
-
-
-
-
-
-
 ################################################################################
 
 # Save graphs and tables
 
 ################################################################################
 
-
-ggsave(gg_hu_4_times_fy, file = "deliverables/presentations/gg_hu_4_times_fy.png",
+ggsave(gg_hu_4_times_fy, file=paste0(sp_data_path, "/Data/r_data/gg_hu_4_times_fy.png", sep = ""),
        width = 4.5, height = 4.2, dpi = 100)
-ggsave(gg_hu_entrance_prop_amount_fy, file = "deliverables/presentations/gg_hu_entrance_prop_amount_fy.png",
+ggsave(gg_hu_entrance_prop_amount_fy, file=paste0(sp_data_path, "/Data/r_data/gg_hu_entrance_prop_amount_fy.png", sep = ""),
        width = 5.5, height = 5.2, dpi = 100)
 
-
-ggsave(gg_hu_pc_holds_fy_4_times, file = "deliverables/presentations/gg_hu_pc_holds_fy_4_times.png",
+ggsave(gg_hu_pc_holds_fy_4_times, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc_holds_fy_4_times.png", sep = ""),
        width = 4.5, height = 4.2, dpi = 100)
-ggsave(gg_hu_pc_holds_fy_1_pct, file = "deliverables/presentations/gg_hu_pc_holds_fy_1_pct.png",
+ggsave(gg_hu_pc_holds_fy_1_pct, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc_holds_fy_1_pct.png", sep = ""),
        width = 4.5, height = 4.2, dpi = 100)
-ggsave(gg_hu_pc_holds_fy_5_pct, file = "deliverables/presentations/gg_hu_pc_holds_fy_5_pct.png",
+ggsave(gg_hu_pc_holds_fy_5_pct, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc_holds_fy_5_pct.png", sep = ""),
        width = 4.5, height = 4.2, dpi = 100)
-ggsave(gg_hu_pc_holds_fy_10_pct, file = "deliverables/presentations/gg_hu_pc_holds_fy_10_pct.png",
+ggsave(gg_hu_pc_holds_fy_10_pct, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc_holds_fy_10_pct.png", sep = ""),
        width = 4.5, height = 4.2, dpi = 100)
 
 
