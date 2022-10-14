@@ -17,4 +17,4 @@
 df_non_hu_4_times_summary <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_4_times", "No", "Coos (bookings only)")
 
 # reactable table
-table_non_hu_4_times_summary <- fnc_reactable_descriptive_summary(df_non_hu_4_times_summary, "HU", "Entrances")
+table_non_hu_4_times_summary <- fnc_reactable_descriptive_summary(df_non_hu_4_times_summary, "Non-HU", "Entrances")

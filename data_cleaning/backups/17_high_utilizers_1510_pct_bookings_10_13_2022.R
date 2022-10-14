@@ -434,7 +434,7 @@ table_hu_bookings_county <- reactable(df_hu_bookings_totals,
 ################################################################################
 
 # select variables
-df_hu_pc_holds <- booking_entrances %>%
+df_hu_pc_holds <- bookings_entrances %>%
   filter(county != "Coos" & county != "Strafford") %>%
   select(county, fy, booking_id, high_utilizer_1_pct, high_utilizer_5_pct, high_utilizer_10_pct, pc_hold_in_booking) %>%
   distinct() %>%

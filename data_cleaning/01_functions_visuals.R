@@ -90,9 +90,10 @@ fnc_booking_heatmap <- function(df){
 # percent grouped bar chart
 fnc_pct_grouped_bar_chart <- function(df, color1, color2){
   # df$variable_name <- get(variable_name, df)
-  df1 <- group_by(df, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
+  df1 <- group_by(df, fy) %>% mutate(pct = total/sum(total)*100) %>%
+    mutate(pct = round(pct, 1))
   df1 <- as.data.frame(df1)
-  df1 <- df1 %>% mutate(pct = comma(pct, digits = 1)) %>% mutate(pct = paste0(pct, "%"))
+  df1 <- df1 %>% mutate(pct = paste0(pct, "%"))
   ggplot(df1, aes(x = fy, y = total, fill = pc_hold_in_booking)) +
     geom_col(colour = NA, position = "fill") +
     scale_y_continuous(labels = scales::percent) +
@@ -108,12 +109,12 @@ fnc_pct_grouped_bar_chart <- function(df, color1, color2){
 }
 
 # percent bar chart showing the proportion over time for HU's and non-HU's bookings
-fnc_hu_pct_grouped_bar_chart <- function(df, color1, color2){
+fnc_hu_pct_grouped_bar_chart <- function(df, color1, color2, type){
   df1 <- group_by(df, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
   df1 <- as.data.frame(df1)
   df1 <- df1 %>% mutate(pct = round(pct, 1))
 
-  ggplot(df1, aes(x = fy, y = total, fill = type  )) +
+  ggplot(df1, aes(x = fy, y = total, fill = type)) +
     geom_col(colour = NA, position = "fill") +
     scale_y_continuous(labels = scales::percent) +
     scale_fill_manual(values=c(color1, color2), labels = c("Non-HU      ","HU")) +
@@ -195,7 +196,7 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
 # highcharts
 ###########
 
-fnc_covid_time_highchart <- function(df, yaxis_label, title){
+fnc_covid_time_highchart <- function(df, yaxis_label, title, line_color){
 
   df1 <- df %>%
     dplyr::group_by(month_year, month_year_text) %>%
@@ -205,26 +206,25 @@ fnc_covid_time_highchart <- function(df, yaxis_label, title){
            month_year_text = as.factor(month_year_text))
 
   chart <- df1 %>%
-    hchart('line', hcaes(x = month_year_text, y = total), color = jri_dark_blue) %>%
+    hchart('line', hcaes(x = month_year_text, y = total), color = line_color) %>%
     hc_setup() %>%
     hc_xAxis(
       title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
-      plotLines = list(list(label = list(text = "Start of COVID-19 Pandemic"), color = jri_red, width = 2, value = 20, zIndex = 1))
+      plotLines = list(list(label = list(text = "COVID-19 Start"), fontSize = "26px", color = "gray", width = 2, value = 20, zIndex = 1))
     ) %>%
-    hc_yAxis(title = list(text = yaxis_label, style = list(color =  "#000000", fontWeight = "bold"))) %>%
+    hc_yAxis(title = list(text = yaxis_label, style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px"))) %>%
     hc_title(text = title)
   return(chart)
 
 }
+temp <- fnc_covid_time_highchart(df1, "", "", jri_orange)
+temp
 
 # custom highcharts theme for plots
 hc_theme_jc <- hc_theme(colors = c(jri_light_blue, jri_green, jri_orange),
-                        chart = list(style = list(fontFamily = "Franklin Gothic Book",
-                          color = "#000000")),
-                        title = list(align = "left", style = list(fontFamily = "Franklin Gothic Book",
-                          fontSize = "24px")),
-                        subtitle = list(align = "left", style = list(fontFamily = "Franklin Gothic Book",
-                          fontSize = "16px")),
+                        chart = list(style = list(fontFamily = "Franklin Gothic Book", color = "#000000")),
+                        title = list(align = "left", style = list(fontFamily = "Franklin Gothic Book", fontSize = "24px")),
+                        subtitle = list(align = "left", style = list(fontFamily = "Franklin Gothic Book", fontSize = "16px")),
                         legend = list(align = "center", verticalAlign = "top"),
                         xAxis = list(gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
                         #yAxis = list(labels = list(enabled = FALSE), gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
