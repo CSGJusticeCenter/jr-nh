@@ -189,6 +189,7 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     panel.grid.minor.x = element_blank(),
     legend.position = "top",
     legend.justification = c(0, 0),
+    legend.title=element_blank(),
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
 
@@ -217,8 +218,6 @@ fnc_covid_time_highchart <- function(df, yaxis_label, title, line_color){
   return(chart)
 
 }
-temp <- fnc_covid_time_highchart(df1, "", "", jri_orange)
-temp
 
 # custom highcharts theme for plots
 hc_theme_jc <- hc_theme(colors = c(jri_light_blue, jri_green, jri_orange),
@@ -329,31 +328,31 @@ fnc_reactable_fy <- function(df, metric_label, label_width, note){
   return(fy_table)
 }
 
-fnc_reactable_county_fy <- function(df){
+fnc_reactable_county_fy <- function(df, row_num){
 
   county_fy_table <-
     reactable(df,
               pagination = FALSE,
               style = list(fontFamily = "Franklin Gothic Book"),
               rowStyle = function(index) {
-                if (index %in% c(10)) {
+                if (index %in% c(row_num)) {
                   list(`border-top` = "thin solid",
                        fontWeight = "bold")
                 }
               },
               theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
               defaultColDef = reactable::colDef(
-                format = colFormat(separators = TRUE), align = "left"
+                format = colFormat(separators = TRUE), align = "center"
               ),
               compact = TRUE,
               fullWidth = FALSE,
               columns = list(
-                `county`     = colDef(minWidth = 180, name = "County"),
-                `2019`       = colDef(minWidth = 80,  name = "2019",  align = "center"),
-                `2020`       = colDef(minWidth = 80,  name = "2020",  align = "center"),
-                `2021`       = colDef(minWidth = 80,  name = "2021",  align = "center", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                total        = colDef(minWidth = 80,  name = "Total", align = "center"),
-                change_19_21 = colDef(minWidth = 120,  name = "Change from 2019-2021", format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"))
+                `county`     = colDef( align = "left", minWidth = 180, name = "County", style = list(fontWeight = "bold")),
+                `2019`       = colDef(minWidth = 80,  name = "2019"),
+                `2020`       = colDef(minWidth = 80,  name = "2020"),
+                `2021`       = colDef(minWidth = 80,  name = "2021", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                total        = colDef(minWidth = 80,  name = "Total", style = list(fontWeight = "bold")),
+                change_19_21 = colDef(minWidth = 120,  name = "Change from 2019-2021", format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold"))
                 ))
 
 }

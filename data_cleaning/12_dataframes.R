@@ -200,6 +200,8 @@ adm_all <- adm_all %>%
   distinct()
 dim(adm_all) # 73183
 
+# if gender is NA in some bookings but present in others, use the recorded gender
+# if genders are different for the same person, make NA since we don't know which is correct
 adm_all <- adm_all %>%
   dplyr::group_by(id) %>%
   fill(gender, .direction = "downup") %>%
@@ -359,7 +361,9 @@ case_when(los_max == 0 ~ "0",
           los_max == 1 ~ "1",
           los_max == 2 ~ "2",
           los_max == 3 ~ "3",
-          los_max >= 4   & los_max <= 10   ~ "4-10",
+          los_max == 4 ~ "4",
+          los_max == 5 ~ "5",
+          los_max >= 6   & los_max <= 10  ~ "6-10",
           los_max >= 11  & los_max <= 30  ~ "11-30",
           los_max >= 31  & los_max <= 50  ~ "31-50",
           los_max >= 50  & los_max <= 100 ~ "50-100",
@@ -370,13 +374,14 @@ case_when(los_max == 0 ~ "0",
                                           "1",
                                           "2",
                                           "3",
-                                          "4-10",
+                                          "4",
+                                          "5",
+                                          "6-10",
                                           "11-30",
                                           "31-50",
                                           "50-100",
                                           "101-180",
                                           "Over 180")))
-
 
 # Remove missing data
 # find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL
@@ -633,3 +638,8 @@ charges <- adm_all %>%
                 pc_hold) %>%
   distinct()
 dim(charges); length(unique(charges$booking_id)); length(unique(charges$id)) #73088 dim, 51545 bookings, 32177 individuals
+
+# save booking dates
+all_booking_dates <- bookings_entrances %>%
+  select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>%
+  distinct()

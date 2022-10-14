@@ -6,22 +6,29 @@
 
 # High Utilizers Based on Jail Bookings by State
 # Explore HU's defined as those booked 4 or more times in a FY
+# Also Explore HU's defined as 1%, 5%, and 10%
 
 # Tables, graphs, and numbers for high utilizers analysis page
 ############################################
 
 ################################################################################
 
-# Min med mean max df for bookings and entrances of HU's
+# Min med mean max df for bookings and entrances of HU's by county
+# All  - county, total entrances, avg entrances/FY,
+# HU's - total hu entrances, avg HU entrances/FY, mean, min, max, proportion of entrances that are HU entrances
 
 ################################################################################
 
 # df for table
 df_hu_4_times_summary <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_4_times", "Yes", "Coos (bookings only)")
 
-# reactable table
-table_hu_4_times_summary <- fnc_reactable_descriptive_summary(df_hu_4_times_summary, "HU", "Entrances")
-
+# # reactable table
+# table_hu_4_times_summary <- fnc_reactable_summary(df_hu_4_times_summary, "HU",
+#                                                   total1  = "Entrances",
+#                                                   total2_name = "test",
+#                                                   freq1_name = "Proportion",
+#                                                   mean1_name = "AVG",
+#                                                   max1_name = "MAX")
 
 ################################################################################
 
@@ -162,6 +169,7 @@ df_hu_entrances_county <- bookings_entrances %>%
 
 # reactable table of number of HU entrances by FY and county and the change from 2019 to 2021
 table_hu_entrances_fy_county <- fnc_reactable_county_fy(df_hu_entrances_county)
+# save_reactable(iris_table, file = paste0(sp_data_path, "/Data/r_data/table_hu_entrances_fy_county.png", sep = ""))
 
 ################################################################################
 
@@ -199,6 +207,136 @@ gg_hu_pc_holds_fy_10_pct  <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_10_pct,
 
 ################################################################################
 
+# Histogram showing LOS for high utilizers
+
+################################################################################
+
+df_los_4_times <- df_los_no_pc_hold %>%
+  filter(high_utilizer_4_times == "Yes") %>%
+  group_by(los_category) %>%
+  summarise(total = n()) %>%
+  mutate(hu = "HU (entered 3 or more times)")
+
+gg_hu_los_category_count <- ggplot(df_los_4_times, aes(los_category, total)) +
+  geom_bar(aes(fill = hu), position = "dodge", stat="identity", width = 0.75) +
+  scale_fill_manual(values=c(jri_orange),
+                    labels = c("HU (3 or more entrances per FY)")) +
+  scale_y_continuous(labels = label_number(big.mark = ","),
+                     limits = c(0,6000)) +
+  xlab("Length of Stay (Days)") + ylab("Number of Entrances\n") +
+  theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
+    axis.text.y = element_text(size = 18, color = "black"),
+    axis.title.x = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(size = 18, color = "black"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.position = "top",
+    legend.justification = c(0, 0),
+    legend.title=element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 18, color = "black")
+  )
+
+# get % of bookings that are 0-10 days
+pct_hu_los_between_0_10_days <- df_los_no_pc_hold %>% group_by(los_category) %>%
+  filter(high_utilizer_4_times == "Yes") %>%
+  summarise(total = n()) %>%
+  mutate(pct = round(total/sum(total)*100, 1)) %>%
+  mutate(los_category = as.character(los_category))
+pct_hu_los_between_0_10_days = pct_hu_los_between_0_10_days[-c(6:10),]
+pct_hu_los_between_0_10_days <- sum(pct_hu_los_between_0_10_days$pct)
+
+# get % of bookings that are 0-1 days
+pct_hu_los_between_0_1_days <- df_los_no_pc_hold %>% group_by(los_category) %>%
+  filter(high_utilizer_4_times == "Yes") %>%
+  summarise(total = n()) %>%
+  mutate(pct = round(total/sum(total)*100, 1)) %>%
+  mutate(los_category = as.character(los_category))
+pct_hu_los_between_0_1_days = pct_hu_los_between_0_1_days[-c(3:10),]
+pct_hu_los_between_0_1_days <- sum(pct_hu_los_between_0_1_days$pct)
+
+################################################################################
+
+# Histogram showing LOS for NON high utilizers
+
+################################################################################
+
+df_los_4_times_new <- df_los_no_pc_hold %>%
+  filter(high_utilizer_4_times == "No") %>%
+  group_by(los_category) %>%
+  summarise(total = n()) %>%
+  mutate(hu = "Non-HU")
+
+gg_non_hu_los_category_count <- ggplot(df_los_4_times_new, aes(los_category, total)) +
+  geom_bar(aes(fill = hu), position = "dodge", stat="identity", width = 0.75) +
+  scale_fill_manual(values=c(jri_green),
+                    labels = c("Non-HU")) +
+  scale_y_continuous(labels = label_number(big.mark = ","),
+                     limits = c(0,6000)) +
+  xlab("Length of Stay (Days)") + ylab("Number of Entrances\n") +
+  theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
+    axis.text.y = element_text(size = 18, color = "black"),
+    axis.title.x = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(size = 18, color = "black"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.position = "top",
+    legend.justification = c(0, 0),
+    legend.title=element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 18, color = "black")
+  )
+#
+# # get % of bookings that are 0-10 days
+# pct_non_hu_los_between_0_10_days <- df_los_no_pc_hold %>% group_by(los_category) %>%
+#   filter(high_utilizer_4_times == "No") %>%
+#   summarise(total = n()) %>%
+#   mutate(pct = round(total/sum(total)*100, 1)) %>%
+#   mutate(los_category = as.character(los_category))
+# pct_non_hu_los_between_0_10_days = pct_non_hu_los_between_0_10_days[-c(6:10),]
+# pct_non_hu_los_between_0_10_days <- sum(pct_non_hu_los_between_0_10_days$pct)
+#
+# # get % of bookings that are 0-1 days
+# pct_non_hu_los_between_0_1_days <- df_los_no_pc_hold %>% group_by(los_category) %>%
+#   filter(high_utilizer_4_times == "No") %>%
+#   summarise(total = n()) %>%
+#   mutate(pct = round(total/sum(total)*100, 1)) %>%
+#   mutate(los_category = as.character(los_category))
+# pct_non_hu_los_between_0_1_days = pct_non_hu_los_between_0_1_days[-c(3:10),]
+# pct_non_hu_los_between_0_1_days <- sum(pct_non_hu_los_between_0_1_days$pct)
+#
+
+# combine into grouped barplot
+df_los_4_times_new <- df_los_no_pc_hold %>%
+  group_by(los_category, high_utilizer_4_times) %>%
+  summarise(total = n())
+
+ggplot(df_los_4_times_new, aes(fill=high_utilizer_4_times, y=total, x=los_category)) +
+  geom_bar(position="dodge", stat="identity") +
+  scale_fill_manual(values=c(jri_green),
+                    labels = c("Non-HU")) +
+  scale_y_continuous(labels = label_number(big.mark = ","),
+                     limits = c(0,6000)) +
+  xlab("Length of Stay (Days)") + ylab("Number of Entrances\n") +
+  theme_minimal(base_family = "Franklin Gothic Book") +
+  theme_axes +
+  theme(
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
+    axis.text.y = element_text(size = 18, color = "black"),
+    axis.title.x = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(size = 18, color = "black"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.position = "top",
+    legend.justification = c(0, 0),
+    legend.title=element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 18, color = "black")
+  )
+
+################################################################################
+
 # Save graphs and tables
 
 ################################################################################
@@ -217,4 +355,6 @@ ggsave(gg_hu_pc_holds_fy_5_pct, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc
 ggsave(gg_hu_pc_holds_fy_10_pct, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc_holds_fy_10_pct.png", sep = ""),
        width = 4.5, height = 4.2, dpi = 100)
 
+ggsave(gg_los_category_by_hu, file=paste0(sp_data_path, "/Data/r_data/gg_los_category_by_hu.png", sep = ""),
+       width = 7, height = 5.2, dpi = 100)
 

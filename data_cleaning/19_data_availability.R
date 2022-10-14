@@ -18,13 +18,24 @@ raw_adm_data_availability <- raw_adm_data_availability.xlsx %>%
             Address)) %>%
   select(County,
          YOB = DOB,
-         everything())
+         everything()) %>%
+  select(-YOB, -GENDER, -RAC)
+
+my_color_bar <- function (color = "lightgray", fixedWidth=150,...)
+{
+  formatter("span", style = function(x) style(width = ))
+}
 
 yes_no <- formattable::formatter(.tag = "span", style = function(x) style(color = ifelse(x == "No" , "red", "green")), x ~ icontext(ifelse(x == "No", "glyphicon glyphicon-remove", "glyphicon glyphicon-ok"), x))
+yes_no <- formatter("span", style = function(x) style(display = "inline-block",
+                                                      direction = "rtl", `border-radius` = "4px", `padding-right` = "2px",
+                                                      `background-color` = "white", width = "80px",
+                                                      color = ifelse(x == "No" , "red", "green")), x ~ icontext(ifelse(x == "No", "glyphicon glyphicon-remove", "glyphicon glyphicon-ok"), x))
+
 raw_adm_data_availability_table <- formattable(raw_adm_data_availability,
             align = c("l","l","l","l","l","l","l","l","l","l"),
             list(County = #formatter("span", style = x ~ style("font-weight" = "bold"), width = "200px"),
-                   formatter(.tag = "span", style = function(x) style("font-weight" = "bold", display = "inline-block", width = "120px")),
+                   formatter(.tag = "span", style = function(x) style("font-weight" = "bold", "font-family" = "Franklin Gothic Book",display = "inline-block", width = "120px")),
                  YOB = yes_no,
                  Race = yes_no,
                  Gender = yes_no,

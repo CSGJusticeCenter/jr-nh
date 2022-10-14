@@ -85,12 +85,12 @@ non_hu_num_bookings_10_pct_3yr <- non_hu_num_bookings_10_pct_3yr  %>% dplyr::ren
 
 # combine all data together - totals
 df_non_hu_bookings_totals <- cbind(non_hu_avg_bookings_1_pct_3yr,
-                               non_hu_num_bookings_1_pct_3yr,
-                               non_hu_avg_bookings_5_pct_3yr,
-                               non_hu_num_bookings_5_pct_3yr,
-                               non_hu_avg_bookings_10_pct_3yr,
-                               non_hu_num_bookings_10_pct_3yr,
-                               bookings_fy_3yr
+                                   non_hu_num_bookings_1_pct_3yr,
+                                   non_hu_avg_bookings_5_pct_3yr,
+                                   non_hu_num_bookings_5_pct_3yr,
+                                   non_hu_avg_bookings_10_pct_3yr,
+                                   non_hu_num_bookings_10_pct_3yr,
+                                   bookings_fy_3yr
 )
 
 df_non_hu_bookings_totals <- df_non_hu_bookings_totals %>%
@@ -205,36 +205,36 @@ gg_non_hu_bookings_fy_10_pct <- fnc_hu_pct_grouped_bar_chart(temp, "gray", jri_o
 
 # reactable table
 table_non_hu_bookings_fy <- reactable(df_non_hu_bookings_fy,
-                                  pagination = FALSE,
-                                  theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-                                  defaultColDef = reactable::colDef(
-                                    format = colFormat(separators = TRUE), align = "left"),
-                                  compact = TRUE,
-                                  fullWidth = FALSE,
-                                  rowStyle = function(index) {
-                                    if (index %in% c(4)) {
-                                      list(`border-top` = "thin solid",
-                                           fontWeight = "bold")
-                                    }
-                                  },
-                                  columnGroups = list(
-                                    colGroup(name = "Not in Top 1%", columns = c("num_bookings_1_pct", "prop_bookings_1_pct", "avg_num_bookings_1_pct")),
-                                    colGroup(name = "Not in Top 5%", columns = c("num_bookings_5_pct", "prop_bookings_5_pct", "avg_num_bookings_5_pct")),
-                                    colGroup(name = "Not in Top 10%", columns = c("num_bookings_10_pct", "prop_bookings_10_pct", "avg_num_bookings_10_pct"))
-                                  ),
-                                  columns = list(
-                                    fy                     = colDef(minWidth = 80, name = "FY", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                    num_bookings_1_pct     = colDef(minWidth = 80, name = "#"),
-                                    prop_bookings_1_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                    avg_num_bookings_1_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                    num_bookings_5_pct     = colDef(minWidth = 80, name = "#"),
-                                    prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                    avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                    num_bookings_10_pct     = colDef(minWidth = 80, name = "#"),
-                                    prop_bookings_10_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                    avg_num_bookings_10_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                      pagination = FALSE,
+                                      theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                                      defaultColDef = reactable::colDef(
+                                        format = colFormat(separators = TRUE), align = "left"),
+                                      compact = TRUE,
+                                      fullWidth = FALSE,
+                                      rowStyle = function(index) {
+                                        if (index %in% c(4)) {
+                                          list(`border-top` = "thin solid",
+                                               fontWeight = "bold")
+                                        }
+                                      },
+                                      columnGroups = list(
+                                        colGroup(name = "Not in Top 1%", columns = c("num_bookings_1_pct", "prop_bookings_1_pct", "avg_num_bookings_1_pct")),
+                                        colGroup(name = "Not in Top 5%", columns = c("num_bookings_5_pct", "prop_bookings_5_pct", "avg_num_bookings_5_pct")),
+                                        colGroup(name = "Not in Top 10%", columns = c("num_bookings_10_pct", "prop_bookings_10_pct", "avg_num_bookings_10_pct"))
+                                      ),
+                                      columns = list(
+                                        fy                     = colDef(minWidth = 80, name = "FY", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                        num_bookings_1_pct     = colDef(minWidth = 80, name = "#"),
+                                        prop_bookings_1_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                        avg_num_bookings_1_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                        num_bookings_5_pct     = colDef(minWidth = 80, name = "#"),
+                                        prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                        avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                        num_bookings_10_pct     = colDef(minWidth = 80, name = "#"),
+                                        prop_bookings_10_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                        avg_num_bookings_10_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
 
-                                    total_bookings         = colDef(minWidth = 80, name = "Total")))
+                                        total_bookings         = colDef(minWidth = 80, name = "Total")))
 
 
 ################################################################################
@@ -378,42 +378,42 @@ df_non_hu_bookings_totals <- df_non_hu_bookings_totals %>% select(county, total_
 ######
 
 table_non_hu_bookings_county <- reactable(df_non_hu_bookings_totals,
-                                      pagination = FALSE,
-                                      style = list(fontFamily = "Franklin Gothic Book"),
-                                      theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-                                      defaultColDef = reactable::colDef(
-                                        format = colFormat(separators = TRUE), align = "center"
-                                      ),
-                                      rowStyle = function(index) {
-                                        if (index %in% c(9)) {
-                                          list(`border-top` = "thin solid",
-                                               fontWeight = "bold")
-                                        }
-                                      },
-                                      compact = TRUE,
-                                      fullWidth = FALSE,
-                                      columnGroups = list(
-                                        colGroup(name = "Total Bookings", columns = c("total_bookings")),
-                                        colGroup(name = "Not in Top 1%", columns = c("num_bookings_1_pct", "prop_bookings_1_pct", "avg_num_bookings_1_pct")),
-                                        colGroup(name = "Not in Top 5%", columns = c("num_bookings_5_pct", "prop_bookings_5_pct", "avg_num_bookings_5_pct")),
-                                        colGroup(name = "Not in Top 10%", columns = c("num_bookings_10_pct", "prop_bookings_10_pct", "avg_num_bookings_10_pct"))
-                                      ),
-                                      columns = list(
-                                        county                 = colDef(minWidth = 130, align = "left", name = "County", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                        #county                 = colDef(minWidth = 150, name = "County", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                        total_bookings         = colDef(minWidth = 130, name = "FY 2019-2021", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                        num_bookings_1_pct     = colDef(minWidth = 75, name = "#"),
-                                        prop_bookings_1_pct    = colDef(minWidth = 75, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                        avg_num_bookings_1_pct = colDef(minWidth = 75, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                        num_bookings_5_pct     = colDef(minWidth = 75, name = "#"),
-                                        prop_bookings_5_pct    = colDef(minWidth = 75, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                        avg_num_bookings_5_pct = colDef(minWidth = 75, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                        num_bookings_10_pct     = colDef(minWidth = 75, name = "#"),
-                                        prop_bookings_10_pct    = colDef(minWidth = 75, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                        avg_num_bookings_10_pct = colDef(minWidth = 75, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1),
-                                                                         #style = list(position = "sticky", borderRight = "1px solid #d3d3d3")
-                                        )
-                                      ))
+                                          pagination = FALSE,
+                                          style = list(fontFamily = "Franklin Gothic Book"),
+                                          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                                          defaultColDef = reactable::colDef(
+                                            format = colFormat(separators = TRUE), align = "center"
+                                          ),
+                                          rowStyle = function(index) {
+                                            if (index %in% c(9)) {
+                                              list(`border-top` = "thin solid",
+                                                   fontWeight = "bold")
+                                            }
+                                          },
+                                          compact = TRUE,
+                                          fullWidth = FALSE,
+                                          columnGroups = list(
+                                            colGroup(name = "Total Bookings", columns = c("total_bookings")),
+                                            colGroup(name = "Not in Top 1%", columns = c("num_bookings_1_pct", "prop_bookings_1_pct", "avg_num_bookings_1_pct")),
+                                            colGroup(name = "Not in Top 5%", columns = c("num_bookings_5_pct", "prop_bookings_5_pct", "avg_num_bookings_5_pct")),
+                                            colGroup(name = "Not in Top 10%", columns = c("num_bookings_10_pct", "prop_bookings_10_pct", "avg_num_bookings_10_pct"))
+                                          ),
+                                          columns = list(
+                                            county                 = colDef(minWidth = 130, align = "left", name = "County", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                            #county                 = colDef(minWidth = 150, name = "County", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                            total_bookings         = colDef(minWidth = 130, name = "FY 2019-2021", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                            num_bookings_1_pct     = colDef(minWidth = 75, name = "#"),
+                                            prop_bookings_1_pct    = colDef(minWidth = 75, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                            avg_num_bookings_1_pct = colDef(minWidth = 75, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                            num_bookings_5_pct     = colDef(minWidth = 75, name = "#"),
+                                            prop_bookings_5_pct    = colDef(minWidth = 75, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                            avg_num_bookings_5_pct = colDef(minWidth = 75, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                            num_bookings_10_pct     = colDef(minWidth = 75, name = "#"),
+                                            prop_bookings_10_pct    = colDef(minWidth = 75, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                            avg_num_bookings_10_pct = colDef(minWidth = 75, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1),
+                                                                             #style = list(position = "sticky", borderRight = "1px solid #d3d3d3")
+                                            )
+                                          ))
 
 ################################################################################
 
@@ -483,69 +483,69 @@ temp <- df_non_hu_bookings_fy
 temp <- temp %>% mutate(fy = ifelse(fy == "Total", "FY2019-FY2021", fy)) %>% filter(fy == "FY2019-FY2021") %>%
   select(fy, total_bookings, everything())
 table_non_hu_bookings_total <- reactable(temp,
-                                     pagination = FALSE,
-                                     style = list(fontFamily = "Franklin Gothic Book"),
-                                     theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-                                     defaultColDef = reactable::colDef(
-                                       format = colFormat(separators = TRUE), align = "center"),
-                                     compact = TRUE,
-                                     fullWidth = FALSE,
-                                     rowStyle = function(index) {
-                                       if (index %in% c(4)) {
-                                         list(`border-top` = "thin solid",
-                                              fontWeight = "bold")
-                                       }
-                                     },
-                                     columnGroups = list(
-                                       colGroup(name = "Total Bookings (including non-HU's)", columns = c("total_bookings")),
+                                         pagination = FALSE,
+                                         style = list(fontFamily = "Franklin Gothic Book"),
+                                         theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                                         defaultColDef = reactable::colDef(
+                                           format = colFormat(separators = TRUE), align = "center"),
+                                         compact = TRUE,
+                                         fullWidth = FALSE,
+                                         rowStyle = function(index) {
+                                           if (index %in% c(4)) {
+                                             list(`border-top` = "thin solid",
+                                                  fontWeight = "bold")
+                                           }
+                                         },
+                                         columnGroups = list(
+                                           colGroup(name = "Total Bookings (including non-HU's)", columns = c("total_bookings")),
 
-                                       colGroup(name = "Not in Top 1%", columns = c("num_bookings_1_pct", "prop_bookings_1_pct", "avg_num_bookings_1_pct")),
-                                       colGroup(name = "Not in Top 5%", columns = c("num_bookings_5_pct", "prop_bookings_5_pct", "avg_num_bookings_5_pct")),
-                                       colGroup(name = "Not in Top 10%", columns = c("num_bookings_10_pct", "prop_bookings_10_pct", "avg_num_bookings_10_pct"))
-                                     ),
-                                     columns = list(
-                                       total_bookings         = colDef(minWidth = 170, name = "#",style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                       fy                     = colDef(#minWidth = 150, name = "", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")
-                                         show = F),
-                                       num_bookings_1_pct     = colDef(minWidth = 80, name = "#"),
-                                       prop_bookings_1_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                       avg_num_bookings_1_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                       num_bookings_5_pct     = colDef(minWidth = 80, name = "#"),
-                                       prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                       avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                       num_bookings_10_pct     = colDef(minWidth = 80, name = "#"),
-                                       prop_bookings_10_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                       avg_num_bookings_10_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1))
-                                     ))
+                                           colGroup(name = "Not in Top 1%", columns = c("num_bookings_1_pct", "prop_bookings_1_pct", "avg_num_bookings_1_pct")),
+                                           colGroup(name = "Not in Top 5%", columns = c("num_bookings_5_pct", "prop_bookings_5_pct", "avg_num_bookings_5_pct")),
+                                           colGroup(name = "Not in Top 10%", columns = c("num_bookings_10_pct", "prop_bookings_10_pct", "avg_num_bookings_10_pct"))
+                                         ),
+                                         columns = list(
+                                           total_bookings         = colDef(minWidth = 170, name = "#",style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                           fy                     = colDef(#minWidth = 150, name = "", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")
+                                             show = F),
+                                           num_bookings_1_pct     = colDef(minWidth = 80, name = "#"),
+                                           prop_bookings_1_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                           avg_num_bookings_1_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                           num_bookings_5_pct     = colDef(minWidth = 80, name = "#"),
+                                           prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                           avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                           num_bookings_10_pct     = colDef(minWidth = 80, name = "#"),
+                                           prop_bookings_10_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                           avg_num_bookings_10_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1))
+                                         ))
 
 temp <- df_non_hu_bookings_totals %>% select(-c(num_bookings_1_pct, num_bookings_5_pct, num_bookings_10_pct, total_bookings))
 table_non_hu_booking_summary_county <- reactable(temp,
-                                             pagination = FALSE,
-                                             style = list(fontFamily = "Franklin Gothic Book"),
-                                             theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-                                             defaultColDef = reactable::colDef(
-                                               format = colFormat(separators = TRUE), align = "left"),
-                                             rowStyle = function(index) {
-                                               if (index %in% c(10)) {
-                                                 list(`border-top` = "thin solid",
-                                                      fontWeight = "bold")
-                                               }
-                                             },
-                                             compact = TRUE,
-                                             fullWidth = FALSE,
-                                             columnGroups = list(
-                                               colGroup(name = "Not in Top 1%", columns = c("prop_bookings_1_pct", "avg_num_bookings_1_pct")),
-                                               colGroup(name = "Not in Top 5%", columns = c("prop_bookings_5_pct", "avg_num_bookings_5_pct")),
-                                               colGroup(name = "Not in Top 10%", columns = c("prop_bookings_10_pct", "avg_num_bookings_10_pct"))
-                                             ),
-                                             columns = list(
-                                               county                 = colDef(minWidth = 150, name = "County", style = list(fontWeight = "bold")),
-                                               prop_bookings_1_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                               avg_num_bookings_1_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                               prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                               avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-                                               prop_bookings_10_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
-                                               avg_num_bookings_10_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1))))
+                                                 pagination = FALSE,
+                                                 style = list(fontFamily = "Franklin Gothic Book"),
+                                                 theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                                                 defaultColDef = reactable::colDef(
+                                                   format = colFormat(separators = TRUE), align = "left"),
+                                                 rowStyle = function(index) {
+                                                   if (index %in% c(10)) {
+                                                     list(`border-top` = "thin solid",
+                                                          fontWeight = "bold")
+                                                   }
+                                                 },
+                                                 compact = TRUE,
+                                                 fullWidth = FALSE,
+                                                 columnGroups = list(
+                                                   colGroup(name = "Not in Top 1%", columns = c("prop_bookings_1_pct", "avg_num_bookings_1_pct")),
+                                                   colGroup(name = "Not in Top 5%", columns = c("prop_bookings_5_pct", "avg_num_bookings_5_pct")),
+                                                   colGroup(name = "Not in Top 10%", columns = c("prop_bookings_10_pct", "avg_num_bookings_10_pct"))
+                                                 ),
+                                                 columns = list(
+                                                   county                 = colDef(minWidth = 150, name = "County", style = list(fontWeight = "bold")),
+                                                   prop_bookings_1_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                                   avg_num_bookings_1_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                                   prop_bookings_5_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                                   avg_num_bookings_5_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1), style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                                                   prop_bookings_10_pct    = colDef(minWidth = 80, name = "%", format = colFormat(percent = TRUE, digits = 1)),
+                                                   avg_num_bookings_10_pct = colDef(minWidth = 80, name = "Avg/Yr", format = colFormat(percent = FALSE, digits = 1))))
 
 ################################################################################
 

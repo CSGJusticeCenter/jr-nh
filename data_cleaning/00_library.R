@@ -11,6 +11,8 @@
 # load packages
 ###################
 
+# remotes::install_github("kcuilla/reactablefmtr")
+
 library(readxl)
 library(readr)
 library(janitor)
@@ -39,6 +41,7 @@ library(downloadthis)
 library(scales)
 library(officer)
 library(rvg)
+library(reactablefmtr)
 
 # install.packages("rmarkdown")
 # install.packages("knitr")

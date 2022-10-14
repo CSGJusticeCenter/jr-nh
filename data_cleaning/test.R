@@ -1,39 +1,32 @@
-# min, median, mean, and max of bookings/entrances
+##########
+
+# reactable table with number of people and proportion people enter for PC holds
+# includes coos and strafford in the table but not the calculation
+
+##########
+
 # select variables
-# all counties included
-hu_booking_entrances <- booking_entrances %>%
+# count number of pc holds vs non-pc holds by county by fiscal year
+df1 <- df_pch %>%
   ungroup() %>%
-  filter(high_utilizer_4_times == "Yes") %>%
-  select(fy,
-         county,
-         id,
-         booking_id,
-         num_bookings,
-         los,
-         los_category,
-         pc_hold_in_booking,
-         high_utilizer_4_times,
-         high_utilizer_1_pct,
-         high_utilizer_5_pct,
-         high_utilizer_10_pct,
-         month_year_text,
-         month_year,
-         race,
-         age,
-         age_category,
-         gender) %>%
-  distinct() %>%
-  mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)", TRUE ~ county))
+  select(id, fy, county, pc_hold_in_booking) %>%
+  distinct()
+dim(df1); length(unique(df1$id))
+table(df1$pc_hold_in_booking)
 
-dim(hu_booking_entrances); length(unique(hu_booking_entrances$booking_id)); length(unique(hu_booking_entrances$id))
-# Total 51545, 51545, 32177
-# HU's (4 or more bookings or entrances a year) 7009, 7009, 1055
+df2 <- df1 %>%
+  group_by(county, pc_hold_in_booking) %>%
+  dplyr::summarise(total = n()) # 1161
 
-# summary table showing min, median, mean, and max of bookings/entrances (including Coos)
-county_num_bookings_entrances_summary <- fnc_summary_county(hu_booking_entrances, "num_bookings")
-num_bookings_entrances_summary        <- fnc_summary(hu_booking_entrances, "num_bookings")
-num_bookings_entrances_summary        <- num_bookings_entrances_summary %>% mutate(county = "State")
-county_num_bookings_entrances_summary <- rbind(county_num_bookings_entrances_summary, num_bookings_entrances_summary)
+# select variables
+# count number of pc holds vs non-pc holds by county by fiscal year
+df1 <- df_pch %>%
+  ungroup() %>%
+  select(id, county, pc_hold_in_booking) %>%
+  distinct()
+dim(df1); length(unique(df1$id))
+table(df1$pc_hold_in_booking)
 
-# reactable table of summary table showing min, median, mean, and max of bookings/entrances (including Coos)
-table_county_num_bookings_entrances_summary <- fnc_reactable_summary(county_num_bookings_entrances_summary, "County")
+df2 <- df1 %>%
+  group_by(county, pc_hold_in_booking) %>%
+  dplyr::summarise(total = n()) # 1161

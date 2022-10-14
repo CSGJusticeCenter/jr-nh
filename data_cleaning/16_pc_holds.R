@@ -12,10 +12,12 @@ df_pch <- pch
 dim(df_pch); length(unique(df_pch$booking_id)) # 51545, 51545
 table(df_pch$county)
 
-###########
+################################################################################
+
 # Highchart pc holds over time
 # remove Coos and Strafford because they don't have data on PC holds. Coos deletes the entire entry.
-###########
+
+################################################################################
 
 # get counties included
 pch_counties <- fnc_counties_in_data(df_pch)
@@ -24,11 +26,13 @@ pch_counties <- fnc_counties_in_data(df_pch)
 temp <- df_pch %>% filter(pc_hold_in_booking == "PC Hold")
 
 # generate high chart using custom function
-hc_pch_time <- fnc_covid_time_highchart(temp, yaxis_label = "Number of PC Holds", title = NULL)
+hc_pch_time <- fnc_covid_time_highchart(temp, yaxis_label = "Number of PC Holds", title = NULL, jri_light_blue)
 
-###########
+################################################################################
+
 # Table pc holds by FY
-###########
+
+################################################################################
 
 # filter by year
 pch_19 <- df_pch %>% select(county, id, booking_id, fy, pc_hold_in_booking) %>% distinct() %>% filter(fy == 2019)
@@ -49,9 +53,11 @@ amt_pch_pct <- round(amt_pch_pct, 1)
 # create reactable table for pc holds by fiscal year
 table_pch <- fnc_reactable_fy(pch_df, metric_label = " ", label_width = 150, note = "Coos and Strafford are included in the NA line of the table above. Coos removes entrances that are PC holds so Coos's administrative data is not used to calculate the proportion of entrances that are PC holds or Non-PC Holds. Strafford's data cannot differentiate between bookings and PC holds so their administrative data is also excluded in these calculations.")
 
-###########
+################################################################################
+
 # Table pc holds by FY by county
-###########
+
+################################################################################
 
 # detach(package:plyr)
 # select variables
@@ -88,9 +94,11 @@ df_pc_holds_fy_county <- df_pc_holds_fy_county %>%
 # format into a reactable table????????????????????????????????????????????????????????? fix total
 table_pc_holds_fy_county <- fnc_reactable_fy(df_pc_holds_fy_county, metric_label = " ", label_width = 150, note = "Coos removes entrances that are PC holds so Coos's administrative data is not included in this table. Strafford's data cannot differentiate between bookings and PC holds so their administrative data is also excluded.")
 
-###########
+################################################################################
+
 # How protective custody holds are recorded across counties
-###########
+
+################################################################################
 
 # select PC hold recordings to show how each county records pc holds (charge_desc, booking_type, sentence_status, release_type)
 # df_county_pc_hold_recordings <- adm_all %>% filter(pc_hold == "PC Hold") %>%
@@ -101,12 +109,12 @@ df_county_pc_hold_recordings <- adm_all %>%
   dplyr::summarise(total = n()) %>%
   dplyr::mutate(total = formattable::comma(total, digits = 0))
 
-##########
+################################################################################
 
 # reactable table with number of entrances and proportion that are PC holds
 # includes coos and strafford in the table but not the calculation
 
-##########
+################################################################################
 
 # data with number of pc holds and freq
 df_entrances_with_pc_holds <- df_pc_holds_fy_county %>%
@@ -161,11 +169,13 @@ df_entrances_with_pc_holds <- df_entrances_with_pc_holds %>%
                                      TRUE ~ total_entrances)) %>%
   filter((county != "Coos" | county != "Strafford") & !is.na(total_entrances)) %>%
   arrange(county) %>%
-  mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)", TRUE ~ county))
+  mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)",
+                            county == "Total" ~ "State", TRUE ~ county)) %>%
+  arrange(county %in% "State")
 
 # reactable table showing the total number of entrances and prop of PC holds
 # includes coos and strafford in the table but not the calculation
-table_entrances_with_pc_holds <-
+PRES_table_entrances_with_pc_holds <-
   reactable(df_entrances_with_pc_holds,
             pagination = FALSE,
             style = list(fontFamily = "Franklin Gothic Book"),
@@ -181,11 +191,21 @@ table_entrances_with_pc_holds <-
             defaultColDef = reactable::colDef(
               format = colFormat(separators = TRUE), align = "left"),
             columns = list(
-              county          = colDef(minWidth = 150, name = "County", style = list(fontWeight = "bold")),
-              total_entrances  = colDef(minWidth = 100, name = "# Entrance", align = "center"),
-              total_pc_holds  = colDef(minWidth = 100, name = "# PC Holds", align = "center"),
-              freq            = colDef(minWidth = 100, style = list(fontWeight = "bold"), name = "% PC Holds", format = colFormat(percent = TRUE, digits = 1), align = "center"))) %>%
+              county          = colDef(minWidth = 180,  name = "County", style = list(fontWeight = "bold")),
+              total_entrances  = colDef(minWidth = 100, name = "Total Entrances", align = "center"),
+              total_pc_holds  = colDef(minWidth = 100,  name = "PC Holds Entrances", align = "center"),
+              freq            = colDef(minWidth = 100, style = list(fontWeight = "bold"), name = "% PC Hold Entrances", format = colFormat(percent = TRUE, digits = 1), align = "center"))) %>%
   add_source("Coos bookings and Strafford entrances were not included when calculating the proportion of entrances that are PC holds.", font_style = "italic", font_size = 14)
+
+
+
+
+
+
+
+
+
+
 
 ##########
 
