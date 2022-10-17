@@ -179,8 +179,10 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     axis.text.x = element_text(size = 22, color = "black"),
     axis.text.y = element_text(size = 22, color = "black"),
     axis.title = element_text(color = "black"),
-    axis.title.y = element_blank(),
-    axis.title.x = element_blank(),
+    # axis.title.y = element_blank(),
+    # axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 22, color = "black"),
+    axis.title.x = element_text(size = 22, color = "black"),
 
     # panel.grid.minor = element_blank(),
     # panel.grid.major = element_blank(),
@@ -192,6 +194,29 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     legend.title=element_blank(),
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
+
+# get proportion of high utilizers by variable
+
+fnc_gg_huvsnonhu_pct <- function(df, variable_name, color1, color2){
+  df$variable_name <- get(variable_name, df)
+  df1 <- group_by(df, fy) %>% mutate(pct = total/sum(total)*100) %>%
+    mutate(pct = round(pct, 1))
+  df1 <- as.data.frame(df1)
+  df1 <- df1 %>% mutate(pct = paste0(pct, "%"))
+
+  ggplot(df1, aes(x = fy, y = total, fill = variable_name)) +
+    geom_col(colour = NA, position = "fill") +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(values=c(color1, color2), labels = c("Non-HU      ","HU")) +
+    geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
+              size = 7.5, family = "Franklin Gothic Book",
+              color = ifelse(df1$variable_name == "Non-PC Hold", "black", "white")) +
+    theme_axes +
+    theme(legend.position = "top",
+          legend.justification = c(0, 0),
+          legend.title=element_blank(),
+          axis.title.y = element_blank())
+}
 
 ###########
 # highcharts
@@ -274,7 +299,8 @@ fnc_reactable_fy <- function(df, metric_label, label_width, note){
   # create reactable table of number/freq of booking types by fiscal year and for all 3 years
   fy_table <- reactable(df1,
                         pagination = FALSE,
-                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                               headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                         defaultColDef = reactable::colDef(
                           format = colFormat(separators = TRUE), align = "center",
                           footer = function(values, name) {
@@ -340,7 +366,8 @@ fnc_reactable_county_fy <- function(df, row_num){
                        fontWeight = "bold")
                 }
               },
-              theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+              theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                     headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
               defaultColDef = reactable::colDef(
                 format = colFormat(separators = TRUE), align = "center"
               ),
@@ -374,7 +401,8 @@ fnc_reactable_summary <- function(df, header_name, total1_name, total2_name, fre
                                fontWeight = "bold")
                         }
                       },
-                      theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                      theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                             headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                       defaultColDef = reactable::colDef(
                         format = colFormat(separators = TRUE), align = "center"),
                       compact = TRUE,
@@ -392,3 +420,33 @@ fnc_reactable_summary <- function(df, header_name, total1_name, total2_name, fre
                         max     = colDef(minWidth = 130, name = max1_name)))
 }
 
+fnc_reactable_hus_descriptive_summary <- function(df){
+  table1 <- reactable(df,
+                      pagination = FALSE,
+                      style = list(fontFamily = "Franklin Gothic Book"),
+                      rowStyle = function(index) {
+                        if (index %in% c(10)) {
+                          list(`border-top` = "thin solid",
+                               fontWeight = "bold")
+                        }
+                      },
+                      theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                             headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                      defaultColDef = reactable::colDef(
+                        format = colFormat(separators = TRUE), align = "center"),
+                      compact = TRUE,
+                      fullWidth = FALSE,
+                      columns = list(
+                        county             = colDef(minWidth = 190, name = "County", align = "left",
+                                                 style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                        total_entrances    = colDef(minWidth = 100, name = "Total Entrances"),
+                        total_people       = colDef(minWidth = 90,  name = "Total People"),
+
+                        total_hu_entrances = colDef(minWidth = 100, name = "HU's (Entrances)"),
+                        mean_all           = colDef(minWidth = 130, name = "Avg Entrances Per Person Per Year", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                        total_hu_people    = colDef(minWidth = 100, name = "HU's (People)" ),
+                        mean               = colDef(minWidth = 130, name = "Avg Entrances Per Person Per Year", style = list(fontWeight = "bold")),
+                        range              = colDef(minWidth = 130, name = "Range of Entrances Per Person Per Year"),
+                        freq               = colDef(minWidth = 130, name = "Proportion of Entrances that are HU's", format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"))
+                      ))
+}

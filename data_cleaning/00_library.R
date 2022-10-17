@@ -42,6 +42,7 @@ library(scales)
 library(officer)
 library(rvg)
 library(reactablefmtr)
+library(ggtext)
 
 # install.packages("rmarkdown")
 # install.packages("knitr")

@@ -44,6 +44,7 @@ source("data_cleaning/11_sullivan.R")
 # high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
 # pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
 # pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other variables)
+# ignore warning messages
 
 belknap_adm      <- fnc_standardize_counties(belknap_adm_all,      "Belknap")
 carroll_adm      <- fnc_standardize_counties(carroll_adm_all,      "Carroll")
@@ -422,10 +423,15 @@ bookings_entrances_all <- adm_all %>%
                 booking_type_standard,
                 fy,
                 num_bookings,
+                num_bookings_fy,
                 high_utilizer_4_times,
                 high_utilizer_1_pct,
                 high_utilizer_5_pct,
                 high_utilizer_10_pct,
+                high_utilizer_4_times_fy,
+                high_utilizer_1_pct_fy,
+                high_utilizer_5_pct_fy,
+                high_utilizer_10_pct_fy,
                 pc_hold_booking,
                 pc_hold_charge,
                 pc_hold_sentence,
@@ -452,7 +458,7 @@ bookings_entrances <- bookings_entrances_all %>%
   mutate(all_hold_types=paste(sort(unique(pc_hold)), collapse="&")) %>%
   mutate(pc_hold_in_booking = case_when(all_hold_types == 'Non-PC Hold&PC Hold' | all_hold_types == 'PC Hold' ~ "PC Hold",
                                         all_hold_types == "Non-PC Hold" ~ "Non-PC Hold")) %>%
-  select(county:high_utilizer_10_pct, month_year_text:pc_hold_in_booking) %>%
+  select(county:high_utilizer_10_pct_fy, month_year_text:pc_hold_in_booking) %>%
   distinct()
 
 dim(bookings_entrances); length(unique(bookings_entrances$booking_id)); length(unique(bookings_entrances$id)) #55087 dim, 51545 bookings, 32177 individuals
@@ -465,11 +471,11 @@ bookings_entrances <- bookings_entrances %>%
   select(county: booking_type, all_booking_types, everything()) %>%
   distinct()
 
-# remove Strafford??????????????????????????????????????????????????????????????????????????????????
 bookings_entrances <- bookings_entrances %>%
   #filter(county != "Strafford") %>%
   droplevels() %>%
   distinct()
+
 dim(bookings_entrances)                       # 55087
 length(unique(bookings_entrances$booking_id)) # 51545
 
@@ -572,7 +578,7 @@ sentence_status_21 <- sentence_status %>% select(county, id, fy, booking_id, sen
 ################################################################################
 
 # instead of removing coos and strafford, I could label their pc_hold_in_booking as NA to include them in tables...
-pch <- bookings_entrances %>%
+df_pch <- bookings_entrances %>%
   #filter(county != "Coos" & county != "Strafford") %>%
   select(fy,
          county,
@@ -587,7 +593,7 @@ pch <- bookings_entrances %>%
   mutate(pc_hold_in_booking = ifelse(county == "Coos", NA, pc_hold_in_booking)) %>%
   droplevels()
 
-dim(pch); length(unique(pch$booking_id)); length(unique(pch$id));  # 51545, 32177
+dim(df_pch); length(unique(df_pch$booking_id)); length(unique(df_pch$id));  # 51545, 32177
 
 ################################################################################
 
@@ -643,3 +649,4 @@ dim(charges); length(unique(charges$booking_id)); length(unique(charges$id)) #73
 all_booking_dates <- bookings_entrances %>%
   select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>%
   distinct()
+

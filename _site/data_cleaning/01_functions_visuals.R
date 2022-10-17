@@ -90,16 +90,17 @@ fnc_booking_heatmap <- function(df){
 # percent grouped bar chart
 fnc_pct_grouped_bar_chart <- function(df, color1, color2){
   # df$variable_name <- get(variable_name, df)
-  df1 <- group_by(df, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
+  df1 <- group_by(df, fy) %>% mutate(pct = total/sum(total)*100) %>%
+    mutate(pct = round(pct, 1))
   df1 <- as.data.frame(df1)
-  df1 <- df1 %>% mutate(pct = comma(pct, digits = 1)) %>% mutate(pct = paste0(pct, "%"))
+  df1 <- df1 %>% mutate(pct = paste0(pct, "%"))
   ggplot(df1, aes(x = fy, y = total, fill = pc_hold_in_booking)) +
     geom_col(colour = NA, position = "fill") +
     scale_y_continuous(labels = scales::percent) +
     scale_fill_manual(values=c(color1,color2), labels = c("Non-PC      ","PC")) +
     geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
               size = 7.5, family = "Franklin Gothic Book",
-              color = ifelse(df1$pc_hold_in_booking == "Non-PC Hold Booking", "black", "white")) +
+              color = ifelse(df1$pc_hold_in_booking == "Non-PC Hold", "black", "white")) +
     theme_axes +
     theme(legend.position = "top",
           legend.justification = c(0, 0),
@@ -108,12 +109,12 @@ fnc_pct_grouped_bar_chart <- function(df, color1, color2){
 }
 
 # percent bar chart showing the proportion over time for HU's and non-HU's bookings
-fnc_hu_pct_grouped_bar_chart <- function(df, color1, color2){
+fnc_hu_pct_grouped_bar_chart <- function(df, color1, color2, type){
   df1 <- group_by(df, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
   df1 <- as.data.frame(df1)
   df1 <- df1 %>% mutate(pct = round(pct, 1))
 
-  ggplot(df1, aes(x = fy, y = total, fill = type  )) +
+  ggplot(df1, aes(x = fy, y = total, fill = type)) +
     geom_col(colour = NA, position = "fill") +
     scale_y_continuous(labels = scales::percent) +
     scale_fill_manual(values=c(color1, color2), labels = c("Non-HU      ","HU")) +
@@ -178,8 +179,10 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     axis.text.x = element_text(size = 22, color = "black"),
     axis.text.y = element_text(size = 22, color = "black"),
     axis.title = element_text(color = "black"),
-    axis.title.y = element_blank(),
-    axis.title.x = element_blank(),
+    # axis.title.y = element_blank(),
+    # axis.title.x = element_blank(),
+    axis.title.y = element_text(size = 22, color = "black"),
+    axis.title.x = element_text(size = 22, color = "black"),
 
     # panel.grid.minor = element_blank(),
     # panel.grid.major = element_blank(),
@@ -188,14 +191,38 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     panel.grid.minor.x = element_blank(),
     legend.position = "top",
     legend.justification = c(0, 0),
+    legend.title=element_blank(),
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
+
+# get proportion of high utilizers by variable
+
+fnc_gg_huvsnonhu_pct <- function(df, variable_name, color1, color2){
+  df$variable_name <- get(variable_name, df)
+  df1 <- group_by(df, fy) %>% mutate(pct = total/sum(total)*100) %>%
+    mutate(pct = round(pct, 1))
+  df1 <- as.data.frame(df1)
+  df1 <- df1 %>% mutate(pct = paste0(pct, "%"))
+
+  ggplot(df1, aes(x = fy, y = total, fill = variable_name)) +
+    geom_col(colour = NA, position = "fill") +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(values=c(color1, color2), labels = c("Non-HU      ","HU")) +
+    geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
+              size = 7.5, family = "Franklin Gothic Book",
+              color = ifelse(df1$variable_name == "Non-PC Hold", "black", "white")) +
+    theme_axes +
+    theme(legend.position = "top",
+          legend.justification = c(0, 0),
+          legend.title=element_blank(),
+          axis.title.y = element_blank())
+}
 
 ###########
 # highcharts
 ###########
 
-fnc_covid_time_highchart <- function(df, yaxis_label, title){
+fnc_covid_time_highchart <- function(df, yaxis_label, title, line_color){
 
   df1 <- df %>%
     dplyr::group_by(month_year, month_year_text) %>%
@@ -205,13 +232,13 @@ fnc_covid_time_highchart <- function(df, yaxis_label, title){
            month_year_text = as.factor(month_year_text))
 
   chart <- df1 %>%
-    hchart('line', hcaes(x = month_year_text, y = total), color = jri_dark_blue) %>%
+    hchart('line', hcaes(x = month_year_text, y = total), color = line_color) %>%
     hc_setup() %>%
     hc_xAxis(
       title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
-      plotLines = list(list(label = list(text = "Start of COVID-19 Pandemic"), color = jri_red, width = 2, value = 20, zIndex = 1))
+      plotLines = list(list(label = list(text = "COVID-19 Start"), fontSize = "26px", color = "gray", width = 2, value = 20, zIndex = 1))
     ) %>%
-    hc_yAxis(title = list(text = yaxis_label, style = list(color =  "#000000", fontWeight = "bold"))) %>%
+    hc_yAxis(title = list(text = yaxis_label, style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px"))) %>%
     hc_title(text = title)
   return(chart)
 
@@ -219,12 +246,9 @@ fnc_covid_time_highchart <- function(df, yaxis_label, title){
 
 # custom highcharts theme for plots
 hc_theme_jc <- hc_theme(colors = c(jri_light_blue, jri_green, jri_orange),
-                        chart = list(style = list(fontFamily = "Franklin Gothic Book",
-                          color = "#000000")),
-                        title = list(align = "left", style = list(fontFamily = "Franklin Gothic Book",
-                          fontSize = "24px")),
-                        subtitle = list(align = "left", style = list(fontFamily = "Franklin Gothic Book",
-                          fontSize = "16px")),
+                        chart = list(style = list(fontFamily = "Franklin Gothic Book", color = "#000000")),
+                        title = list(align = "left", style = list(fontFamily = "Franklin Gothic Book", fontSize = "24px")),
+                        subtitle = list(align = "left", style = list(fontFamily = "Franklin Gothic Book", fontSize = "16px")),
                         legend = list(align = "center", verticalAlign = "top"),
                         xAxis = list(gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
                         #yAxis = list(labels = list(enabled = FALSE), gridLineColor = "transparent", lineColor = "transparent", minorGridLineColor = "transparent", tickColor = "transparent"),
@@ -267,7 +291,7 @@ fnc_freq_table <- function(df, title){
 
 # show number of bookings by type by fiscal year
 # coos, strafford does not have booking type
-fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, note){
+fnc_reactable_fy <- function(df, metric_label, label_width, note){
 
   df1 <- df %>%
     dplyr::rename(new_variable_name = 1)
@@ -275,7 +299,8 @@ fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, 
   # create reactable table of number/freq of booking types by fiscal year and for all 3 years
   fy_table <- reactable(df1,
                         pagination = FALSE,
-                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                               headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                         defaultColDef = reactable::colDef(
                           format = colFormat(separators = TRUE), align = "center",
                           footer = function(values, name) {
@@ -324,43 +349,104 @@ fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, 
                           freq         = colDef(minWidth = 90,
                                                 name = "%",
                                                 format = colFormat(percent = TRUE, digits = 1)))) %>%
-    add_source(paste("Counties included: ", reactable_counties, ". ", note), font_style = "italic", font_size = 14)
+    add_source(paste(note), font_style = "italic", font_size = 14)
 
   return(fy_table)
 }
 
-# # show how PC holds are recorded across columns
-# reactable(temp,
-#           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-#           defaultColDef = reactable::colDef(
-#             format = colFormat(separators = TRUE), align = "center",
-#             footer = function(values, name) {
-#               if (name %in% c("count_19", "count_20", "count_21", "total")) {
-#                 htmltools::div(paste0("", formatC(
-#                   x = sum(values),
-#                   digits = 0,
-#                   big.mark = ",",
-#                   format = "f"
-#                 )))
-#               }
-#             },
-#             footerStyle = list(fontWeight = "bold")
-#           ),
-#           compact = TRUE,
-#           fullWidth = FALSE,
-#           pagination = FALSE,
-#           columns = list(
-#             county = colDef(show = FALSE),
-#             charge_desc = colDef(footer = "Charge Desc",
-#                                  name = "Booking type",
-#                                  align = "left",
-#                                  minWidth = 220),
-#             booking_type     = colDef(minWidth = 220,
-#                                       name = "Booking Type"),
-#             sentence_status     = colDef(minWidth = 220,
-#                                          name = "Sentence Status"),
-#             release_type     = colDef(minWidth = 220,
-#                                       name = "Release Type"),
-#             total     = colDef(minWidth = 80,
-#                                name = "Total")
-#           ))
+fnc_reactable_county_fy <- function(df, row_num){
+
+  county_fy_table <-
+    reactable(df,
+              pagination = FALSE,
+              style = list(fontFamily = "Franklin Gothic Book"),
+              rowStyle = function(index) {
+                if (index %in% c(row_num)) {
+                  list(`border-top` = "thin solid",
+                       fontWeight = "bold")
+                }
+              },
+              theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                     headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+              defaultColDef = reactable::colDef(
+                format = colFormat(separators = TRUE), align = "center"
+              ),
+              compact = TRUE,
+              fullWidth = FALSE,
+              columns = list(
+                `county`     = colDef( align = "left", minWidth = 180, name = "County", style = list(fontWeight = "bold")),
+                `2019`       = colDef(minWidth = 80,  name = "2019"),
+                `2020`       = colDef(minWidth = 80,  name = "2020"),
+                `2021`       = colDef(minWidth = 80,  name = "2021", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                total        = colDef(minWidth = 80,  name = "Total", style = list(fontWeight = "bold")),
+                change_19_21 = colDef(minWidth = 120,  name = "Change from 2019-2021", format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold"))
+                ))
+
+}
+
+
+fnc_reactable_summary <- function(df, header_name, total1_name, total2_name, freq1_name, mean1_name, max1_name){
+
+  df1 <- df %>%
+    dplyr::rename(new_variable_name = 1,
+                  total1 = 2,
+                  total2 = 3)
+
+  table1 <- reactable(df1,
+                      pagination = FALSE,
+                      style = list(fontFamily = "Franklin Gothic Book"),
+                      rowStyle = function(index) {
+                        if (index %in% c(10)) {
+                          list(`border-top` = "thin solid",
+                               fontWeight = "bold")
+                        }
+                      },
+                      theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                             headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                      defaultColDef = reactable::colDef(
+                        format = colFormat(separators = TRUE), align = "center"),
+                      compact = TRUE,
+                      fullWidth = FALSE,
+                      columns = list(
+                        new_variable_name = colDef(minWidth = 190, name = header_name, align = "left",
+                                                   style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                        total1  = colDef(minWidth = 100, name = total1_name),
+                        total2  = colDef(minWidth = 100, name = total2_name),
+                        freq    = colDef(minWidth = 130,  name = freq1_name, format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                        min     = colDef(minWidth = 100, name = "Minimum", show = F),
+                        median  = colDef(minWidth = 100, name = "Median", show = F),
+                        mean    = colDef(minWidth = 130, name = mean1_name,
+                                        style = list(fontWeight = "bold")),
+                        max     = colDef(minWidth = 130, name = max1_name)))
+}
+
+fnc_reactable_hus_descriptive_summary <- function(df){
+  table1 <- reactable(df,
+                      pagination = FALSE,
+                      style = list(fontFamily = "Franklin Gothic Book"),
+                      rowStyle = function(index) {
+                        if (index %in% c(10)) {
+                          list(`border-top` = "thin solid",
+                               fontWeight = "bold")
+                        }
+                      },
+                      theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                             headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                      defaultColDef = reactable::colDef(
+                        format = colFormat(separators = TRUE), align = "center"),
+                      compact = TRUE,
+                      fullWidth = FALSE,
+                      columns = list(
+                        county             = colDef(minWidth = 190, name = "County", align = "left",
+                                                 style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                        total_entrances    = colDef(minWidth = 100, name = "Total Entrances"),
+                        total_people       = colDef(minWidth = 90,  name = "Total People"),
+
+                        total_hu_entrances = colDef(minWidth = 100, name = "HU's (Entrances)"),
+                        mean_all           = colDef(minWidth = 130, name = "Avg Entrances Per Person Per Year", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                        total_hu_people    = colDef(minWidth = 100, name = "HU's (People)" ),
+                        mean               = colDef(minWidth = 130, name = "Avg Entrances Per Person Per Year", style = list(fontWeight = "bold")),
+                        range              = colDef(minWidth = 130, name = "Range of Entrances Per Person Per Year"),
+                        freq               = colDef(minWidth = 130, name = "Proportion of Entrances that are HU's", format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"))
+                      ))
+}

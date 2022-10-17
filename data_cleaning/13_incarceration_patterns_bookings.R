@@ -13,14 +13,18 @@
 # A PC hold is technically not a booking
 ############################################
 
-################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
-# PEOPLE BOOKED INTO JAIL
+# PEOPLE BOOKED INTO JAIL / NOT ENTRANCES
 
 # Use booking_no_pc_hold because it is bookings that do not include PC holds
 # Does not include Strafford
 
-################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
 ####################
 
@@ -74,10 +78,11 @@ amt_people_booked <- format(round(as.numeric(amt_people_booked), 0), nsmall=0, b
 
 # one row table minimal showing number of people booked by FY and total
 # no Strafford
-table_people_booked <-
+row_people_booked <-
   reactable(df_people_booked,
             pagination = FALSE,
-            theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+            theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                   headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
             defaultColDef = reactable::colDef(format = colFormat(separators = TRUE), align = "center"),
             compact = TRUE,
             fullWidth = FALSE,
@@ -139,7 +144,7 @@ df_people_booked_county <- df_people_booked_county %>%
   mutate(county = case_when(county == "Coos" ~ "Coos", TRUE ~ county))
 
 # table showing the number of people booked by FY by county
-PRES_table_people_booked_fy_county <- fnc_reactable_county_fy(df_people_booked_county, row_num = 9)
+table_people_booked_fy_county <- fnc_reactable_county_fy(df_people_booked_county, row_num = 9)
 
 ##########
 
@@ -164,17 +169,17 @@ gg_people_booked <-
                      limits = c(0,24000)) +
   theme_no_axes
 
-
-#################################################################################################################################################
-#################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
 # NUMBER OF BOOKINGS
 
 # Use booking_no_pc_hold because it is bookings that do not include PC holds
 # Does not include Strafford
 
-#################################################################################################################################################
-#################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
 ####################
 
@@ -221,10 +226,11 @@ amt_bookings <- format(round(as.numeric(amt_bookings), 0), nsmall=0, big.mark=",
 ##########
 
 # one row minimal table showing the number of bookings by FY and total
-table_bookings_fy <-
+row_bookings_fy <-
    reactable(df_bookings,
              pagination = FALSE,
-             theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+             theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                    headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
              defaultColDef = reactable::colDef(format = colFormat(separators = TRUE), align = "center"),
              compact = TRUE,
              fullWidth = FALSE,
@@ -243,15 +249,15 @@ table_bookings_fy <-
 ##########
 
 # data for ggplot showing the number of bookings by FY
-df1 <- df_bookings %>% select(-total)
-df1 <- gather(df1, fy, total, `2019`:`2021`, factor_key=TRUE) %>%
+data1 <- df_bookings %>% select(-total)
+data1 <- gather(data1, fy, total, `2019`:`2021`, factor_key=TRUE) %>%
   mutate(fy = as.numeric(fy)) %>%
   mutate(fy = case_when(fy == 1 ~ "2019", fy == 2 ~ "2020", fy == 3 ~ "2021"))
 
 # ggplot showing the number of bookings by FY
 PRES_gg_bookings <-
-  ggplot(data=df1, aes(x=fy, y=total)) +
-  geom_bar(stat="identity", width = 0.74, fill = jri_green) +
+  ggplot(data=data1, aes(x=fy, y=total)) +
+  geom_bar(stat="identity", width = 0.74, fill = jri_dark_blue) +
   xlab("") + ylab("Number of Bookings") +
   geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
@@ -298,17 +304,17 @@ df_bookings_county <- df_bookings_county %>%
   mutate(county = case_when(county == "Coos" ~ "Coos", TRUE ~ county))
 
 # table showing the number of people booked by FY by county
-PRES_table_bookings_fy_county <- fnc_reactable_county_fy(df_bookings_county, row_num = 9)
+table_bookings_fy_county <- fnc_reactable_county_fy(df_bookings_county, row_num = 9)
 
-
-
-#################################################################################################################################################
-#################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
 # Common Booking Types
 
-#################################################################################################################################################
-#################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
 # custom functions to find the number of booking types by fiscal year
 df_booking <- fnc_variable_table(bookings_entrances_19, bookings_entrances_20, bookings_entrances_21, "booking_type_standard")

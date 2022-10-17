@@ -22,7 +22,7 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/01_functions_visuals.R")
-source("data_cleaning/rdas.R")
+source("data_cleaning/21_rdas.R")
 ```
 
 # Jail Data Availability 
@@ -30,6 +30,6 @@ source("data_cleaning/rdas.R")
 NH is not on a unified system so data availability varied by county.  
 
 ```{r}
-raw_adm_data_availability_table
+# raw_adm_data_availability_table
 ```
 

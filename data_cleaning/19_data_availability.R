@@ -19,7 +19,7 @@ raw_adm_data_availability <- raw_adm_data_availability.xlsx %>%
   select(County,
          YOB = DOB,
          everything()) %>%
-  select(-YOB, -GENDER, -RAC)
+  select(-YOB, -Gender, -Race)
 
 my_color_bar <- function (color = "lightgray", fixedWidth=150,...)
 {
