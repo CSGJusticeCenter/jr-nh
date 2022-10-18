@@ -255,4 +255,4 @@ temp2 <- group_by(temp, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
 temp2 <- as.data.frame(temp2)
 temp2 <- temp2 %>% mutate(pct = comma(pct, digits = 1)) %>% mutate(pct = paste0(pct, "%"))
 
-gg_pch_pct_barchart <- fnc_pct_grouped_bar_chart(temp2, "gray", jri_red)
+PRES_gg_pch_pct_barchart <- fnc_pct_grouped_bar_chart(temp2, "gray", jri_red)

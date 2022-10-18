@@ -159,6 +159,7 @@ theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
      legend.justification = c(0, 0),
      legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
     )
+
 # ggplot theme
 theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
   theme(
