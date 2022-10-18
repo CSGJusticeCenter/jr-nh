@@ -277,7 +277,7 @@ fnc_add_data_labels <- function(df){
   df1$inmate_id           <- as.character(df1$inmate_id)
   df1$yob                 <- as.numeric(df1$yob)
   df1$race_code           <- as.factor(df1$race_code)
-  df1$race                <- as.factor(df1$race)
+  df1$race                <- as.character(df1$race)
   df1$gender              <- as.factor(df1$gender)
   df1$charge_code         <- as.character(df1$charge_code)
   df1$charge_desc         <- as.character(df1$charge_desc)
@@ -660,7 +660,7 @@ fnc_hus_descriptive_summary <- function(df, hu_variable_name, yesno, county_excl
 
   df_id <- df %>%
     ungroup() %>%
-    filter(hu_variable_name == "Yes") %>%
+    filter(hu_variable_name == yesno) %>%
     select(county,
            id,
            num_bookings,
@@ -672,7 +672,7 @@ fnc_hus_descriptive_summary <- function(df, hu_variable_name, yesno, county_excl
 
   df_id_total <- df %>%
     ungroup() %>%
-    filter(hu_variable_name == "Yes") %>%
+    filter(hu_variable_name == yesno) %>%
     select(county,
            id,
            num_bookings,
@@ -690,7 +690,7 @@ fnc_hus_descriptive_summary <- function(df, hu_variable_name, yesno, county_excl
 
   df_booking_id <- df %>%
     ungroup() %>%
-    filter(hu_variable_name == "Yes") %>%
+    filter(hu_variable_name == yesno) %>%
     select(county,
            booking_id,
            num_bookings,
@@ -702,7 +702,7 @@ fnc_hus_descriptive_summary <- function(df, hu_variable_name, yesno, county_excl
 
   df_booking_id_total <- df %>%
     ungroup() %>%
-    filter(hu_variable_name == "Yes") %>%
+    filter(hu_variable_name == yesno) %>%
     select(county,
            booking_id,
            num_bookings,
@@ -720,7 +720,7 @@ fnc_hus_descriptive_summary <- function(df, hu_variable_name, yesno, county_excl
 
   df_summary <- df %>%
     ungroup() %>%
-    filter(hu_variable_name == "Yes") %>%
+    filter(hu_variable_name == yesno) %>%
     select(county, id, num_bookings) %>%
     distinct() %>%
     group_by(county) %>%
@@ -734,7 +734,7 @@ fnc_hus_descriptive_summary <- function(df, hu_variable_name, yesno, county_excl
 
   df_summary_total <- df %>%
     ungroup() %>%
-    filter(hu_variable_name == "Yes") %>%
+    filter(hu_variable_name == yesno) %>%
     select(id, num_bookings) %>%
     distinct() %>%
     group_by() %>%

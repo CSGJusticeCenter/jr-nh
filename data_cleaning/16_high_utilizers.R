@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File:  high_utilizers.R
-# Last updated: October 127 2022
+# Last updated: October 17, 2022
 # Author: Mari Roberts
 
 # High Utilizers Based on Jail Bookings by State
