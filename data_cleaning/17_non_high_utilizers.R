@@ -1,13 +1,13 @@
 ############################################
 # Project: JRI New Hampshire
 # File:  non_high_utilizers.R
-# Last updated: October 18, 2022
+# Last updated: October 19, 2022
 # Author: Mari Roberts
 
-# Non-High Utilizers Based on Jail Bookings by State
-# Explore non-HU's defined as people not in the 1%, 5%, and 10%
+# Non-High Utilizers Based on Jail Bookings by State.
+# Explore non-HU's defined as people not in the 1%, 5%, and 10%.
 
-# Tables, graphs, and numbers for high utilizers analysis page
+# Tables, graphs, and numbers for high utilizers analysis page.
 ############################################
 
 ################################################################################################################################################################
@@ -15,33 +15,32 @@
 ################################################################################################################################################################
 
 # Min med mean max df for bookings and entrances of non-HU's by county
-# All  - county, total entrances, avg entrances/FY,
-# non-HU's - total non-hu entrances, avg non-HU entrances/FY, mean, min, max, proportion of entrances that are non-HU entrances
 
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# df for tables
-# ignore warnings
+# Summary info for each type of non-HU
+# Ignore warnings
 df_hu_4_times_summary <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_4_times", "No", "Coos (bookings only)")
 df_hu_1_pct_summary   <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_1_pct",   "No", "Coos (bookings only)")
 df_hu_5_pct_summary   <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_5_pct",   "No", "Coos (bookings only)")
 df_hu_10_pct_summary  <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_10_pct",  "No", "Coos (bookings only)")
 
-# subset data for total entrances (HU and non-HU), total people, and average number of entranves a year
+# Subset data for total entrances (HU and non-HU), total people, and average number of entrances a year
+# Created in incarceration_patterns_entrances.R
 df_entrances1 <- df_entrances_table %>% select(county, entrances_total, people_entered_total, avg_entrances)
 
-# add labels to metrics to identify 1, 5, and 10%
-data1 <- df_hu_1_pct_summary  %>% rename_with(~paste0(., "_1_pct"),  -c("county"))
-data2 <- df_hu_5_pct_summary  %>% rename_with(~paste0(., "_5_pct"),  -c("county"))
-data3 <- df_hu_10_pct_summary %>% rename_with(~paste0(., "_10_pct"), -c("county"))
+# Add labels to metrics to identify 1, 5, and 10%
+data_1_pct <- df_hu_1_pct_summary  %>% rename_with(~paste0(., "_1_pct"),  -c("county"))
+data_5_pct <- df_hu_5_pct_summary  %>% rename_with(~paste0(., "_5_pct"),  -c("county"))
+data_10_pct <- df_hu_10_pct_summary %>% rename_with(~paste0(., "_10_pct"), -c("county"))
 
-# combine data
-data4 <- df_entrances1 %>%
-  left_join(data1, by = "county") %>%
-  left_join(data2, by = "county") %>%
-  left_join(data3, by = "county") %>%
+# Combine county entrances and county HU entrances info
+df_1_5_10 <- df_entrances1 %>%
+  left_join(data_1_pct, by = "county") %>%
+  left_join(data_5_pct, by = "county") %>%
+  left_join(data_10_pct, by = "county") %>%
   mutate(freq_1_pct = total_hu_entrances_1_pct/entrances_total,
          freq_5_pct = total_hu_entrances_5_pct/entrances_total,
          freq_10_pct = total_hu_entrances_10_pct/entrances_total) %>%
@@ -51,7 +50,7 @@ data4 <- df_entrances1 %>%
   arrange(county %in% "State")
 
 # reactable table for presentation showing the number of HU's, min, med, mean, max, etc.
-PRES_non_hu_summary <- reactable(data4,
+PRES_non_hu_summary <- reactable(df_1_5_10,
                              pagination = FALSE,
                              style = list(fontFamily = "Franklin Gothic Book"),
                              rowStyle = function(index) {
@@ -125,7 +124,7 @@ PRES_non_hu_summary <- reactable(data4,
                              ))
 
 # same as before but showing different metrics (show = T or show = F)
-PRES_non_hu_summary1 <- reactable(data4,
+PRES_non_hu_summary1 <- reactable(df_1_5_10,
                               pagination = FALSE,
                               style = list(fontFamily = "Franklin Gothic Book"),
                               rowStyle = function(index) {

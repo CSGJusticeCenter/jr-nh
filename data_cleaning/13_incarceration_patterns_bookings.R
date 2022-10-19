@@ -1,16 +1,15 @@
 ############################################
 # Project: JRI New Hampshire
 # File: incarceration_patterns.R
-# Last updated: October 12, 2022
+# Last updated: October 19, 2022
 # Author: Mari Roberts
 
 # Tables, graphs, and numbers for incarceration patterns page
-# Focuses on bookings, booking types, and los
+# Focuses on bookings and booking types
 
 # Notes:
 # Entrances = Bookings and PC holds
-# Bookings  = Booked for a criminal charge
-# A PC hold is technically not a booking
+# Bookings  = Booked for a criminal charge, not including PC holds
 ############################################
 
 ################################################################################################################################################################
@@ -28,12 +27,12 @@
 
 ####################
 
-# by state
+# By state
 
 ####################
 
-# table of total number of people booked (no duplicates for counting by FY)
-# no Strafford
+# Total number of people booked
+# No Strafford
 amt_people_booked <- booking_no_pc_hold %>%
   dplyr::ungroup() %>%
   dplyr::select(id, county) %>%
@@ -44,7 +43,7 @@ amt_people_booked <- booking_no_pc_hold %>%
   amt_people_booked <- amt_people_booked$total
   # amt_people_booked <- format(round(as.numeric(amt_people_booked), 0), nsmall=0, big.mark=",")
 
-# table of total number of people booked by FY (some duplicates because it's by FY)
+# Df of total number of people booked by FY (some duplicates because it's by FY)
 df_people_booked_pre <- booking_no_pc_hold %>%
   dplyr::ungroup() %>%
   dplyr::select(id, fy, county) %>%
@@ -53,7 +52,7 @@ df_people_booked_pre <- booking_no_pc_hold %>%
   dplyr::summarise(total = n()) %>%
   dplyr::mutate(label = formatC(total, format="d", big.mark=","))
 
-# transpose and format, wide version
+# Transpose and format to wide version (one row shoring the number of people by FY and total)
 df_people_booked <- df_people_booked_pre %>%
   select(-label) %>%
   t %>% as.data.frame() %>%
@@ -66,18 +65,12 @@ df_people_booked <- df_people_booked_pre %>%
   df_people_booked <- df_people_booked %>%
   mutate(variable_name = ifelse(variable_name == "total", "# Unique People Booked into Jail", ""))
 
-# count number of people booked for all three years / accounts for double counting by FY-accurate
-# no Strafford
+# Count number of people booked for all three years / accounts for double counting by FY
+# No Strafford
 amt_people_booked <- format(round(as.numeric(amt_people_booked), 0), nsmall=0, big.mark=",")
 
-##########
-
-# create reactable table showing number of people booked by FY and total
-
-##########
-
-# one row table minimal showing number of people booked by FY and total
-# no Strafford
+# Create reactable table showing number of people booked by FY and total
+# No Strafford
 row_people_booked <-
   reactable(df_people_booked,
             pagination = FALSE,
@@ -94,7 +87,7 @@ row_people_booked <-
                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
               `total` = colDef(minWidth = 80, name = "Total")))
 
-# save changes between years to call in sentences in incarceration patterns rmd
+# Cave changes between years to call in sentences in incarceration patterns rmd.
 v1 <- as.numeric(filter(df_people_booked_pre, fy==2019) %>% select(total))
 v2 <- as.numeric(filter(df_people_booked_pre, fy==2020) %>% select(total))
 v3 <- as.numeric(filter(df_people_booked_pre, fy==2021) %>% select(total))
@@ -111,13 +104,7 @@ change_19_21_people_booked <- round(change_19_21_people_booked*100, 1)
 
 ####################
 
-##########
-
-# create reactable table showing number people booked by FY and total
-
-##########
-
-# number of people booked by county for all three years
+# Number of people booked by county for all three years
 amt_people_booked_county <- booking_no_pc_hold %>%
   dplyr::ungroup() %>%
   dplyr::select(id, county) %>%
@@ -125,7 +112,7 @@ amt_people_booked_county <- booking_no_pc_hold %>%
   dplyr::group_by(county) %>%
   dplyr::summarise(total = n())
 
-# df of total number of people booked by FY
+# Df for total number of people booked by FY
 df_people_booked_county <- booking_no_pc_hold %>%
   dplyr::ungroup() %>%
   dplyr::select(id, fy, county) %>%
@@ -180,6 +167,7 @@ gg_people_booked <-
 
 ################################################################################################################################################################
 ################################################################################################################################################################
+################################################################################################################################################################
 
 ####################
 
@@ -193,7 +181,7 @@ gg_people_booked <-
 
 ##########
 
-# calculate number of booking events per fy
+# Calculate number of booking events per fy
 df_bookings_events <- booking_no_pc_hold %>%
   select(id, booking_id, fy, county) %>%
   distinct() %>%
@@ -202,7 +190,7 @@ df_bookings_events <- booking_no_pc_hold %>%
   dplyr::summarise(total = n()) %>%
   mutate(label = formatC(total, format="d", big.mark=","))
 
-# create table showing number of bookings by fiscal year
+# Df showing number of bookings by FY
 df_bookings <- df_bookings_events %>%
   select(-label) %>%
   t %>% as.data.frame() %>%
@@ -225,7 +213,7 @@ amt_bookings <- format(round(as.numeric(amt_bookings), 0), nsmall=0, big.mark=",
 
 ##########
 
-# one row minimal table showing the number of bookings by FY and total
+# One row table showing the number of bookings by FY and total
 row_bookings_fy <-
    reactable(df_bookings,
              pagination = FALSE,
@@ -271,13 +259,7 @@ PRES_gg_bookings <-
 
 ####################
 
-##########
-
-# create reactable table showing number bookings by FY and total
-
-##########
-
-# number of bookings by county for all three years
+# Number of bookings by county for all three years
 amt_bookings_county <- booking_no_pc_hold %>%
   dplyr::ungroup() %>%
   dplyr::select(booking_id, county) %>%
@@ -285,7 +267,7 @@ amt_bookings_county <- booking_no_pc_hold %>%
   dplyr::group_by(county) %>%
   dplyr::summarise(total = n())
 
-# df of total number of people booked by FY
+# Df of total number of people booked by FY
 df_bookings_county <- booking_no_pc_hold %>%
   dplyr::ungroup() %>%
   dplyr::select(booking_id, fy, county) %>%
@@ -310,13 +292,13 @@ table_bookings_fy_county <- fnc_reactable_county_fy(df_bookings_county, row_num 
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# Common Booking Types
+# Common Booking Types - still need to clean booking types and charges
 
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# custom functions to find the number of booking types by fiscal year
+# custom functions to find the number of booking types by FY
 df_booking <- fnc_variable_table(bookings_entrances_19, bookings_entrances_20, bookings_entrances_21, "booking_type_standard")
 df_booking <- fnc_variable_table_desc(df_booking)
 df_booking <- df_booking %>% filter(variable_name != "Total") %>%
@@ -328,7 +310,7 @@ df_booking <- df_booking %>% filter(variable_name != "Total") %>%
 
 ##########
 
-# create reactable table of number/freq of booking types by fiscal year and for all 3 years
+# create reactable table of number/freq of booking types by FY and for all 3 years
 table_booking_types <- fnc_reactable_fy(df_booking,
                                            metric_label = "Booking Type",
                                            label_width = 275,

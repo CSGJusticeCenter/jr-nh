@@ -4,36 +4,40 @@ This project focuses on the prevalence of people with behavioral health needs mo
 
 # Repository Structure
 
-    |-- Background 
-      |-- DHHS          # DHHS documentation
-        |-- NH_datadiagram.tex #create data flow & security diagram
-        |-- SharePoint.png     #image for diagram
-        |-- flow1.png          #image for diagram
-        |-- flow2.png          #image for diagram
-        |-- flow3.png          #image for diagram
-
-
-
     |-- data_cleaning 
-      |-- 00_library.R          # load packages
-      |-- 01_functions.R        # custom functions for efficient coding
-      |-- 02_import.R           # import jail data from sharepoint
-      |-- 03_belknap.R          # clean Belknap jail data and create rds data for rmd files
-      |-- 04_carroll.R          # clean Carroll jail data and create rds data for rmd files 
-      |-- 05_cheshire.R         # clean Cheshire jail data and create rds data for rmd files 
-      |-- 06_coos.R             # clean Coos jail data and create rds data for rmd files 
-      |-- 07_grafton.R          # clean Grafton jail data and create rds data for rmd files 
-      |-- 08_hillsborough.R     # clean Hillsborough jail data and create rds data for rmd files 
-      |-- 09_merrimack.R        # clean Merrimack jail data and create rds data for rmd files 
-      |-- 10_rockingham.R       # clean Rockingham jail data and create rds data for rmd files 
-      |-- 11_strafford.R        # clean Strafford jail data and create rds data for rmd files 
-      |-- 12_sullivan.R         # clean Sullivan jail data and create rds data for rmd files
-      |-- 13_dataframes.R       # load rds data created in R files (03_belknap.R to 12_sullivan.R)
+      |-- 00_library.R                           # Load packages
+      |-- 01_functions.R                         # Custom functions for efficient coding
+      |-- 01_functions_visuals.R                 # Custom functions for efficient coding
+
+      |-- 02_import.R                            # Import jail data from sharepoint
+      
+      |-- 03_belknap.R                           # Standardize Belknap jail data 
+      |-- 04_carroll.R                           # Standardize Carroll jail data 
+      |-- 05_cheshire.R                          # Standardize Cheshire jail data 
+      |-- 06_coos.R                              # Standardize Coos jail data 
+      |-- 07_hillsborough.R                      # Standardize Hillsborough jail data 
+      |-- 08_merrimack.R                         # clean Merrimack jail data 
+      |-- 09_rockingham.R                        # Standardize Rockingham jail data 
+      |-- 10_strafford.R                         # Standardize Strafford jail data 
+      |-- 11_sullivan.R                          # Standardize Sullivan jail data
+      
+      |-- 12_dataframes.R                        # Combine jail data and create df's used in analysis
+      
+      |-- 13_incarceration_patterns_bookings.R   # Analyze booking data and create viz deliverables
+      |-- 14_incarceration_patterns_entrances.R  # Analyze entrances data and create viz deliverables
+      |-- 15_pc_holds.R                          # Analyze PC holds
+      |-- 16_high_utilizers.R                    # Analyze HU's (1%, 5%, 10%)
+      |-- 17_non_high_utilizers.R                # Analyze non-HU's (1%, 5%, 10%)
+      |-- 18_los.R                               # Analyze LOS
+      |-- 19_data_availability.R                 # Create table to show data availability by county
+      |-- 20_demographics.R                      # Analyze demographics
+      
+      |-- 22_county_reports_tables.R             # Create tables for county reports
+      |-- 23_county_reports_plots.R              # Create plots for county reports
+      |-- 24_generate_county_reports.R           # Generate county report RMD's automatically
       
 # Data  
 
 - Administrative and behavioral treatment related files from jail partners
 - Matched Medicaid data from DHHS
-
-# Links to Project Documents
 

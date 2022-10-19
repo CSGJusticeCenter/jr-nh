@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: functions.R
-# Last updated: June 1, 2022
+# Last updated: October 19, 2022
 # Author: Mari Roberts
 
 # Custom data cleaning and structure functions
@@ -16,9 +16,10 @@ source("data_cleaning/00_library.R")
 # Create fy, age, los, recode race, and order variables
 ###########
 
-# add code to check for hispanic vs non hispanic variables by county????????????????????????????
-# create fy, age, los, and race variable
-# organize variables
+# Add code to check for hispanic vs non hispanic variables by county????????????????????????????
+# Create fy, age, los, and race variable
+# Organize variables
+# Remove outliers for age
 fnc_data_setup <- function(df){
   df1 <- df %>%
     mutate(fy = case_when(booking_date >= "2018-07-01" & booking_date <= "2019-06-30" ~ 2019,
@@ -71,11 +72,11 @@ fnc_data_setup <- function(df){
                   sentence_status,
                   los,
                   county,
-                  fy)
-  df1 <- df1 %>% mutate(race = ifelse(race == "Unknown", NA, race),
-                        age = as.numeric(age)) %>%
+                  fy) %>%
+    mutate(race = ifelse(race == "Unknown", NA, race), age = as.numeric(age)) %>%
     filter(age >= 18) %>%
     mutate(age = ifelse(age > 100, NA, age))
+
   #  18–29, 30–39, and 40
   df1 <- df1 %>% mutate(age_category
                         = case_when(age <= 29 ~ "18-29 yo",
@@ -83,8 +84,8 @@ fnc_data_setup <- function(df){
                                     age >= 40 ~ "40+ yo"))
 }
 
-# create booking id to get a sense of how many booking events occurred
-# based on inmate id and booking date
+# Create booking id.
+# Based on inmate id and booking date.
 fnc_booking_id <- function(df, county){
   df1 <- df %>%
     mutate(id = ifelse(is.na(id), inmate_id, id))
@@ -95,7 +96,7 @@ fnc_booking_id <- function(df, county){
     select(id, inmate_id, booking_id, everything())
 }
 
-# calculate los
+# Get maximum los by booking id.
 fnc_los <- function(df){
   df_new <- df %>%
     ungroup() %>%
@@ -108,9 +109,9 @@ fnc_los <- function(df){
 # Create pc hold variables
 ###########
 
-# some PC holds are indicated in the charge description but labeled as pretrial in the booking type
-# account for this by creating multiple pc hold variables (pc_hold_booking, pc_hold_charge, pc_hold_sentence)
-# create an overall pc_hold variable depending on any indication of pc hold in bookings, charges, and sentence statuses
+# Come PC holds are indicated in the charge description but labeled as pretrial in the booking type.
+# Account for this by creating multiple pc hold variables (pc_hold_booking, pc_hold_charge, pc_hold_sentence, pc_hold_release).
+# Create an overall pc_hold variable depending on any indication of pc hold in bookings, charges, release types, and sentence statuses.
 fnc_pc_hold_variables <- function(df){
   df1 <- df %>%
     mutate(pc_hold_booking  = case_when(booking_type == "PROTECTIVE CUSTODY" ~ "PC Hold",
@@ -146,7 +147,7 @@ fnc_pc_hold_variables <- function(df){
 # Add high utilizer variables
 ###########
 
-# create flag for high utilizer for bookings in the top 1%, 5%, 10% percentile of bookings
+# Create flag for high utilizer for bookings in the top 1%, 5%, 10% percentile of entrances.
 fnc_create_high_utilizer_variables <- function(df){
 
   #########
@@ -161,7 +162,7 @@ fnc_create_high_utilizer_variables <- function(df){
 
   df_hus_3yrs <- df_hus_3yrs %>%
     select(id, num_bookings) %>% distinct() %>%
-    mutate(high_utilizer_4_times = num_bookings >= 8) %>%
+    mutate(high_utilizer_4_times = num_bookings >= 4) %>%
     mutate(high_utilizer_1_pct   = quantile(df_hus_3yrs$num_bookings, probs = 0.99) < num_bookings) %>%
     mutate(high_utilizer_5_pct   = quantile(df_hus_3yrs$num_bookings, probs = 0.95) < num_bookings) %>%
     mutate(high_utilizer_10_pct  = quantile(df_hus_3yrs$num_bookings, probs = 0.90) < num_bookings) %>%
@@ -176,7 +177,7 @@ fnc_create_high_utilizer_variables <- function(df){
                                             high_utilizer_10_pct == FALSE ~ "No"))
 
   #########
-  # per FY HUs
+  # per FY HUs - not using anymore
   #########
 
   df_hus_fy <- df %>%
@@ -209,7 +210,7 @@ fnc_create_high_utilizer_variables <- function(df){
 # Add sex labels
 ###########
 
-# add sex labels depending on sex code
+# Add sex labels depending on sex code
 fnc_sex_labels <- function(df){
   df1 <- df %>%
     mutate(gender = case_when(
@@ -232,7 +233,7 @@ fnc_sex_labels <- function(df){
 # Add data labels to county data
 ###########
 
-# add labels to data for data dictionaries
+# Add labels to data for data dictionaries
 fnc_add_data_labels <- function(df){
 
   df1 <- df %>%
@@ -272,7 +273,7 @@ fnc_add_data_labels <- function(df){
            pc_hold_release,
            pc_hold)
 
-  # change data types
+  # Change data types
   df1$id                  <- as.character(df1$id)
   df1$inmate_id           <- as.character(df1$inmate_id)
   df1$yob                 <- as.numeric(df1$yob)
@@ -346,44 +347,47 @@ fnc_add_data_labels <- function(df){
 
 }
 
-
-###########################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
 # Standardizing counties
 # Uses functions above
 
-###########################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
 fnc_standardize_counties <- function(df, county){
   # Create fy, age, los, recode race, and order variables
   df1 <- fnc_data_setup(df)
 
-  # add booking id by id and booking date
+  # Add booking id by id and booking date
   df1 <- fnc_booking_id(df1, county)
 
-  # calculate los
+  # Calculate los
   df1 <- fnc_los(df1)
 
-  # create high utilizer variable
+  # Create high utilizer variable
   df_hu <- fnc_create_high_utilizer_variables(df1)
   df1 <- left_join(df1, df_hu, by = c("id", "fy"))
 
-  # create a PC hold variables
-  # some PC holds are indicated in the charge description but labeled as pretrial in the booking type
-  # account for this by creating multiple pc hold variables
+  # Create a PC hold variables
+  # Some PC holds are indicated in the charge description but labeled as pretrial in the booking type
+  # Account for this by creating multiple pc hold variables
   df1 <- fnc_pc_hold_variables(df1)
 
-  # custom function to add sex code labels
+  # Custom function to add sex code labels
   df1 <- fnc_sex_labels(df1)
 
-  # custom function to add data label
+  # Custom function to add data label
   df1 <- fnc_add_data_labels(df1)
 
-  # remove duplicates bc of release date issues
+  # Remove duplicates bc of release date issues
   df1 <- df1 %>% distinct()
 }
 
-# some people have two release dates but the same booking date, use the max release date. most of the time the other los is zero
+# Some people have two release dates but the same booking date, use the max release date. Most of the time the other los is zero.
 fnc_max_release_date <- function(df){
   dups <- df[duplicated(df$booking_id)|duplicated(df$booking_id, fromLast=TRUE),]
   temp <- df %>% anti_join(dups)
@@ -392,20 +396,24 @@ fnc_max_release_date <- function(df){
   return(df1)
 }
 
-###########################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
 # Content functions
 
-###########################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
-# replace NAs with blanks or no data
+# Replace NAs with blanks or no data
 fnc_replace_nas <- function(df){
   df <- df %>%
     mutate_if(grepl('<NA>',.), ~replace(., grepl('<NA>', .), "NA")) %>%
     mutate_if(grepl('NA%',.), ~replace(., grepl('NA%', .), "-"))
 }
 
-# get row and column totals for tables
+# Get row and column totals for tables.
 fnc_row_totals <- function(df){
   withnas <- df %>%
     adorn_totals("row") %>%
@@ -418,7 +426,6 @@ fnc_row_totals <- function(df){
     adorn_totals("row") %>%
     select(c(1, "freq"))
   df_freq <- merge(withnas, nonas, by.x = 1, by.y = 1, all.x = TRUE)
-
   return(df_freq)
 }
 
@@ -426,7 +433,7 @@ fnc_row_totals <- function(df){
 # Prop by fiscal year
 ###########
 
-# get prop of variable by FY
+# Get prop of variable
 fnc_variable_by_year <- function(df, variable_name){
   df$variable_name <- get(variable_name, df)
   df <- df %>% select(variable_name, booking_id) %>% distinct()
@@ -441,7 +448,7 @@ fnc_variable_by_year <- function(df, variable_name){
 # Data descending
 ###########
 
-# arrange data descending
+# Arrange data in descending order
 fnc_variable_table_desc <- function(df){
   df <- df %>% arrange(-count_19)
   df <- df[1:length(df)]
@@ -463,12 +470,12 @@ fnc_variable_table_desc <- function(df){
 ###########
 
 fnc_variable_table <- function(df_19, df_20, df_21, variable_name){
-  # get count and prop of pc_hold by FY
+  # Get count and prop of pc_hold by FY
   df_19_new <- fnc_variable_by_year(df_19, variable_name)
   df_20_new <- fnc_variable_by_year(df_20, variable_name)
   df_21_new <- fnc_variable_by_year(df_21, variable_name)
 
-  # rename variables for merging, indicate which year
+  # Rename variables for merging, indicate which year
   df_19_new <- df_19_new %>% dplyr::rename(count_19 = count,
                                            pct_19   = pct)
   df_20_new <- df_20_new %>% dplyr::rename(count_20 = count,
@@ -476,18 +483,18 @@ fnc_variable_table <- function(df_19, df_20, df_21, variable_name){
   df_21_new <- df_21_new %>% dplyr::rename(count_21 = count,
                                            pct_21   = pct)
 
-  # join data
+  # Join data
   df <- merge(df_19_new, df_20_new, by = "variable_name", all.x = TRUE, all.y = TRUE)
   df <- merge(df, df_21_new, by = "variable_name", all.x = TRUE, all.y = TRUE)
 
-  # create row totals and frequencies
+  # Create row totals and frequencies
   df[df == "NA%"] = NA
   df[is.na(df)] = 0
   df <- df %>%
     filter(variable_name != "Total")
   df <- fnc_replace_nas(df)
 
-  # get totals and frequencies without including NAs
+  # Get totals and frequencies without including NAs
   df <- fnc_row_totals(df)
   # df <- df %>%
   #   mutate(total = count_19 + count_20 + count_21) %>%
@@ -505,7 +512,7 @@ fnc_variable_table <- function(df_19, df_20, df_21, variable_name){
   return(df)
 }
 
-# custom function to get counties in data
+# Get counties in data
 fnc_counties_in_data <- function(df){
   counties <- df %>%
     mutate(county = as.character(county))
@@ -516,7 +523,7 @@ fnc_counties_in_data <- function(df){
 # Get booking pattern info for certain flagged individuals, i.e. HU's
 ###########
 
-# calculate the average number of bookings per year (by HU for example)
+# Calculate the average number of bookings per year (by HU for example)
 fnc_avg_bookings_fy <- function(df, variable_name, logical){
   df$variable_name <- get(variable_name, df)
   df1 <- df %>%
@@ -528,7 +535,7 @@ fnc_avg_bookings_fy <- function(df, variable_name, logical){
     dplyr::summarize(new_variable_name = mean(num_bookings, na.rm=TRUE))
 }
 
-# calculate the total number of bookings per year (by HU for example)#########################
+# Calculate the total number of bookings per year (by HU for example)#########################
 fnc_num_bookings_fy <- function(df, variable_name, logical){
   df$variable_name <- get(variable_name, df)
   df <- df %>% select(variable_name, fy, booking_id) %>% distinct() # NEW, may cause issues
@@ -542,7 +549,7 @@ fnc_num_bookings_fy <- function(df, variable_name, logical){
     mutate(fy = as.character(fy)) %>% mutate(fy = as.numeric(fy))
 }
 
-# calculate the average number of bookings for all three years (by HU for example)
+# Calculate the average number of bookings for all three years (by HU for example)
 fnc_avg_bookings_3yr <- function(df, variable_name, logical){
   df$variable_name <- get(variable_name, df)
   df1 <- df %>%
@@ -554,7 +561,7 @@ fnc_avg_bookings_3yr <- function(df, variable_name, logical){
     dplyr::summarize(new_variable_name = mean(num_bookings, na.rm=TRUE))
 }
 
-# calculate the total number of bookings for all three years (by HU for example)
+# Calculate the total number of bookings for all three years (by HU for example)
 fnc_num_bookings_3yr <- function(df, variable_name, logical){
   df$variable_name <- get(variable_name, df)
   df1 <- df %>%
@@ -565,7 +572,7 @@ fnc_num_bookings_3yr <- function(df, variable_name, logical){
     dplyr::summarise(new_variable_name = n())
 }
 
-# calculate the average number of bookings per year (by HU for example)
+# Calculate the average number of bookings per year and by county (by HU for example)
 fnc_avg_bookings_fy_county <- function(df, variable_name, logical){
   df$variable_name <- get(variable_name, df)
   df1 <- df %>%
@@ -578,7 +585,7 @@ fnc_avg_bookings_fy_county <- function(df, variable_name, logical){
     dplyr::summarize(new_variable_name = mean(num_bookings, na.rm=TRUE))
 }
 
-# calculate the total number of bookings per year (by HU for example) ############################
+# Calculate the total number of bookings per year and by county (by HU for example) ############################
 fnc_num_bookings_fy_county <- function(df, variable_name, logical){
   df$variable_name <- get(variable_name, df)
   df <- df %>% select(variable_name, fy, county, booking_id) %>% distinct() # NEW, may cause issues
@@ -593,7 +600,7 @@ fnc_num_bookings_fy_county <- function(df, variable_name, logical){
     mutate(fy = as.character(fy)) %>% mutate(fy = as.numeric(fy))
 }
 
-# calculate the average number of bookings for all three years (by HU for example)
+# Calculate the average number of bookings for all three years and by county (by HU for example)
 fnc_avg_bookings_3yr_county <- function(df, variable_name, logical){
   df$variable_name <- get(variable_name, df)
   df1 <- df %>%
@@ -605,7 +612,7 @@ fnc_avg_bookings_3yr_county <- function(df, variable_name, logical){
     dplyr::summarize(new_variable_name = mean(num_bookings, na.rm=TRUE))
 }
 
-# calculate the total number of bookings for all three years (by HU for example)############################
+# Calculate the total number of bookings for all three years and by county (by HU for example)############################
 fnc_num_bookings_3yr_county <- function(df, variable_name, logical){
   df$variable_name <- get(variable_name, df)
   df1 <- df %>% dplyr::select(variable_name, county, booking_id) %>% dplyr::distinct()
@@ -618,7 +625,7 @@ fnc_num_bookings_3yr_county <- function(df, variable_name, logical){
     select(-variable_name)
 }
 
-# basic summary info with total, min, median, mean, and max
+# Basic summary info with total, min, median, mean, and max
 fnc_summary <- function(df){
   #df$variable_name <- get(variable_name, df)
   df1 <- df %>%
@@ -633,7 +640,7 @@ fnc_summary <- function(df){
     mutate(mean = round(mean, 1))
 }
 
-# summary info by county
+# Summary info by county
 fnc_summary_county <- function(df){
   #df$variable_name <- get(variable_name, df)
   df1 <- df %>%
@@ -649,7 +656,7 @@ fnc_summary_county <- function(df){
     mutate(mean = round(mean, 1))
 }
 
-# min, median, mean, and max of bookings/entrances
+# Min, median, mean, and max of bookings/entrances
 fnc_hus_descriptive_summary <- function(df, hu_variable_name, yesno, county_exclusion_text){
 
   df$hu_variable_name <- get(hu_variable_name, df)

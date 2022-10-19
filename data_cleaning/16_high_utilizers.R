@@ -1,10 +1,10 @@
 ############################################
 # Project: JRI New Hampshire
 # File:  high_utilizers.R
-# Last updated: October 17, 2022
+# Last updated: October 19, 2022
 # Author: Mari Roberts
 
-# High Utilizers Based on Jail Bookings by State
+# High Utilizers Based on Jail Entrances by State
 # Explore HU's defined as 1%, 5%, and 10%
 
 # Tables, graphs, and numbers for high utilizers analysis page
@@ -14,34 +14,39 @@
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# Min med mean max df for bookings and entrances of HU's by county
-# All  - county, total entrances, avg entrances/FY,
-# HU's - total hu entrances, avg HU entrances/FY, mean, min, max, proportion of entrances that are HU entrances
+# Find the min med mean max number of entrances for HU's
 
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# df for tables
-# ignore warnings
+# Summary info for each type of HU
+# Ignore warnings
 df_hu_4_times_summary <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_4_times", "Yes", "Coos (bookings only)")
 df_hu_1_pct_summary   <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_1_pct",   "Yes", "Coos (bookings only)")
 df_hu_5_pct_summary   <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_5_pct",   "Yes", "Coos (bookings only)")
 df_hu_10_pct_summary  <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_10_pct",  "Yes", "Coos (bookings only)")
 
-# subset data for total entrances (HU and non-HU), total people, and average number of entranves a year
+# # reactable tables by HU (will combine for presentations)
+# table_hu_4_times_summary <- fnc_reactable_hus_descriptive_summary(df_hu_4_times_summary)
+# table_hu_1_pct_summary   <- fnc_reactable_hus_descriptive_summary(df_hu_1_pct_summary)
+# table_hu_5_pct_summary   <- fnc_reactable_hus_descriptive_summary(df_hu_5_pct_summary)
+# table_hu_10_pct_summary  <- fnc_reactable_hus_descriptive_summary(df_hu_10_pct_summary)
+
+# Subset data for total entrances (HU and non-HU), total people, and average number of entrances a year
+# Created in incarceration_patterns_entrances.R
 df_entrances1 <- df_entrances_table %>% select(county, entrances_total, people_entered_total, avg_entrances)
 
-# add labels to metrics to identify 1, 5, and 10%
-data1 <- df_hu_1_pct_summary  %>% rename_with(~paste0(., "_1_pct"),  -c("county"))
-data2 <- df_hu_5_pct_summary  %>% rename_with(~paste0(., "_5_pct"),  -c("county"))
-data3 <- df_hu_10_pct_summary %>% rename_with(~paste0(., "_10_pct"), -c("county"))
+# Add labels to metrics to identify 1, 5, and 10%
+data_1_pct <- df_hu_1_pct_summary  %>% rename_with(~paste0(., "_1_pct"),  -c("county"))
+data_5_pct <- df_hu_5_pct_summary  %>% rename_with(~paste0(., "_5_pct"),  -c("county"))
+data_10_pct <- df_hu_10_pct_summary %>% rename_with(~paste0(., "_10_pct"), -c("county"))
 
-# combine data
-data4 <- df_entrances1 %>%
-  left_join(data1, by = "county") %>%
-  left_join(data2, by = "county") %>%
-  left_join(data3, by = "county") %>%
+# Combine county entrances and county HU entrances info
+df_1_5_10 <- df_entrances1 %>%
+  left_join(data_1_pct, by = "county") %>%
+  left_join(data_5_pct, by = "county") %>%
+  left_join(data_10_pct, by = "county") %>%
   mutate(freq_1_pct = total_hu_entrances_1_pct/entrances_total,
          freq_5_pct = total_hu_entrances_5_pct/entrances_total,
          freq_10_pct = total_hu_entrances_10_pct/entrances_total) %>%
@@ -50,8 +55,8 @@ data4 <- df_entrances1 %>%
          range_10_pct = paste(min_10_pct, max_10_pct, sep = "-")) %>%
   arrange(county %in% "State")
 
-# reactable table for presentation showing the number of HU's, min, med, mean, max, etc.
-PRES_hu_summary <- reactable(data4,
+# Reactable table for presentation showing the number of HU's, min, med, mean, max, etc.
+PRES_hu_summary <- reactable(df_1_5_10,
                     pagination = FALSE,
                     style = list(fontFamily = "Franklin Gothic Book"),
                     rowStyle = function(index) {
@@ -124,8 +129,8 @@ PRES_hu_summary <- reactable(data4,
 
 ))
 
-# same as before but showing different metrics (show = T or show = F)
-PRES_hu_summary1 <- reactable(data4,
+# Same as before but showing different metrics (show = T or show = F)
+PRES_hu_summary1 <- reactable(df_1_5_10,
                               pagination = FALSE,
                               style = list(fontFamily = "Franklin Gothic Book"),
                               rowStyle = function(index) {
@@ -202,33 +207,27 @@ PRES_hu_summary1 <- reactable(data4,
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# Number of entrances showing cut offs for 1, 5, 10%
+# Number of entrances and cut offs for 1, 5, 10% in a ggplot
 
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# get average number of entrances depending on HU
-top_1_pct_avg_entrances <- data4 %>% filter(county == "State") %>% select(mean_1_pct)
+# Get average number of entrances depending on HU
+top_1_pct_avg_entrances <- df_1_5_10 %>% filter(county == "State") %>% select(mean_1_pct)
 top_1_pct_avg_entrances <- as.numeric(top_1_pct_avg_entrances$mean_1_pct)
-top_5_pct_avg_entrances <- data4 %>% filter(county == "State") %>% select(mean_5_pct)
+top_5_pct_avg_entrances <- df_1_5_10 %>% filter(county == "State") %>% select(mean_5_pct)
 top_5_pct_avg_entrances <- as.numeric(top_5_pct_avg_entrances$mean_5_pct)
-top_10_pct_avg_entrances <- data4 %>% filter(county == "State") %>% select(mean_10_pct)
+top_10_pct_avg_entrances <- df_1_5_10 %>% filter(county == "State") %>% select(mean_10_pct)
 top_10_pct_avg_entrances <- as.numeric(top_10_pct_avg_entrances$mean_10_pct)
 
 # get minimum number of entrances depending on HU
-top_1_pct_min_entrances <- data4 %>% filter(county == "State") %>% select(min_1_pct)
+top_1_pct_min_entrances <- df_1_5_10 %>% filter(county == "State") %>% select(min_1_pct)
 top_1_pct_min_entrances <- as.numeric(top_1_pct_min_entrances$min_1_pct)
-top_5_pct_min_entrances <- data4 %>% filter(county == "State") %>% select(min_5_pct)
+top_5_pct_min_entrances <- df_1_5_10 %>% filter(county == "State") %>% select(min_5_pct)
 top_5_pct_min_entrances <- as.numeric(top_5_pct_min_entrances$min_5_pct)
-top_10_pct_min_entrances <- data4 %>% filter(county == "State") %>% select(min_10_pct)
+top_10_pct_min_entrances <- df_1_5_10 %>% filter(county == "State") %>% select(min_10_pct)
 top_10_pct_min_entrances <- as.numeric(top_10_pct_min_entrances$min_10_pct)
-
-# # reactable tables by HU (will combine for presentations)
-# table_hu_4_times_summary <- fnc_reactable_hus_descriptive_summary(df_hu_4_times_summary)
-# table_hu_1_pct_summary   <- fnc_reactable_hus_descriptive_summary(df_hu_1_pct_summary)
-# table_hu_5_pct_summary   <- fnc_reactable_hus_descriptive_summary(df_hu_5_pct_summary)
-# table_hu_10_pct_summary  <- fnc_reactable_hus_descriptive_summary(df_hu_10_pct_summary)
 
 # subset data and create categories for number of entrances
 data1 <- bookings_entrances %>% ungroup() %>% select(id, num_bookings) %>% distinct() %>%
@@ -340,36 +339,6 @@ PRES_gg_hu_percentile_explanation <- ggplot(data1)+
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# reactable table of number of HU entrances by FY and county and the change from 2019 to 2021
-
-################################################################################################################################################################
-################################################################################################################################################################
-################################################################################################################################################################
-
-# # data table of number of entrances by FY and county
-# data1 <- bookings_entrances %>%
-#   filter(high_utilizer_10_pct == "Yes") %>%
-#   select(id, booking_id, fy, county) %>%
-#   distinct() %>%
-#   group_by(fy, county) %>%
-#   dplyr::summarise(total = n()) %>%
-#   spread(fy, total) %>%
-#   mutate(`2019` = as.numeric(`2019`),
-#          `2020` = as.numeric(`2020`),
-#          `2021` = as.numeric(`2021`)) %>%
-#   mutate(total = `2019` + `2020` + `2021`) %>%
-#   adorn_totals("row") %>%
-#   mutate(change_19_21 = (`2021`-`2019`)/`2019`) %>%
-#   mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)", TRUE ~ county))
-#
-# # reactable table of number of HU entrances by FY and county and the change from 2019 to 2021
-# table_hu_entrances_fy_county <- fnc_reactable_county_fy(data1, 10)
-# # save_reactable(iris_table, file = paste0(sp_data_path, "/Data/r_data/table_hu_entrances_fy_county.png", sep = ""))
-
-################################################################################################################################################################
-################################################################################################################################################################
-################################################################################################################################################################
-
 # Line graph showing HU entrances
 
 ################################################################################################################################################################
@@ -387,13 +356,13 @@ gg_10_pct_entrances_month_year <- fnc_covid_time_highchart(data1, "", "", jri_or
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# Proportion of PC holds that are high utilizers
+# Proportion of PC holds that are 10% high utilizers
 
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# select variables
+# Select variables
 data1 <- bookings_entrances %>%
   filter(county != "Coos" & county != "Strafford") %>%
   select(county,
@@ -432,7 +401,7 @@ PRES_gg_10_pct_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, 
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# Table showing proportion of PC holds that are high utilizers
+# Table showing proportion of PC holds that are 10% high utilizers
 
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -450,15 +419,15 @@ data1total <- bookings_entrances %>%
          pc_hold_in_booking) %>%
   distinct() %>%
   filter(!is.na(pc_hold_in_booking)) %>%
-  group_by(pc_hold_in_booking, high_utilizer_1_pct) %>%
+  group_by(pc_hold_in_booking, high_utilizer_10_pct) %>%
   summarise(total = n()) %>%
   ungroup() %>%
-  filter(high_utilizer_1_pct == "Yes") %>%
+  filter(high_utilizer_10_pct == "Yes") %>%
   filter(pc_hold_in_booking == "PC Hold") %>%
   select(total_hu_pc_holds = total) %>%
   mutate(county = "State")
 
-# select variables
+# Select variables
 data1 <- bookings_entrances %>%
   filter(county != "Coos" & county != "Strafford") %>%
   select(county,
@@ -471,10 +440,10 @@ data1 <- bookings_entrances %>%
          pc_hold_in_booking) %>%
   distinct() %>%
   filter(!is.na(pc_hold_in_booking)) %>%
-  group_by(county, pc_hold_in_booking, high_utilizer_1_pct) %>%
+  group_by(county, pc_hold_in_booking, high_utilizer_10_pct) %>%
   summarise(total = n()) %>%
   ungroup() %>%
-  filter(high_utilizer_1_pct == "Yes") %>%
+  filter(high_utilizer_10_pct == "Yes") %>%
   filter(pc_hold_in_booking == "PC Hold") %>%
   select(county, total_hu_pc_holds = total)
 data1 <- rbind(data1, data1total)
@@ -521,7 +490,7 @@ PRES_table_pc_hold_hus <-
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# select variables
+# Select variables
 df_hu_pc_holds <- bookings_entrances %>%
   filter(county != "Coos" & county != "Strafford") %>%
   select(county,
@@ -535,7 +504,7 @@ df_hu_pc_holds <- bookings_entrances %>%
   distinct() %>%
   filter(!is.na(pc_hold_in_booking))
 
-# get entrances of high utilizers
+# Get entrances of high utilizers
 df_hu_pc_holds_fy_4_times <- df_hu_pc_holds %>% filter(high_utilizer_10_pct == "Yes") %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n())
 df_hu_pc_holds_fy_1_pct   <- df_hu_pc_holds %>% filter(high_utilizer_1_pct   == "Yes") %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n())
 df_hu_pc_holds_fy_5_pct   <- df_hu_pc_holds %>% filter(high_utilizer_5_pct   == "Yes") %>% group_by(fy, pc_hold_in_booking) %>% summarise(total = n())
@@ -547,15 +516,9 @@ gg_hu_pc_holds_fy_1_pct   <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_1_pct, 
 gg_hu_pc_holds_fy_5_pct   <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_5_pct,   "gray", jri_green)
 gg_hu_pc_holds_fy_10_pct  <- fnc_pct_grouped_bar_chart(df_hu_pc_holds_fy_10_pct,  "gray", jri_orange)
 
-# get entrances of high utilizers
-df_hu_pc_holds_fy_4_times <- df_hu_pc_holds %>% filter(high_utilizer_10_pct == "Yes")  %>% group_by(pc_hold_in_booking) %>% summarise(total = n())
-df_hu_pc_holds_fy_1_pct   <- df_hu_pc_holds %>% filter(high_utilizer_1_pct  == "Yes")  %>% group_by(pc_hold_in_booking) %>% summarise(total = n())
-df_hu_pc_holds_fy_5_pct   <- df_hu_pc_holds %>% filter(high_utilizer_5_pct  == "Yes")  %>% group_by(pc_hold_in_booking) %>% summarise(total = n())
-df_hu_pc_holds_fy_10_pct  <- df_hu_pc_holds %>% filter(high_utilizer_10_pct == "Yes")  %>% group_by(pc_hold_in_booking) %>% summarise(total = n())
-
 ################################################################################
 
-# Histogram showing LOS for high utilizers for BOOKINGS
+# Histogram showing LOS for high utilizers for BOOKINGS not entrances
 
 ################################################################################
 

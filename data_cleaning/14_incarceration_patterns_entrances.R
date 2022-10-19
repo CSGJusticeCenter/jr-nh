@@ -30,7 +30,7 @@
 
 ####################
 
-# table of total number of people entered (no duplicates for counting by FY)
+# Total number of people entered (no duplicates for counting by FY)
 amt_people_entered <- bookings_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(id, county) %>%
@@ -40,7 +40,7 @@ amt_people_entered <- bookings_entrances %>%
   dplyr::mutate(label = formatC(total, format="d", big.mark=","))
   amt_people_entered <- amt_people_entered$total
 
-# table of total number of people entered by FY (some duplicates because it's by FY)
+# Df of total number of people entered by FY (some duplicates because it's by FY)
 df_people_entered_pre <- bookings_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(id, fy, county) %>%
@@ -49,7 +49,7 @@ df_people_entered_pre <- bookings_entrances %>%
   dplyr::summarise(total = n()) %>%
   dplyr::mutate(label = formatC(total, format="d", big.mark=","))
 
-# transpose and format, wide version
+# Transpose and format to wide version
 df_people_entered <- df_people_entered_pre %>%
   select(-label) %>%
   t %>% as.data.frame() %>%
@@ -71,7 +71,7 @@ amt_people_entered <- format(round(as.numeric(amt_people_entered), 0), nsmall=0,
 
 ##########
 
-# one row table minimal showing number of people entered by FY and total
+# one row table showing number of people entered by FY and total
 row_people_entered <-
   reactable(df_people_entered,
             pagination = FALSE,
@@ -105,13 +105,7 @@ change_19_21_people_entered <- round(change_19_21_people_entered*100, 1)
 
 ####################
 
-##########
-
-# create reactable table showing number people entered by FY and total
-
-##########
-
-# number of people entered by county for all three years
+# Number of people entered by county for all three years
 amt_people_entered_county <- bookings_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(id, county) %>%
@@ -119,7 +113,7 @@ amt_people_entered_county <- bookings_entrances %>%
   dplyr::group_by(county) %>%
   dplyr::summarise(total = n())
 
-# df of total number of people entered by FY
+# Df of total number of people entered by FY
 df_people_entered_county <- bookings_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(id, fy, county) %>%
@@ -137,7 +131,7 @@ df_people_entered_county <- bookings_entrances %>%
                             county == "Total" ~ "State",
                             TRUE ~ county))
 
-# table showing the number of people entered by FY by county
+# Table showing the number of people entered by FY by county
 table_people_entered_fy_county <- fnc_reactable_county_fy(df_people_entered_county, row_num = 10)
 
 ##########
@@ -146,7 +140,7 @@ table_people_entered_fy_county <- fnc_reactable_county_fy(df_people_entered_coun
 
 ##########
 
-# data for ggplot showing the number of people entered by FY
+# Data for ggplot showing the number of people entered by FY
 df_people_entered_long <- df_people_entered %>% select(-total)
 df_people_entered_long <- gather(df_people_entered, fy, total, `2019`:`2021`, factor_key=TRUE)
 df_people_entered_long <- df_people_entered_long %>% mutate(fy = as.numeric(fy)) %>%
@@ -179,13 +173,7 @@ gg_people_entered <-
 
 ####################
 
-##########
-
-# ggplot bar chart showing the number of entrances by FY
-
-##########
-
-# calculate number of entrances events per fy
+# Calculate number of entrances events per fy
 df_entrances_events <- bookings_entrances %>%
   select(id, booking_id, fy, county) %>%
   distinct() %>%
@@ -194,7 +182,7 @@ df_entrances_events <- bookings_entrances %>%
   dplyr::summarise(total = n()) %>%
   mutate(label = formatC(total, format="d", big.mark=","))
 
-# create table showing number of entrances by fiscal year
+# Df showing number of entrances by FY
 df_entrances <- df_entrances_events %>%
   select(-label) %>%
   t %>% as.data.frame() %>%
@@ -207,7 +195,7 @@ df_entrances <- df_entrances_events %>%
   df_entrances <- df_entrances %>%
   mutate(variable_name = ifelse(variable_name == "total", "# of entrances", ""))
 
-# count number of entrances for three years
+# Count number of entrances for three years
 amt_entrances <- df_entrances$total
 amt_entrances <- format(round(as.numeric(amt_entrances), 0), nsmall=0, big.mark=",")
 
@@ -217,7 +205,7 @@ amt_entrances <- format(round(as.numeric(amt_entrances), 0), nsmall=0, big.mark=
 
 ##########
 
-# one row minimal table showing the number of entrances by FY and total
+# One row table showing the number of entrances by FY and total
 row_entrances_fy <-
   reactable(df_entrances,
             pagination = FALSE,
@@ -233,12 +221,6 @@ row_entrances_fy <-
               `2021`  = colDef(minWidth = 80, name = "2021",
                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
               `total` = colDef(minWidth = 80, name = "Total")))
-
-##########
-
-# PRESENTATION - ggplot showing the number of entrances by FY
-
-##########
 
 # data for ggplot showing the number of entrances by FY
 data1 <- df_entrances %>% select(-total)
@@ -263,13 +245,7 @@ PRES_gg_entrances <-
 
 ####################
 
-##########
-
-# create reactable table showing number entrances by FY and total
-
-##########
-
-# number of entrances by county for all three years
+# Number of entrances by county for all three years
 amt_entrances_county <- bookings_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(booking_id, county) %>%
@@ -277,7 +253,7 @@ amt_entrances_county <- bookings_entrances %>%
   dplyr::group_by(county) %>%
   dplyr::summarise(total = n())
 
-# df of total number of entrances by FY
+# Df of total number of entrances by FY
 df_entrances_county <- bookings_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(booking_id, fy, county) %>%
@@ -298,9 +274,10 @@ df_entrances_county <- df_entrances_county %>%
                             county == "Total" ~ "State",
                             TRUE ~ county))
 
-# table showing the number of people entered by FY by county
+# Table showing the number of people entered by FY by county
 PRES_table_entrances_fy_county <- fnc_reactable_county_fy(df_entrances_county, row_num = 10)
 
+#################################################################################################################################################
 #################################################################################################################################################
 #################################################################################################################################################
 
@@ -308,8 +285,9 @@ PRES_table_entrances_fy_county <- fnc_reactable_county_fy(df_entrances_county, r
 
 #################################################################################################################################################
 #################################################################################################################################################
+#################################################################################################################################################
 
-# average number of entrances/fy by county
+# Average number of entrances/fy by county
 df_avg_entrances_county <- bookings_entrances %>%
   ungroup() %>%
   select(county, id, num_bookings) %>%
@@ -318,6 +296,7 @@ df_avg_entrances_county <- bookings_entrances %>%
   dplyr::summarize(avg_entrances = mean(num_bookings, na.rm=TRUE)) %>%
   mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)", TRUE ~ county))
 
+# Average number of entrances/fy by state
 df_avg_entrances_total <- bookings_entrances %>%
   ungroup() %>%
   select(id, num_bookings) %>%
@@ -326,15 +305,16 @@ df_avg_entrances_total <- bookings_entrances %>%
   dplyr::summarize(avg_entrances = mean(num_bookings, na.rm=TRUE)) %>%
   mutate(county = "State")
 
+# Add county and state info together
 df_avg_entrances_county <- rbind(df_avg_entrances_county, df_avg_entrances_total)
 
-# rename variables and add data together
+# Rename variables and add data together
 df_entrances_county <- df_entrances_county %>% rename_with(~paste0("entrances_", .), -c("county"))
 df_entrances_people_county <- df_people_entered_county %>% rename_with(~paste0("people_entered_", .), -c("county"))
 df_entrances_table <- merge(df_entrances_county, df_entrances_people_county, by = "county", all.x = TRUE, all.y = TRUE)
 df_entrances_table <- merge(df_entrances_table, df_avg_entrances_county, by = "county", all.x = TRUE, all.y = TRUE)
 
-# remove variables to condense table
+# Remove variables to condense table
 data1 <- df_entrances_table %>% select(county,
                                        people_entered_total,
                                        people_entered_change_19_21,
@@ -345,6 +325,7 @@ data1 <- df_entrances_table %>% select(county,
   mutate(avg_entrances = round(avg_entrances, 1)) %>%
   arrange(county %in% "State")
 
+# Table showing the number of entrances and number of people by county
 PRES_table_entrances_people_county <-
   reactable(data1,
             pagination = FALSE,
@@ -397,7 +378,7 @@ data1 <- bookings_entrances %>% ungroup() %>% select(id, num_bookings) %>% disti
                                                    "5",
                                                    "6+")))
 
-# histgram showing the frequency of the number of entrances per person
+# Histogram showing the frequency of the number of entrances per person
 PRES_gg_num_entrances <- ggplot(data1, aes(x = num_bookings_category)) +
   geom_bar(width = 0.74, fill = jri_dark_blue) +
   scale_y_continuous(labels = label_number(big.mark = ","),

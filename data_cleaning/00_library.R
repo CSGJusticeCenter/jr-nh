@@ -11,6 +11,7 @@
 # load packages
 ###################
 
+# download this version
 # remotes::install_github("kcuilla/reactablefmtr")
 
 library(readxl)
@@ -44,13 +45,17 @@ library(rvg)
 library(reactablefmtr)
 library(ggtext)
 
-# install.packages("rmarkdown")
-# install.packages("knitr")
-# install.packages("yaml")
+###################
+# Local and research sharepoint
+###################
 
-# library(rmarkdown)
-# library(knitr)
-# library(yaml)
+# path to data on research div sharepoint
+# make sure SP folder is synced locally
+# https://csgorg.sharepoint.com/:f:/s/Team-JC-Research/EhdvImKN2rdPnmHQ2TrKlooBdYqnnWc0SUXBNuh9C7d41g?e=NCsh8I
+# in your Renviron, set CSG_SP_PATH = "your sharepoint path here" and GITHUB_PAT = "your token here"
+# To generate a github token - usethis::create_github_token()
+# To edit Renviron - usethis::edit_r_environ()
+sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
 
 ###################
 # Fonts
@@ -66,18 +71,6 @@ font_add(family  = "Franklin Gothic Book", # Name you want to use
          italic  = "FRABKIT.ttf") # Text of the 'General' tab plus the font extension
 showtext_auto()
 default_fonts <- c("Franklin Gothic Book")
-
-###################
-# Local and research sharepoint
-###################
-
-# path to data on research div sharepoint
-# make sure SP folder is synced locally
-# https://csgorg.sharepoint.com/:f:/s/Team-JC-Research/EhdvImKN2rdPnmHQ2TrKlooBdYqnnWc0SUXBNuh9C7d41g?e=NCsh8I
-# in your Renviron, set CSG_SP_PATH = "your sharepoint path here" and GITHUB_PAT = "your token here"
-# To generate a github token - usethis::create_github_token()
-# To edit Renviron - usethis::edit_r_environ()
-sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
 
 ###################
 # Colors

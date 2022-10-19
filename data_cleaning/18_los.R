@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: los.R
-# Last updated: October 18, 2022
+# Last updated: October 19, 2022
 # Author: Mari Roberts
 
 # Tables, graphs, and numbers for los
@@ -11,13 +11,14 @@
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# Reactable table for LOS for entrances (including Coos bookings and Strafford) - ALL
+# Reactable table for LOS for entrances (including Coos bookings and Strafford)
+# Includes HU's and non-HU's
 
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# count freq of los for entrances (including Coos bookings and Strafford)
+# Count freq of los for entrances (including Coos bookings and Strafford)
 df_los_entrances <- bookings_entrances %>%
   select(fy,
          county,
@@ -31,15 +32,15 @@ df_los_entrances <- bookings_entrances %>%
          high_utilizer_10_pct) %>%
   distinct() %>%
   filter(!is.na(los))
-dim(df_los_entrances); length(unique(df_los_entrances$booking_id)) # 51349, 51349 will be less because of NAs in LOS's
+# dim(df_los_entrances); length(unique(df_los_entrances$booking_id)) # 51349, 51349 will be less than total entrances because of NAs in LOS's
 
-# average lOS for entrances
+# Average lOS for all entrances
 avg_los_entrances <- df_los_entrances %>%
   group_by() %>%
   dplyr::summarize(mean = mean(los, na.rm=TRUE))
 avg_los_entrances <- as.numeric(avg_los_entrances)
 
-# overall LOS for entrances
+# Df showing summary for LOS for entrances
 df_los_entrances_summary <- df_los_entrances %>%
   group_by() %>%
   summarise(
@@ -49,7 +50,7 @@ df_los_entrances_summary <- df_los_entrances %>%
     mean   = mean(c(los, na.rm = T)),
     max    = max(los, na.rm = T)
   ) %>%
-  mutate(mean = round(mean, 1))
+  mutate(mean = round(mean, 1)) # 28.3
 df_los_entrances_summary <- df_los_entrances_summary %>% mutate(type = "All (HU's and non-HU's)") %>% select(type, everything())
 
 row_los_entrances_summary <- reactable(df_los_entrances_summary,
@@ -73,20 +74,21 @@ row_los_entrances_summary <- reactable(df_los_entrances_summary,
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# Reactable table for LOS for entrances (including Coos bookings and Strafford) - High Utilizers
+# Reactable table for LOS for entrances (including Coos bookings and Strafford)
+# For HU's only
 
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# average lOS for entrances
+# Average lOS for entrances for 10% HU's
 avg_los_entrances <- df_los_entrances %>%
-  filter(high_utilizer_1_pct == "Yes") %>%
+  filter(high_utilizer_10_pct == "Yes") %>%
   group_by() %>%
   dplyr::summarize(mean = mean(los, na.rm=TRUE))
 avg_los_entrances <- as.numeric(avg_los_entrances)
 
-# overall LOS for entrances
+# overall LOS for entrances for 10% HU's
 df_los_entrances_summary <- df_los_entrances %>%
   filter(high_utilizer_10_pct == "Yes") %>%
   group_by() %>%
@@ -121,7 +123,7 @@ row_los_entrances_summary
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# ggplot showing histogram of LOS
+# Ggplot showing histogram of LOS
 
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -139,7 +141,7 @@ df_los_10_pct <- df_los_entrances %>%
 df_los_pct <- rbind(df_los_1_pct, df_los_5_pct, df_los_10_pct)
 df_los_pct$hu <- factor(df_los_pct$hu, levels = c("Top 1%", "Top 5%", "Top 10%"))
 
-# grouped ggplot with all HU categories
+# Grouped ggplot with all HU categories
 gg_los_category_by_hu <- ggplot(df_los_pct, aes(los_category, total)) +
   geom_bar(aes(fill = hu), position = "dodge", stat="identity", width = 0.75) +
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange),
@@ -206,27 +208,26 @@ data1 <- df_los_entrances %>%
   mutate(hu = "Top 10%") %>%
   filter(!is.na(los_category))
 
-# average los for entrances
+# Average los for entrances
 avg_los_entrances_10_pct <- df_los_entrances %>%
   filter(high_utilizer_10_pct == "Yes") %>%
   group_by() %>%
   dplyr::summarize(mean = mean(los, na.rm=TRUE))
 avg_los_entrances_10_pct <- as.numeric(avg_los_entrances_10_pct)
 
-# median los for entrances
+# Median los for entrances
 median_los_entrances_10_pct <- df_los_entrances %>%
   filter(high_utilizer_10_pct == "Yes") %>%
   group_by() %>%
   dplyr::summarize(median = median(los, na.rm=TRUE))
 median_los_entrances_10_pct <- as.numeric(median_los_entrances_10_pct)
 
-# median los for entrances
+# Maximum los for entrances
 maximum_los_entrances_10_pct <- df_los_entrances %>%
   filter(high_utilizer_10_pct == "Yes") %>%
   group_by() %>%
   dplyr::summarize(maximum = max(los, na.rm=TRUE))
 maximum_los_entrances_10_pct <- as.numeric(maximum_los_entrances_10_pct)
-
 
 # NOTE: Manually adds median and mean to discrete scale. Make sure this is accurate each time run.
 PRES_gg_los_10_pct <- ggplot(data1, aes(x = los_category, y = total, fill = hu)) +
@@ -234,7 +235,7 @@ PRES_gg_los_10_pct <- ggplot(data1, aes(x = los_category, y = total, fill = hu))
   geom_bar(aes(x = los_category, y = total, fill = hu), stat="identity", width = 0.75) +
   labs(x = "Length of Stay (Days)", y = "Frequency\n") +
 
-  # median
+  # Median
   geom_vline(xintercept = 3, linetype = "dashed", colour = "darkgray",size = 1) +
   geom_richtext(aes(x=3, y=3400, label="Median = 2"),
                 color = "white",
@@ -247,7 +248,7 @@ PRES_gg_los_10_pct <- ggplot(data1, aes(x = los_category, y = total, fill = hu))
                 #angle = 90
                 ) +
 
-  # mean
+  # Mean
   geom_vline(xintercept = 12, linetype = "dashed", colour = "darkgray",size = 1) +
   geom_richtext(aes(x=12, y=3400, label="Average = 22"),
                 color = "white",
@@ -280,21 +281,22 @@ PRES_gg_los_10_pct <- ggplot(data1, aes(x = los_category, y = total, fill = hu))
         legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
 
-# get % of bookings that are 0-10 days
-pct_los_between_0_10_days <- df_los_entrances %>% group_by(los_category) %>%
+# Get % of bookings that are 0-10 days
+pct_los_between_0_10_days <- df_los_entrances %>%
   filter(high_utilizer_10_pct == "Yes") %>%
+  group_by(los_category) %>%
   summarise(total = n()) %>%
   mutate(pct = round(total/sum(total)*100, 1)) %>%
   mutate(los_category = as.character(los_category))
 pct_los_between_0_10_days = pct_los_between_0_10_days[-c(8:12),]
 pct_los_between_0_10_days <- sum(pct_los_between_0_10_days$pct)
 
-# get % of bookings that are 0-1 days
-pct_los_between_0_1_days <- df_los_entrances %>% group_by(los_category) %>%
+# Get % of bookings that are 0-1 days
+pct_los_between_0_1_days <- df_los_entrances %>%
   filter(high_utilizer_10_pct == "Yes") %>%
+  group_by(los_category) %>%
   summarise(total = n()) %>%
   mutate(pct = round(total/sum(total)*100, 1)) %>%
   mutate(los_category = as.character(los_category))
-pct_los_between_0_1_days = pct_los_between_0_1_days[-c(3:10),]
+pct_los_between_0_1_days = pct_los_between_0_1_days[-c(3:12),]
 pct_los_between_0_1_days <- sum(pct_los_between_0_1_days$pct)
-
