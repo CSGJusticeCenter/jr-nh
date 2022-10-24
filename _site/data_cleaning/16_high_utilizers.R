@@ -27,11 +27,11 @@ df_hu_1_pct_summary   <- fnc_hus_descriptive_summary(bookings_entrances, "high_u
 df_hu_5_pct_summary   <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_5_pct",   "Yes", "Coos (bookings only)")
 df_hu_10_pct_summary  <- fnc_hus_descriptive_summary(bookings_entrances, "high_utilizer_10_pct",  "Yes", "Coos (bookings only)")
 
-# # reactable tables by HU (will combine for presentations)
-# table_hu_4_times_summary <- fnc_reactable_hus_descriptive_summary(df_hu_4_times_summary)
-# table_hu_1_pct_summary   <- fnc_reactable_hus_descriptive_summary(df_hu_1_pct_summary)
-# table_hu_5_pct_summary   <- fnc_reactable_hus_descriptive_summary(df_hu_5_pct_summary)
-# table_hu_10_pct_summary  <- fnc_reactable_hus_descriptive_summary(df_hu_10_pct_summary)
+# reactable tables by HU (will combine for presentations)
+table_hu_4_times_summary <- fnc_reactable_hus_descriptive_summary(df_hu_4_times_summary)
+table_hu_1_pct_summary   <- fnc_reactable_hus_descriptive_summary(df_hu_1_pct_summary)
+table_hu_5_pct_summary   <- fnc_reactable_hus_descriptive_summary(df_hu_5_pct_summary)
+table_hu_10_pct_summary  <- fnc_reactable_hus_descriptive_summary(df_hu_10_pct_summary)
 
 # Subset data for total entrances (HU and non-HU), total people, and average number of entrances a year
 # Created in incarceration_patterns_entrances.R
@@ -58,7 +58,7 @@ df_1_5_10 <- df_entrances1 %>%
 # Reactable table for presentation showing the number of HU's, min, med, mean, max, etc.
 PRES_hu_summary <- reactable(df_1_5_10,
                     pagination = FALSE,
-                    style = list(fontFamily = "Franklin Gothic Book"),
+                    style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                     rowStyle = function(index) {
                       if (index %in% c(10)) {
                         list(`border-top` = "thin solid",
@@ -132,7 +132,7 @@ PRES_hu_summary <- reactable(df_1_5_10,
 # Same as before but showing different metrics (show = T or show = F)
 PRES_hu_summary1 <- reactable(df_1_5_10,
                               pagination = FALSE,
-                              style = list(fontFamily = "Franklin Gothic Book"),
+                              style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                               rowStyle = function(index) {
                                 if (index %in% c(10)) {
                                   list(`border-top` = "thin solid",
@@ -455,7 +455,7 @@ data2 <- df_entrances_with_pc_holds %>% select(county, total_pc_holds) %>%
 PRES_table_pc_hold_hus <-
   reactable(data2,
            pagination = FALSE,
-           style = list(fontFamily = "Franklin Gothic Book"),
+           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
            rowStyle = function(index) {
              if (index %in% c(10)) {
                list(`border-top` = "thin solid",
@@ -594,3 +594,15 @@ ggsave(gg_hu_pc_holds_fy_5_pct, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc
 ggsave(gg_hu_pc_holds_fy_10_pct, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc_holds_fy_10_pct.png", sep = ""),
        width = 4.5, height = 4.2, dpi = 100)
 
+##########
+
+# Save data
+
+##########
+
+save(table_hu_4_times_summary, file=paste0(sp_data_path, "/Data/r_data/table_hu_4_times_summary.Rda", sep = ""))
+save(table_hu_1_pct_summary, file=paste0(sp_data_path, "/Data/r_data/table_hu_1_pct_summary.Rda", sep = ""))
+save(table_hu_5_pct_summary, file=paste0(sp_data_path, "/Data/r_data/table_hu_5_pct_summary.Rda", sep = ""))
+save(table_hu_10_pct_summary, file=paste0(sp_data_path, "/Data/r_data/table_hu_10_pct_summary.Rda", sep = ""))
+save(PRES_hu_summary, file=paste0(sp_data_path, "/Data/r_data/PRES_hu_summary.Rda", sep = ""))
+save(PRES_hu_summary1, file=paste0(sp_data_path, "/Data/r_data/PRES_hu_summary1.Rda", sep = ""))

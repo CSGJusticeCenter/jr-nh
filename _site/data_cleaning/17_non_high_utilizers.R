@@ -52,7 +52,7 @@ df_1_5_10 <- df_entrances1 %>%
 # reactable table for presentation showing the number of HU's, min, med, mean, max, etc.
 PRES_non_hu_summary <- reactable(df_1_5_10,
                              pagination = FALSE,
-                             style = list(fontFamily = "Franklin Gothic Book"),
+                             style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                              rowStyle = function(index) {
                                if (index %in% c(10)) {
                                  list(`border-top` = "thin solid",
@@ -126,7 +126,7 @@ PRES_non_hu_summary <- reactable(df_1_5_10,
 # same as before but showing different metrics (show = T or show = F)
 PRES_non_hu_summary1 <- reactable(df_1_5_10,
                               pagination = FALSE,
-                              style = list(fontFamily = "Franklin Gothic Book"),
+                              style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                               rowStyle = function(index) {
                                 if (index %in% c(10)) {
                                   list(`border-top` = "thin solid",

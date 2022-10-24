@@ -27,6 +27,35 @@ source("data_cleaning/rdas.R")
 Using the jail administrative data submitted to CSG, we defined high utilizers (HU) as the top 1%, 5%, or 10% of people booked into jails each FY.
 
 ```{r}
-
+PRES_hu_summary
 ```
 
+```{r}
+PRES_hu_summary1
+```
+
+<br>
+
+# Top 1%
+
+```{r}
+table_hu_1_pct_summary
+```
+
+<br>
+
+# Top 5%
+
+```{r}
+table_hu_5_pct_summary
+```
+
+<br>
+
+# Top 10%
+
+```{r}
+table_hu_10_pct_summary
+```
+
+<br>

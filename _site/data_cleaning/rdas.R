@@ -43,3 +43,11 @@ load(paste0(sp_data_path, "/Data/r_data/PRES_gg_pch_pct_barchart.Rda",          
 load(paste0(sp_data_path, "/Data/r_data/hc_pch_time.Rda",                        sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_with_pc_holds.Rda", sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/table_pc_holds_fy_county.Rda",           sep = ""))
+
+# High Utilizers Page
+load(paste0(sp_data_path, "/Data/r_data/table_hu_4_times_summary.Rda",           sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/table_hu_1_pct_summary.Rda",             sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/table_hu_5_pct_summary.Rda",             sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/table_hu_10_pct_summary.Rda",            sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/PRES_hu_summary.Rda",                    sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/PRES_hu_summary1.Rda",                   sep = ""))

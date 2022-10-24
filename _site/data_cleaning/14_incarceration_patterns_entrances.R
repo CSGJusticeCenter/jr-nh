@@ -75,6 +75,7 @@ amt_people_entered <- format(round(as.numeric(amt_people_entered), 0), nsmall=0,
 row_people_entered <-
   reactable(df_people_entered,
             pagination = FALSE,
+            style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
             theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
                                    headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
             defaultColDef = reactable::colDef(format = colFormat(separators = TRUE), align = "center"),
@@ -209,6 +210,7 @@ amt_entrances <- format(round(as.numeric(amt_entrances), 0), nsmall=0, big.mark=
 row_entrances_fy <-
   reactable(df_entrances,
             pagination = FALSE,
+            style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
             theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
                                    headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
             defaultColDef = reactable::colDef(format = colFormat(separators = TRUE), align = "center"),
@@ -351,7 +353,7 @@ data1 <- df_entrances_table %>% select(county,
 PRES_table_entrances_people_county <-
   reactable(data1,
             pagination = FALSE,
-            style = list(fontFamily = "Franklin Gothic Book"),
+            style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
             rowStyle = function(index) {
               if (index %in% c(10)) {
                 list(`border-top` = "thin solid",

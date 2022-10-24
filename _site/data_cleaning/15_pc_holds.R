@@ -193,7 +193,7 @@ df_entrances_with_pc_holds <- df_entrances_with_pc_holds %>%
 PRES_table_entrances_with_pc_holds <-
   reactable(df_entrances_with_pc_holds,
             pagination = FALSE,
-            style = list(fontFamily = "Franklin Gothic Book"),
+            style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
             theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
                                    headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
             compact = TRUE,

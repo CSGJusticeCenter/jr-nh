@@ -55,7 +55,7 @@ df_los_entrances_summary <- df_los_entrances_summary %>% mutate(type = "All (HU'
 
 row_los_entrances_summary <- reactable(df_los_entrances_summary,
                                        pagination = FALSE,
-                                       style = list(fontFamily = "Franklin Gothic Book"),
+                                       style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                                        defaultColDef = reactable::colDef(
                                          format = colFormat(separators = TRUE), align = "left"),
@@ -104,7 +104,7 @@ df_los_entrances_summary <- df_los_entrances_summary %>% mutate(type = "All (HU'
 
 row_los_entrances_summary <- reactable(df_los_entrances_summary,
                                        pagination = FALSE,
-                                       style = list(fontFamily = "Franklin Gothic Book"),
+                                       style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                                        defaultColDef = reactable::colDef(
                                          format = colFormat(separators = TRUE), align = "left"),

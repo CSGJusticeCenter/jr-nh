@@ -74,6 +74,7 @@ amt_people_booked <- format(round(as.numeric(amt_people_booked), 0), nsmall=0, b
 row_people_booked <-
   reactable(df_people_booked,
             pagination = FALSE,
+            style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
             theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
                                    headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
             defaultColDef = reactable::colDef(format = colFormat(separators = TRUE), align = "center"),
@@ -217,6 +218,7 @@ amt_bookings <- format(round(as.numeric(amt_bookings), 0), nsmall=0, big.mark=",
 row_bookings_fy <-
    reactable(df_bookings,
              pagination = FALSE,
+             style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
              theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
                                     headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
              defaultColDef = reactable::colDef(format = colFormat(separators = TRUE), align = "center"),

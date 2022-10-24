@@ -508,10 +508,13 @@ fnc_reactable_hus_descriptive_summary <- function(df){
                         total_people       = colDef(minWidth = 90,  name = "Total People"),
 
                         total_hu_entrances = colDef(minWidth = 100, name = "HU's (Entrances)"),
-                        mean_all           = colDef(minWidth = 130, name = "Avg Entrances Per Person Per Year", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+                        mean_all           = colDef(minWidth = 130, name = "Avg Entrances Per Person", style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
                         total_hu_people    = colDef(minWidth = 100, name = "HU's (People)" ),
-                        mean               = colDef(minWidth = 130, name = "Avg Entrances Per Person Per Year", style = list(fontWeight = "bold")),
-                        range              = colDef(minWidth = 130, name = "Range of Entrances Per Person Per Year"),
+                        min                = colDef(minWidth = 130, name = "Min Entrances Per Person"),
+                        max                = colDef(minWidth = 130, name = "Max Entrances Per Person"),
+                        median             = colDef(minWidth = 130, name = "Med Entrances Per Person"),
+                        mean               = colDef(minWidth = 130, name = "Avg Entrances Per Person", format = colFormat(digits = 1), style = list(fontWeight = "bold")),
+                        range              = colDef(minWidth = 130, name = "Range of Entrances Per Person"),
                         freq               = colDef(minWidth = 130, name = "Proportion of Entrances that are HU's", format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"))
                       ))
 }
