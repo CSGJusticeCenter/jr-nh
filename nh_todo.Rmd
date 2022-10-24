@@ -1,5 +1,5 @@
 ---
-title: "Mari/Sara To Do"
+title: "Mari/Andrew To Do"
 output: 
   distill::distill_article:
     toc: true
@@ -17,63 +17,3 @@ knitr::opts_chunk$set(
   )
 ```
 
-
-## Questions  
-
-- Should LOS include PC holds? Weekends?  
-- How should we define high utilizer?
-
-## Jail Questions
-
-Belknap
-
-- Protective custody charge but their booking type is "pretrial", what does that mean? There are some cases where the charge is protective custody but the booking type is "pretrial" or "protective custody."?
-
-Sullivan
-
-- Race categories? What does N and K stand for?
-
-## To Do
-
-- Add 3 yr totals to tables  
-- Create two way tables between high utilizer vs not high utilizer to see how they differ across characteristics  
-- PC holds compositions  
-- Most common charges by charge category  
-
-## Belknap  
-
-- Race categories: A, B, C, H, I, NH, O, P, U, W, X    
-- Booking date range: 2018-07-01 - 2021-06-30  
-- Housing: "Housed", "Unhoused"  
-- No data: Ethnicity, release type, sentence status  
-
-## Carroll  
-
-- Race categories: A, B, I, U, W   
-- Booking date range: 2018-07-01 - 2021-06-30  
-- Housing: "Housed", "Unhoused"  
-- No data: Ethnicity, release type is mostly missing
-
-## Cheshire  
-
-- Race categories: A, B, H, I, L, P, U, W   
-- Booking date range: 2018-07-01 - 2021-06-29    
-- Housing: All "Housed" - likely a data entry or excel issue  
-- No data: Ethnicity, release type  
-
-## Merrimack  
-
-- Race categories: A, B, H, I, O, P, U, W, X     
-- Date range: 2018-07-01 - 2021-06-30   
-- Housing: "Housed", "Unhoused", "Unknown"  
-- No data: Ethnicity, release type  
-
-# Visualization ideas
-
-- [Bookings by type over time](https://app.powerbigov.us/view?r=eyJrIjoiMmRkMmNiOTEtNDBlNy00ZjIwLTk3OTQtYzQ5YTA0YzcxZGZmIiwidCI6ImU0YTM0MGU2LWI4OWUtNGU2OC04ZWFhLTE1NDRkMjcwMzk4MCJ9) 
-- [Bookings with positive MH screen](https://www.tiftonison.com/dashboard-shows-mental-health-needs-at-johnson-county-jail/); [Another](https://viz.jocogov.org/t/Public/views/SteppingUp/Dashboard?%3Aembed=y&%3Aiid=1&%3AisGuestRedirectFromVizportal=y)
-- [Response to covid](https://safetyandjusticechallenge.org/topics/data-analysis/)
-- Did mental health/drug use increase after covid? 
-- [Pathways from arrest -> booking -> release](https://www.prisonpolicy.org/reports/incomejails.html) 
-- [Incarceration rates by race/ethnicity per 100,000 people in NH](https://www.prisonpolicy.org/graphs/2010rates/NH.html) 
-- Map showing available MH services

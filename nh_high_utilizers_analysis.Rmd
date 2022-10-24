@@ -19,9 +19,14 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/01_functions_visuals.R")
-source("data_cleaning/21_rdas.R")
+source("data_cleaning/rdas.R")
 ```
 
 # How we define High Utilizers
 
 Using the jail administrative data submitted to CSG, we defined high utilizers (HU) as the top 1%, 5%, or 10% of people booked into jails each FY.
+
+```{r}
+
+```
+

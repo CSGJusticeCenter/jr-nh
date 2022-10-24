@@ -21,7 +21,139 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/01_functions_visuals.R")
-source("data_cleaning/21_rdas.R")
+source("data_cleaning/rdas.R")
 ```
 
-Coming soon.
+# Bookings
+
+Bookings include anyone booked into jail for a criminal charge which does not include protective custody holds.
+
+## People Booked By State
+
+```{r, results='asis'}
+# print header for pc hold section
+cat("**There were ", amt_people_booked, " people booked into NH jails between FY2019 to FY2021.**\n\n", sep = "")
+```
+## Number of Bookings By State
+
+Please Note: This section reflects the number of bookings per fiscal year, not the number of people.    
+
+```{r, results='asis'}
+# print header for pc hold section
+cat("**There were ", amt_bookings, " bookings across New Hampshire from FY2019 to FY2021.**\n\n", sep = "")
+```
+
+```{r}
+PRES_gg_bookings
+```
+
+```{r}
+row_bookings_fy
+```
+
+## Number of Bookings By County
+
+Counties saw variations in the number of bookings but they all saw a decrease in the past three years.
+
+```{r}
+table_bookings_fy_county
+```
+
+## Booking Types
+
+```{r}
+#nh_booking_types
+```
+
+Coming soon. 
+
+<br>
+
+# Entrances
+
+Entrances include anyone Entered into jail for a criminal charge which does not include protective custody holds.
+
+## People Entered By State
+
+```{r, results='asis'}
+# print header for pc hold section
+cat("**There were ", amt_people_entered, " who entered into NH jails between FY2019 to FY2021.**\n\n", sep = "")
+```
+
+## Number of Entrances By State
+
+Please Note: This section reflects the number of entrances per fiscal year, not the number of people.    
+
+```{r, results='asis'}
+# print header for pc hold section
+cat("**There were ", amt_entrances, " entrances across New Hampshire from FY2019 to FY2021.**\n\n", sep = "")
+```
+
+```{r}
+PRES_gg_entrances
+```
+
+```{r}
+row_entrances_fy
+```
+
+## Number of Entrances By County
+
+Counties saw variations in the number of Entrances but they all saw a decrease in the past three years.
+
+```{r}
+PRES_table_entrances_fy_county
+```
+**On average, people entered jails 1.6 times from 2019 to 2021.**
+
+```{r}
+PRES_table_entrances_people_county
+```
+```{r fig.height = 5, fig.width = 12}
+PRES_gg_num_entrances
+```
+
+
+# Protective Custody Holds
+
+## By State
+
+```{r, results='asis'}
+# print header for pc hold section
+cat("**Protective custody holds accounted for ", amt_pch_pct, "% of bookings from 2019 to 2021.**\n\n", sep = "")
+```
+Coos and Strafford are not included in this calculation due to missing data.
+
+**Although the number of entrances has been decreasing, the proportion of PC holds has remained the same.**
+
+```{r}
+PRES_gg_pch_pct_barchart
+```
+
+<br>
+
+**Protective custody holds tend to occur most frequently during summer months. There was a decline in protective custody holds at the start of the pandemic but they began climbing again shortly after.**  
+
+```{r}
+hc_pch_time
+```
+
+## By County
+
+The proportion of bookings that were protective custody holds varied greatly by county. The table below shows the number of and proportion of bookings that included a protective custody hold charge.  
+
+Belknap had the highest proportion of bookings that were protective custody holds.  
+
+```{r}
+PRES_table_entrances_with_pc_holds
+```
+Some counties saw decreases in PC holds while others saw increases.  
+
+```{r}
+table_pc_holds_fy_county
+```
+
+## How Protective Custody Holds Are Recorded
+
+Each county records PC holds differently. PC holds are recorded in the charge description, booking type, sentence status, or release type, and sometimes across these metrics. See each **County Report** in the top menu to see how each county records PC holds and the "outcomes" of these holds.  
+

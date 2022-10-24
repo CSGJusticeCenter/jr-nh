@@ -277,6 +277,28 @@ df_entrances_county <- df_entrances_county %>%
 # Table showing the number of people entered by FY by county
 PRES_table_entrances_fy_county <- fnc_reactable_county_fy(df_entrances_county, row_num = 10)
 
+# # Number of entrances by county for all three years
+# data1 <- bookings_entrances %>%
+#   dplyr::ungroup() %>%
+#   dplyr::select(fy, booking_id, county) %>%
+#   dplyr::distinct() %>%
+#   dplyr::group_by(fy, county) %>%
+#   dplyr::summarise(total = n())
+#
+# ggplot(data = data1, aes(x=fy, y=total, group=county, color=county)) +
+#   geom_line() +
+#   # geom_text(aes(label = comma(total)), color = "black", position = position_dodge(0.9), vjust = -0.5,
+#   #           size = 7.5, family = "Franklin Gothic Book") +
+#   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
+#                      expand = c(0,0)
+#                      #limits = c(0,14000)
+#                      ) +
+#   #scale_fill_manual(values=c(jri_light_blue,jri_orange), labels = c("Non-PC","PC")) +
+#   theme_axes +
+#   theme(#legend.position = c(0.75,0.85),
+#         legend.title=element_blank(),
+#         axis.title.y = element_blank())
+
 #################################################################################################################################################
 #################################################################################################################################################
 #################################################################################################################################################
@@ -363,6 +385,9 @@ PRES_table_entrances_people_county <-
 
 ################################################################################
 
+min(bookings_entrances$num_bookings)
+max(bookings_entrances$num_bookings)
+
 data1 <- bookings_entrances %>% ungroup() %>% select(id, num_bookings) %>% distinct() %>%
   mutate(num_bookings_category = case_when(num_bookings == 1 ~ "1",
                                            num_bookings == 2 ~ "2",
@@ -386,3 +411,76 @@ PRES_gg_num_entrances <- ggplot(data1, aes(x = num_bookings_category)) +
                      limits = c(0,26500)) +
   theme_axes +
   xlab("\nNumber of Entrances Per Person") + ylab("Count\n")
+
+# different version (goes up to 20+ instead of 6+)
+
+# subset data and create categories for number of entrances
+data1 <- bookings_entrances %>%
+  ungroup() %>%
+  select(id, num_bookings) %>%
+  distinct() %>%
+  mutate(num_bookings_category = case_when(num_bookings == 1 ~ "1",
+                                           num_bookings == 2 ~ "2",
+                                           num_bookings == 3 ~ "3",
+                                           num_bookings == 4 ~ "4",
+                                           num_bookings == 5 ~ "5",
+                                           num_bookings == 6 ~ "6",
+                                           num_bookings == 7 ~ "7",
+                                           num_bookings == 8 ~ "8",
+                                           num_bookings == 9 ~ "9",
+                                           num_bookings == 10 ~ "10",
+                                           num_bookings == 11 ~ "11",
+                                           num_bookings == 12 ~ "12",
+                                           num_bookings == 13 ~ "13",
+                                           num_bookings == 14 ~ "14",
+                                           num_bookings == 15 ~ "15",
+                                           num_bookings == 16 ~ "16",
+                                           num_bookings == 17 ~ "17",
+                                           num_bookings == 18 ~ "18",
+                                           num_bookings == 19 ~ "19",
+                                           num_bookings >= 20 ~ "20+")) %>%
+  mutate(num_bookings_category = factor(num_bookings_category,
+                                        levels = c("1",
+                                                   "2",
+                                                   "3",
+                                                   "4",
+                                                   "5",
+                                                   "6",
+                                                   "7",
+                                                   "8",
+                                                   "9",
+                                                   "10",
+                                                   "11",
+                                                   "12",
+                                                   "13",
+                                                   "14",
+                                                   "15",
+                                                   "16",
+                                                   "17",
+                                                   "18",
+                                                   "19",
+                                                   "20+")))
+
+# Histogram showing the frequency of the number of entrances per person
+PRES_gg_num_entrances <- ggplot(data1, aes(x = num_bookings_category)) +
+  geom_bar(width = 0.74, fill = jri_green) +
+  scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
+                     expand = c(0,0),
+                     limits = c(0,26500)) +
+  theme_axes +
+  xlab("\nNumber of Entrances") + ylab("Number of People\n")
+
+##########
+
+# Save data
+
+##########
+
+save(amt_people_entered,              file=paste0(sp_data_path, "/Data/r_data/amt_people_entered.Rda",              sep = ""))
+save(row_people_entered,              file=paste0(sp_data_path, "/Data/r_data/row_people_entered.Rda",              sep = ""))
+save(amt_entrances,                   file=paste0(sp_data_path, "/Data/r_data/amt_entrances.Rda",                   sep = ""))
+save(row_entrances_fy,                file=paste0(sp_data_path, "/Data/r_data/row_entrances_fy.Rda",                sep = ""))
+save(PRES_gg_entrances,               file=paste0(sp_data_path, "/Data/r_data/PRES_gg_entrances.Rda",               sep = ""))
+save(PRES_table_entrances_fy_county,  file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_fy_county.Rda",  sep = ""))
+save(PRES_table_entrances_people_county, file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_people_county.Rda",  sep = ""))
+save(PRES_gg_num_entrances,  file=paste0(sp_data_path, "/Data/r_data/PRES_gg_num_entrances.Rda",  sep = ""))

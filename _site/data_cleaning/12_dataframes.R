@@ -9,9 +9,9 @@
 # Creates data frames:
 
 # adm_all            - this is broken down into the tables below
-# bookings_entrances  - used the most, admissions events (includes Coos and Strafford)
+# bookings_entrances - used the most, admissions events (includes Coos and Strafford)
 # booking_no_pc_hold - bookings without pc holds (no Strafford)
-# entrances          - bookings with pc holds (no Coos at first but add back in)
+# entrances          - bookings with pc holds (no Coos)
 
 # charges            - individual charges
 # release_types      - individual release types
@@ -24,7 +24,7 @@
 
 ################################################################################
 
-# load R files that import and standardize each jail file so the variables are the same
+# Load R files that import and standardize each jail file so the variables are the same.
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions_visuals.R")
 source("data_cleaning/01_functions.R")
@@ -39,12 +39,16 @@ source("data_cleaning/09_rockingham.R")
 source("data_cleaning/10_strafford.R")
 source("data_cleaning/11_sullivan.R")
 
-# custom function that creates the variables we need and relabels codes so they're consistent across counties
-# creates booking_id, los, fy, num_bookings,
-# high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
-# pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
-# pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other variables)
-# ignore warning messages
+# Custom functions below creates the variables we need and relabels codes so they're consistent across counties.
+# Creates booking_id, los, fy, num_bookings, high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
+#    pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
+#    pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other pc variables)
+# Ignore warning messages.
+
+# Note about LOS: some people can be booked on the same day for multiple charges.
+# For example, someone could enter jail on a protective custody hold on 10/19 with a release
+#   date of 10/20 but also be booked for a criminal charge on 10/19 with a release date of 10/26
+#   For this reason, find the maximum release date for each booking id (created using id and booking_date).
 
 belknap_adm      <- fnc_standardize_counties(belknap_adm_all,      "Belknap")
 carroll_adm      <- fnc_standardize_counties(carroll_adm_all,      "Carroll")
@@ -56,16 +60,10 @@ rockingham_adm   <- fnc_standardize_counties(rockingham_adm_all,   "Rockingham")
 strafford_adm    <- fnc_standardize_counties(strafford_adm_all,    "Strafford")
 sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all,     "Sullivan")
 
-# # removes duplicates with strafford where race is indicated in some booking ids but NA in others
-# dups <- strafford_adm[duplicated(strafford_adm$booking_id)|duplicated(strafford_adm$booking_id, fromLast=TRUE),]
-# temp <- strafford_adm %>% anti_join(dups)
-# dups <- dups %>% group_by(booking_id) %>% filter(!is.na(race)) %>% droplevels() %>% distinct()
-# strafford_adm <- rbind(temp, dups)
-
 ################################################################################
 
-# remove LOS and release date duplicates due to release date issues
-# manually fix PC hold recordings and booking types if needed - based off of jail discussions
+# Remove LOS (keep los max) and release date due to release date differences by booking id.
+# Manually fix PC hold recordings and booking types if needed - based off of jail discussions.
 
 ################################################################################
 
@@ -73,8 +71,8 @@ sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all,     "Sullivan")
 # Belknap
 ##########
 
-# if charge is present then it was a mistake to book them as a PC hold
-# change booking type to unknown for these since they aren't PC holds
+# If charge is present then it was a mistake to book them as a PC hold.
+# Change the booking type to unknown for these since they aren't PC holds. Keep charge info though.
 belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
   mutate(pc_hold = as.character(pc_hold)) %>%
   mutate(pc_hold = case_when(( charge_desc == "TEMPORARY REMOVAL OR TRANSFER" |
@@ -107,8 +105,8 @@ carroll_adm1 <- carroll_adm %>% select(-c(los, release_date)) %>% distinct()
 # Cheshire
 ##########
 
-# if charge is temporary removal or transfer and sentence status indicates PC hold then it isn't a PC hold
-# change sentence status to unknown for these since they aren't PC holds
+# If charge is temporary removal or transfer and sentence status indicates PC hold then it isn't a PC hold.
+# Change sentence status to unknown for these since they aren't PC holds.
 cheshire_adm1 <- cheshire_adm %>%
   select(-c(los, release_date)) %>%
   distinct() %>%
@@ -148,7 +146,7 @@ rockingham_adm1 <- rockingham_adm %>% select(-c(los, release_date)) %>% distinct
 
 strafford_adm1 <- strafford_adm %>% select(-c(los, release_date)) %>% distinct()
 # %>%
-# filter(num_bookings < 43) # seems like an outlier or data entry issue
+# filter(num_bookings < 72) # seems like an outlier or data entry issue but keep for now
 
 ##########
 # Sullivan
@@ -157,7 +155,7 @@ strafford_adm1 <- strafford_adm %>% select(-c(los, release_date)) %>% distinct()
 sullivan_adm1 <- sullivan_adm %>% select(-c(los, release_date)) %>% distinct()
 
 ##########
-# save data to SP for data dictionaries
+# save data to SP for data dictionaries Rmd
 ##########
 
 save(belknap_adm1,      file=paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",      sep = ""))
@@ -170,14 +168,18 @@ save(rockingham_adm1,   file=paste0(sp_data_path, "/Data/r_data/rockingham_adm.R
 save(strafford_adm1,    file=paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda",    sep = ""))
 save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
 
-################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
 # STATE-WIDE DATA
-# combine county data for large NH dataframe with all charge descriptions, booking types, etc.
+# Combine county data for large NH dataframe with all charge descriptions, booking types, etc.
 
-################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
+################################################################################################################################################################
 
-# combine jail data
+# Combine jail data.
 adm_all <- rbind(belknap_adm1,
                  carroll_adm1,
                  cheshire_adm1,
@@ -187,10 +189,10 @@ adm_all <- rbind(belknap_adm1,
                  rockingham_adm1,
                  strafford_adm1,
                  sullivan_adm1)
-dim(adm_all) # 73183
+# dim(adm_all) # 73183
 
-# if race is NA in some bookings but present in others, use the recorded race
-# if races are different for the same person, make NA since we don't know which is correct
+# If race or gender is NA in some bookings but present in others, use the recorded race or gender.
+# If races or genders are different for the same person, make NA since we don't know which is correct.
 adm_all <- adm_all %>%
   dplyr::group_by(id) %>%
   fill(race, .direction = "downup") %>%
@@ -198,12 +200,7 @@ adm_all <- adm_all %>%
   group_by(id) %>%
   mutate(different_race_recorded = n_distinct(race) == 1) %>%
   mutate(race = ifelse(different_race_recorded == FALSE, NA, race)) %>%
-  distinct()
-dim(adm_all) # 73183
-
-# if gender is NA in some bookings but present in others, use the recorded gender
-# if genders are different for the same person, make NA since we don't know which is correct
-adm_all <- adm_all %>%
+  distinct() %>%
   dplyr::group_by(id) %>%
   fill(gender, .direction = "downup") %>%
   distinct() %>%
@@ -212,12 +209,11 @@ adm_all <- adm_all %>%
   mutate(gender = ifelse(different_gender_recorded == FALSE, NA, gender)) %>%
   distinct() %>%
   select(-different_gender_recorded, -different_race_recorded)
-dim(adm_all) # 73183
 
-# fix los_max issues
-# remove negatives because of data entry issues with booking and release dates
-# if release date is missing, then change to NA
-# make all charges, booking types, release types, and sentence statuses uppercase
+# Fix los issues.
+# Remove negatives because of data entry issues with booking and release dates.
+# If release date is missing, then change los to NA instead of Inf.
+# Make all charges, booking types, release types, and sentence statuses uppercase.
 adm_all <- adm_all %>%
   mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
   filter(los_max >= 0 | is.na(los_max)) %>%
@@ -231,15 +227,15 @@ adm_all <- adm_all %>%
 # Standardize booking types for PC holds
 ##########
 
-# if PC hold is in charge description and it has been confirmed that the booking type is a PC hold,
-# change the booking_type (new variable, booking_type_withpcs, to preserve raw booking type) to a PC hold
-# gets a more accurate count of other booking types
+# If PC hold is in charge description and it has been confirmed that the booking type is a PC hold,
+#    change the booking_type (new variable, booking_type_withpcs, to preserve raw booking type) to a PC hold.
+# Gets a more accurate count of other booking types and the number of PC holds.
+
 adm_all <- adm_all %>%
+
   mutate(booking_type_withpcs =
             ###########
-
             # Change booking type to PC Hold
-
             ###########
   case_when(county == "Belknap"      & str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY/INTOXICATION", charge_desc) ~ "PROTECTIVE CUSTODY",
 
@@ -286,9 +282,7 @@ adm_all <- adm_all %>%
             county == "Sullivan"     & str_detect("TREATMENT AND SERVICES: PROTECTIVE CUSTODY", charge_desc)         ~ "PROTECTIVE CUSTODY",
 
             ###########
-
             # Change booking type
-
             ###########
             county == "Hillsborough" & str_detect("BOARDED", booking_type)
                                      & str_detect("CONVICTED|CONVICTED ROCK", sentence_status)                                              ~ "CONVICTED",
@@ -302,7 +296,7 @@ adm_all <- adm_all %>%
             TRUE ~ booking_type)) %>%
   select(id, booking_id, county, charge_desc, booking_type, booking_type_withpcs, sentence_status, release_type, everything())
 
-# combine some booking types together (some are the same or it makes sense to group them)
+# Combine some booking types together (some are the same or it makes sense to group them).
 adm_all <- adm_all %>%
   mutate(booking_type_standard =
   case_when(booking_type_withpcs == "DETAINEE REQUEST" |
@@ -350,44 +344,44 @@ adm_all <- adm_all %>%
 
   select(id, booking_id, county, charge_desc, booking_type, booking_type_withpcs, booking_type_standard, sentence_status, release_type, everything())
 
-# Change all "Unknown" to NA
+# Change all "Unknown" to NA for booking types, sentence statuses, and release types
 adm_all$booking_type[adm_all$booking_type                   == "UNKNOWN"] <- NA
 adm_all$booking_type_standard[adm_all$booking_type_standard == "UNKNOWN"] <- NA
 adm_all$sentence_status[adm_all$sentence_status             == "UNKNOWN"] <- NA
 adm_all$release_type[adm_all$release_type                   == "UNKNOWN"] <- NA
 
+# Create los categories.
 adm_all <- adm_all %>%
-mutate(los_category =
-case_when(los_max == 0 ~ "0",
-          los_max == 1 ~ "1",
-          los_max == 2 ~ "2",
-          los_max == 3 ~ "3",
-          los_max == 4 ~ "4",
-          los_max == 5 ~ "5",
-          los_max >= 6   & los_max <= 10  ~ "6-10",
-          los_max >= 11  & los_max <= 30  ~ "11-30",
-          los_max >= 31  & los_max <= 50  ~ "31-50",
-          los_max >= 50  & los_max <= 100 ~ "50-100",
-          los_max >= 101 & los_max <= 180 ~ "101-180",
-          los_max >  180              ~ "Over 180")) %>%
-  mutate(los_category = factor(los_category,
-                               levels = c("0",
-                                          "1",
-                                          "2",
-                                          "3",
-                                          "4",
-                                          "5",
-                                          "6-10",
-                                          "11-30",
-                                          "31-50",
-                                          "50-100",
-                                          "101-180",
-                                          "Over 180")))
+  mutate(los_category =
+  case_when(los_max == 0 ~ "0",
+            los_max == 1 ~ "1",
+            los_max == 2 ~ "2",
+            los_max == 3 ~ "3",
+            los_max == 4 ~ "4",
+            los_max == 5 ~ "5",
+            los_max >= 6   & los_max <= 10  ~ "6-10",
+            los_max >= 11  & los_max <= 30  ~ "11-30",
+            los_max >= 31  & los_max <= 50  ~ "31-50",
+            los_max >= 50  & los_max <= 100 ~ "50-100",
+            los_max >= 101 & los_max <= 180 ~ "101-180",
+            los_max >  180              ~ "Over 180")) %>%
+    mutate(los_category = factor(los_category,
+                                 levels = c("0",
+                                            "1",
+                                            "2",
+                                            "3",
+                                            "4",
+                                            "5",
+                                            "6-10",
+                                            "11-30",
+                                            "31-50",
+                                            "50-100",
+                                            "101-180",
+                                            "Over 180")))
 
-# Remove missing data
-# find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL
-# don't remove strafford
-# Only 37 entries
+# Remove missing data (37 entries).
+# Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
+# Don't remove Strafford since all of their info is blank except for dates.
 all_nas <- adm_all %>%
   filter(county != "Strafford") %>%
   filter(is.na(charge_desc) &
@@ -395,18 +389,19 @@ all_nas <- adm_all %>%
          is.na(release_type) &
          is.na(sentence_status))
 adm_all <- adm_all %>% anti_join(all_nas) %>% distinct()
-dim(adm_all); length(unique(adm_all$booking_id)); length(unique(adm_all$id)) # 73093 dim, 51545 bookings, 32177 individuals
+# dim(adm_all); length(unique(adm_all$booking_id)); length(unique(adm_all$id)) # 73093 dim, 51545 bookings, 32177 individuals
 
 ################################################################################
 
 # BOOKINGS & ENTRANCES (includes Coos and Strafford)
+# Includes Coos bookings and all other county entrances (including PC holds).
 
 ################################################################################
 
-# remove charges, release types, and sentence statuses to get booking events/less rows
-# create month year variables
-# there will not be one booking id per row because people can have multiple booking types per booking episode
-# this includes pc holds
+# Remove charges, release types, and sentence statuses to get booking events/less rows.
+# Create month year variables.
+# There will not be one booking id per row because people can have multiple booking types per booking episode.
+# This df includes pc holds.
 bookings_entrances_all <- adm_all %>%
   dplyr::select(county,
                 id,
@@ -452,7 +447,8 @@ table(bookings_entrances_all$county) # All counties
 
 ##########
 
-# determine if PC hold happened in booking event
+# Some people can be booked for a criminal charge but also be held for protective custody.
+# Determine if PC hold happened in booking event.
 bookings_entrances <- bookings_entrances_all %>%
   dplyr::group_by(booking_id) %>%
   mutate(all_hold_types=paste(sort(unique(pc_hold)), collapse="&")) %>%
@@ -461,23 +457,18 @@ bookings_entrances <- bookings_entrances_all %>%
   select(county:high_utilizer_10_pct_fy, month_year_text:pc_hold_in_booking) %>%
   distinct()
 
-dim(bookings_entrances); length(unique(bookings_entrances$booking_id)); length(unique(bookings_entrances$id)) #55087 dim, 51545 bookings, 32177 individuals
-dups <- bookings_entrances[duplicated(bookings_entrances$booking_id)|duplicated(bookings_entrances$booking_id, fromLast=TRUE),] # 6551
+# dim(bookings_entrances); length(unique(bookings_entrances$booking_id)); length(unique(bookings_entrances$id)) #55087 dim, 51545 bookings, 32177 individuals
+# dups <- bookings_entrances[duplicated(bookings_entrances$booking_id)|duplicated(bookings_entrances$booking_id, fromLast=TRUE),] # 6551
 
-# combine booking types by booking id
+# Combine booking types by booking id.
 bookings_entrances <- bookings_entrances %>%
   group_by(booking_id) %>%
   mutate(all_booking_types=paste(sort(unique(booking_type)), collapse=" & ")) %>%
   select(county: booking_type, all_booking_types, everything()) %>%
   distinct()
 
-bookings_entrances <- bookings_entrances %>%
-  #filter(county != "Strafford") %>%
-  droplevels() %>%
-  distinct()
-
-dim(bookings_entrances)                       # 55087
-length(unique(bookings_entrances$booking_id)) # 51545
+# dim(bookings_entrances)                       # 55087
+# length(unique(bookings_entrances$booking_id)) # 51545
 
 # sep by fy year
 bookings_entrances_19 <- bookings_entrances %>% distinct() %>% filter(fy == 2019)
@@ -486,11 +477,11 @@ bookings_entrances_21 <- bookings_entrances %>% distinct() %>% filter(fy == 2021
 
 ##########
 
-# ENTRANCES (No Coos)
+# ENTRANCES (No Coos) - not using for now.
 
 ##########
 
-# remove Coos
+# Remove Coos.
 entrances <- bookings_entrances_all %>%
   select(county,
          fy,
@@ -500,8 +491,11 @@ entrances <- bookings_entrances_all %>%
          los,
          los_category,
          high_utilizer_4_times,
-         high_utilizer_1_pct, high_utilizer_5_pct, high_utilizer_10_pct,
-         month_year_text, month_year) %>%
+         high_utilizer_1_pct,
+         high_utilizer_5_pct,
+         high_utilizer_10_pct,
+         month_year_text,
+         month_year) %>%
   filter(county != "Coos") %>%
   droplevels() %>%
   distinct()
@@ -530,46 +524,8 @@ booking_no_pc_hold <- bookings_entrances_all %>%
   droplevels() %>%
   distinct()
 
-dim(booking_no_pc_hold); length(unique(booking_no_pc_hold$booking_id)); length(unique(booking_no_pc_hold$id)) #31936 dim, 31936 bookings, 19024 individuals
-table(booking_no_pc_hold$county) # No strafford
-
-################################################################################
-
-# Release types data frame
-
-################################################################################
-
-release_type <- adm_all %>%
-  select(county,
-         id,
-         fy,
-         booking_id,
-         release_type) %>%
-  distinct()
-
-# sep by fy year
-release_type_19 <- release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2019)
-release_type_20 <- release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2020)
-release_type_21 <- release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2021)
-
-################################################################################
-
-# Sentence statuses data frame
-
-################################################################################
-
-sentence_status <- adm_all %>%
-  select(county,
-         id,
-         fy,
-         booking_id,
-         sentence_status) %>%
-  distinct()
-
-# sep by fy year
-sentence_status_19 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2019)
-sentence_status_20 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2020)
-sentence_status_21 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2021)
+# dim(booking_no_pc_hold); length(unique(booking_no_pc_hold$booking_id)); length(unique(booking_no_pc_hold$id)) #31936 dim, 31936 bookings, 19024 individuals
+# table(booking_no_pc_hold$county) # No strafford
 
 ################################################################################
 
@@ -577,7 +533,7 @@ sentence_status_21 <- sentence_status %>% select(county, id, fy, booking_id, sen
 
 ################################################################################
 
-# instead of removing coos and strafford, I could label their pc_hold_in_booking as NA to include them in tables...
+# instead of removing coos and strafford, I label their pc_hold_in_booking as NA to include them in tables
 df_pch <- bookings_entrances %>%
   #filter(county != "Coos" & county != "Strafford") %>%
   select(fy,
@@ -593,7 +549,7 @@ df_pch <- bookings_entrances %>%
   mutate(pc_hold_in_booking = ifelse(county == "Coos", NA, pc_hold_in_booking)) %>%
   droplevels()
 
-dim(df_pch); length(unique(df_pch$booking_id)); length(unique(df_pch$id));  # 51545, 32177
+# dim(df_pch); length(unique(df_pch$booking_id)); length(unique(df_pch$id));  # 51545, 32177
 
 ################################################################################
 
@@ -608,7 +564,7 @@ counties <- adm_all$county %>%
 
 ################################################################################
 
-# Charges dataframe
+# Charges dataframe - not using for now
 
 ################################################################################
 
@@ -650,3 +606,41 @@ all_booking_dates <- bookings_entrances %>%
   select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>%
   distinct()
 
+
+################################################################################
+
+# Release types data frame - not using for now
+
+################################################################################
+
+release_type <- adm_all %>%
+  select(county,
+         id,
+         fy,
+         booking_id,
+         release_type) %>%
+  distinct()
+
+# sep by fy year
+release_type_19 <- release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2019)
+release_type_20 <- release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2020)
+release_type_21 <- release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2021)
+
+################################################################################
+
+# Sentence statuses data frame - not using for now
+
+################################################################################
+
+sentence_status <- adm_all %>%
+  select(county,
+         id,
+         fy,
+         booking_id,
+         sentence_status) %>%
+  distinct()
+
+# sep by fy year
+sentence_status_19 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2019)
+sentence_status_20 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2020)
+sentence_status_21 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2021)

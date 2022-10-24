@@ -153,7 +153,7 @@ gg_people_booked <-
   geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
-                     limits = c(0,24000)) +
+                     limits = c(0,15000)) +
   theme_no_axes
 
 ################################################################################################################################################################
@@ -315,3 +315,16 @@ table_booking_types <- fnc_reactable_fy(df_booking,
                                            metric_label = "Booking Type",
                                            label_width = 275,
                                            note = "")
+
+##########
+
+# Save data
+
+##########
+
+save(amt_people_booked, file=paste0(sp_data_path, "/Data/r_data/amt_people_booked.Rda", sep = ""))
+save(row_people_booked, file=paste0(sp_data_path, "/Data/r_data/row_people_booked.Rda", sep = ""))
+save(amt_bookings,      file=paste0(sp_data_path, "/Data/r_data/amt_bookings.Rda",      sep = ""))
+save(row_bookings_fy,   file=paste0(sp_data_path, "/Data/r_data/row_bookings_fy.Rda",   sep = ""))
+save(PRES_gg_bookings,  file=paste0(sp_data_path, "/Data/r_data/PRES_gg_bookings.Rda",  sep = ""))
+

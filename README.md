@@ -29,8 +29,9 @@ This project focuses on the prevalence of people with behavioral health needs mo
       |-- 16_high_utilizers.R                    # Analyze HU's (1%, 5%, 10%)
       |-- 17_non_high_utilizers.R                # Analyze non-HU's (1%, 5%, 10%)
       |-- 18_los.R                               # Analyze LOS
-      |-- 19_data_availability.R                 # Create table to show data availability by county
+      |-- 19_data_availability.R                 # Table that shows data availability by county
       |-- 20_demographics.R                      # Analyze demographics
+      |-- 21_charges.R                           # Create charge categories
       
       |-- 22_county_reports_tables.R             # Create tables for county reports
       |-- 23_county_reports_plots.R              # Create plots for county reports

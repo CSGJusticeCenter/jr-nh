@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: functions_visuals.R
-# Last updated: August 23, 2022
+# Last updated: October 24, 2022
 # Author: Mari Roberts
 
 # Custom table and plot based functions
@@ -46,7 +46,7 @@ fnc_table_settings <- function(gt_object){
     )
 }
 
-# custom function to format table headers for pc holds
+# custom function to format table headers with fys as columns
 fnc_pc_holds_headers <- function(gt_object){
   gt_object %>%
     cols_width(
@@ -75,60 +75,6 @@ fnc_pc_holds_headers <- function(gt_object){
 # ggplots
 ###########
 
-# booking heat map
-fnc_booking_heatmap <- function(df){
-  ggplot(df, aes(year, month)) +
-    geom_tile(aes(fill = N), colour = "white") +
-    #scale_fill_gradient(low = "#d4e9f8", high = "#00475d") +
-    scale_fill_gradient(low = "#eeed90", high = "#315c15") +
-    guides(fill=guide_legend(title="Total Bookings")) +
-    labs(title = "Number of Bookings by Month and FY",
-         x = "Year", y = "Month") +
-    theme_bw() + theme_minimal()
-}
-
-# percent grouped bar chart
-fnc_pct_grouped_bar_chart <- function(df, color1, color2){
-  # df$variable_name <- get(variable_name, df)
-  df1 <- group_by(df, fy) %>% mutate(pct = total/sum(total)*100) %>%
-    mutate(pct = round(pct, 1))
-  df1 <- as.data.frame(df1)
-  df1 <- df1 %>% mutate(pct = paste0(pct, "%"))
-  ggplot(df1, aes(x = fy, y = total, fill = pc_hold_in_booking)) +
-    geom_col(colour = NA, position = "fill") +
-    scale_y_continuous(labels = scales::percent) +
-    scale_fill_manual(values=c(color1,color2), labels = c("Non-PC      ","PC")) +
-    geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
-              size = 7.5, family = "Franklin Gothic Book",
-              color = ifelse(df1$pc_hold_in_booking == "Non-PC Hold", "black", "white")) +
-    theme_axes +
-    theme(legend.position = "top",
-          legend.justification = c(0, 0),
-          legend.title=element_blank(),
-          axis.title.y = element_blank())
-}
-
-# percent bar chart showing the proportion over time for HU's and non-HU's bookings
-fnc_hu_pct_grouped_bar_chart <- function(df, color1, color2, type){
-  df1 <- group_by(df, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
-  df1 <- as.data.frame(df1)
-  df1 <- df1 %>% mutate(pct = round(pct, 1))
-
-  ggplot(df1, aes(x = fy, y = total, fill = type)) +
-    geom_col(colour = NA, position = "fill") +
-    scale_y_continuous(labels = scales::percent) +
-    scale_fill_manual(values=c(color1, color2), labels = c("Non-HU      ","HU")) +
-    geom_text(data=subset(df1, pct > 3), aes(label = paste0(pct, "%"), fontface = 'bold'), position = position_fill(vjust = 0.5),
-              size = 7.5, family = "Franklin Gothic Book",
-              color = ifelse(df1$type == "No", "black", "white")) +
-    theme_axes +
-    theme(legend.position = "top",
-          legend.justification = c(0, 0),
-          legend.title=element_blank(),
-          axis.title.y = element_blank())
-
-}
-
 # ggplot theme
 theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
   theme(
@@ -145,20 +91,21 @@ theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
       color = "black",
       margin = margin(-10, 0, 15, 0)
     ),
-     #axis.text = element_text(size = 22),
-     axis.text.x = element_text(size = 22, color = "black"),
-     axis.title = element_text(color = "black"),
-     axis.title.y = element_text(size = 22, color = "black"),
-     axis.title.x = element_blank(),
-     axis.text.y = element_blank(),
+    #axis.text = element_text(size = 22),
+    axis.text.x = element_text(size = 22, color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.title.y = element_text(size = 22, color = "black"),
+    axis.title.x = element_blank(),
+    axis.text.y = element_blank(),
 
-     panel.grid.minor = element_blank(),
-     panel.grid.major = element_blank(),
-     panel.border = element_blank(),
-     legend.position = "top",
-     legend.justification = c(0, 0),
-     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
-    )
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.border = element_blank(),
+    legend.position = "top",
+    legend.justification = c(0, 0),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
+  )
+
 # ggplot theme
 theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
   theme(
@@ -195,8 +142,62 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
 
-# get proportion of high utilizers by variable
+# # booking heat map - not using anymore
+# fnc_booking_heatmap <- function(df){
+#   ggplot(df, aes(year, month)) +
+#     geom_tile(aes(fill = N), colour = "white") +
+#     #scale_fill_gradient(low = "#d4e9f8", high = "#00475d") +
+#     scale_fill_gradient(low = "#eeed90", high = "#315c15") +
+#     guides(fill=guide_legend(title="Total Bookings")) +
+#     labs(title = "Number of Bookings by Month and FY",
+#          x = "Year", y = "Month") +
+#     theme_bw() + theme_minimal()
+# }
 
+# percent grouped bar chart
+fnc_pct_grouped_bar_chart <- function(df, color1, color2){
+  # df$variable_name <- get(variable_name, df)
+  df1 <- group_by(df, fy) %>% mutate(pct = total/sum(total)*100) %>%
+    mutate(pct = round(pct, 1))
+  df1 <- as.data.frame(df1)
+  df1 <- df1 %>% mutate(pct = paste0(pct, "%"))
+  ggplot(df1, aes(x = fy, y = total, fill = pc_hold_in_booking)) +
+    geom_col(colour = NA, position = "fill") +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(values=c(color1,color2), labels = c("Non-PC      ","PC")) +
+    geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
+              size = 7.5, family = "Franklin Gothic Book",
+              color = ifelse(df1$pc_hold_in_booking == "Non-PC Hold", "black", "white")) +
+    theme_axes +
+    theme(legend.position = "top",
+          legend.justification = c(0, 0),
+          legend.title=element_blank(),
+          axis.title.y = element_blank(),
+          axis.title.x = element_blank())
+}
+
+# percent bar chart showing the proportion over time for HU's and non-HU's
+fnc_hu_pct_grouped_bar_chart <- function(df, color1, color2, type){
+  df1 <- group_by(df, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
+  df1 <- as.data.frame(df1)
+  df1 <- df1 %>% mutate(pct = round(pct, 1))
+
+  ggplot(df1, aes(x = fy, y = total, fill = type)) +
+    geom_col(colour = NA, position = "fill") +
+    scale_y_continuous(labels = scales::percent) +
+    scale_fill_manual(values=c(color1, color2), labels = c("Non-HU      ","HU")) +
+    geom_text(data=subset(df1, pct > 3), aes(label = paste0(pct, "%"), fontface = 'bold'), position = position_fill(vjust = 0.5),
+              size = 7.5, family = "Franklin Gothic Book",
+              color = ifelse(df1$type == "No", "black", "white")) +
+    theme_axes +
+    theme(legend.position = "top",
+          legend.justification = c(0, 0),
+          legend.title=element_blank(),
+          axis.title.y = element_blank())
+
+}
+
+# get proportion of high utilizers by variable
 fnc_gg_huvsnonhu_pct <- function(df, variable_name, color1, color2){
   df$variable_name <- get(variable_name, df)
   df1 <- group_by(df, fy) %>% mutate(pct = total/sum(total)*100) %>%
@@ -221,28 +222,6 @@ fnc_gg_huvsnonhu_pct <- function(df, variable_name, color1, color2){
 ###########
 # highcharts
 ###########
-
-fnc_covid_time_highchart <- function(df, yaxis_label, title, line_color){
-
-  df1 <- df %>%
-    dplyr::group_by(month_year, month_year_text) %>%
-    dplyr::summarise(total = n())
-  df1 <- df1 %>%
-    mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"),
-           month_year_text = as.factor(month_year_text))
-
-  chart <- df1 %>%
-    hchart('line', hcaes(x = month_year_text, y = total), color = line_color) %>%
-    hc_setup() %>%
-    hc_xAxis(
-      title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
-      plotLines = list(list(label = list(text = "COVID-19 Start"), fontSize = "26px", color = "gray", width = 2, value = 20, zIndex = 1))
-    ) %>%
-    hc_yAxis(title = list(text = yaxis_label, style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px"))) %>%
-    hc_title(text = title)
-  return(chart)
-
-}
 
 # custom highcharts theme for plots
 hc_theme_jc <- hc_theme(colors = c(jri_light_blue, jri_green, jri_orange),
@@ -269,6 +248,29 @@ hc_setup <- function(x) {
     highcharter::hc_exporting(enabled = TRUE)
 }
 
+# highchart showing change over time with covid line
+fnc_covid_time_highchart <- function(df, yaxis_label, title, line_color){
+
+  df1 <- df %>%
+    dplyr::group_by(month_year, month_year_text) %>%
+    dplyr::summarise(total = n())
+  df1 <- df1 %>%
+    mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"),
+           month_year_text = as.factor(month_year_text))
+
+  chart <- df1 %>%
+    hchart('line', hcaes(x = month_year_text, y = total), color = line_color) %>%
+    hc_setup() %>%
+    hc_xAxis(
+      title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
+      plotLines = list(list(label = list(text = "COVID-19 Start"), fontSize = "26px", color = "gray", width = 2, value = 20, zIndex = 1))
+    ) %>%
+    hc_yAxis(title = list(text = yaxis_label, style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px"))) %>%
+    hc_title(text = title)
+  return(chart)
+
+}
+
 ###########
 # Kable tables
 ###########
@@ -290,7 +292,6 @@ fnc_freq_table <- function(df, title){
 ###########
 
 # show number of bookings by type by fiscal year
-# coos, strafford does not have booking type
 fnc_reactable_fy <- function(df, metric_label, label_width, note){
 
   df1 <- df %>%
@@ -354,6 +355,7 @@ fnc_reactable_fy <- function(df, metric_label, label_width, note){
   return(fy_table)
 }
 
+# basic reactable table with fys as columns - by county
 fnc_reactable_county_fy <- function(df, row_num){
 
   county_fy_table <-
@@ -384,7 +386,67 @@ fnc_reactable_county_fy <- function(df, row_num){
 
 }
 
+# basic reactable table with fys as columns - by state
+fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, note){
 
+  df1 <- df %>%
+    dplyr::rename(new_variable_name = 1)
+
+  fy_table <- reactable(df1,
+                        pagination = FALSE,
+                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                        defaultColDef = reactable::colDef(
+                          format = colFormat(separators = TRUE), align = "center",
+                          footer = function(values, name) {
+                            if (name %in% c("count_19", "count_20", "count_21", "total")) {
+                              htmltools::div(paste0("", formatC(
+                                x = sum(values),
+                                digits = 0,
+                                big.mark = ",",
+                                format = "f"
+                              )))
+                            }
+                          },
+                          footerStyle = list(fontWeight = "bold")
+                        ),
+                        compact = TRUE,
+                        fullWidth = FALSE,
+                        columnGroups = list(
+                          colGroup(name = "2019", columns = c("count_19", "pct_19")),
+                          colGroup(name = "2020", columns = c("count_20", "pct_20")),
+                          colGroup(name = "2021", columns = c("count_21", "pct_21")),
+                          colGroup(name = "3 Years", columns = c("total", "freq"))
+                        ),
+                        columns = list(
+                          new_variable_name = colDef(footer = "Total",
+                                                     name = "100",
+                                                     align = "left",
+                                                     minWidth = 150),
+                          count_19     = colDef(minWidth = 80,
+                                                name = "Count"),
+                          pct_19       = colDef(minWidth = 80,
+                                                name = "%",
+                                                format = colFormat(percent = TRUE, digits = 1)),
+                          count_20     = colDef(minWidth = 80,
+                                                name = "Count"),
+                          pct_20       = colDef(minWidth = 80,
+                                                name = "%",
+                                                format = colFormat(percent = TRUE, digits = 1)),
+                          count_21     = colDef(minWidth = 80,
+                                                name = "Count"),
+                          pct_21       = colDef(minWidth = 80,
+                                                name = "%",
+                                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3"),
+                                                format = colFormat(percent = TRUE, digits = 1)),
+                          total        = colDef(minWidth = 100,
+                                                name = "Count"),
+                          freq         = colDef(minWidth = 90,
+                                                name = "%",
+                                                format = colFormat(percent = TRUE, digits = 1))))
+
+}
+
+# summary table showing the min mean max of a variable
 fnc_reactable_summary <- function(df, header_name, total1_name, total2_name, freq1_name, mean1_name, max1_name){
 
   df1 <- df %>%
@@ -420,6 +482,7 @@ fnc_reactable_summary <- function(df, header_name, total1_name, total2_name, fre
                         max     = colDef(minWidth = 130, name = max1_name)))
 }
 
+# summary table showing the min mean max of hu's
 fnc_reactable_hus_descriptive_summary <- function(df){
   table1 <- reactable(df,
                       pagination = FALSE,

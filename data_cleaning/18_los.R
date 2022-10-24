@@ -233,7 +233,7 @@ maximum_los_entrances_10_pct <- as.numeric(maximum_los_entrances_10_pct)
 PRES_gg_los_10_pct <- ggplot(data1, aes(x = los_category, y = total, fill = hu)) +
 
   geom_bar(aes(x = los_category, y = total, fill = hu), stat="identity", width = 0.75) +
-  labs(x = "Length of Stay (Days)", y = "Frequency\n") +
+  labs(x = "Length of Stay (Days)", y = "Number of People\n") +
 
   # Median
   geom_vline(xintercept = 3, linetype = "dashed", colour = "darkgray",size = 1) +
