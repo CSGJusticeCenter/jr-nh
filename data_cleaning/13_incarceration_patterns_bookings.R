@@ -250,7 +250,7 @@ PRES_gg_bookings <-
   geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
-                     limits = c(0,24000)) +
+                     limits = c(0,15000)) +
   theme_no_axes
 
 ####################
@@ -327,4 +327,4 @@ save(row_people_booked, file=paste0(sp_data_path, "/Data/r_data/row_people_booke
 save(amt_bookings,      file=paste0(sp_data_path, "/Data/r_data/amt_bookings.Rda",      sep = ""))
 save(row_bookings_fy,   file=paste0(sp_data_path, "/Data/r_data/row_bookings_fy.Rda",   sep = ""))
 save(PRES_gg_bookings,  file=paste0(sp_data_path, "/Data/r_data/PRES_gg_bookings.Rda",  sep = ""))
-
+save(table_bookings_fy_county,  file=paste0(sp_data_path, "/Data/r_data/table_bookings_fy_county.Rda",  sep = ""))

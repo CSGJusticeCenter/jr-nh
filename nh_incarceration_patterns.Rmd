@@ -48,7 +48,7 @@ PRES_gg_bookings
 ```
 
 ```{r}
-row_bookings_fy
+#row_bookings_fy
 ```
 
 ## Number of Bookings By County
@@ -77,7 +77,7 @@ Entrances include anyone Entered into jail for a criminal charge which does not 
 
 ```{r, results='asis'}
 # print header for pc hold section
-cat("**There were ", amt_people_entered, " who entered into NH jails between FY2019 to FY2021.**\n\n", sep = "")
+cat("**There were ", amt_people_entered, " people who entered into NH jails between FY2019 to FY2021.**\n\n", sep = "")
 ```
 
 ## Number of Entrances By State
@@ -94,7 +94,7 @@ PRES_gg_entrances
 ```
 
 ```{r}
-row_entrances_fy
+#row_entrances_fy
 ```
 
 ## Number of Entrances By County
@@ -109,7 +109,7 @@ PRES_table_entrances_fy_county
 ```{r}
 PRES_table_entrances_people_county
 ```
-```{r fig.height = 5, fig.width = 12}
+```{r fig.height = 8, fig.width = 15}
 PRES_gg_num_entrances
 ```
 
@@ -140,14 +140,16 @@ hc_pch_time
 
 ## By County
 
-The proportion of bookings that were protective custody holds varied greatly by county. The table below shows the number of and proportion of bookings that included a protective custody hold charge.  
+The proportion of entrances that were protective custody holds varied greatly by county. The table below shows the number of and proportion of entrances that included a protective custody hold charge.  
 
 Belknap had the highest proportion of bookings that were protective custody holds.  
 
 ```{r}
 PRES_table_entrances_with_pc_holds
 ```
-Some counties saw decreases in PC holds while others saw increases.  
+<br>
+
+**Some counties saw decreases in PC holds while others saw increases.**  
 
 ```{r}
 table_pc_holds_fy_county

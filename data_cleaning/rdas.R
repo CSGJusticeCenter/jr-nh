@@ -27,6 +27,7 @@ load(paste0(sp_data_path, "/Data/r_data/row_people_booked.Rda",     sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/amt_bookings.Rda",          sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/row_bookings_fy.Rda",       sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/PRES_gg_bookings.Rda",      sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/table_bookings_fy_county.Rda",      sep = ""))
 
 load(paste0(sp_data_path, "/Data/r_data/amt_people_entered.Rda",             sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/row_people_entered.Rda",             sep = ""))

@@ -299,6 +299,7 @@ fnc_reactable_fy <- function(df, metric_label, label_width, note){
 
   # create reactable table of number/freq of booking types by fiscal year and for all 3 years
   fy_table <- reactable(df1,
+                        style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                         pagination = FALSE,
                         theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
                                                headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
@@ -360,8 +361,8 @@ fnc_reactable_county_fy <- function(df, row_num){
 
   county_fy_table <-
     reactable(df,
+              style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
               pagination = FALSE,
-              style = list(fontFamily = "Franklin Gothic Book"),
               rowStyle = function(index) {
                 if (index %in% c(row_num)) {
                   list(`border-top` = "thin solid",
@@ -394,6 +395,7 @@ fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, 
 
   fy_table <- reactable(df1,
                         pagination = FALSE,
+                        style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                         theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
                         defaultColDef = reactable::colDef(
                           format = colFormat(separators = TRUE), align = "center",
@@ -419,7 +421,7 @@ fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, 
                         ),
                         columns = list(
                           new_variable_name = colDef(footer = "Total",
-                                                     name = "100",
+                                                     name = "County",
                                                      align = "left",
                                                      minWidth = 150),
                           count_19     = colDef(minWidth = 80,
@@ -456,7 +458,7 @@ fnc_reactable_summary <- function(df, header_name, total1_name, total2_name, fre
 
   table1 <- reactable(df1,
                       pagination = FALSE,
-                      style = list(fontFamily = "Franklin Gothic Book"),
+                      style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                       rowStyle = function(index) {
                         if (index %in% c(10)) {
                           list(`border-top` = "thin solid",
@@ -486,7 +488,7 @@ fnc_reactable_summary <- function(df, header_name, total1_name, total2_name, fre
 fnc_reactable_hus_descriptive_summary <- function(df){
   table1 <- reactable(df,
                       pagination = FALSE,
-                      style = list(fontFamily = "Franklin Gothic Book"),
+                      style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                       rowStyle = function(index) {
                         if (index %in% c(10)) {
                           list(`border-top` = "thin solid",
