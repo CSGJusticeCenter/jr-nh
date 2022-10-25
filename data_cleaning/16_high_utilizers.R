@@ -230,30 +230,30 @@ top_10_pct_min_entrances <- df_1_5_10 %>% filter(county == "State") %>% select(m
 top_10_pct_min_entrances <- as.numeric(top_10_pct_min_entrances$min_10_pct)
 
 # subset data and create categories for number of entrances
-data1 <- bookings_entrances %>% ungroup() %>% select(id, num_bookings) %>% distinct() %>%
-  mutate(num_bookings_category = case_when(num_bookings == 1 ~ "1",
-                                           num_bookings == 2 ~ "2",
-                                           num_bookings == 3 ~ "3",
-                                           num_bookings == 4 ~ "4",
-                                           num_bookings == 5 ~ "5",
-                                           num_bookings == 6 ~ "6",
-                                           num_bookings == 7 ~ "7",
-                                           num_bookings == 8 ~ "8",
-                                           num_bookings == 9 ~ "9",
-                                           num_bookings == 10 ~ "10",
-                                           num_bookings == 11 ~ "11",
-                                           num_bookings == 12 ~ "12",
-                                           num_bookings == 13 ~ "13",
-                                           num_bookings == 14 ~ "14",
-                                           num_bookings == 15 ~ "15",
-                                           num_bookings == 16 ~ "16",
-                                           num_bookings == 17 ~ "17",
-                                           num_bookings == 18 ~ "18",
-                                           num_bookings == 19 ~ "19",
-                                           num_bookings >= 20 ~ "20+")) %>%
-  group_by(num_bookings_category) %>% summarise(total = n())
+data1 <- bookings_entrances %>% ungroup() %>% select(id, num_entrances) %>% distinct() %>%
+  mutate(num_entrances_category = case_when(num_entrances == 1 ~ "1",
+                                           num_entrances == 2 ~ "2",
+                                           num_entrances == 3 ~ "3",
+                                           num_entrances == 4 ~ "4",
+                                           num_entrances == 5 ~ "5",
+                                           num_entrances == 6 ~ "6",
+                                           num_entrances == 7 ~ "7",
+                                           num_entrances == 8 ~ "8",
+                                           num_entrances == 9 ~ "9",
+                                           num_entrances == 10 ~ "10",
+                                           num_entrances == 11 ~ "11",
+                                           num_entrances == 12 ~ "12",
+                                           num_entrances == 13 ~ "13",
+                                           num_entrances == 14 ~ "14",
+                                           num_entrances == 15 ~ "15",
+                                           num_entrances == 16 ~ "16",
+                                           num_entrances == 17 ~ "17",
+                                           num_entrances == 18 ~ "18",
+                                           num_entrances == 19 ~ "19",
+                                           num_entrances >= 20 ~ "20+")) %>%
+  group_by(num_entrances_category) %>% summarise(total = n())
 
-data1$num_bookings_category <- factor(data1$num_bookings_category,
+data1$num_entrances_category <- factor(data1$num_entrances_category,
                                       levels = c("1",
                                                  "2",
                                                  "3",
@@ -294,7 +294,7 @@ PRES_gg_hu_percentile_explanation <- ggplot(data1)+
             ymax=23945,
             fill=jri_light_blue, alpha = 0.01) +
 
-  geom_bar(data=data1, aes(x=num_bookings_category, y=total),
+  geom_bar(data=data1, aes(x=num_entrances_category, y=total),
            stat="identity",
            fill = "gray",
            colour= "gray", lwd=0.5) +

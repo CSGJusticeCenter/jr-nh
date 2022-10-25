@@ -16,7 +16,7 @@ coos_adm_all <- coos_adm.xlsx %>%
   clean_names() %>%
   mutate(booking_type = NA,
          release_type = NA,
-         race_label = NA) %>%
+         race_label   = NA) %>%
   dplyr::select(id = unique_id,
                 inmate_id,
                 yob,

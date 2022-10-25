@@ -62,12 +62,12 @@ df_people_entered <- df_people_entered_pre %>%
   df_people_entered <- df_people_entered %>%
   mutate(variable_name = ifelse(variable_name == "total", "# Unique People entered into Jail", ""))
 
-# count number of people entered for all three years / accounts for double counting by FY-accurate
+# Count number of people entered for all three years / accounts for double counting by FY-accurate
 amt_people_entered <- format(round(as.numeric(amt_people_entered), 0), nsmall=0, big.mark=",")
 
 ##########
 
-# create reactable table showing number of people entered by FY and total
+# Create reactable table showing number of people entered by FY and total
 
 ##########
 
@@ -114,7 +114,7 @@ amt_people_entered_county <- bookings_entrances %>%
   dplyr::group_by(county) %>%
   dplyr::summarise(total = n())
 
-# Df of total number of people entered by FY
+# Df of total number of people entered by FY by county
 df_people_entered_county <- bookings_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(id, fy, county) %>%
@@ -155,7 +155,7 @@ gg_people_entered <-
   geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
-                     limits = c(0,24000)) +
+                     limits = c(0,17000)) +
   theme_no_axes
 
 ################################################################################################################################################################
@@ -281,15 +281,15 @@ PRES_table_entrances_fy_county <- fnc_reactable_county_fy(df_entrances_county, r
 
 data1 <- df_entrances_county %>%
   mutate(county = ifelse(county == "Coos (bookings only)", "Coos", county),
-         entrances_change_19_21 = round(entrances_change_19_21, 3)
+         change_19_21 = round(change_19_21, 3)
          ) %>%
   filter(county != "State")
 
 PRES_gg_entrances_change_county <-
-  ggplot(data1, aes(reorder(county, entrances_change_19_21), entrances_change_19_21, fill = jri_green)) +
+  ggplot(data1, aes(reorder(county, change_19_21), change_19_21, fill = jri_green)) +
   geom_bar(stat = "identity", fill=jri_dark_blue) +
   coord_flip() +
-  geom_text(data = data1, aes(label = paste("-", (entrances_change_19_21*100), "%", sep = ""), fontface = 'bold'),
+  geom_text(data = data1, aes(label = paste("-", (round(change_19_21*100, 0)), "%", sep = ""), fontface = 'bold'),
             size = 7.5,
             hjust = 1.2,
             family = "Franklin Gothic Book",
@@ -317,19 +317,19 @@ PRES_gg_entrances_change_county <-
 # Average number of entrances/fy by county
 df_avg_entrances_county <- bookings_entrances %>%
   ungroup() %>%
-  select(county, id, num_bookings) %>%
+  select(county, id, num_entrances) %>%
   distinct() %>%
   group_by(county) %>%
-  dplyr::summarize(avg_entrances = mean(num_bookings, na.rm=TRUE)) %>%
+  dplyr::summarize(avg_entrances = mean(num_entrances, na.rm=TRUE)) %>%
   mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)", TRUE ~ county))
 
 # Average number of entrances/fy by state
 df_avg_entrances_total <- bookings_entrances %>%
   ungroup() %>%
-  select(id, num_bookings) %>%
+  select(id, num_entrances) %>%
   distinct() %>%
   group_by() %>%
-  dplyr::summarize(avg_entrances = mean(num_bookings, na.rm=TRUE)) %>%
+  dplyr::summarize(avg_entrances = mean(num_entrances, na.rm=TRUE)) %>%
   mutate(county = "State")
 
 # Add county and state info together
@@ -363,7 +363,7 @@ PRES_table_entrances_people_county <-
                      fontWeight = "bold")
               }
             },
-            # columnGroups = list(
+            # ColumnGroups = list(
             #   colGroup(name = "Number of People",    columns = c("people_entered_total", "people_entered_change_19_21")),
             #   colGroup(name = "Number of Entrances", columns = c("entrances_total", "entrances_change_19_21", "avg_entrances"))
             # ),
@@ -390,17 +390,17 @@ PRES_table_entrances_people_county <-
 
 ################################################################################
 
-min(bookings_entrances$num_bookings)
-max(bookings_entrances$num_bookings)
+min(bookings_entrances$num_entrances)
+max(bookings_entrances$num_entrances)
 
-data1 <- bookings_entrances %>% ungroup() %>% select(id, num_bookings) %>% distinct() %>%
-  mutate(num_bookings_category = case_when(num_bookings == 1 ~ "1",
-                                           num_bookings == 2 ~ "2",
-                                           num_bookings == 3 ~ "3",
-                                           num_bookings == 4 ~ "4",
-                                           num_bookings == 5 ~ "5",
-                                           num_bookings  > 5 ~ "6+")) %>%
-  mutate(num_bookings_category = factor(num_bookings_category,
+data1 <- bookings_entrances %>% ungroup() %>% select(id, num_entrances) %>% distinct() %>%
+  mutate(num_entrances_category = case_when(num_entrances == 1 ~ "1",
+                                           num_entrances == 2 ~ "2",
+                                           num_entrances == 3 ~ "3",
+                                           num_entrances == 4 ~ "4",
+                                           num_entrances == 5 ~ "5",
+                                           num_entrances  > 5 ~ "6+")) %>%
+  mutate(num_entrances_category = factor(num_entrances_category,
                                         levels = c("1",
                                                    "2",
                                                    "3",
@@ -409,7 +409,7 @@ data1 <- bookings_entrances %>% ungroup() %>% select(id, num_bookings) %>% disti
                                                    "6+")))
 
 # Histogram showing the frequency of the number of entrances per person
-PRES_gg_num_entrances <- ggplot(data1, aes(x = num_bookings_category)) +
+PRES_gg_num_entrances <- ggplot(data1, aes(x = num_entrances_category)) +
   geom_bar(width = 0.74, fill = jri_dark_blue) +
   scale_y_continuous(labels = label_number(big.mark = ","),
                      expand = c(0,0),
@@ -422,29 +422,29 @@ PRES_gg_num_entrances <- ggplot(data1, aes(x = num_bookings_category)) +
 # subset data and create categories for number of entrances
 data1 <- bookings_entrances %>%
   ungroup() %>%
-  select(id, num_bookings) %>%
+  select(id, num_entrances) %>%
   distinct() %>%
-  mutate(num_bookings_category = case_when(num_bookings == 1 ~ "1",
-                                           num_bookings == 2 ~ "2",
-                                           num_bookings == 3 ~ "3",
-                                           num_bookings == 4 ~ "4",
-                                           num_bookings == 5 ~ "5",
-                                           num_bookings == 6 ~ "6",
-                                           num_bookings == 7 ~ "7",
-                                           num_bookings == 8 ~ "8",
-                                           num_bookings == 9 ~ "9",
-                                           num_bookings == 10 ~ "10",
-                                           num_bookings == 11 ~ "11",
-                                           num_bookings == 12 ~ "12",
-                                           num_bookings == 13 ~ "13",
-                                           num_bookings == 14 ~ "14",
-                                           num_bookings == 15 ~ "15",
-                                           num_bookings == 16 ~ "16",
-                                           num_bookings == 17 ~ "17",
-                                           num_bookings == 18 ~ "18",
-                                           num_bookings == 19 ~ "19",
-                                           num_bookings >= 20 ~ "20+")) %>%
-  mutate(num_bookings_category = factor(num_bookings_category,
+  mutate(num_entrances_category = case_when(num_entrances == 1 ~ "1",
+                                           num_entrances == 2 ~ "2",
+                                           num_entrances == 3 ~ "3",
+                                           num_entrances == 4 ~ "4",
+                                           num_entrances == 5 ~ "5",
+                                           num_entrances == 6 ~ "6",
+                                           num_entrances == 7 ~ "7",
+                                           num_entrances == 8 ~ "8",
+                                           num_entrances == 9 ~ "9",
+                                           num_entrances == 10 ~ "10",
+                                           num_entrances == 11 ~ "11",
+                                           num_entrances == 12 ~ "12",
+                                           num_entrances == 13 ~ "13",
+                                           num_entrances == 14 ~ "14",
+                                           num_entrances == 15 ~ "15",
+                                           num_entrances == 16 ~ "16",
+                                           num_entrances == 17 ~ "17",
+                                           num_entrances == 18 ~ "18",
+                                           num_entrances == 19 ~ "19",
+                                           num_entrances >= 20 ~ "20+")) %>%
+  mutate(num_entrances_category = factor(num_entrances_category,
                                         levels = c("1",
                                                    "2",
                                                    "3",
@@ -467,7 +467,7 @@ data1 <- bookings_entrances %>%
                                                    "20+")))
 
 # Histogram showing the frequency of the number of entrances per person
-PRES_gg_num_entrances <- ggplot(data1, aes(x = num_bookings_category)) +
+PRES_gg_num_entrances <- ggplot(data1, aes(x = num_entrances_category)) +
   geom_bar(width = 0.74, fill = jri_green) +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),

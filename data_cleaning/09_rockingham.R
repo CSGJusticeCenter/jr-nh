@@ -12,7 +12,6 @@
 # Rockingham County
 ###################
 
-# clean variable names
 rockingham_adm_all <- rockingham_adm.xlsx %>%
   clean_names() %>%
   mutate(id = NA,

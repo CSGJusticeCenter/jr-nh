@@ -9,7 +9,7 @@
 ############################################
 
 ###################
-# Hillsborough.R County
+# Hillsborough County
 ###################
 
 hillsborough_adm_all <- hillsborough_adm.xlsx %>%
@@ -22,7 +22,7 @@ hillsborough_adm_all <- hillsborough_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                housing = homeless_y_n,   # switch N to Y??????????
+                housing = homeless_y_n,   # switch N to Y? - not using anyway
                 charge_code,
                 charge_desc = charges,
                 booking_date,

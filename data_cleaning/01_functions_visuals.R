@@ -11,10 +11,11 @@
 # GT tables
 ###########
 
-# custom function to format table for for all gt tables (spacing, font size, colors, etc.)
+# Format table for for all gt tables (spacing, font size, colors, etc.)
 fnc_table_settings <- function(gt_object){
   gt_object %>%
-    tab_options(#table.width = px(760),
+    tab_options(
+      #table.width = px(760),
       table.align = "left",
       heading.align = "left",
 
@@ -46,7 +47,7 @@ fnc_table_settings <- function(gt_object){
     )
 }
 
-# custom function to format table headers with fys as columns
+# Format table headers with fys as columns
 fnc_pc_holds_headers <- function(gt_object){
   gt_object %>%
     cols_width(
@@ -75,7 +76,7 @@ fnc_pc_holds_headers <- function(gt_object){
 # ggplots
 ###########
 
-# ggplot theme
+# ggplot theme without axes
 theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
   theme(
     plot.title = element_text(
@@ -106,7 +107,7 @@ theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
 
-# ggplot theme
+# ggplot theme with axes
 theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
   theme(
     plot.title = element_text(
@@ -131,9 +132,9 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     axis.title.y = element_text(size = 22, color = "black"),
     axis.title.x = element_text(size = 22, color = "black"),
 
-    # panel.grid.minor = element_blank(),
-    # panel.grid.major = element_blank(),
-    # panel.border = element_blank(),
+    # Panel.grid.minor = element_blank(),
+    # Panel.grid.major = element_blank(),
+    # Panel.border = element_blank(),
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank(),
     legend.position = "top",
@@ -142,9 +143,8 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
 
-# percent grouped bar chart
+# Percent grouped bar chart for PC vs non-PC hold
 fnc_pct_grouped_bar_chart <- function(df, color1, color2){
-  # df$variable_name <- get(variable_name, df)
   df1 <- group_by(df, fy) %>% mutate(pct = total/sum(total)*100) %>%
     mutate(pct = round(pct, 1))
   df1 <- as.data.frame(df1)
@@ -164,7 +164,7 @@ fnc_pct_grouped_bar_chart <- function(df, color1, color2){
           axis.title.x = element_blank())
 }
 
-# percent bar chart showing the proportion over time for HU's and non-HU's
+# Percent bar chart showing the change in the of HU's and non-HU's over time
 fnc_hu_pct_grouped_bar_chart <- function(df, color1, color2, type){
   df1 <- group_by(df, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
   df1 <- as.data.frame(df1)
@@ -185,7 +185,7 @@ fnc_hu_pct_grouped_bar_chart <- function(df, color1, color2, type){
 
 }
 
-# get proportion of high utilizers by variable
+# Get proportion of high utilizers by variable
 fnc_gg_huvsnonhu_pct <- function(df, variable_name, color1, color2){
   df$variable_name <- get(variable_name, df)
   df1 <- group_by(df, fy) %>% mutate(pct = total/sum(total)*100) %>%
@@ -211,7 +211,7 @@ fnc_gg_huvsnonhu_pct <- function(df, variable_name, color1, color2){
 # highcharts
 ###########
 
-# custom highcharts theme for plots
+# highcharts theme
 hc_theme_jc <- hc_theme(colors = c(jri_light_blue, jri_green, jri_orange),
                         chart = list(style = list(fontFamily = "Franklin Gothic Book", color = "#000000")),
                         title = list(align = "left", style = list(fontFamily = "Franklin Gothic Book", fontSize = "24px")),
@@ -226,7 +226,7 @@ hc_theme_jc <- hc_theme(colors = c(jri_light_blue, jri_green, jri_orange),
                                            arearange = list(marker = list(enabled = FALSE)),
                                            bubble = list(maxSize = "10%")))
 
-# set up highcharts download buttons
+# Set up highcharts download buttons
 hc_setup <- function(x) {
   highcharter::hc_add_dependency(x, name = "plugins/series-label.js") %>%
     highcharter::hc_add_dependency(name = "plugins/accessibility.js") %>%
@@ -236,7 +236,7 @@ hc_setup <- function(x) {
     highcharter::hc_exporting(enabled = TRUE)
 }
 
-# highchart showing change over time with covid line
+# Highchart showing change over time with covid line
 fnc_covid_time_highchart <- function(df, yaxis_label, title, line_color){
 
   df1 <- df %>%
@@ -263,7 +263,7 @@ fnc_covid_time_highchart <- function(df, yaxis_label, title, line_color){
 # Kable tables
 ###########
 
-# kable freq tables
+# Kable freq tables
 fnc_freq_table <- function(df, title){
   last_row <- nrow(df)
   kable(df, format.args = list(big.mark = ","), align=rep('c'),
@@ -279,13 +279,12 @@ fnc_freq_table <- function(df, title){
 # Reactable tables
 ###########
 
-# show number of bookings by type by fiscal year
+# Show number of entrances by type by fiscal year
 fnc_reactable_fy <- function(df, metric_label, label_width, note){
 
   df1 <- df %>%
     dplyr::rename(new_variable_name = 1)
 
-  # create reactable table of number/freq of booking types by fiscal year and for all 3 years
   fy_table <- reactable(df1,
                         style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
                         pagination = FALSE,
@@ -344,7 +343,7 @@ fnc_reactable_fy <- function(df, metric_label, label_width, note){
   return(fy_table)
 }
 
-# basic reactable table with fys as columns - by county
+# Basic reactable table with fys as columns - by county
 fnc_reactable_county_fy <- function(df, row_num){
 
   county_fy_table <-
@@ -375,7 +374,7 @@ fnc_reactable_county_fy <- function(df, row_num){
 
 }
 
-# basic reactable table with fys as columns - by state
+# Basic reactable table with fys as columns - by state
 fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, note){
 
   df1 <- df %>%
@@ -436,7 +435,7 @@ fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, 
 
 }
 
-# summary table showing the min mean max of a variable
+# Summary table showing the min mean max of a variable
 fnc_reactable_summary <- function(df, header_name, total1_name, total2_name, freq1_name, mean1_name, max1_name){
 
   df1 <- df %>%
@@ -472,7 +471,7 @@ fnc_reactable_summary <- function(df, header_name, total1_name, total2_name, fre
                         max     = colDef(minWidth = 130, name = max1_name)))
 }
 
-# summary table showing the min mean max of hu's
+# Summary table showing the min mean max of hu's
 fnc_reactable_hus_descriptive_summary <- function(df){
   table1 <- reactable(df,
                       pagination = FALSE,
