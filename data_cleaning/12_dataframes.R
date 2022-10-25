@@ -601,6 +601,24 @@ manual_charge_categories <- charges %>% ungroup() %>%
   group_by(charge_code, charge_desc) %>%
   summarise(total = n())
 
+# # match descriptions without a code with charge codes - USEFUL?
+# charge_codes <- charge_codes.xlsx %>%
+#   clean_names() %>%
+#   mutate(descriptor = toupper(descriptor)) %>%
+#   select(smart_code, ctl_number, vis, descriptor, offense_statute, degree) %>% distinct()
+# manual_charge_categories <- merge(manual_charge_categories, charge_codes, by.x = "charge_desc", by.y = "descriptor", all.x = TRUE)
+
+# save charges in a spreadsheet for manual work
+manual_charge_categories_with_booking_details <- charges %>% ungroup() %>%
+  select(charge_code, charge_desc, booking_type, release_type, sentence_status) %>%
+  distinct() %>%
+  group_by(charge_code, charge_desc, booking_type, release_type, sentence_status) %>%
+  summarise(total = n())
+
+# save files to SP for collaboration
+write.xlsx(manual_charge_categories, file=paste0(sp_data_path, "/Data/Offense Information/Manual_charge_categories.xlsx", sep = ""))
+write.xlsx(manual_charge_categories_with_booking_details, file=paste0(sp_data_path, "/Data/Offense Information/Manual_charge_categories_with_booking_details.xlsx", sep = ""))
+
 ################################################################################
 
 # Release types data frame - not using for now

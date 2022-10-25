@@ -44,6 +44,7 @@ library(officer)
 library(rvg)
 library(reactablefmtr)
 library(ggtext)
+library(openxlsx)
 
 ###################
 # Local and research sharepoint
