@@ -212,7 +212,7 @@ fnc_create_high_utilizer_variables <- function(df){
 
   df_hus_fy <- df_hus_fy %>%
     select(id, fy, num_entrances_fy) %>% distinct() %>%
-    mutate(high_utilizer_4_times_fy = num_entrances_fy >= 8) %>%
+    mutate(high_utilizer_4_times_fy = num_entrances_fy >= 4) %>%
     mutate(high_utilizer_1_pct_fy   = quantile(df_hus_fy$num_entrances_fy, probs = 0.99) < num_entrances_fy) %>%
     mutate(high_utilizer_5_pct_fy   = quantile(df_hus_fy$num_entrances_fy, probs = 0.95) < num_entrances_fy) %>%
     mutate(high_utilizer_10_pct_fy  = quantile(df_hus_fy$num_entrances_fy, probs = 0.90) < num_entrances_fy) %>%
