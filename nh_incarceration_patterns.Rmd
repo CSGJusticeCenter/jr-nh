@@ -26,10 +26,10 @@ source("data_cleaning/rdas.R")
 
 # Bookings
 
-**Includes**: People booked into jail for a criminal charge  
-**Does Not Include**: PC holds  
+**Includes**: People booked into jail for a criminal charge.    
+**Does Not Include**: PC holds.    
 
-**Counties**: All New Hampshire counties except Grafton and Strafford. Strafford is excluded because their data does not differentiate between bookings and PC holds.  
+**Counties**: All New Hampshire counties except Grafton and Strafford. Strafford is excluded because their data does not differentiate between bookings and PC holds.   
 
 <br>
 

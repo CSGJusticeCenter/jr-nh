@@ -439,11 +439,13 @@ data1 <- bookings_entrances %>%
   group_by(pc_hold_in_booking, high_utilizer_10_pct) %>%
   summarise(total = n())
 
-data1 <- group_by(data1) %>% mutate(pct = total/sum(total)*100) %>%
-  mutate(pct = round(pct, 1))
+data1 <- group_by(data1) %>%
+  mutate(pct = total/sum(total)*100) %>%
+  mutate(pct = round(pct, 0))
 data1 <- as.data.frame(data1)
 data1 <- data1 %>% mutate(pct = paste0(pct, "%"))
 
+# One stacked barplot for all three years
 PRES_gg_10_pct_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, fill = high_utilizer_10_pct)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
@@ -456,6 +458,17 @@ PRES_gg_10_pct_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, 
         legend.justification = c(0, 0),
         legend.title=element_blank(),
         axis.title.y = element_blank())
+
+# Pie chart for all three years
+PRES_gg_pie_10_pct_pc_holds <- PRES_gg_10_pct_pc_holds +
+  coord_polar("y", start=0) +
+  theme_no_axes +
+  blank_theme +
+  theme(axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        legend.title = element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black")
+  )
 
 ################################################################################################################################################################
 ################################################################################################################################################################

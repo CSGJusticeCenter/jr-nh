@@ -230,30 +230,30 @@ top_10_pct_min_entrances <- df_1_5_10 %>% filter(county == "State") %>% select(m
 top_10_pct_min_entrances <- as.numeric(top_10_pct_min_entrances$min_10_pct)
 
 # subset data and create categories for number of entrances
-data1 <- bookings_entrances %>% ungroup() %>% select(id, num_bookings) %>% distinct() %>%
-  mutate(num_bookings_category = case_when(num_bookings == 1 ~ "1",
-                                           num_bookings == 2 ~ "2",
-                                           num_bookings == 3 ~ "3",
-                                           num_bookings == 4 ~ "4",
-                                           num_bookings == 5 ~ "5",
-                                           num_bookings == 6 ~ "6",
-                                           num_bookings == 7 ~ "7",
-                                           num_bookings == 8 ~ "8",
-                                           num_bookings == 9 ~ "9",
-                                           num_bookings == 10 ~ "10",
-                                           num_bookings == 11 ~ "11",
-                                           num_bookings == 12 ~ "12",
-                                           num_bookings == 13 ~ "13",
-                                           num_bookings == 14 ~ "14",
-                                           num_bookings == 15 ~ "15",
-                                           num_bookings == 16 ~ "16",
-                                           num_bookings == 17 ~ "17",
-                                           num_bookings == 18 ~ "18",
-                                           num_bookings == 19 ~ "19",
-                                           num_bookings >= 20 ~ "20+")) %>%
-  group_by(num_bookings_category) %>% summarise(total = n())
+data1 <- bookings_entrances %>% ungroup() %>% select(id, num_entrances) %>% distinct() %>%
+  mutate(num_entrances_category = case_when(num_entrances == 1 ~ "1",
+                                           num_entrances == 2 ~ "2",
+                                           num_entrances == 3 ~ "3",
+                                           num_entrances == 4 ~ "4",
+                                           num_entrances == 5 ~ "5",
+                                           num_entrances == 6 ~ "6",
+                                           num_entrances == 7 ~ "7",
+                                           num_entrances == 8 ~ "8",
+                                           num_entrances == 9 ~ "9",
+                                           num_entrances == 10 ~ "10",
+                                           num_entrances == 11 ~ "11",
+                                           num_entrances == 12 ~ "12",
+                                           num_entrances == 13 ~ "13",
+                                           num_entrances == 14 ~ "14",
+                                           num_entrances == 15 ~ "15",
+                                           num_entrances == 16 ~ "16",
+                                           num_entrances == 17 ~ "17",
+                                           num_entrances == 18 ~ "18",
+                                           num_entrances == 19 ~ "19",
+                                           num_entrances >= 20 ~ "20+")) %>%
+  group_by(num_entrances_category) %>% summarise(total = n())
 
-data1$num_bookings_category <- factor(data1$num_bookings_category,
+data1$num_entrances_category <- factor(data1$num_entrances_category,
                                       levels = c("1",
                                                  "2",
                                                  "3",
@@ -294,7 +294,7 @@ PRES_gg_hu_percentile_explanation <- ggplot(data1)+
             ymax=23945,
             fill=jri_light_blue, alpha = 0.01) +
 
-  geom_bar(data=data1, aes(x=num_bookings_category, y=total),
+  geom_bar(data=data1, aes(x=num_entrances_category, y=total),
            stat="identity",
            fill = "gray",
            colour= "gray", lwd=0.5) +
@@ -334,6 +334,66 @@ PRES_gg_hu_percentile_explanation <- ggplot(data1)+
                 fill = jri_orange,
                 label.r = unit(0, "lines"),
                 angle = 90)
+
+# reshape data for lollipop graph showing the min and max number of entrances for each type of HU
+data1 <- df_1_5_10 %>% filter(county == "State") %>%
+  select(county,
+         min_1_pct,
+         max_1_pct,
+         min_5_pct,
+         max_5_pct,
+         min_10_pct,
+         max_10_pct)
+data1 <- gather(data1, min_max, total, min_1_pct:max_10_pct, factor_key=TRUE) %>%
+  mutate(hu = case_when(min_max == "min_1_pct"  | min_max == "max_1_pct"  ~ "Top 1%",
+                        min_max == "min_5_pct"  | min_max == "max_5_pct"  ~ "Top 5%",
+                        min_max == "min_10_pct" | min_max == "max_10_pct" ~ "Top 10%"),
+         min_max = case_when(min_max == "min_1_pct" | min_max == "min_5_pct" | min_max == "min_10_pct"  ~ "Min",
+                             min_max == "max_1_pct" | min_max == "max_5_pct" | min_max == "max_10_pct"  ~ "Max"))
+data1 <- spread(data1, min_max, total)
+data1 <- data1 %>%
+  mutate(hu = factor(hu, levels = c("Top 1%", "Top 5%", "Top 10%")))
+
+# sep by hu type
+data_1_pct <- data1 %>% filter(hu == "Top 1%")
+data_5_pct <- data1 %>% filter(hu == "Top 5%")
+data_10_pct <- data1 %>% filter(hu == "Top 10%")
+
+library(hrbrthemes)
+ggplot() +
+  # Top 1%
+  geom_segment(data = data_1_pct, aes(x=hu, xend=hu, y=Min, yend=Max), color=jri_light_blue, size = 2) +
+  geom_point(data = data_1_pct, aes(x=hu, y=Min), color=jri_light_blue, size=5) +
+  geom_point(data = data_1_pct, aes(x=hu, y=Max), color=jri_light_blue, size=5) +
+  geom_text(data = data_1_pct, aes(x=hu, y=Min, label = Min), hjust = 2, size = 8, color = "black", family = "Franklin Gothic Book") +
+  geom_text(data = data_1_pct, aes(x=hu, y=Max, label = Max), hjust = -0.5, size = 8, color = "black", family = "Franklin Gothic Book") +
+
+  # Top 5%
+  geom_segment(data = data_5_pct, aes(x=hu, xend=hu, y=Min, yend=Max), color=jri_green, size = 2) +
+  geom_point(data = data_5_pct, aes(x=hu, y=Min), color=jri_green, size=5) +
+  geom_point(data = data_5_pct, aes(x=hu, y=Max), color=jri_green, size=5) +
+  geom_text(data = data_5_pct, aes(x=hu, y=Min, label = Min), hjust = 2, size = 8, color = "black", family = "Franklin Gothic Book") +
+  geom_text(data = data_5_pct, aes(x=hu, y=Max, label = Max), hjust = -0.5, size = 8, color = "black", family = "Franklin Gothic Book") +
+
+  # Top 10%
+  geom_segment(data = data_10_pct, aes(x=hu, xend=hu, y=Min, yend=Max), color=jri_orange, size = 2) +
+  geom_point(data = data_10_pct, aes(x=hu, y=Min), color=jri_orange, size=5) +
+  geom_point(data = data_10_pct, aes(x=hu, y=Max), color=jri_orange, size=5) +
+  geom_text(data = data_10_pct, aes(x=hu, y=Min, label = Min), hjust = 2, size = 8, color = "black", family = "Franklin Gothic Book") +
+  geom_text(data = data_10_pct, aes(x=hu, y=Max, label = Max), hjust = -0.5, size = 8, color = "black", family = "Franklin Gothic Book") +
+
+  coord_flip() +
+  scale_x_discrete(drop = FALSE, expand = c(0,0.3)) +
+  scale_y_continuous(limits = c(0,80)) +
+  theme_ipsum() +
+  theme_axes +
+  theme(legend.position = "none",
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_text(family = "Franklin Gothic Book", face = "bold", size = 20)) +
+  xlab("") +
+  ylab("Minimum and Maximum Number of Entrances")
 
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -477,8 +537,60 @@ PRES_table_pc_hold_hus <-
              freq = colDef(show = T, minWidth = 120, name = "Proportion of HU PC Holds",
                                   style = list(fontWeight = "bold"),
                                   format = colFormat(percent = TRUE, digits = 1))
-
            ))
+
+
+# Select variables
+data1 <- bookings_entrances %>%
+  select(county,
+         fy,
+         id,
+         booking_id,
+         high_utilizer_1_pct,
+         high_utilizer_5_pct,
+         high_utilizer_10_pct,
+         pc_hold_in_booking) %>%
+  distinct() %>%
+  #filter(!is.na(pc_hold_in_booking)) %>%
+  group_by(county, pc_hold_in_booking, high_utilizer_10_pct) %>%
+  summarise(total = n()) %>%
+  filter(pc_hold_in_booking == "PC Hold")
+data1 <- group_by(data1, county) %>% mutate(pct = round(total/sum(total)*100, 1))
+data1 <- as.data.frame(data1)
+data1 <- data1 %>% mutate(pct = round(pct, digits = 0)) %>%
+  mutate(pct = paste0(pct, "%"))
+
+PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = high_utilizer_10_pct )) +
+  geom_col(colour = "white", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_orange),
+                    na.value = "white",
+                    labels = c("Non-HU      ","HU", " ")) +
+  geom_text(aes(label = pct, fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.7,
+            size = 10, family = "Franklin Gothic Book",
+            color = case_when(data1$high_utilizer_10_pct  == "No" ~ "black",
+                              TRUE ~ "white")
+            ) +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
+        axis.text.y = element_text(size = 28, color = "black"),
+        legend.position = "right",
+        legend.justification = c(1, 0.5),
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+  # geom_hline(aes(yintercept=0.20), size = 1)
+PRES_gg_pchold_hu_prop
+
+ggsave(PRES_gg_pchold_hu_prop, file=paste0(sp_data_path, "/Data/r_data/PRES_gg_pchold_prop.png", sep = ""),
+       width = 15, height = 6, dpi = 100)
 
 ################################################################################################################################################################
 ################################################################################################################################################################

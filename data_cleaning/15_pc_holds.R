@@ -291,7 +291,7 @@ data1 <- group_by(data1, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
 data1 <- as.data.frame(data1)
 data1 <- data1 %>% mutate(pct = comma(pct, digits = 1)) %>% mutate(pct = paste0(pct, "%"))
 
-# Grouped bar chart showing the proportion of PC holds for all three years
+# Grouped bar chart showing the proportion of PC holds by FY
 PRES_gg_pch_pct_barchart <- fnc_pct_grouped_bar_chart(data1, "gray", jri_red)
 
 ##########

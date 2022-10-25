@@ -1,20 +1,20 @@
 ############################################
 # Project: JRI New Hampshire
 # File: dataframes.R
-# Last updated: October 12, 2022
+# Last updated: October 25, 2022
 # Author: Mari Roberts
 
-# Generate tables for state overview
+# Generate tables for graphs and visualizations
 
 # Creates data frames:
 
 # adm_all            - this is broken down into the tables below
 # bookings_entrances - used the most, admissions events (includes Coos and Strafford)
 # booking_no_pc_hold - bookings without pc holds (no Strafford)
-# entrances          - bookings with pc holds (no Coos)
+# entrances          - entrances, including pc holds (no Coos)
 
-# charges            - individual charges
-# release_types      - individual release types
+# charges            - charges
+# release_types      - release types
 # sentence_statuses  - sentence statuses
 ############################################
 
@@ -40,9 +40,9 @@ source("data_cleaning/10_strafford.R")
 source("data_cleaning/11_sullivan.R")
 
 # Custom functions below creates the variables we need and relabels codes so they're consistent across counties.
-# Creates booking_id, los, fy, num_bookings, high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
+# Creates booking_id, los, fy, num_entrances, high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
 #    pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
-#    pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other pc variables)
+#    pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other pc variables).
 # Ignore warning messages.
 
 # Note about LOS: some people can be booked on the same day for multiple charges.
@@ -72,7 +72,7 @@ sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all,     "Sullivan")
 ##########
 
 # If charge is present then it was a mistake to book them as a PC hold.
-# Change the booking type to unknown for these since they aren't PC holds. Keep charge info though.
+# Change to non-PC hold and the booking type to unknown these since they aren't PC holds. Keep charge info though.
 belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
   mutate(pc_hold = as.character(pc_hold)) %>%
   mutate(pc_hold = case_when(( charge_desc == "TEMPORARY REMOVAL OR TRANSFER" |
@@ -146,7 +146,7 @@ rockingham_adm1 <- rockingham_adm %>% select(-c(los, release_date)) %>% distinct
 
 strafford_adm1 <- strafford_adm %>% select(-c(los, release_date)) %>% distinct()
 # %>%
-# filter(num_bookings < 72) # seems like an outlier or data entry issue but keep for now
+# filter(num_entrances < 72) # seems like an outlier or data entry issue but keep for now
 
 ##########
 # Sullivan
@@ -179,7 +179,7 @@ save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-# Combine jail data.
+# Combine jail data
 adm_all <- rbind(belknap_adm1,
                  carroll_adm1,
                  cheshire_adm1,
@@ -191,9 +191,11 @@ adm_all <- rbind(belknap_adm1,
                  sullivan_adm1)
 # dim(adm_all) # 73183
 
-# If race or gender is NA in some bookings but present in others, use the recorded race or gender.
+# If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.
 adm_all <- adm_all %>%
+
+  # race
   dplyr::group_by(id) %>%
   fill(race, .direction = "downup") %>%
   distinct() %>%
@@ -201,6 +203,8 @@ adm_all <- adm_all %>%
   mutate(different_race_recorded = n_distinct(race) == 1) %>%
   mutate(race = ifelse(different_race_recorded == FALSE, NA, race)) %>%
   distinct() %>%
+
+  # gender
   dplyr::group_by(id) %>%
   fill(gender, .direction = "downup") %>%
   distinct() %>%
@@ -210,10 +214,10 @@ adm_all <- adm_all %>%
   distinct() %>%
   select(-different_gender_recorded, -different_race_recorded)
 
-# Fix los issues.
-# Remove negatives because of data entry issues with booking and release dates.
-# If release date is missing, then change los to NA instead of Inf.
-# Make all charges, booking types, release types, and sentence statuses uppercase.
+# Fix los issues
+# Remove negatives because of data entry issues with booking and release dates
+# If release date is missing, then change los to NA instead of Inf
+# Make all charges, booking types, release types, and sentence statuses uppercase
 adm_all <- adm_all %>%
   mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
   filter(los_max >= 0 | is.na(los_max)) %>%
@@ -234,45 +238,48 @@ adm_all <- adm_all %>%
 adm_all <- adm_all %>%
 
   mutate(booking_type_withpcs =
+
             ###########
             # Change booking type to PC Hold
             ###########
+
   case_when(county == "Belknap"      & str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY/INTOXICATION", charge_desc) ~ "PROTECTIVE CUSTODY",
+
 
             county == "Carroll"      & str_detect("PROTECTIVE CUSTODY", charge_desc)                                 ~ "PROTECTIVE CUSTODY",
 
-            county == "Carroll"      & str_detect("DETAINEE REQUEST", booking_type) &
+            county == "Carroll"      & str_detect("DETAINEE REQUEST",   booking_type) &
                                        str_detect("PROTECTIVE CUSTODY", sentence_status)                             ~ "PROTECTIVE CUSTODY",
 
             county == "Carroll"      & str_detect("INVOLUNTARY EMERGENCY ADMISSION", charge_desc) &
-                                       str_detect("PROTECTIVE CUSTODY", sentence_status)                             ~ "PROTECTIVE CUSTODY",
+                                       str_detect("PROTECTIVE CUSTODY",              sentence_status)                ~ "PROTECTIVE CUSTODY",
 
             county == "Carroll"      & str_detect("DOMESTIC VIOLENCE OFFENSE", charge_desc) &
-                                       str_detect("PROTECTIVE CUSTODY", sentence_status)                             ~ "PROTECTIVE CUSTODY",
+                                       str_detect("PROTECTIVE CUSTODY",        sentence_status)                      ~ "PROTECTIVE CUSTODY",
 
             county == "Cheshire"     & str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY - DRUGS", charge_desc)      ~ "PROTECTIVE CUSTODY",
 
-            county == "Cheshire"     & str_detect("DETAINEE REQUEST", booking_type) &
+            county == "Cheshire"     & str_detect("DETAINEE REQUEST",   booking_type) &
                                        str_detect("PROTECTIVE CUSTODY", sentence_status)                             ~ "PROTECTIVE CUSTODY",
 
-            #county == "Coos"        no info
+            #county == "Coos"        no data
 
             county == "Hillsborough" & str_detect("172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII", charge_desc)      ~ "PROTECTIVE CUSTODY",
 
             county == "Hillsborough" & str_detect("TREATMENT AND SERVICES", booking_type) &
-                                       str_detect("PC RELEASE", release_type)                                        ~ "PROTECTIVE CUSTODY",
+                                       str_detect("PC RELEASE",             release_type)                            ~ "PROTECTIVE CUSTODY",
 
             county == "Hillsborough" & str_detect("NEW ARREST", booking_type) &
                                        str_detect("PC RELEASE", release_type)                                        ~ "PROTECTIVE CUSTODY",
 
             county == "Merrimack"    & str_detect("PROTECTIVE CUSTODY", charge_desc)                                 ~ "PROTECTIVE CUSTODY",
 
-            county == "Merrimack"    & str_detect("PC-IEA", sentence_status)                             ~ "PROTECTIVE CUSTODY",
+            county == "Merrimack"    & str_detect("PC-IEA", sentence_status)                                         ~ "PROTECTIVE CUSTODY",
 
-            county == "Merrimack"    & str_detect("DETAINEE REQUEST", booking_type) &
+            county == "Merrimack"    & str_detect("DETAINEE REQUEST",        booking_type) &
                                        str_detect("PROTECTIVE CUSTODY HOLD", sentence_status)                        ~ "PROTECTIVE CUSTODY",
 
-            county == "Merrimack"    & str_detect("ARREST WARRANT", booking_type) &
+            county == "Merrimack"    & str_detect("ARREST WARRANT",          booking_type) &
                                        str_detect("PROTECTIVE CUSTODY HOLD", sentence_status)                        ~ "PROTECTIVE CUSTODY",
 
             county == "Rockingham"   & str_detect("PROTECTIVE CUSTODY", charge_desc)                                 ~ "PROTECTIVE CUSTODY",
@@ -282,8 +289,9 @@ adm_all <- adm_all %>%
             county == "Sullivan"     & str_detect("TREATMENT AND SERVICES: PROTECTIVE CUSTODY", charge_desc)         ~ "PROTECTIVE CUSTODY",
 
             ###########
-            # Change booking type
+            # Combine some booking types together
             ###########
+
             county == "Hillsborough" & str_detect("BOARDED", booking_type)
                                      & str_detect("CONVICTED|CONVICTED ROCK", sentence_status)                                              ~ "CONVICTED",
 
@@ -379,7 +387,7 @@ adm_all <- adm_all %>%
                                             "101-180",
                                             "Over 180")))
 
-# Remove missing data (37 entries).
+# Remove rows with all missing data (37 entries).
 # Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
 # Don't remove Strafford since all of their info is blank except for dates.
 all_nas <- adm_all %>%
@@ -393,8 +401,8 @@ adm_all <- adm_all %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
-# BOOKINGS & ENTRANCES (includes Coos and Strafford)
-# Includes Coos bookings and all other county entrances (including PC holds).
+# BOOKINGS & ENTRANCES (All counties)
+# Includes Coos bookings even though we don't have PC hold data
 
 ################################################################################
 
@@ -417,16 +425,12 @@ bookings_entrances_all <- adm_all %>%
                 booking_type,
                 booking_type_standard,
                 fy,
-                num_bookings,
-                num_bookings_fy,
+                num_entrances,
+                num_entrances_fy,
                 high_utilizer_4_times,
                 high_utilizer_1_pct,
                 high_utilizer_5_pct,
                 high_utilizer_10_pct,
-                high_utilizer_4_times_fy,
-                high_utilizer_1_pct_fy,
-                high_utilizer_5_pct_fy,
-                high_utilizer_10_pct_fy,
                 pc_hold_booking,
                 pc_hold_charge,
                 pc_hold_sentence,
@@ -434,9 +438,6 @@ bookings_entrances_all <- adm_all %>%
   mutate(month_year_text = format(as.Date(booking_date, "%d/%m/%Y"), "%b %Y"),
          month_year      = as.Date(as.yearmon(month_year_text))) %>%
   distinct()
-
-dim(bookings_entrances_all); length(unique(bookings_entrances_all$booking_id)); length(unique(bookings_entrances_all$id)) #55780 dim, 51545 bookings, 32177 individuals
-table(bookings_entrances_all$county) # All counties
 
 # People can have multiple booking types when entering jail (some are PC hold + criminal charge)
 # dups <- bookings_entrances_all[duplicated(bookings_entrances_all$booking_id)|duplicated(bookings_entrances_all$booking_id, fromLast=TRUE),] # 7932
@@ -454,11 +455,8 @@ bookings_entrances <- bookings_entrances_all %>%
   mutate(all_hold_types=paste(sort(unique(pc_hold)), collapse="&")) %>%
   mutate(pc_hold_in_booking = case_when(all_hold_types == 'Non-PC Hold&PC Hold' | all_hold_types == 'PC Hold' ~ "PC Hold",
                                         all_hold_types == "Non-PC Hold" ~ "Non-PC Hold")) %>%
-  select(county:high_utilizer_10_pct_fy, month_year_text:pc_hold_in_booking) %>%
+  select(county:high_utilizer_10_pct, month_year_text:pc_hold_in_booking) %>%
   distinct()
-
-# dim(bookings_entrances); length(unique(bookings_entrances$booking_id)); length(unique(bookings_entrances$id)) #55087 dim, 51545 bookings, 32177 individuals
-# dups <- bookings_entrances[duplicated(bookings_entrances$booking_id)|duplicated(bookings_entrances$booking_id, fromLast=TRUE),] # 6551
 
 # Combine booking types by booking id.
 bookings_entrances <- bookings_entrances %>%
@@ -466,9 +464,6 @@ bookings_entrances <- bookings_entrances %>%
   mutate(all_booking_types=paste(sort(unique(booking_type)), collapse=" & ")) %>%
   select(county: booking_type, all_booking_types, everything()) %>%
   distinct()
-
-# dim(bookings_entrances)                       # 55087
-# length(unique(bookings_entrances$booking_id)) # 51545
 
 # sep by fy year
 bookings_entrances_19 <- bookings_entrances %>% distinct() %>% filter(fy == 2019)
@@ -487,7 +482,7 @@ entrances <- bookings_entrances_all %>%
          fy,
          id,
          booking_id,
-         num_bookings,
+         num_entrances,
          los,
          los_category,
          high_utilizer_4_times,
@@ -499,7 +494,6 @@ entrances <- bookings_entrances_all %>%
   filter(county != "Coos") %>%
   droplevels() %>%
   distinct()
-dim(entrances); length(unique(entrances$booking_id)); length(unique(entrances$id)) #50874 dim, 50874 bookings, 31706 individuals
 
 ##########
 
@@ -514,7 +508,7 @@ booking_no_pc_hold <- bookings_entrances_all %>%
          fy,
          id,
          booking_id,
-         num_bookings,
+         num_entrances,
          los,
          los_category,
          high_utilizer_4_times,
@@ -523,9 +517,6 @@ booking_no_pc_hold <- bookings_entrances_all %>%
   filter(county != "Strafford") %>%
   droplevels() %>%
   distinct()
-
-# dim(booking_no_pc_hold); length(unique(booking_no_pc_hold$booking_id)); length(unique(booking_no_pc_hold$id)) #31936 dim, 31936 bookings, 19024 individuals
-# table(booking_no_pc_hold$county) # No strafford
 
 ################################################################################
 
@@ -548,8 +539,6 @@ df_pch <- bookings_entrances %>%
   mutate(pc_hold_in_booking = as.character(pc_hold_in_booking)) %>%
   mutate(pc_hold_in_booking = ifelse(county == "Coos", NA, pc_hold_in_booking)) %>%
   droplevels()
-
-# dim(df_pch); length(unique(df_pch$booking_id)); length(unique(df_pch$id));  # 51545, 32177
 
 ################################################################################
 
@@ -588,7 +577,7 @@ charges <- adm_all %>%
                 los = los_max,
                 los_category,
                 fy,
-                num_bookings,
+                num_entrances,
                 high_utilizer_4_times,
                 high_utilizer_1_pct,
                 high_utilizer_5_pct,
@@ -599,13 +588,41 @@ charges <- adm_all %>%
                 pc_hold_release,
                 pc_hold) %>%
   distinct()
-dim(charges); length(unique(charges$booking_id)); length(unique(charges$id)) #73088 dim, 51545 bookings, 32177 individuals
 
 # save booking dates
 all_booking_dates <- bookings_entrances %>%
   select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>%
   distinct()
 
+# save charges in a spreadsheet for manual work
+manual_charge_categories <- charges %>% ungroup() %>%
+  select(charge_code, charge_desc, booking_type, release_type, sentence_status) %>%
+  distinct() %>%
+  group_by(charge_code, charge_desc) %>%
+  summarise(total = n())
+
+# match descriptions without a code with charge codes - USEFUL?
+charge_codes <- charge_codes.xlsx %>%
+  clean_names() %>%
+  mutate(descriptor = toupper(descriptor)) %>%
+  select(smart_code, ctl_number, vis, descriptor, offense_statute, degree) %>%
+  distinct()
+manual_charge_categories_with_codes <- merge(manual_charge_categories, charge_codes, by.x = "charge_desc", by.y = "descriptor", all.x = TRUE)
+
+# save charges in a spreadsheet for manual work
+manual_charge_categories_with_booking_details <- charges %>% ungroup() %>%
+  select(charge_code, charge_desc, booking_type, release_type, sentence_status) %>%
+  distinct() %>%
+  group_by(charge_code, charge_desc, booking_type, release_type, sentence_status) %>%
+  summarise(total = n())
+
+# save files to SP for collaboration
+write.xlsx(manual_charge_categories,
+           file=paste0(sp_data_path, "/Data/Offense Information/Manual_charge_categories.xlsx",                      sep = ""))
+write.xlsx(manual_charge_categories_with_codes,
+           file=paste0(sp_data_path, "/Data/Offense Information/Manual_charge_categories_with_codes.xlsx",           sep = ""))
+write.xlsx(manual_charge_categories_with_booking_details,
+           file=paste0(sp_data_path, "/Data/Offense Information/Manual_charge_categories_with_booking_details.xlsx", sep = ""))
 
 ################################################################################
 

@@ -41,4 +41,5 @@ sullivan_adm_all <- sullivan_adm_all %>%
                 release_date = release_date_time,
                 release_type,
                 sentence_status) %>%
-  mutate(county = "Sullivan") %>% distinct()
+  mutate(county = "Sullivan") %>%
+  distinct()

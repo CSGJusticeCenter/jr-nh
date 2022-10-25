@@ -93,11 +93,11 @@ theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
       margin = margin(-10, 0, 15, 0)
     ),
     #axis.text = element_text(size = 22),
-    axis.text.x = element_text(size = 22, color = "black"),
     axis.title = element_text(color = "black"),
     axis.title.y = element_text(size = 22, color = "black"),
-    axis.title.x = element_blank(),
-    axis.text.y = element_blank(),
+    axis.title.x = element_text(size = 22, color = "black"),
+    axis.text.y = element_text(size = 22, color = "black"),
+    axis.text.x = element_text(size = 22, color = "black"),
 
     panel.grid.minor = element_blank(),
     panel.grid.major = element_blank(),
@@ -141,6 +141,17 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     legend.justification = c(0, 0),
     legend.title=element_blank(),
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
+  )
+
+# ggplot pie chart theme
+blank_theme <- theme_minimal()+
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.border = element_blank(),
+    panel.grid=element_blank(),
+    axis.ticks = element_blank(),
+    plot.title=element_text(size=14, face="bold")
   )
 
 # Percent grouped bar chart for PC vs non-PC hold
@@ -250,7 +261,7 @@ fnc_covid_time_highchart <- function(df, yaxis_label, title, line_color){
     hchart('line', hcaes(x = month_year_text, y = total), color = line_color) %>%
     hc_setup() %>%
     hc_xAxis(
-      title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold")),
+      title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px")),
       plotLines = list(list(label = list(text = "COVID-19 Start"), fontSize = "26px", color = "gray", width = 2, value = 20, zIndex = 1))
     ) %>%
     hc_yAxis(title = list(text = yaxis_label, style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px"))) %>%
@@ -316,7 +327,8 @@ fnc_reactable_fy <- function(df, metric_label, label_width, note){
                           new_variable_name = colDef(footer = "Total",
                                                      name = metric_label,
                                                      align = "left",
-                                                     minWidth = label_width),
+                                                     minWidth = label_width,
+                                                     style = list(fontWeight = "bold")),
                           count_19     = colDef(minWidth = 80,
                                                 name = "Count"),
                           pct_19       = colDef(minWidth = 80,
@@ -364,7 +376,7 @@ fnc_reactable_county_fy <- function(df, row_num){
               compact = TRUE,
               fullWidth = FALSE,
               columns = list(
-                `county`     = colDef( align = "left", minWidth = 180, name = "County", style = list(fontWeight = "bold")),
+                `county`     = colDef(align = "left", minWidth = 180, name = "County", style = list(fontWeight = "bold")),
                 `2019`       = colDef(minWidth = 80,  name = "2019"),
                 `2020`       = colDef(minWidth = 80,  name = "2020"),
                 `2021`       = colDef(minWidth = 80,  name = "2021", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
@@ -410,6 +422,7 @@ fnc_reactable_fy <- function(df, metric_label, label_width, reactable_counties, 
                           new_variable_name = colDef(footer = "Total",
                                                      name = "County",
                                                      align = "left",
+                                                     style = list(fontWeight = "bold"),
                                                      minWidth = 150),
                           count_19     = colDef(minWidth = 80,
                                                 name = "Count"),

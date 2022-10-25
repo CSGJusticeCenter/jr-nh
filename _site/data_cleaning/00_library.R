@@ -8,10 +8,10 @@
 ############################################
 
 ###################
-# load packages
+# Load packages
 ###################
 
-# download this version
+# Download this version
 # remotes::install_github("kcuilla/reactablefmtr")
 
 library(readxl)
@@ -44,15 +44,16 @@ library(officer)
 library(rvg)
 library(reactablefmtr)
 library(ggtext)
+library(openxlsx)
 
 ###################
 # Local and research sharepoint
 ###################
 
-# path to data on research div sharepoint
-# make sure SP folder is synced locally
+# Path to data on research div sharepoint
+# Make sure SP folder is synced locally
 # https://csgorg.sharepoint.com/:f:/s/Team-JC-Research/EhdvImKN2rdPnmHQ2TrKlooBdYqnnWc0SUXBNuh9C7d41g?e=NCsh8I
-# in your Renviron, set CSG_SP_PATH = "your sharepoint path here" and GITHUB_PAT = "your token here"
+# In your Renviron, set CSG_SP_PATH = "your sharepoint path here" and GITHUB_PAT = "your token here"
 # To generate a github token - usethis::create_github_token()
 # To edit Renviron - usethis::edit_r_environ()
 sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
@@ -76,7 +77,7 @@ default_fonts <- c("Franklin Gothic Book")
 # Colors
 ###################
 
-# official jri colors
+# Official jri colors
 jri_light_blue <- "#4095B1"
 jri_dark_blue  <- "#273C4C"
 jri_red        <- "#E25449"
