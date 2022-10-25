@@ -33,4 +33,5 @@ coos_adm_all <- coos_adm.xlsx %>%
                 sentence_status) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
-         county = "Coos") %>% distinct()
+         county = "Coos") %>%
+  distinct()

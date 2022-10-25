@@ -10,6 +10,7 @@
 # load packages
 source("data_cleaning/00_library.R")
 
+# data availability by county
 raw_adm_data_availability.xlsx <- read_excel(paste0(sp_data_path, "/Data/Raw_data_dictionaries_09_12_22.xlsx"), sheet = "Overall")
 
 ###################
@@ -22,6 +23,7 @@ belknap_adm.xlsx       <- read_csv(file=paste0(sp_data_path, "/Data/Belknap Coun
 # Carroll County
 ###################
 
+# carrol county separates their data into releases and bookings which will be joined
 carroll_releases.xlsx  <- read_excel(paste0(sp_data_path, "/Data/Carroll County/CSG release data 7.1.2018-6.30.2021.xls"))
 carroll_bookings.xlsx  <- read_excel(paste0(sp_data_path, "/Data/Carroll County/CSG data 7.1.2018-6.30-2021.xls"))
 
@@ -30,8 +32,10 @@ carroll_bookings.xlsx  <- read_excel(paste0(sp_data_path, "/Data/Carroll County/
 ###################
 
 cheshire_adm.xlsx      <- read_excel(paste0(sp_data_path, "/Data/Cheshire County/CSG Jail Data D-IDENT.xlsx"))
-cheshire_prog.xlsx     <- read_excel(paste0(sp_data_path, "/Data/Cheshire County/MRT Attendance Logs CSG.xlsx"))
-cheshire_mh_stats.xlsx <- read_excel(paste0(sp_data_path, "/Data/Cheshire County/AAA MH & SU STATS CSG.xls"))
+
+# not looking at bh data for now
+# cheshire_prog.xlsx     <- read_excel(paste0(sp_data_path, "/Data/Cheshire County/MRT Attendance Logs CSG.xlsx"))
+# cheshire_mh_stats.xlsx <- read_excel(paste0(sp_data_path, "/Data/Cheshire County/AAA MH & SU STATS CSG.xls"))
 
 ###################
 # Coos County
@@ -44,7 +48,9 @@ coos_adm.xlsx          <- read_excel(paste0(sp_data_path, "/Data/Coos County/Cop
 ###################
 
 hillsborough_adm.xlsx         <- read_excel(paste0(sp_data_path, "/Data/Hillsborough County/Justice Center 2.xls"))
-hillsborough_bh.xlsx          <- read_excel(paste0(sp_data_path, "/Data/Hillsborough County/Justice Center 3.xls"))
+
+# not looking at bh data for now
+# hillsborough_bh.xlsx          <- read_excel(paste0(sp_data_path, "/Data/Hillsborough County/Justice Center 3.xls"))
 
 ###################
 # Merrimack County

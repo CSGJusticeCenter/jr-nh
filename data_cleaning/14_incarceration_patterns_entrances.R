@@ -279,27 +279,30 @@ df_entrances_county <- df_entrances_county %>%
 # Table showing the number of people entered by FY by county
 PRES_table_entrances_fy_county <- fnc_reactable_county_fy(df_entrances_county, row_num = 10)
 
-# # Number of entrances by county for all three years
-# data1 <- bookings_entrances %>%
-#   dplyr::ungroup() %>%
-#   dplyr::select(fy, booking_id, county) %>%
-#   dplyr::distinct() %>%
-#   dplyr::group_by(fy, county) %>%
-#   dplyr::summarise(total = n())
-#
-# ggplot(data = data1, aes(x=fy, y=total, group=county, color=county)) +
-#   geom_line() +
-#   # geom_text(aes(label = comma(total)), color = "black", position = position_dodge(0.9), vjust = -0.5,
-#   #           size = 7.5, family = "Franklin Gothic Book") +
-#   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
-#                      expand = c(0,0)
-#                      #limits = c(0,14000)
-#                      ) +
-#   #scale_fill_manual(values=c(jri_light_blue,jri_orange), labels = c("Non-PC","PC")) +
-#   theme_axes +
-#   theme(#legend.position = c(0.75,0.85),
-#         legend.title=element_blank(),
-#         axis.title.y = element_blank())
+data1 <- df_entrances_county %>%
+  mutate(county = ifelse(county == "Coos (bookings only)", "Coos", county),
+         entrances_change_19_21 = round(entrances_change_19_21, 3)
+         ) %>%
+  filter(county != "State")
+
+PRES_gg_entrances_change_county <-
+  ggplot(data1, aes(reorder(county, entrances_change_19_21), entrances_change_19_21, fill = jri_green)) +
+  geom_bar(stat = "identity", fill=jri_dark_blue) +
+  coord_flip() +
+  geom_text(data = data1, aes(label = paste("-", (entrances_change_19_21*100), "%", sep = ""), fontface = 'bold'),
+            size = 7.5,
+            hjust = 1.2,
+            family = "Franklin Gothic Book",
+            color = jri_red) +
+  theme_axes +
+  theme(legend.position = "none",
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()) +
+  scale_y_continuous("\nDecrease in Jail Entrances Between 2019 and 2021",
+                     limits = c(-.65, 0),
+                     labels = percent_format())
 
 #################################################################################################################################################
 #################################################################################################################################################
@@ -478,11 +481,12 @@ PRES_gg_num_entrances <- ggplot(data1, aes(x = num_bookings_category)) +
 
 ##########
 
-save(amt_people_entered,              file=paste0(sp_data_path, "/Data/r_data/amt_people_entered.Rda",              sep = ""))
-save(row_people_entered,              file=paste0(sp_data_path, "/Data/r_data/row_people_entered.Rda",              sep = ""))
-save(amt_entrances,                   file=paste0(sp_data_path, "/Data/r_data/amt_entrances.Rda",                   sep = ""))
-save(row_entrances_fy,                file=paste0(sp_data_path, "/Data/r_data/row_entrances_fy.Rda",                sep = ""))
-save(PRES_gg_entrances,               file=paste0(sp_data_path, "/Data/r_data/PRES_gg_entrances.Rda",               sep = ""))
-save(PRES_table_entrances_fy_county,  file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_fy_county.Rda",  sep = ""))
-save(PRES_table_entrances_people_county, file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_people_county.Rda",  sep = ""))
-save(PRES_gg_num_entrances,  file=paste0(sp_data_path, "/Data/r_data/PRES_gg_num_entrances.Rda",  sep = ""))
+save(amt_people_entered,                 file=paste0(sp_data_path, "/Data/r_data/amt_people_entered.Rda",                 sep = ""))
+save(row_people_entered,                 file=paste0(sp_data_path, "/Data/r_data/row_people_entered.Rda",                 sep = ""))
+save(amt_entrances,                      file=paste0(sp_data_path, "/Data/r_data/amt_entrances.Rda",                      sep = ""))
+save(row_entrances_fy,                   file=paste0(sp_data_path, "/Data/r_data/row_entrances_fy.Rda",                   sep = ""))
+save(PRES_gg_entrances,                  file=paste0(sp_data_path, "/Data/r_data/PRES_gg_entrances.Rda",                  sep = ""))
+save(PRES_table_entrances_fy_county,     file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_fy_county.Rda",     sep = ""))
+save(PRES_table_entrances_people_county, file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_people_county.Rda", sep = ""))
+save(PRES_gg_num_entrances,              file=paste0(sp_data_path, "/Data/r_data/PRES_gg_num_entrances.Rda",              sep = ""))
+save(PRES_gg_entrances_change_county,    file=paste0(sp_data_path, "/Data/r_data/PRES_gg_entrances_change_county.Rda",    sep = ""))

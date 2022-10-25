@@ -36,4 +36,5 @@ rockingham_adm_all <- rockingham_adm.xlsx %>%
          release_date = format(release_date, format = "%m/%d/%Y"),
          county = "Rockingham") %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
-         release_date = as.Date(release_date, format = "%m/%d/%Y")) %>% distinct()
+         release_date = as.Date(release_date, format = "%m/%d/%Y")) %>%
+  distinct()

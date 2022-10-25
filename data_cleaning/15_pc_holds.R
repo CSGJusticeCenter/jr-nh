@@ -216,6 +216,53 @@ PRES_table_entrances_with_pc_holds <-
 
 ##########
 
+# ggplot showing the decrease in entrances by county
+
+##########
+
+# Data for ggplots showing the number of entrances and proportion of PC holds by FY
+data1 <- df_pch %>%
+  group_by(county, pc_hold_in_booking) %>% summarise(total = n())
+data1 <- group_by(data1, county) %>% mutate(pct = round(total/sum(total)*100, 1))
+data1 <- as.data.frame(data1)
+data1 <- data1 %>% mutate(pct = round(pct, digits = 0)) %>%
+  mutate(pct = paste0(pct, "%"))
+
+PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_in_booking)) +
+  geom_col(colour = "white", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_red),
+                    na.value = "white",
+                    labels = c("Non-PC      ","PC", " ")
+                    ) +
+  geom_text(aes(label = pct, fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.8,
+            size = 10, family = "Franklin Gothic Book",
+            color = case_when(data1$pc_hold_in_booking == "Non-PC Hold" ~ "black",
+                              data1$county == "Hillsborough" ~ "white",
+                              TRUE ~ "white")) +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
+        axis.text.y = element_text(size = 28, color = "black"),
+        legend.position = "right",
+        legend.justification = c(1, 0.5),
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))+
+  geom_hline(aes(yintercept=0.20), size = 1)
+PRES_gg_pchold_prop
+
+ggsave(PRES_gg_pchold_prop, file=paste0(sp_data_path, "/Data/r_data/PRES_gg_pchold_prop.png", sep = ""),
+       width = 15, height = 6, dpi = 100)
+
+##########
+
 # ggplots showing the number of entrances and proportion of PC holds by FY
 
 ##########

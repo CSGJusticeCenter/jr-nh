@@ -142,18 +142,6 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
 
-# # booking heat map - not using anymore
-# fnc_booking_heatmap <- function(df){
-#   ggplot(df, aes(year, month)) +
-#     geom_tile(aes(fill = N), colour = "white") +
-#     #scale_fill_gradient(low = "#d4e9f8", high = "#00475d") +
-#     scale_fill_gradient(low = "#eeed90", high = "#315c15") +
-#     guides(fill=guide_legend(title="Total Bookings")) +
-#     labs(title = "Number of Bookings by Month and FY",
-#          x = "Year", y = "Month") +
-#     theme_bw() + theme_minimal()
-# }
-
 # percent grouped bar chart
 fnc_pct_grouped_bar_chart <- function(df, color1, color2){
   # df$variable_name <- get(variable_name, df)

@@ -13,8 +13,8 @@
 # booking_no_pc_hold - bookings without pc holds (no Strafford)
 # entrances          - bookings with pc holds (no Coos)
 
-# charges            - individual charges
-# release_types      - individual release types
+# charges            - charges
+# release_types      - release types
 # sentence_statuses  - sentence statuses
 ############################################
 
@@ -423,10 +423,6 @@ bookings_entrances_all <- adm_all %>%
                 high_utilizer_1_pct,
                 high_utilizer_5_pct,
                 high_utilizer_10_pct,
-                high_utilizer_4_times_fy,
-                high_utilizer_1_pct_fy,
-                high_utilizer_5_pct_fy,
-                high_utilizer_10_pct_fy,
                 pc_hold_booking,
                 pc_hold_charge,
                 pc_hold_sentence,
@@ -434,9 +430,6 @@ bookings_entrances_all <- adm_all %>%
   mutate(month_year_text = format(as.Date(booking_date, "%d/%m/%Y"), "%b %Y"),
          month_year      = as.Date(as.yearmon(month_year_text))) %>%
   distinct()
-
-dim(bookings_entrances_all); length(unique(bookings_entrances_all$booking_id)); length(unique(bookings_entrances_all$id)) #55780 dim, 51545 bookings, 32177 individuals
-table(bookings_entrances_all$county) # All counties
 
 # People can have multiple booking types when entering jail (some are PC hold + criminal charge)
 # dups <- bookings_entrances_all[duplicated(bookings_entrances_all$booking_id)|duplicated(bookings_entrances_all$booking_id, fromLast=TRUE),] # 7932
@@ -467,9 +460,6 @@ bookings_entrances <- bookings_entrances %>%
   select(county: booking_type, all_booking_types, everything()) %>%
   distinct()
 
-# dim(bookings_entrances)                       # 55087
-# length(unique(bookings_entrances$booking_id)) # 51545
-
 # sep by fy year
 bookings_entrances_19 <- bookings_entrances %>% distinct() %>% filter(fy == 2019)
 bookings_entrances_20 <- bookings_entrances %>% distinct() %>% filter(fy == 2020)
@@ -499,7 +489,6 @@ entrances <- bookings_entrances_all %>%
   filter(county != "Coos") %>%
   droplevels() %>%
   distinct()
-dim(entrances); length(unique(entrances$booking_id)); length(unique(entrances$id)) #50874 dim, 50874 bookings, 31706 individuals
 
 ##########
 
@@ -524,9 +513,6 @@ booking_no_pc_hold <- bookings_entrances_all %>%
   droplevels() %>%
   distinct()
 
-# dim(booking_no_pc_hold); length(unique(booking_no_pc_hold$booking_id)); length(unique(booking_no_pc_hold$id)) #31936 dim, 31936 bookings, 19024 individuals
-# table(booking_no_pc_hold$county) # No strafford
-
 ################################################################################
 
 # PC hold data frame
@@ -548,8 +534,6 @@ df_pch <- bookings_entrances %>%
   mutate(pc_hold_in_booking = as.character(pc_hold_in_booking)) %>%
   mutate(pc_hold_in_booking = ifelse(county == "Coos", NA, pc_hold_in_booking)) %>%
   droplevels()
-
-# dim(df_pch); length(unique(df_pch$booking_id)); length(unique(df_pch$id));  # 51545, 32177
 
 ################################################################################
 
@@ -599,13 +583,11 @@ charges <- adm_all %>%
                 pc_hold_release,
                 pc_hold) %>%
   distinct()
-dim(charges); length(unique(charges$booking_id)); length(unique(charges$id)) #73088 dim, 51545 bookings, 32177 individuals
 
 # save booking dates
 all_booking_dates <- bookings_entrances %>%
   select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>%
   distinct()
-
 
 ################################################################################
 

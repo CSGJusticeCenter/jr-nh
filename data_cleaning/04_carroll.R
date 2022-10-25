@@ -12,7 +12,7 @@
 # Carroll County
 ###################
 
-# carroll must have done the unique ids incorrectly?????
+# check to make sure ids were done correctly?
 
 # clean variable names
 # not using releases for now because of merge issues
@@ -52,4 +52,5 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
                 sentence_status = sentencing_status) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
-         county = "Carroll") %>% distinct()
+         county = "Carroll") %>%
+  distinct()
