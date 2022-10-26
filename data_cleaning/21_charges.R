@@ -66,6 +66,9 @@ belknap_adm_charge_clean_test <- belknap_adm_charge_clean %>%
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(belknap_adm_charge_clean_test$missing_charge_data) ### only missing clean charge data for 1110 of 41811 records
 
+### here's a list of the jail-entered charge descriptions where no charge code and/or clean charge data are available
+table(belknap_adm_charge_clean_test$charge_desc_clean[belknap_adm_charge_clean_test$missing_charge_data==1])
+
 ##########
 # Carroll
 ##########
