@@ -496,10 +496,7 @@ save(PRES_table_entrances_people_county, file=paste0(sp_data_path, "/Data/r_data
 save(PRES_gg_num_entrances,              file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_num_entrances.Rda",              sep = ""))
 save(PRES_gg_entrances_change_county,    file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances_change_county.Rda",    sep = ""))
 
-# save ggplots
-ggsave(PRES_gg_entrances,                file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances.png",                  sep = ""),
-       width = 6, height = 5, dpi = 100)
-ggsave(PRES_gg_num_entrances,            file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_num_entrances.png",              sep = ""),
-       width = 12, height = 5, dpi = 100)
-ggsave(PRES_gg_entrances_change_county,  file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances_change_county.png",    sep = ""),
-       width = 10, height = 7, dpi = 100)
+# save ggplots to images folder (only works here)
+ggsave(PRES_gg_entrances,                file= "img/PRES_gg_entrances.png", width = 6, height = 5, dpi = 100)
+ggsave(PRES_gg_num_entrances,            file= "img/PRES_gg_num_entrances.png", width = 12, height = 5, dpi = 100)
+ggsave(PRES_gg_entrances_change_county,  file= "img/PRES_gg_entrances_change_county.png", width = 10, height = 7, dpi = 100)

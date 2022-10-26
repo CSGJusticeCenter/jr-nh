@@ -258,9 +258,6 @@ PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_i
   geom_hline(aes(yintercept=0.20), size = 1)
 PRES_gg_pchold_prop
 
-ggsave(PRES_gg_pchold_prop, file=paste0(sp_data_path, "/Data/r_data/PRES_gg_pchold_prop.png", sep = ""),
-       width = 15, height = 6, dpi = 100)
-
 ##########
 
 # ggplots showing the number of entrances and proportion of PC holds by FY
@@ -306,6 +303,6 @@ save(hc_pch_time,                        file=paste0(sp_data_path, "/Data/r_data
 save(PRES_table_entrances_with_pc_holds, file=paste0(sp_data_path, "/Data/r_data/pc_holds_page/PRES_table_entrances_with_pc_holds.Rda", sep = ""))
 save(table_pc_holds_fy_county,           file=paste0(sp_data_path, "/Data/r_data/pc_holds_page/table_pc_holds_fy_county.Rda",           sep = ""))
 
-# save ggplots
-ggsave(PRES_gg_pch_pct_barchart,         file=paste0(sp_data_path, "/Data/r_data/pc_holds_page/PRES_gg_pch_pct_barchart.png", sep = ""),
-       width = 6, height = 5, dpi = 100)
+# save ggplots to images folder (only works here)
+ggsave(PRES_gg_pch_pct_barchart,         file="img/PRES_gg_pch_pct_barchart.png", width = 6,  height = 5, dpi = 100)
+ggsave(PRES_gg_pchold_prop,              file="img/PRES_gg_pchold_prop.png",      width = 15, height = 6, dpi = 100)

@@ -332,6 +332,5 @@ save(row_bookings_fy,           file=paste0(sp_data_path, "/Data/r_data/incarcer
 save(PRES_gg_bookings,          file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_bookings.Rda",          sep = ""))
 save(table_bookings_fy_county,  file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/table_bookings_fy_county.Rda",  sep = ""))
 
-# save ggplots
-ggsave(PRES_gg_bookings,        file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_bookings.png",          sep = ""),
-                                width = 6, height = 5, dpi = 100)
+# save ggplots to images folder (only works here)
+ggsave(PRES_gg_bookings,        file = "img/incarceration_patterns_page/PRES_gg_bookings.png", width = 6, height = 5, dpi = 100)

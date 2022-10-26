@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
   echo=FALSE, 
   message=FALSE, 
   warning=FALSE,
-  #dev = "ragg_png",
+  dev = "ragg_png",
   cache = FALSE
   )
 
@@ -49,9 +49,8 @@ Please Note: This section reflects the number of bookings per fiscal year, not t
 cat("**There were ", amt_bookings, " bookings across New Hampshire from FY2019 to FY2021.**\n\n", sep = "")
 ```
 
-```{r, results='asis'}
-# print header for pc hold section
-cat("![](", sp_data_path, "/r_data/incarceration_patterns_page/PRES_gg_bookings.png)", sep = "")
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+knitr::include_graphics("img/incarceration_patterns_page/PRES_gg_bookings.png")
 ```
 
 <br>
@@ -100,9 +99,8 @@ Please Note: This section reflects the number of entrances per fiscal year, not 
 cat("**There were ", amt_entrances, " entrances across New Hampshire from FY2019 to FY2021 and an overall decrease of 38.1% since FY2019.**\n\n", sep = "")
 ```
 
-```{r, results='asis'}
-# print header for pc hold section
-cat("![](", sp_data_path, "/r_data/incarceration_patterns_page/PRES_gg_entrances.png)", sep = "")
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+knitr::include_graphics("img/PRES_gg_entrances.png")
 ```
 
 ### Number of Entrances By County

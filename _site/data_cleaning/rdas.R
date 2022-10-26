@@ -22,12 +22,12 @@ load(paste0(sp_data_path, "/Data/r_data/county_pages/county_age_category.Rda",  
 load(paste0(sp_data_path, "/Data/r_data/county_pages/county_gender.Rda",         sep = ""))
 
 # Incarceration Patterns Page
-load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_people_booked.Rda",     sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_people_booked.Rda",     sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_bookings.Rda",          sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_bookings_fy.Rda",       sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_bookings.Rda",      sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/table_bookings_fy_county.Rda",      sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_people_booked.Rda",        sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_people_booked.Rda",        sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_bookings.Rda",             sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_bookings_fy.Rda",          sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_bookings.Rda",         sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/table_bookings_fy_county.Rda", sep = ""))
 
 load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_people_entered.Rda",             sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_people_entered.Rda",             sep = ""))

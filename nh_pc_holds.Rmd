@@ -35,9 +35,8 @@ cat("**Protective custody holds accounted for ", amt_pch_pct, "% of bookings fro
 
 **Although the number of entrances has been decreasing, the proportion of PC holds has remained the same.**
 
-```{r, results='asis'}
-# print header for pc hold section
-cat("![](", sp_data_path, "/r_data/incarceration_patterns_page/PRES_gg_pch_pct_barchart.png)", sep = "")
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+knitr::include_graphics("img/PRES_gg_pch_pct_barchart.png")
 ```
 
 <br>

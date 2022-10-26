@@ -717,12 +717,12 @@ save(table_hu_10_pct_summary,  file=paste0(sp_data_path, "/Data/r_data/high_util
 save(PRES_hu_summary,          file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/PRES_hu_summary.Rda", sep = ""))
 save(PRES_hu_summary1,         file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/PRES_hu_summary1.Rda", sep = ""))
 
-# save ggplots
-ggsave(gg_hu_pc_holds_fy_4_times, file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/gg_hu_pc_holds_fy_4_times.png", sep = ""),
+# save ggplots to images folder (only works here)
+ggsave(gg_hu_pc_holds_fy_4_times, file= "img/gg_hu_pc_holds_fy_4_times.png",
        width = 4.5, height = 4.2, dpi = 100)
-ggsave(gg_hu_pc_holds_fy_1_pct, file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/gg_hu_pc_holds_fy_1_pct.png", sep = ""),
+ggsave(gg_hu_pc_holds_fy_4_times, file= "img/gg_hu_pc_holds_fy_1_pct.png",
        width = 4.5, height = 4.2, dpi = 100)
-ggsave(gg_hu_pc_holds_fy_5_pct, file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/gg_hu_pc_holds_fy_5_pct.png", sep = ""),
+ggsave(gg_hu_pc_holds_fy_4_times, file= "img/gg_hu_pc_holds_fy_5_pct.png",
        width = 4.5, height = 4.2, dpi = 100)
-ggsave(gg_hu_pc_holds_fy_10_pct, file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/gg_hu_pc_holds_fy_10_pct.png", sep = ""),
+ggsave(gg_hu_pc_holds_fy_4_times, file= "img/gg_hu_pc_holds_fy_10_pct.png",
        width = 4.5, height = 4.2, dpi = 100)
