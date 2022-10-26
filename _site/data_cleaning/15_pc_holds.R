@@ -291,7 +291,7 @@ data1 <- group_by(data1, fy) %>% mutate(pct = round(total/sum(total)*100, 1))
 data1 <- as.data.frame(data1)
 data1 <- data1 %>% mutate(pct = comma(pct, digits = 1)) %>% mutate(pct = paste0(pct, "%"))
 
-# Grouped bar chart showing the proportion of PC holds for all three years
+# Grouped bar chart showing the proportion of PC holds by FY
 PRES_gg_pch_pct_barchart <- fnc_pct_grouped_bar_chart(data1, "gray", jri_red)
 
 ##########
@@ -300,9 +300,12 @@ PRES_gg_pch_pct_barchart <- fnc_pct_grouped_bar_chart(data1, "gray", jri_red)
 
 ##########
 
-save(amt_pch_pct,                        file=paste0(sp_data_path, "/Data/r_data/amt_pch_pct.Rda",              sep = ""))
-save(PRES_gg_pch_pct_barchart,           file=paste0(sp_data_path, "/Data/r_data/PRES_gg_pch_pct_barchart.Rda", sep = ""))
-save(hc_pch_time,                        file=paste0(sp_data_path, "/Data/r_data/hc_pch_time.Rda",              sep = ""))
-save(PRES_table_entrances_with_pc_holds, file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_with_pc_holds.Rda", sep = ""))
-save(table_pc_holds_fy_county,           file=paste0(sp_data_path, "/Data/r_data/table_pc_holds_fy_county.Rda", sep = ""))
+save(amt_pch_pct,                        file=paste0(sp_data_path, "/Data/r_data/pc_holds_page/amt_pch_pct.Rda",                        sep = ""))
+save(PRES_gg_pch_pct_barchart,           file=paste0(sp_data_path, "/Data/r_data/pc_holds_page/PRES_gg_pch_pct_barchart.Rda",           sep = ""))
+save(hc_pch_time,                        file=paste0(sp_data_path, "/Data/r_data/pc_holds_page/hc_pch_time.Rda",                        sep = ""))
+save(PRES_table_entrances_with_pc_holds, file=paste0(sp_data_path, "/Data/r_data/pc_holds_page/PRES_table_entrances_with_pc_holds.Rda", sep = ""))
+save(table_pc_holds_fy_county,           file=paste0(sp_data_path, "/Data/r_data/pc_holds_page/table_pc_holds_fy_county.Rda",           sep = ""))
 
+# save ggplots
+ggsave(PRES_gg_pch_pct_barchart,         file=paste0(sp_data_path, "/Data/r_data/pc_holds_page/PRES_gg_pch_pct_barchart.png", sep = ""),
+       width = 6, height = 5, dpi = 100)

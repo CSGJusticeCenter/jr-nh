@@ -156,7 +156,7 @@ gg_people_entered <-
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
                      limits = c(0,17000)) +
-  theme_no_axes
+  theme_no_axes_labels
 
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -239,7 +239,7 @@ PRES_gg_entrances <-
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
                      limits = c(0,24000)) +
-  theme_no_axes
+  theme_no_axes_labels
 
 ####################
 
@@ -287,13 +287,13 @@ data1 <- df_entrances_county %>%
 
 PRES_gg_entrances_change_county <-
   ggplot(data1, aes(reorder(county, change_19_21), change_19_21, fill = jri_green)) +
-  geom_bar(stat = "identity", fill=jri_dark_blue) +
+  geom_bar(stat = "identity", fill=jri_green) +
   coord_flip() +
   geom_text(data = data1, aes(label = paste("-", (round(change_19_21*100, 0)), "%", sep = ""), fontface = 'bold'),
             size = 7.5,
             hjust = 1.2,
             family = "Franklin Gothic Book",
-            color = jri_red) +
+            color = "black") +
   theme_axes +
   theme(legend.position = "none",
         axis.title.y = element_blank(),
@@ -464,15 +464,20 @@ data1 <- bookings_entrances %>%
                                                    "17",
                                                    "18",
                                                    "19",
-                                                   "20+")))
+                                                   "20+"))) %>%
+  group_by(num_entrances_category) %>%
+  summarise(total = n())
 
 # Histogram showing the frequency of the number of entrances per person
-PRES_gg_num_entrances <- ggplot(data1, aes(x = num_entrances_category)) +
-  geom_bar(width = 0.74, fill = jri_green) +
+PRES_gg_num_entrances <-
+  ggplot(data1, aes(x = num_entrances_category, y = total)) +
+  geom_bar(stat = "identity", width = 0.74, fill = jri_green) +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
-                     expand = c(0,0),
+                     expand = c(0.05,0),
                      limits = c(0,26500)) +
-  theme_axes +
+  geom_hline(yintercept=20) +
+  geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 6, family = "Franklin Gothic Book") +
+  theme_no_axes +
   xlab("\nNumber of Entrances") + ylab("Number of People\n")
 
 ##########
@@ -481,12 +486,20 @@ PRES_gg_num_entrances <- ggplot(data1, aes(x = num_entrances_category)) +
 
 ##########
 
-save(amt_people_entered,                 file=paste0(sp_data_path, "/Data/r_data/amt_people_entered.Rda",                 sep = ""))
-save(row_people_entered,                 file=paste0(sp_data_path, "/Data/r_data/row_people_entered.Rda",                 sep = ""))
-save(amt_entrances,                      file=paste0(sp_data_path, "/Data/r_data/amt_entrances.Rda",                      sep = ""))
-save(row_entrances_fy,                   file=paste0(sp_data_path, "/Data/r_data/row_entrances_fy.Rda",                   sep = ""))
-save(PRES_gg_entrances,                  file=paste0(sp_data_path, "/Data/r_data/PRES_gg_entrances.Rda",                  sep = ""))
-save(PRES_table_entrances_fy_county,     file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_fy_county.Rda",     sep = ""))
-save(PRES_table_entrances_people_county, file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_people_county.Rda", sep = ""))
-save(PRES_gg_num_entrances,              file=paste0(sp_data_path, "/Data/r_data/PRES_gg_num_entrances.Rda",              sep = ""))
-save(PRES_gg_entrances_change_county,    file=paste0(sp_data_path, "/Data/r_data/PRES_gg_entrances_change_county.Rda",    sep = ""))
+save(amt_people_entered,                 file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_people_entered.Rda",                 sep = ""))
+save(row_people_entered,                 file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_people_entered.Rda",                 sep = ""))
+save(amt_entrances,                      file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_entrances.Rda",                      sep = ""))
+save(row_entrances_fy,                   file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_entrances_fy.Rda",                   sep = ""))
+save(PRES_gg_entrances,                  file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances.Rda",                  sep = ""))
+save(PRES_table_entrances_fy_county,     file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_table_entrances_fy_county.Rda",     sep = ""))
+save(PRES_table_entrances_people_county, file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_table_entrances_people_county.Rda", sep = ""))
+save(PRES_gg_num_entrances,              file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_num_entrances.Rda",              sep = ""))
+save(PRES_gg_entrances_change_county,    file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances_change_county.Rda",    sep = ""))
+
+# save ggplots
+ggsave(PRES_gg_entrances,                file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances.png",                  sep = ""),
+       width = 6, height = 5, dpi = 100)
+ggsave(PRES_gg_num_entrances,            file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_num_entrances.png",              sep = ""),
+       width = 12, height = 5, dpi = 100)
+ggsave(PRES_gg_entrances_change_county,  file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances_change_county.png",    sep = ""),
+       width = 10, height = 7, dpi = 100)

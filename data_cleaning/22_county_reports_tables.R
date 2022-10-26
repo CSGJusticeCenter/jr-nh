@@ -143,13 +143,13 @@ county_gender <- bind_rows(county_gender)
 # Save data
 ##################
 
-save(county_hu_1_pct_prop,   file=paste0(sp_data_path, "/Data/r_data/county_hu_1_pct_prop.Rda",   sep = ""))
-save(county_hu_5_pct_prop,   file=paste0(sp_data_path, "/Data/r_data/county_hu_5_pct_prop.Rda",   sep = ""))
-save(county_hu_10_pct_prop,  file=paste0(sp_data_path, "/Data/r_data/county_hu_10_pct_prop.Rda",  sep = ""))
+save(county_hu_1_pct_prop,   file=paste0(sp_data_path, "/Data/r_data/county_pages/county_hu_1_pct_prop.Rda",   sep = ""))
+save(county_hu_5_pct_prop,   file=paste0(sp_data_path, "/Data/r_data/county_pages/county_hu_5_pct_prop.Rda",   sep = ""))
+save(county_hu_10_pct_prop,  file=paste0(sp_data_path, "/Data/r_data/county_pages/county_hu_10_pct_prop.Rda",  sep = ""))
 
-save(county_race,            file=paste0(sp_data_path, "/Data/r_data/county_race.Rda",            sep = ""))
-save(county_age_category,    file=paste0(sp_data_path, "/Data/r_data/county_age_category.Rda",    sep = ""))
-save(county_gender,          file=paste0(sp_data_path, "/Data/r_data/county_gender.Rda",          sep = ""))
+save(county_race,            file=paste0(sp_data_path, "/Data/r_data/county_pages/county_race.Rda",            sep = ""))
+save(county_age_category,    file=paste0(sp_data_path, "/Data/r_data/county_pages/county_age_category.Rda",    sep = ""))
+save(county_gender,          file=paste0(sp_data_path, "/Data/r_data/county_pages/county_gender.Rda",          sep = ""))
 
 # save(county_booking_type,    file=paste0(sp_data_path, "/Data/r_data/county_booking_type.Rda",    sep = ""))
 # save(county_sentence_status, file=paste0(sp_data_path, "/Data/r_data/county_sentence_status.Rda", sep = ""))

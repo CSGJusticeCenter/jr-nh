@@ -40,8 +40,8 @@ amt_people_booked <- booking_no_pc_hold %>%
   dplyr::group_by() %>%
   dplyr::summarise(total = n()) %>%
   dplyr::mutate(label = formatC(total, format="d", big.mark=","))
-  amt_people_booked <- amt_people_booked$total
-  # amt_people_booked <- format(round(as.numeric(amt_people_booked), 0), nsmall=0, big.mark=",")
+amt_people_booked <- amt_people_booked$total
+# amt_people_booked <- format(round(as.numeric(amt_people_booked), 0), nsmall=0, big.mark=",")
 
 # Df of total number of people booked by FY (some duplicates because it's by FY)
 df_people_booked_pre <- booking_no_pc_hold %>%
@@ -152,10 +152,11 @@ gg_people_booked <-
   geom_bar(stat="identity", width = 0.74, fill = jri_orange) +
   xlab("") + ylab("People Booked") +
   geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
-  scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
+  scale_y_continuous(labels = label_number(#suffix = "k", scale = 1e-3,
+                     big.mark = ","),
                      expand = c(0,0),
-                     limits = c(0,15000)) +
-  theme_no_axes
+                     limits = c(0,11000)) +
+  theme_no_axes_labels
 
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -252,8 +253,8 @@ PRES_gg_bookings <-
   geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
-                     limits = c(0,15000)) +
-  theme_no_axes
+                     limits = c(0,17000)) +
+  theme_no_axes_labels
 
 ####################
 
@@ -324,9 +325,13 @@ table_booking_types <- fnc_reactable_fy(df_booking,
 
 ##########
 
-save(amt_people_booked, file=paste0(sp_data_path, "/Data/r_data/amt_people_booked.Rda", sep = ""))
-save(row_people_booked, file=paste0(sp_data_path, "/Data/r_data/row_people_booked.Rda", sep = ""))
-save(amt_bookings,      file=paste0(sp_data_path, "/Data/r_data/amt_bookings.Rda",      sep = ""))
-save(row_bookings_fy,   file=paste0(sp_data_path, "/Data/r_data/row_bookings_fy.Rda",   sep = ""))
-save(PRES_gg_bookings,  file=paste0(sp_data_path, "/Data/r_data/PRES_gg_bookings.Rda",  sep = ""))
-save(table_bookings_fy_county,  file=paste0(sp_data_path, "/Data/r_data/table_bookings_fy_county.Rda",  sep = ""))
+save(amt_people_booked,         file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_people_booked.Rda",         sep = ""))
+save(row_people_booked,         file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_people_booked.Rda",         sep = ""))
+save(amt_bookings,              file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_bookings.Rda",              sep = ""))
+save(row_bookings_fy,           file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_bookings_fy.Rda",           sep = ""))
+save(PRES_gg_bookings,          file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_bookings.Rda",          sep = ""))
+save(table_bookings_fy_county,  file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/table_bookings_fy_county.Rda",  sep = ""))
+
+# save ggplots
+ggsave(PRES_gg_bookings,        file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_bookings.png",          sep = ""),
+                                width = 6, height = 5, dpi = 100)

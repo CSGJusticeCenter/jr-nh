@@ -710,24 +710,19 @@ pct_hu_los_between_0_1_days <- sum(pct_hu_los_between_0_1_days$pct)
 
 ################################################################################
 
-ggsave(gg_hu_pc_holds_fy_4_times, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc_holds_fy_4_times.png", sep = ""),
-       width = 4.5, height = 4.2, dpi = 100)
-ggsave(gg_hu_pc_holds_fy_1_pct, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc_holds_fy_1_pct.png", sep = ""),
-       width = 4.5, height = 4.2, dpi = 100)
-ggsave(gg_hu_pc_holds_fy_5_pct, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc_holds_fy_5_pct.png", sep = ""),
-       width = 4.5, height = 4.2, dpi = 100)
-ggsave(gg_hu_pc_holds_fy_10_pct, file=paste0(sp_data_path, "/Data/r_data/gg_hu_pc_holds_fy_10_pct.png", sep = ""),
-       width = 4.5, height = 4.2, dpi = 100)
+save(table_hu_4_times_summary, file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/table_hu_4_times_summary.Rda", sep = ""))
+save(table_hu_1_pct_summary,   file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/table_hu_1_pct_summary.Rda", sep = ""))
+save(table_hu_5_pct_summary,   file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/table_hu_5_pct_summary.Rda", sep = ""))
+save(table_hu_10_pct_summary,  file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/table_hu_10_pct_summary.Rda", sep = ""))
+save(PRES_hu_summary,          file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/PRES_hu_summary.Rda", sep = ""))
+save(PRES_hu_summary1,         file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/PRES_hu_summary1.Rda", sep = ""))
 
-##########
-
-# Save data
-
-##########
-
-save(table_hu_4_times_summary, file=paste0(sp_data_path, "/Data/r_data/table_hu_4_times_summary.Rda", sep = ""))
-save(table_hu_1_pct_summary, file=paste0(sp_data_path, "/Data/r_data/table_hu_1_pct_summary.Rda", sep = ""))
-save(table_hu_5_pct_summary, file=paste0(sp_data_path, "/Data/r_data/table_hu_5_pct_summary.Rda", sep = ""))
-save(table_hu_10_pct_summary, file=paste0(sp_data_path, "/Data/r_data/table_hu_10_pct_summary.Rda", sep = ""))
-save(PRES_hu_summary, file=paste0(sp_data_path, "/Data/r_data/PRES_hu_summary.Rda", sep = ""))
-save(PRES_hu_summary1, file=paste0(sp_data_path, "/Data/r_data/PRES_hu_summary1.Rda", sep = ""))
+# save ggplots
+ggsave(gg_hu_pc_holds_fy_4_times, file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/gg_hu_pc_holds_fy_4_times.png", sep = ""),
+       width = 4.5, height = 4.2, dpi = 100)
+ggsave(gg_hu_pc_holds_fy_1_pct, file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/gg_hu_pc_holds_fy_1_pct.png", sep = ""),
+       width = 4.5, height = 4.2, dpi = 100)
+ggsave(gg_hu_pc_holds_fy_5_pct, file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/gg_hu_pc_holds_fy_5_pct.png", sep = ""),
+       width = 4.5, height = 4.2, dpi = 100)
+ggsave(gg_hu_pc_holds_fy_10_pct, file=paste0(sp_data_path, "/Data/r_data/high_utilizers_page/gg_hu_pc_holds_fy_10_pct.png", sep = ""),
+       width = 4.5, height = 4.2, dpi = 100)

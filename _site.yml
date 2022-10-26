@@ -12,6 +12,8 @@ navbar:
       menu:
         - text: "Incarceration Patterns"
           href: nh_incarceration_patterns.html
+        - text: "Protective Custody Holds"
+          href: nh_pc_holds.html
         - text: "High Utilizers"
           href: nh_high_utilizers_analysis.html
         - text: "Demographics"

@@ -156,7 +156,7 @@ gg_people_entered <-
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
                      limits = c(0,17000)) +
-  theme_no_axes
+  theme_no_axes_labels
 
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -239,7 +239,7 @@ PRES_gg_entrances <-
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
                      limits = c(0,24000)) +
-  theme_no_axes
+  theme_no_axes_labels
 
 ####################
 
@@ -486,12 +486,20 @@ PRES_gg_num_entrances <-
 
 ##########
 
-save(amt_people_entered,                 file=paste0(sp_data_path, "/Data/r_data/amt_people_entered.Rda",                 sep = ""))
-save(row_people_entered,                 file=paste0(sp_data_path, "/Data/r_data/row_people_entered.Rda",                 sep = ""))
-save(amt_entrances,                      file=paste0(sp_data_path, "/Data/r_data/amt_entrances.Rda",                      sep = ""))
-save(row_entrances_fy,                   file=paste0(sp_data_path, "/Data/r_data/row_entrances_fy.Rda",                   sep = ""))
-save(PRES_gg_entrances,                  file=paste0(sp_data_path, "/Data/r_data/PRES_gg_entrances.Rda",                  sep = ""))
-save(PRES_table_entrances_fy_county,     file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_fy_county.Rda",     sep = ""))
-save(PRES_table_entrances_people_county, file=paste0(sp_data_path, "/Data/r_data/PRES_table_entrances_people_county.Rda", sep = ""))
-save(PRES_gg_num_entrances,              file=paste0(sp_data_path, "/Data/r_data/PRES_gg_num_entrances.Rda",              sep = ""))
-save(PRES_gg_entrances_change_county,    file=paste0(sp_data_path, "/Data/r_data/PRES_gg_entrances_change_county.Rda",    sep = ""))
+save(amt_people_entered,                 file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_people_entered.Rda",                 sep = ""))
+save(row_people_entered,                 file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_people_entered.Rda",                 sep = ""))
+save(amt_entrances,                      file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/amt_entrances.Rda",                      sep = ""))
+save(row_entrances_fy,                   file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/row_entrances_fy.Rda",                   sep = ""))
+save(PRES_gg_entrances,                  file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances.Rda",                  sep = ""))
+save(PRES_table_entrances_fy_county,     file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_table_entrances_fy_county.Rda",     sep = ""))
+save(PRES_table_entrances_people_county, file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_table_entrances_people_county.Rda", sep = ""))
+save(PRES_gg_num_entrances,              file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_num_entrances.Rda",              sep = ""))
+save(PRES_gg_entrances_change_county,    file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances_change_county.Rda",    sep = ""))
+
+# save ggplots
+ggsave(PRES_gg_entrances,                file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances.png",                  sep = ""),
+       width = 6, height = 5, dpi = 100)
+ggsave(PRES_gg_num_entrances,            file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_num_entrances.png",              sep = ""),
+       width = 12, height = 5, dpi = 100)
+ggsave(PRES_gg_entrances_change_county,  file=paste0(sp_data_path, "/Data/r_data/incarceration_patterns_page/PRES_gg_entrances_change_county.png",    sep = ""),
+       width = 10, height = 7, dpi = 100)

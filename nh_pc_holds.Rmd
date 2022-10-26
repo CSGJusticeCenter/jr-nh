@@ -1,0 +1,77 @@
+---
+title: "Protective Custody Holds"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    self_contained: false
+---
+
+The following incarceration patterns were found using jail administrative data submitted directly to CSG.   
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
+  #dev = "ragg_png",
+  cache = FALSE
+  )
+
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/01_functions_visuals.R")
+source("data_cleaning/rdas.R")
+```
+
+# Protective Custody Holds
+
+### By State
+
+```{r, results='asis'}
+# print header for pc hold section
+cat("**Protective custody holds accounted for ", amt_pch_pct, "% of bookings from 2019 to 2021.** Coos and Strafford are not included in this calculation due to missing data.\n\n", sep = "")
+```
+
+**Although the number of entrances has been decreasing, the proportion of PC holds has remained the same.**
+
+```{r, results='asis'}
+# print header for pc hold section
+cat("![](", sp_data_path, "/r_data/incarceration_patterns_page/PRES_gg_pch_pct_barchart.png)", sep = "")
+```
+
+<br>
+
+**Protective custody holds tend to occur most frequently during summer months. There was a decline in protective custody holds at the start of the pandemic but they began climbing again shortly after.**  
+
+```{r}
+hc_pch_time
+```
+
+
+<br>
+
+### By County
+
+The proportion of entrances that were protective custody holds varied greatly by county. The table below shows the number of and proportion of entrances that included a protective custody hold charge. Belknap had the highest proportion of bookings that were protective custody holds.  
+
+```{r}
+PRES_table_entrances_with_pc_holds
+```
+
+<br>
+
+**Some counties saw decreases in PC holds while others saw increases.**  
+
+```{r}
+table_pc_holds_fy_county
+```
+
+<br>
+
+### How Protective Custody Holds Are Recorded
+
+Each county records PC holds differently. PC holds are recorded in the charge description, booking type, sentence status, or release type, and sometimes across these metrics. See each **County Report** in the top menu to see how each county records PC holds and the "outcomes" of these holds.  
+
+<br>
+<br>

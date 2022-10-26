@@ -158,15 +158,15 @@ sullivan_adm1 <- sullivan_adm %>% select(-c(los, release_date)) %>% distinct()
 # save data to SP for data dictionaries Rmd
 ##########
 
-save(belknap_adm1,      file=paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",      sep = ""))
-save(carroll_adm1,      file=paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda",      sep = ""))
-save(cheshire_adm1,     file=paste0(sp_data_path, "/Data/r_data/cheshire_adm.Rda",     sep = ""))
-save(coos_adm1,         file=paste0(sp_data_path, "/Data/r_data/coos_adm.Rda",         sep = ""))
-save(hillsborough_adm1, file=paste0(sp_data_path, "/Data/r_data/hillsborough_adm.Rda", sep = ""))
-save(merrimack_adm1,    file=paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda",    sep = ""))
-save(rockingham_adm1,   file=paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda",   sep = ""))
-save(strafford_adm1,    file=paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda",    sep = ""))
-save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
+save(belknap_adm1,      file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/belknap_adm.Rda",      sep = ""))
+save(carroll_adm1,      file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/carroll_adm.Rda",      sep = ""))
+save(cheshire_adm1,     file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/cheshire_adm.Rda",     sep = ""))
+save(coos_adm1,         file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/coos_adm.Rda",         sep = ""))
+save(hillsborough_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/hillsborough_adm.Rda", sep = ""))
+save(merrimack_adm1,    file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/merrimack_adm.Rda",    sep = ""))
+save(rockingham_adm1,   file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/rockingham_adm.Rda",   sep = ""))
+save(strafford_adm1,    file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/strafford_adm.Rda",    sep = ""))
+save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/sullivan_adm.Rda",     sep = ""))
 
 ################################################################################################################################################################
 ################################################################################################################################################################
