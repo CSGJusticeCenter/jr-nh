@@ -1,10 +1,6 @@
 ---
 title: "Incarceration Patterns"
-output: 
-  distill::distill_article:
-    toc: true
-    toc_depth: 3
-    self_contained: false
+site: distill::distill_website
 ---
 
 The following incarceration patterns were found using jail administrative data submitted directly to CSG.   
