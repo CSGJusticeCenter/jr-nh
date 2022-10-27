@@ -17,8 +17,9 @@ carroll_adm_all <- clean_names(carroll_bookings.xlsx)
 
 # Not using releases for now because of merge issues
 # carroll_releases <- clean_names(carroll_releases.xlsx)
+# carroll_bookings <- clean_names(carroll_bookings.xlsx)
 # Merge two adm files together
-# carroll_adm_all <- merge(carroll_releases, carroll_bookings, by = c("inmate_id", "release_dt_tm"), all.x = TRUE, all.y = TRUE)
+# carroll_adm_all <- merge(carroll_releases, carroll_bookings, by = c("inmate_id", "release_dt_tm"), all.x = TRUE)
 
 # Change date formats for booking and release dataes
 carroll_adm_all$booking_dt_tm <- .POSIXct(carroll_adm_all$booking_dt_tm, tz="UTC")
@@ -51,3 +52,5 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
          county = "Carroll") %>%
   distinct()
+
+dim(carroll_adm_all); length(unique(carroll_adm_all$inmate_id)) # 5402, 1849

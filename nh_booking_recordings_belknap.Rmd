@@ -1,5 +1,5 @@
 ---
-title: "Booking Types Recorded by County"
+title: "Bookings Recorded by Belknap"
 output: 
   distill::distill_article:
     toc: true
@@ -22,10 +22,10 @@ source("data_cleaning/01_functions_visuals.R")
 source("data_cleaning/rdas.R")
 ```
 
-# Booking Type Categories
+Booking Types:  
 
 1. ADMINISTRATIVE TRANSFER  
-2. DETAINERS, WARRANTS, HOLDS   
+2. OVERNIGHT HOLD  
 3. DUAL   
 4. NH STATE PRISONER   
 5. PRETRIAL   
@@ -34,12 +34,9 @@ source("data_cleaning/rdas.R")
 
 <br>
 
-# Belknap 
-
-Belknap only provided data on charge descriptions, codes, and booking types. There is no information on release types or sentence statuses.  
+# Overview
 
 ```{r}
-# Belknap only has charge descriptions, codes (sometimes),and booking types
 data1 <- adm_all %>%
   filter(county == "Belknap") %>%
   select(id,
@@ -70,10 +67,10 @@ You can see in the table above that some protective custody holds were recorded 
 
 <br>
 
-### Administrative Transfer
+### ADMINISTRATIVE TRANSFER
 
 ```{r}
-# Belknap only has charge descriptions, codes (sometimes),and booking types
+
 data1 <- adm_all %>%
   filter(county == "Belknap") %>%
   filter(booking_type_standard == "ADMINISTRATIVE TRANSFER") %>% 
@@ -103,13 +100,13 @@ data1 <- adm_all %>%
 
 <br>
 
-### Detainers, Warrants, Holds
+### OVERNIGHT HOLD
 
 ```{r}
-# Belknap only has charge descriptions, codes (sometimes),and booking types
+
 data1 <- adm_all %>%
   filter(county == "Belknap") %>%
-  filter(booking_type_standard == "DETAINERS, WARRANTS, HOLDS") %>% 
+  filter(booking_type_standard == "OVERNIGHT HOLD") %>% 
   select(id,
          booking_id,
          charge_code,
@@ -136,12 +133,10 @@ data1 <- adm_all %>%
 
 <br>
 
-### Dual
-
-Does dual mean that they were booked for multiple reasons?
+### DUAL
 
 ```{r}
-# Belknap only has charge descriptions, codes (sometimes),and booking types
+
 data1 <- adm_all %>%
   filter(county == "Belknap") %>%
   filter(booking_type_standard == "DUAL") %>% 
@@ -174,7 +169,6 @@ data1 <- adm_all %>%
 ### NH State Prisoner
 
 ```{r}
-# Belknap only has charge descriptions, codes (sometimes),and booking types
 data1 <- adm_all %>%
   filter(county == "Belknap") %>%
   filter(booking_type_standard == "NH STATE PRISONER") %>% 
@@ -207,7 +201,7 @@ data1 <- adm_all %>%
 ### Pretrial
 
 ```{r}
-# Belknap only has charge descriptions, codes (sometimes),and booking types
+
 data1 <- adm_all %>%
   filter(county == "Belknap") %>%
   filter(booking_type_standard == "PRETRIAL") %>% 
@@ -240,7 +234,7 @@ data1 <- adm_all %>%
 ### Protective Custody
 
 ```{r}
-# Belknap only has charge descriptions, codes (sometimes),and booking types
+
 data1 <- adm_all %>%
   filter(county == "Belknap") %>%
   filter(booking_type_standard == "PROTECTIVE CUSTODY") %>% 
@@ -270,13 +264,13 @@ data1 <- adm_all %>%
 
 <br>
 
-### Sentences/Sentencing
+### SENTENCED/SENTENCING  
 
 ```{r}
-# Belknap only has charge descriptions, codes (sometimes),and booking types
+
 data1 <- adm_all %>%
   filter(county == "Belknap") %>%
-  filter(booking_type_standard == "DETAINERS, WARRANTS, HOLDS") %>% 
+  filter(booking_type_standard == "SENTENCED/SENTENCING") %>% 
   select(id,
          booking_id,
          charge_code,

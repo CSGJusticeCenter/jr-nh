@@ -293,23 +293,23 @@ adm_all <- adm_all %>%
 # Combine some booking types together (some are the same or it makes sense to group them).
 adm_all <- adm_all %>%
   mutate(booking_type_standard =
-  case_when(booking_type_withpcs == "DETAINEE REQUEST" |
-            booking_type_withpcs == "DETAINER"         |
-            booking_type_withpcs == "DETENTION ORDER"  |
-            booking_type_withpcs == "DETAINERS,WARRANTS,HOLDS" |
-
-            booking_type_withpcs == "ARREST WARRANT" |
-            booking_type_withpcs == "ELECTRONIC BENCH WARRANT" |
-            booking_type_withpcs == "SUPERIOR COURT ARREST WARRANT" |
-            booking_type_withpcs == "WARRANT ARREST" |
-            booking_type_withpcs == "CAPIAS" |
-
-            booking_type_withpcs == "24 HOUR DETENTION REQUEST" |
-            booking_type_withpcs == "FEDERAL HOLD" |
-            booking_type_withpcs == "HOLD FOR ANOTHER AGENCY" |
-            booking_type_withpcs == "HOLD SHEET" |
-            booking_type_withpcs == "OVERNIGHT HOLD" |
-            booking_type_withpcs == "ADULT ORDER OF COMMITMENT"       ~ "DETAINERS, WARRANTS, HOLDS",
+  case_when(# booking_type_withpcs == "DETAINEE REQUEST" |
+            # booking_type_withpcs == "DETAINER"         |
+            # booking_type_withpcs == "DETENTION ORDER"  |
+            # booking_type_withpcs == "DETAINERS,WARRANTS,HOLDS" |
+            #
+            # booking_type_withpcs == "ARREST WARRANT" |
+            # booking_type_withpcs == "ELECTRONIC BENCH WARRANT" |
+            # booking_type_withpcs == "SUPERIOR COURT ARREST WARRANT" |
+            # booking_type_withpcs == "WARRANT ARREST" |
+            # booking_type_withpcs == "CAPIAS" |
+            #
+            # booking_type_withpcs == "24 HOUR DETENTION REQUEST" |
+            # booking_type_withpcs == "FEDERAL HOLD" |
+            # booking_type_withpcs == "HOLD FOR ANOTHER AGENCY" |
+            # booking_type_withpcs == "HOLD SHEET" |
+            # booking_type_withpcs == "OVERNIGHT HOLD" |
+            # booking_type_withpcs == "ADULT ORDER OF COMMITMENT"       ~ "DETAINERS, WARRANTS, HOLDS",
 
             booking_type_withpcs == "ADMIN TRANSFER" |
             booking_type_withpcs == "ADMINISTRATIVE TRANSFER"         ~ "ADMINISTRATIVE TRANSFER",
@@ -328,8 +328,8 @@ adm_all <- adm_all %>%
             booking_type_withpcs == "VIOLATION OF PAROLE" |
             booking_type_withpcs == "VIOLATION OF PROBATION"          ~ "PROBATION/PAROLE (VIOLATION/DETENTION ORDER)",
 
-            booking_type_withpcs == "CONVICTED" |      # not sure if this should be here
-            booking_type_withpcs == "CONVICTED ROCK" | # not sure if this should be here
+            # booking_type_withpcs == "CONVICTED" |      # not sure if this should be here
+            # booking_type_withpcs == "CONVICTED ROCK" | # not sure if this should be here
             booking_type_withpcs == "SENTENCED" |
             booking_type_withpcs == "SENTENCING" |
             booking_type_withpcs == "WALK IN-SENTENCED"               ~ "SENTENCED/SENTENCING",
