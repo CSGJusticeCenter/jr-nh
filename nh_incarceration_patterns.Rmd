@@ -27,10 +27,6 @@ source("data_cleaning/rdas.R")
 
 ```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-knitr::include_graphics("img/nh-jri-flow.png")
-```
-
 # Bookings
 
 **Includes**: People booked into jail for a criminal charge.    
