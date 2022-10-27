@@ -50,7 +50,7 @@ cat("**There were ", amt_bookings, " bookings across New Hampshire from FY2019 t
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-knitr::include_graphics("img/incarceration_patterns_page/PRES_gg_bookings.png")
+knitr::include_graphics("img/PRES_gg_bookings.png")
 ```
 
 <br>
