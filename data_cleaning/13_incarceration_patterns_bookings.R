@@ -301,6 +301,55 @@ table_bookings_fy_county <- fnc_reactable_county_fy(df_bookings_county, row_num 
 ################################################################################################################################################################
 ################################################################################################################################################################
 
+##########
+
+# Belknap Booking Data
+
+##########
+
+booking_events_belknap <- bookings_entrances_all %>% filter(county == "Belknap")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # custom functions to find the number of booking types by FY
 df_booking <- fnc_variable_table(bookings_entrances_19, bookings_entrances_20, bookings_entrances_21, "booking_type_standard")
 df_booking <- fnc_variable_table_desc(df_booking)
