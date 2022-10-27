@@ -22,9 +22,8 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/01_functions_visuals.R")
-source("data_cleaning/00_library_ab_path.R")
+# source("data_cleaning/00_library_ab_path.R")
 source("data_cleaning/rdas.R")
-
 ```
 
 # Bookings
@@ -34,7 +33,7 @@ source("data_cleaning/rdas.R")
 
 **Counties**: All New Hampshire counties except Grafton and Strafford. Strafford is excluded because their data does not differentiate between bookings and PC holds.   
 
-### People Booked By State
+### People Booked  
 
 ```{r, results='asis'}
 # print header for pc hold section
@@ -43,7 +42,7 @@ cat("**There were ", amt_people_booked, " people booked into NH jails between FY
 
 <br>
 
-### Number of Bookings By State
+### Number of Bookings  
 
 Please Note: This section reflects the number of bookings per fiscal year, not the number of people.    
 
@@ -55,10 +54,6 @@ cat("**There were ", amt_bookings, " bookings across New Hampshire from FY2019 t
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
 knitr::include_graphics("img/PRES_gg_bookings.png")
 ```
-
-<br>
-
-### Number of Bookings By County
 
 Counties saw variations in the number of bookings but they all saw a decrease in the past three years.
 
@@ -84,7 +79,7 @@ Coming soon.
 
 **Counties**: All New Hampshire counties except Grafton. Includes Coos bookings, but not PC holds.   
 
-### People Entered By State
+### People Entered  
 
 ```{r, results='asis'}
 # print header for pc hold section
@@ -93,7 +88,7 @@ cat("**There were ", amt_people_entered, " people who entered into NH jails betw
 
 <br>
 
-### Number of Entrances By State
+### Number of Entrances  
 
 Please Note: This section reflects the number of entrances per fiscal year, not the number of people.    
 
@@ -105,8 +100,6 @@ cat("**There were ", amt_entrances, " entrances across New Hampshire from FY2019
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
 knitr::include_graphics("img/PRES_gg_entrances.png")
 ```
-
-### Number of Entrances By County
 
 Counties saw variations in the number of Entrances but they all saw a decrease in the past three years.
 
