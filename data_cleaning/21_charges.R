@@ -13,6 +13,7 @@
 # - START WITH adm_all.rda INSTEAD OF INDIVIDUAL COUNTY FILES B/C MARI CLEANED UP CHARGE/PC HOLD FLAGS AFTER JOINING COUNTIES TOGETHER
 
 # - DECIDE HOW TO HANDLE DUPLICATE CHARGES IN LOOKUP FILE -- WITH SAME CODES AND DATES, BUT DIFFERENT DEGREES
+# Should we choose the most serious or least serious? 
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -260,9 +261,20 @@ coos_adm_charge_clean_final <- rbind(coos_adm_charge_clean_join_one_final,coos_a
 ##########
 # Hillsborough
 ##########
-
-### here -- 10/26
 hillsborough_adm_charge_clean <- hillsborough_adm1 %>% 
+  separate(charge_desc, 
+           paste("charge_desc", 1:11, sep="_"), 
+           sep=";", 
+           extra="drop",
+           remove=FALSE) %>% ### 11 charges is the most included in charge_desc
+  mutate(across(charge_desc_1:charge_desc_11, str_trim)) ### remove leading and trailing blanks
+
+### here -- 10/27
+
+  separate(charge_desc, 
+           into = c("charge_desc_clean","charge_code_clean"), 
+           sep = "(?<=[a-zA-Z])\\s*(?=[0-9])",
+           remove = FALSE) %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
   group_by(charge_desc_clean) %>% 
