@@ -154,20 +154,6 @@ strafford_adm1 <- strafford_adm %>% select(-c(los, release_date)) %>% distinct()
 
 sullivan_adm1 <- sullivan_adm %>% select(-c(los, release_date)) %>% distinct()
 
-##########
-# save data to SP for data dictionaries Rmd
-##########
-
-save(belknap_adm1,      file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/belknap_adm.Rda",      sep = ""))
-save(carroll_adm1,      file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/carroll_adm.Rda",      sep = ""))
-save(cheshire_adm1,     file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/cheshire_adm.Rda",     sep = ""))
-save(coos_adm1,         file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/coos_adm.Rda",         sep = ""))
-save(hillsborough_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/hillsborough_adm.Rda", sep = ""))
-save(merrimack_adm1,    file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/merrimack_adm.Rda",    sep = ""))
-save(rockingham_adm1,   file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/rockingham_adm.Rda",   sep = ""))
-save(strafford_adm1,    file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/strafford_adm.Rda",    sep = ""))
-save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/sullivan_adm.Rda",     sep = ""))
-
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -661,3 +647,20 @@ sentence_status <- adm_all %>%
 sentence_status_19 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2019)
 sentence_status_20 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2020)
 sentence_status_21 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2021)
+
+################################################################################
+
+# Save data to SP for data dictionaries Rmd
+
+################################################################################
+
+save(belknap_adm1,      file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/belknap_adm.Rda",      sep = ""))
+save(carroll_adm1,      file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/carroll_adm.Rda",      sep = ""))
+save(cheshire_adm1,     file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/cheshire_adm.Rda",     sep = ""))
+save(coos_adm1,         file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/coos_adm.Rda",         sep = ""))
+save(hillsborough_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/hillsborough_adm.Rda", sep = ""))
+save(merrimack_adm1,    file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/merrimack_adm.Rda",    sep = ""))
+save(rockingham_adm1,   file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/rockingham_adm.Rda",   sep = ""))
+save(strafford_adm1,    file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/strafford_adm.Rda",    sep = ""))
+save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/sullivan_adm.Rda",     sep = ""))
+save(adm_all,           file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda",          sep = ""))

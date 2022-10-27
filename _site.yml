@@ -42,6 +42,10 @@ navbar:
           href: county_report_Strafford.html
         - text: "Sullivan"
           href: county_report_Sullivan.html
+    - text: "Data Standardization"
+      menu:
+          - text: "Belknap"
+          href: nh_booking_recordings_belknap.html
     - text: "Research"
       menu:
         - text: "Data Availability"

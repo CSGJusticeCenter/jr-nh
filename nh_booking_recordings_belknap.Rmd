@@ -1,0 +1,320 @@
+---
+title: "Booking Types Recorded by County"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
+  dev = "ragg_png",
+  cache = FALSE
+  )
+
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/01_functions_visuals.R")
+source("data_cleaning/rdas.R")
+```
+
+# Booking Type Categories
+
+1. ADMINISTRATIVE TRANSFER  
+2. DETAINERS, WARRANTS, HOLDS   
+3. DUAL   
+4. NH STATE PRISONER   
+5. PRETRIAL   
+6. PROTECTIVE CUSTODY   
+7. SENTENCED/SENTENCING    
+
+<br>
+
+# Belknap 
+
+Belknap only provided data on charge descriptions, codes, and booking types. There is no information on release types or sentence statuses.  
+
+```{r}
+# Belknap only has charge descriptions, codes (sometimes),and booking types
+data1 <- adm_all %>%
+  filter(county == "Belknap") %>%
+  select(id,
+         booking_id,
+         charge_code,
+         charge_desc,
+         booking_type,
+         booking_type_standard,
+         sentence_status,
+         release_type
+         ) %>%
+  distinct() %>%
+  group_by(#charge_code,
+           #charge_desc,
+           booking_type,
+           booking_type_standard,
+           sentence_status,
+           release_type) %>%
+  summarise(total = n()) %>% 
+  arrange(booking_type_standard)
+
+# Custom function for booking recordings table
+# Shows how each county records things differently
+(table1 <- fnc_reactable_booking_recordings(data1))
+```
+
+You can see in the table above that some protective custody holds were recorded in the booking type OR the charge description, which means the booking type was either pretrial or protective custody. The booking type should always be protective custody holds in these cases so the booking type was standardized.
+
+<br>
+
+### Administrative Transfer
+
+```{r}
+# Belknap only has charge descriptions, codes (sometimes),and booking types
+data1 <- adm_all %>%
+  filter(county == "Belknap") %>%
+  filter(booking_type_standard == "ADMINISTRATIVE TRANSFER") %>% 
+  select(id,
+         booking_id,
+         charge_code,
+         charge_desc,
+         booking_type,
+         booking_type_standard,
+         sentence_status,
+         release_type
+         ) %>%
+  distinct() %>%
+  group_by(#charge_code,
+           charge_desc,
+           #booking_type,
+           booking_type_standard,
+           sentence_status,
+           release_type) %>%
+  summarise(total = n()) %>% 
+  arrange(booking_type_standard)
+
+# Custom function for booking recordings table
+# Shows how each county records things differently
+(table1 <- fnc_reactable_charges_booking_recordings(data1))
+```
+
+<br>
+
+### Detainers, Warrants, Holds
+
+```{r}
+# Belknap only has charge descriptions, codes (sometimes),and booking types
+data1 <- adm_all %>%
+  filter(county == "Belknap") %>%
+  filter(booking_type_standard == "DETAINERS, WARRANTS, HOLDS") %>% 
+  select(id,
+         booking_id,
+         charge_code,
+         charge_desc,
+         booking_type,
+         booking_type_standard,
+         sentence_status,
+         release_type
+         ) %>%
+  distinct() %>%
+  group_by(#charge_code,
+           charge_desc,
+           #booking_type,
+           booking_type_standard,
+           sentence_status,
+           release_type) %>%
+  summarise(total = n()) %>% 
+  arrange(booking_type_standard)
+
+# Custom function for booking recordings table
+# Shows how each county records things differently
+(table1 <- fnc_reactable_charges_booking_recordings(data1))
+```
+
+<br>
+
+### Dual
+
+Does dual mean that they were booked for multiple reasons?
+
+```{r}
+# Belknap only has charge descriptions, codes (sometimes),and booking types
+data1 <- adm_all %>%
+  filter(county == "Belknap") %>%
+  filter(booking_type_standard == "DUAL") %>% 
+  select(id,
+         booking_id,
+         charge_code,
+         charge_desc,
+         booking_type,
+         booking_type_standard,
+         sentence_status,
+         release_type
+         ) %>%
+  distinct() %>%
+  group_by(#charge_code,
+           charge_desc,
+           #booking_type,
+           booking_type_standard,
+           sentence_status,
+           release_type) %>%
+  summarise(total = n()) %>% 
+  arrange(booking_type_standard)
+
+# Custom function for booking recordings table
+# Shows how each county records things differently
+(table1 <- fnc_reactable_charges_booking_recordings(data1))
+```
+
+<br>
+
+### NH State Prisoner
+
+```{r}
+# Belknap only has charge descriptions, codes (sometimes),and booking types
+data1 <- adm_all %>%
+  filter(county == "Belknap") %>%
+  filter(booking_type_standard == "NH STATE PRISONER") %>% 
+  select(id,
+         booking_id,
+         charge_code,
+         charge_desc,
+         booking_type,
+         booking_type_standard,
+         sentence_status,
+         release_type
+         ) %>%
+  distinct() %>%
+  group_by(#charge_code,
+           charge_desc,
+           #booking_type,
+           booking_type_standard,
+           sentence_status,
+           release_type) %>%
+  summarise(total = n()) %>% 
+  arrange(booking_type_standard)
+
+# Custom function for booking recordings table
+# Shows how each county records things differently
+(table1 <- fnc_reactable_charges_booking_recordings(data1))
+```
+
+<br>
+
+### Pretrial
+
+```{r}
+# Belknap only has charge descriptions, codes (sometimes),and booking types
+data1 <- adm_all %>%
+  filter(county == "Belknap") %>%
+  filter(booking_type_standard == "PRETRIAL") %>% 
+  select(id,
+         booking_id,
+         charge_code,
+         charge_desc,
+         booking_type,
+         booking_type_standard,
+         sentence_status,
+         release_type
+         ) %>%
+  distinct() %>%
+  group_by(#charge_code,
+           charge_desc,
+           #booking_type,
+           booking_type_standard,
+           sentence_status,
+           release_type) %>%
+  summarise(total = n()) %>% 
+  arrange(booking_type_standard)
+
+# Custom function for booking recordings table
+# Shows how each county records things differently
+(table1 <- fnc_reactable_charges_booking_recordings(data1))
+```
+
+<br>
+
+### Protective Custody
+
+```{r}
+# Belknap only has charge descriptions, codes (sometimes),and booking types
+data1 <- adm_all %>%
+  filter(county == "Belknap") %>%
+  filter(booking_type_standard == "PROTECTIVE CUSTODY") %>% 
+  select(id,
+         booking_id,
+         charge_code,
+         charge_desc,
+         booking_type,
+         booking_type_standard,
+         sentence_status,
+         release_type
+         ) %>%
+  distinct() %>%
+  group_by(#charge_code,
+           charge_desc,
+           #booking_type,
+           booking_type_standard,
+           sentence_status,
+           release_type) %>%
+  summarise(total = n()) %>% 
+  arrange(booking_type_standard)
+
+# Custom function for booking recordings table
+# Shows how each county records things differently
+(table1 <- fnc_reactable_charges_booking_recordings(data1))
+```
+
+<br>
+
+### Sentences/Sentencing
+
+```{r}
+# Belknap only has charge descriptions, codes (sometimes),and booking types
+data1 <- adm_all %>%
+  filter(county == "Belknap") %>%
+  filter(booking_type_standard == "DETAINERS, WARRANTS, HOLDS") %>% 
+  select(id,
+         booking_id,
+         charge_code,
+         charge_desc,
+         booking_type,
+         booking_type_standard,
+         sentence_status,
+         release_type
+         ) %>%
+  distinct() %>%
+  group_by(#charge_code,
+           charge_desc,
+           #booking_type,
+           booking_type_standard,
+           sentence_status,
+           release_type) %>%
+  summarise(total = n()) %>% 
+  arrange(booking_type_standard)
+
+# Custom function for booking recordings table
+# Shows how each county records things differently
+(table1 <- fnc_reactable_charges_booking_recordings(data1))
+```
+
+<br>
+<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
