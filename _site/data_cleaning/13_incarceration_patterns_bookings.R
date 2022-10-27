@@ -307,7 +307,9 @@ table_bookings_fy_county <- fnc_reactable_county_fy(df_bookings_county, row_num 
 
 ##########
 
-booking_events_belknap <- bookings_entr
+booking_events_belknap <- bookings_entrances_all %>% filter(county == "Belknap")
+
+
 
 
 
