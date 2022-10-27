@@ -25,6 +25,10 @@ source("data_cleaning/01_functions_visuals.R")
 source("data_cleaning/rdas.R")
 ```
 
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+knitr::include_graphics("img/nh-jri-flow.png")
+```
+
 # Bookings
 
 **Includes**: People booked into jail for a criminal charge.    
@@ -51,7 +55,7 @@ cat("**There were ", amt_bookings, " bookings across New Hampshire from FY2019 t
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-knitr::include_graphics("img/PRES_gg_bookings.png")
+knitr::include_graphics("_site/img/PRES_gg_bookings.png")
 ```
 
 <br>
@@ -101,7 +105,7 @@ cat("**There were ", amt_entrances, " entrances across New Hampshire from FY2019
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-knitr::include_graphics("img/PRES_gg_entrances.png")
+knitr::include_graphics("_site/img/PRES_gg_entrances.png")
 ```
 
 ### Number of Entrances By County
