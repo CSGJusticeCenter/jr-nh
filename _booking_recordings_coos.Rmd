@@ -29,7 +29,7 @@ source("data_cleaning/rdas.R")
 
 ```{r}
 # Coos only has charge descriptions, codes (sometimes),and booking types
-data1 <- adm_all %>%
+data1 <- SAVE_adm_all %>%
   filter(county == "Coos") %>%
   select(id,
          booking_id,
@@ -60,7 +60,7 @@ data1 <- adm_all %>%
 ### DUAL STATUS
 
 ```{r}
-data1 <- adm_all %>%
+data1 <- SAVE_adm_all %>%
   filter(county == "Coos") %>%
   filter(sentence_status == "DUAL STATUS") %>% 
   select(id,
@@ -92,7 +92,7 @@ data1 <- adm_all %>%
 ### PRETRIAL
 
 ```{r}
-data1 <- adm_all %>%
+data1 <- SAVE_adm_all %>%
   filter(county == "Coos") %>%
   filter(sentence_status == "PRETRIAL") %>% 
   select(id,
@@ -124,7 +124,7 @@ data1 <- adm_all %>%
 ### SENTENCED 
 
 ```{r}
-data1 <- adm_all %>%
+data1 <- SAVE_adm_all %>%
   filter(county == "Coos") %>%
   filter(sentence_status == "SENTENCED") %>% 
   select(id,

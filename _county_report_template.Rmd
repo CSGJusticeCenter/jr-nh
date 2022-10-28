@@ -26,17 +26,6 @@ knitr::opts_chunk$set(
   )
 ```
 
-# Incarceration Patterns
-
-# Jail Bookings
-
-Coming soon.
-
-# Demographics
-
-Coming soon.
-
-
 # High Utilizers
 
 ## Top 1%
@@ -48,12 +37,28 @@ cat("**High Utilizers, when defined as the people in the top 1% of entrances, ac
 ```
 
 ```{r}
+data1 <- county_hu_1_pct_prop %>% filter(county == county_name & high_utilizer_1_pct != "Total") %>% ungroup() %>% select(-county) %>% droplevels() 
+
+table1 <- fnc_reactable_fy(data1)
+table1
+```
+
+## Top 5%
+
+```{r, results='asis'}
+temp <- county_hu_5_pct_prop %>% filter(county == county_name) %>% filter(high_utilizer_5_pct == "Yes") %>% select(freq) 
+temp <- as.vector(temp)
+cat("**High Utilizers, when defined as the people in the top 10% of entrances, accounted for ", round(temp$freq*100, 1), "% of all entrances between FY2019 and FY2021", ".**\n\n", sep = "")
+```
+
+```{r}
 data1 <- county_hu_5_pct_prop %>% filter(county == county_name & high_utilizer_5_pct != "Total") %>% ungroup() %>% select(-county) %>% droplevels() 
 
 table1 <- fnc_reactable_fy(data1)
 table1
 ```
-## Top 5%
+
+## Top 10%
 
 ```{r, results='asis'}
 temp <- county_hu_10_pct_prop %>% filter(county == county_name) %>% filter(high_utilizer_10_pct == "Yes") %>% select(freq) 
