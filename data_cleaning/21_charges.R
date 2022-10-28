@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File:  charges.R
-# Last updated: October 26, 2022
+# Last updated: October 27, 2022
 # Author: Andrew Byrum
 
 # Explore charge data for each jail -- attempting to clean and separate charge code from charge description
@@ -14,6 +14,19 @@
 
 # - DECIDE HOW TO HANDLE DUPLICATE CHARGES IN LOOKUP FILE -- WITH SAME CODES AND DATES, BUT DIFFERENT DEGREES
 # Should we choose the most serious or least serious? 
+
+# - Clarify with superintendents/jail partners whether charge data represent most serious charge linked to bookings
+# aside from hillsborough where all charges appear to be entered along with a booking
+
+# - Explore other resources to use for records missing charge codes
+
+# - Join all counties together and then fill across lookup table values using charge description 
+# (i.e., to fill in charge codes and charge lookup table values using descriptions that did have a matching code linked)
+
+# - Fix rbind issue (columns don't match) for join_1 and join_2 dataframes
+
+# - Missing charge code/charge description data by county
+
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -33,9 +46,9 @@ load(paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",          sep = ""))
 ################################################################################################################################################################
 ################################################################################################################################################################
 
-#####################
+##################################
 # Charge Lookup Table
-#####################
+##################################
 charge_codes_lookup <- charge_codes.xlsx %>%
   clean_names() %>%
   mutate(descriptor = tolower(descriptor),
@@ -48,9 +61,9 @@ charge_codes_lookup <- charge_codes.xlsx %>%
   select(charge_code_clean, descriptor, statute_title, smart_code, ctl_number, vis, degree)
   
 
-##########
+##################################
 # Belknap
-##########
+##################################
 belknap_adm_charge_clean <- belknap_adm1 %>% 
   separate(charge_desc, 
            into = c("charge_desc_clean","charge_code_clean"), 
@@ -103,9 +116,9 @@ belknap_adm_charge_clean_final <- rbind(belknap_adm_charge_clean_join_one_final,
 ### final tally for belknap: missing 1,073 of 41,811 non-pc hold records
 
 
-##########
+##################################
 # Carroll
-##########
+##################################
 carroll_adm_charge_clean <- carroll_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
@@ -158,9 +171,9 @@ carroll_adm_charge_clean_final <- rbind(carroll_adm_charge_clean_join_one_final,
 
 ### final tally for carroll: missing 1,634 non-pc hold records
 
-##########
+##################################
 # Cheshire
-##########
+##################################
 cheshire_adm_charge_clean <- cheshire_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
@@ -208,9 +221,9 @@ cheshire_adm_charge_clean_final <- rbind(cheshire_adm_charge_clean_join_one_fina
 
 ### final tally for cheshire: missing 1,711 non-pc hold records
 
-##########
+##################################
 # Coos
-##########
+##################################
 coos_adm_charge_clean <- coos_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
@@ -258,32 +271,63 @@ coos_adm_charge_clean_final <- rbind(coos_adm_charge_clean_join_one_final,coos_a
 
 ### final tally for coos: missing 391 non-pc hold records
 
-##########
+##################################
 # Hillsborough
-##########
+##################################
 hillsborough_adm_charge_clean <- hillsborough_adm1 %>% 
   separate(charge_desc, 
            paste("charge_desc", 1:11, sep="_"), 
            sep=";", 
            extra="drop",
            remove=FALSE) %>% ### 11 charges is the most included in charge_desc
-  mutate(across(charge_desc_1:charge_desc_11, str_trim)) ### remove leading and trailing blanks
-
-### here -- 10/27
-
-  separate(charge_desc, 
-           into = c("charge_desc_clean","charge_code_clean"), 
-           sep = "(?<=[a-zA-Z])\\s*(?=[0-9])",
-           remove = FALSE) %>% 
-  mutate(charge_desc_clean = tolower(charge_desc),
-         charge_code_clean = tolower(charge_code)) %>% 
+  mutate(across(charge_desc_1:charge_desc_11, str_trim)) %>% 
+  pivot_longer(charge_desc_1:charge_desc_11, 
+               names_to = "charge_desc_first_clean_count", 
+               values_to = "charge_desc_first_clean_value") %>% ### pivot wide to long for easier cleaning
+### need to keep first code, drop second code, and tolower across all new charge_code and charge_desc cols
+### remove leading and trailing blanks
+  separate(charge_desc_first_clean_value,
+           paste("charge_desc_second_clean_value", 1:2, sep="_"), 
+           sep="-", 
+           extra="drop",
+           remove=FALSE) %>% 
+### remove duplicate charge codes from charge description
+  
+### two options for removing charge codes from charge_desc_second_clean_value_2:
+## remove everything after first number (downside: this removes everything for "2nd degree...")
+## remove everything after last letter (downside: leaves leftover codes that end in letters)
+  
+  
+### remove everything after last letter
+  mutate(charge_desc_second_clean_value_2 = str_remove(charge_desc_second_clean_value_2, "[0-9].+")) %>% 
+  mutate(charge_desc_second_clean_value_2 = case_when(
+    charge_desc_second_clean_value_1=="LITTER CONTROL" ~ "LITTER CONTROL",
+    charge_desc_second_clean_value_1=="MV DRIVERS SCHOOL 263:44" ~ "MV DRIVERS SCHOOL",
+    charge_desc_second_clean_value_1=="Eletronic Bench Warrant" ~ "Electronic Bench Warrant",
+    charge_desc_second_clean_value_1=="DUTY TO INFORM 651" ~ "DUTY TO INFORM",
+    charge_desc_second_clean_value_1=="DUTY OF GOVERNOR 612:2" ~ "DUTY OF GOVERNOR",
+    TRUE ~ as.character(charge_desc_second_clean_value_2))) %>% 
+  mutate(charge_desc_second_clean_value_1_num_only = case_when(
+    charge_desc_second_clean_value_1=="LITTER CONTROL" ~ as.character(NA),
+    charge_desc_second_clean_value_1=="PENALTY 262:40" ~ "262:40-C",
+    charge_desc_second_clean_value_1=="MV DRIVERS SCHOOL 263:44" ~ "263:44",
+    charge_desc_second_clean_value_1=="Eletronic Bench Warrant" ~ as.character(NA),
+    charge_desc_second_clean_value_1=="DUTY TO INFORM 651" ~ "651-B:5",
+    charge_desc_second_clean_value_1=="DUTY OF GOVERNOR 612:2" ~ "612:2",
+    TRUE ~ as.character(charge_desc_second_clean_value_1))) %>% 
+### again remove leading and trailing blanks
+  mutate(across(charge_desc_second_clean_value_1:charge_desc_second_clean_value_2, str_trim)) %>% 
+  mutate(charge_desc_clean = tolower(charge_desc_second_clean_value_2),
+         charge_code_clean = tolower(charge_desc_second_clean_value_1_num_only)) %>% 
+### fill charge code by charge descriptions (some descriptions are missing a code where others have one)
   group_by(charge_desc_clean) %>% 
   fill(charge_code_clean, 
        .direction = "downup") %>%
   ungroup()
-# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
 
 ### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
+  
+### to do: group_by booking and only keep most serious charge
 hillsborough_adm_charge_clean_join_one <- hillsborough_adm_charge_clean %>% 
   filter(pc_hold=="Non-PC Hold") %>% 
   left_join(charge_codes_lookup, 
@@ -317,24 +361,161 @@ table(hillsborough_adm_charge_clean_join_two$missing_charge_data_second_join) ##
 hillsborough_adm_charge_clean_join_one_final <- hillsborough_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join==0)
 
-hillsborough_adm_charge_clean_final <- rbind(hillsborough_adm_charge_clean_join_one_final,hillsborough_adm_charge_clean_join_two)
+hillsborough_adm_charge_clean_final <- rbind(hillsborough_adm_charge_clean_join_one_final,
+                                             hillsborough_adm_charge_clean_join_two)
 
 ### final tally for hillsborough: missing 391 non-pc hold records
 
-##########
+##################################
 # Merrimack
-##########
+##################################
 
-##########
+### NOTE: MERRIMACK DOESN'T HAVE ANY CHARGE CODES -- SO WE HAVE TO RELY ON CHARGE DESCRIPTIONS
+
+merrimack_adm_charge_clean <- merrimack_adm1 %>% 
+  mutate(charge_desc_clean = tolower(charge_desc)) 
+
+### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
+merrimack_adm_charge_clean_join_one <- merrimack_adm_charge_clean %>% 
+  filter(pc_hold=="Non-PC Hold") %>% 
+  left_join(charge_codes_lookup, 
+            by = c("charge_desc_clean" = "statute_title")) %>% 
+  mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
+                                                 1,
+                                                 0)) 
+
+### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
+table(merrimack_adm_charge_clean_join_one$missing_charge_data_first_join) ### missing clean charge data for 6,000+ records
+
+### here's a list of the jail-entered charge descriptions where no charge code and/or clean charge data are available
+table(merrimack_adm_charge_clean_join_one$charge_desc_clean[merrimack_adm_charge_clean_join_one$missing_charge_data_first_join==1])
+
+### for non-pc hold bookings that did not join to the charge lookup table, either because there isn't a charge code
+### in the jail-provided file or because the charge code in the jail-provided file doesn't match any charge code in 
+### lookup
+merrimack_adm_charge_clean_join_two <- merrimack_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join == 1) %>% 
+  select(-c(descriptor, smart_code, ctl_number, vis, degree)) %>% 
+  left_join(charge_codes_lookup, 
+            by = c("charge_desc_clean" = "descriptor")) %>% 
+  mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
+                                                  1,
+                                                  0))
+
+### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
+table(merrimack_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~200 of 6,000+ records (there are dupes with the joins)
+
+### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
+merrimack_adm_charge_clean_join_one_final <- merrimack_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0)
+
+merrimack_adm_charge_clean_final <- rbind(merrimack_adm_charge_clean_join_one_final,merrimack_adm_charge_clean_join_two)
+
+### final tally for merrimack: missing 6,461 non-pc hold records
+
+##################################
 # Rockingham
-##########
+##################################
+rockingham_adm_charge_clean <- rockingham_adm1 %>% 
+  mutate(charge_desc_clean = tolower(charge_desc),
+         charge_code_clean = tolower(charge_code)) %>% 
+  group_by(charge_desc_clean) %>% 
+  fill(charge_code_clean, 
+       .direction = "downup") %>%
+  ungroup()
+# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
 
-##########
+### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
+rockingham_adm_charge_clean_join_one <- rockingham_adm_charge_clean %>% 
+  filter(pc_hold=="Non-PC Hold") %>% 
+  left_join(charge_codes_lookup, 
+            by = "charge_code_clean") %>% 
+  mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
+                                                 1,
+                                                 0))
+
+### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
+table(rockingham_adm_charge_clean_join_one$missing_charge_data_first_join) ### missing clean charge data for ~5500 records
+
+### here's a list of the jail-entered charge descriptions where no charge code and/or clean charge data are available
+table(rockingham_adm_charge_clean_join_one$charge_desc_clean[rockingham_adm_charge_clean_join_one$missing_charge_data_first_join==1])
+
+### for non-pc hold bookings that did not join to the charge lookup table, either because there isn't a charge code
+### in the jail-provided file or because the charge code in the jail-provided file doesn't match any charge code in 
+### lookup
+rockingham_adm_charge_clean_join_two <- rockingham_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join == 1) %>% 
+  select(-c(descriptor, statute_title, smart_code, ctl_number, vis, degree)) %>% 
+  left_join(charge_codes_lookup, 
+            by = c("charge_desc_clean" = "statute_title")) %>% 
+  mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
+                                                  1,
+                                                  0))
+
+### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
+table(rockingham_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~1700 of 5500 records (there are dupes with the joins)
+
+### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
+rockingham_adm_charge_clean_join_one_final <- rockingham_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0)
+
+rockingham_adm_charge_clean_final <- rbind(rockingham_adm_charge_clean_join_one_final,rockingham_adm_charge_clean_join_two)
+
+### final tally for rockingham: missing 2,826 non-pc hold records
+
+##################################
 # Strafford
-##########
+##################################
 
-##########
+### NOTE: Strafford is missing both charge codes and charge descriptions. Unless we receive updated data,
+### we'll have to exclude Strafford from all charge-specific analysis
+
+##################################
 # Sullivan
-##########
+##################################
+sullivan_adm_charge_clean <- sullivan_adm1 %>% 
+  mutate(charge_desc_clean = tolower(charge_desc),
+         charge_code_clean = tolower(charge_code)) %>% 
+  group_by(charge_desc_clean) %>% 
+  fill(charge_code_clean, 
+       .direction = "downup") %>%
+  ungroup()
+# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
 
+### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
+sullivan_adm_charge_clean_join_one <- sullivan_adm_charge_clean %>% 
+  filter(pc_hold=="Non-PC Hold") %>% 
+  left_join(charge_codes_lookup, 
+            by = "charge_code_clean") %>% 
+  mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
+                                                 1,
+                                                 0))
 
+### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
+table(sullivan_adm_charge_clean_join_one$missing_charge_data_first_join) ### missing clean charge data for ~1200 records
+
+### here's a list of the jail-entered charge descriptions where no charge code and/or clean charge data are available
+table(sullivan_adm_charge_clean_join_one$charge_desc_clean[sullivan_adm_charge_clean_join_one$missing_charge_data_first_join==1])
+
+### for non-pc hold bookings that did not join to the charge lookup table, either because there isn't a charge code
+### in the jail-provided file or because the charge code in the jail-provided file doesn't match any charge code in 
+### lookup
+sullivan_adm_charge_clean_join_two <- sullivan_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join == 1) %>% 
+  select(-c(descriptor, statute_title, smart_code, ctl_number, vis, degree)) %>% 
+  left_join(charge_codes_lookup, 
+            by = c("charge_desc_clean" = "statute_title")) %>% 
+  mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
+                                                  1,
+                                                  0))
+
+### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
+table(sullivan_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~44 of 1200 records (there are dupes with the joins)
+
+### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
+sullivan_adm_charge_clean_join_one_final <- sullivan_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0)
+
+sullivan_adm_charge_clean_final <- rbind(sullivan_adm_charge_clean_join_one_final,sullivan_adm_charge_clean_join_two)
+
+### final tally for sullivan: missing 2,826 non-pc hold records
