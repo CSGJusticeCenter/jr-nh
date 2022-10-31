@@ -782,3 +782,26 @@ fnc_hus_descriptive_summary <- function(df, hu_variable_name, yesno, county_excl
     arrange(county %in% "State")
 
 }
+
+# Extract levels of booking type, sentence status, and release type to understand booking information by county
+fnc_investigate_booking_recordings <- function(df){
+  df1 <- df %>%
+    mutate(charge_desc     = as.character(charge_desc),
+           booking_type    = as.character(booking_type),
+           release_type    = as.character(release_type),
+           sentence_status = as.character(sentence_status),
+           charge_desc     = toupper(charge_desc),
+           booking_type    = toupper(booking_type),
+           release_type    = toupper(release_type),
+           sentence_status = toupper(sentence_status)) %>%
+    select(id, booking_id, charge_desc, booking_type, sentence_status, release_type) %>%
+    distinct() %>%
+    group_by(booking_type, sentence_status) %>%
+    summarise(total = n())
+}
+
+fnc_investigate_booking_recordings_standard <- function(df){
+  df1 <- df %>%
+    group_by(booking_type, sentence_status, booking_type_standard, sentence_status_standard) %>%
+    summarise(total = n())
+}
