@@ -64,12 +64,13 @@ sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all,     "Sullivan")
 
 # Remove LOS (keep los max) and release date due to release date differences by booking id.
 
-# Standardize booking types across counties so they have these categories:
-     # 1) PROTECTIVE CUSTODY
-     # 2) PRETRIAL
-     # 3) SENTENCED/SENTENCING
-     # 4) UNKNOWN
-     # 5) OTHER
+# Standardize sentence statuses across counties so they have these categories:
+      # 1) PROTECTIVE CUSTODY
+      # 2) PRETRIAL
+      # 3) SENTENCED
+      # 4) NH STATE PRISONER
+      # 4) UNKNOWN
+      # 5) OTHER
 
 # Felony drug court programs for adult offenders are available in
      # Belknap, Carroll, Cheshire, Coos, Grafton, Hillsborough, Merrimack, Rockingham, and Strafford
@@ -96,18 +97,8 @@ booking_recordings_belknap <- fnc_investigate_booking_recordings(belknap_adm)
 
 belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
 
-  mutate(pc_hold = as.character(pc_hold)) %>%
-  mutate(pc_hold = case_when((charge_desc == "TEMPORARY REMOVAL OR TRANSFER" |
-                              charge_desc == "RESIST ARREST OR DETENTION 642:2" |
-                              charge_desc == "DISORDERLY CONDUCT 644:2" |
-                              charge_desc == "DRIVING OR OPERATING UNDER THE INFLUENCE OF DRUGSOR LIQUOR 265-A:2" |
-                              charge_desc == "RESISTING ARREST 594:5"|
-                              charge_desc == "SIMPLE ASSAULT 631:2-A" |
-                              charge_desc == "VIOLATION OF PROTECTIVE ORDER")
-                              & booking_type == "PROTECTIVE CUSTODY"              ~ "Non-PC Hold",
-                              TRUE                                                ~ pc_hold)) %>%
-
-  mutate(charge_desc     = as.character(charge_desc),
+  mutate(pc_hold = as.character(pc_hold),
+         charge_desc     = as.character(charge_desc),
          booking_type    = as.character(booking_type),
          release_type    = as.character(release_type),
          sentence_status = as.character(sentence_status),
@@ -116,79 +107,48 @@ belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
          release_type    = toupper(release_type),
          sentence_status = toupper(sentence_status)) %>%
 
-                                            # UNKNOWN, not PC holds
-  mutate(booking_type_standard = case_when((charge_desc == "TEMPORARY REMOVAL OR TRANSFER" |
-                                            charge_desc == "RESIST ARREST OR DETENTION 642:2" |
-                                            charge_desc == "DISORDERLY CONDUCT 644:2" |
-                                            charge_desc == "DRIVING OR OPERATING UNDER THE INFLUENCE OF DRUGSOR LIQUOR 265-A:2" |
-                                            charge_desc == "RESISTING ARREST 594:5"|
-                                            charge_desc == "SIMPLE ASSAULT 631:2-A" |
-                                            charge_desc == "VIOLATION OF PROTECTIVE ORDER")
-                                           & booking_type == "PROTECTIVE CUSTODY"                                              ~ "UNKNOWN",
+  mutate(pc_hold = case_when((charge_desc == "TEMPORARY REMOVAL OR TRANSFER" |
+                                charge_desc == "RESIST ARREST OR DETENTION 642:2" |
+                                charge_desc == "DISORDERLY CONDUCT 644:2" |
+                                charge_desc == "DRIVING OR OPERATING UNDER THE INFLUENCE OF DRUGSOR LIQUOR 265-A:2" |
+                                charge_desc == "RESISTING ARREST 594:5"|
+                                charge_desc == "SIMPLE ASSAULT 631:2-A" |
+                                charge_desc == "VIOLATION OF PROTECTIVE ORDER")
+                             & booking_type == "PROTECTIVE CUSTODY"              ~ "Non-PC Hold",
+                             TRUE                                                ~ pc_hold)) %>%
 
-                                           # PROTECTIVE CUSTODY
-                                           str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY/INTOXICATION", charge_desc)       ~ "PROTECTIVE CUSTODY",
-
-                                           # ADMINISTRATIVE TRANSFER
-                                           str_detect("ADMIN TRANSFER", booking_type)                                          ~ "TRANSFER",
-
-                                           # OTHER
-                                           str_detect("OVERNIGHT HOLD", booking_type)                                          ~ "DETAIN/HOLD/WARRANT",
-
-                                           # DUAL - normally a sentence status
-                                           str_detect("DUAL", booking_type)                                                    ~ "UNKNOWN",
-
-                                           # NH STATE PRISONER - normally a sentence status
-                                           str_detect("NH STATE PRISONER", booking_type)                                       ~ "UNKNOWN",
-
-                                           # SENTENCED - normally a sentence status
-                                           str_detect("SENTENCED", booking_type)                                               ~ "UNKNOWN",
-
-                                           # PRETRIAL - normally a sentence status
-                                           str_detect("PRETRIAL", booking_type)                                                ~ "UNKNOWN",
-
-
-                                           TRUE ~ booking_type)) %>%
-
-                                               # UNKNOWN
-  mutate(sentence_status_standard = case_when((charge_desc == "TEMPORARY REMOVAL OR TRANSFER" |
-                                                 charge_desc == "RESIST ARREST OR DETENTION 642:2" |
-                                                 charge_desc == "DISORDERLY CONDUCT 644:2" |
-                                                 charge_desc == "DRIVING OR OPERATING UNDER THE INFLUENCE OF DRUGSOR LIQUOR 265-A:2" |
-                                                 charge_desc == "RESISTING ARREST 594:5"|
-                                                 charge_desc == "SIMPLE ASSAULT 631:2-A" |
-                                                 charge_desc == "VIOLATION OF PROTECTIVE ORDER")
-                                              & booking_type == "PROTECTIVE CUSTODY"                                              ~ "UNKNOWN",
-
-                                              # PROTECTIVE CUSTODY
+  mutate(sentence_status_standard = case_when(# PROTECTIVE CUSTODY
                                               str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY/INTOXICATION", charge_desc)       ~ "PROTECTIVE CUSTODY",
-
-                                              # ADMINISTRATIVE TRANSFER - normally a booking type
-                                              str_detect("ADMIN TRANSFER", booking_type)                                          ~ "UNKNOWN",
-
-                                              # HOLD - normally a booking type
-                                              str_detect("OVERNIGHT HOLD", booking_type)                                          ~ "UNKNOWN",
-
-                                              # DUAL
-                                              str_detect("DUAL", booking_type)                                                    ~ "DUAL",
-
-                                              # NH STATE PRISONER
-                                              str_detect("NH STATE PRISONER", booking_type)                                       ~ "NH STATE PRISONER",
-
-                                              # SENTENCED
-                                              str_detect("SENTENCED", booking_type)                                               ~ "SENTENCED",
 
                                               # PRETRIAL
                                               str_detect("PRETRIAL", booking_type)                                                ~ "PRETRIAL",
 
+                                              # SENTENCED
+                                              str_detect("SENTENCED", booking_type)                                               ~ "SENTENCED",
 
-                                              TRUE ~ booking_type)) %>%
+                                              # NH STATE PRISONER
+                                              str_detect("NH STATE PRISONER", booking_type)                                       ~ "NH STATE PRISONER",
 
-  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, booking_type_standard, sentence_status, sentence_status_standard, release_type, booking_date, everything())
+                                              # OTHER
+                                              str_detect("DUAL", booking_type)                                                    ~ "OTHER",
+                                              str_detect("OVERNIGHT HOLD", booking_type)                                          ~ "OTHER",
+                                              str_detect("ADMIN TRANSFER", booking_type)                                          ~ "OTHER",
 
-temp <- fnc_investigate_booking_recordings_standard(belknap_adm1)
-table(belknap_adm1$booking_type_standard)
-table(belknap_adm1$sentence_status_standard)
+                                              # UNKNOWN
+                                              ((charge_desc == "TEMPORARY REMOVAL OR TRANSFER" |
+                                              charge_desc == "RESIST ARREST OR DETENTION 642:2" |
+                                              charge_desc == "DISORDERLY CONDUCT 644:2" |
+                                              charge_desc == "DRIVING OR OPERATING UNDER THE INFLUENCE OF DRUGSOR LIQUOR 265-A:2" |
+                                              charge_desc == "RESISTING ARREST 594:5"|
+                                              charge_desc == "SIMPLE ASSAULT 631:2-A" |
+                                              charge_desc == "VIOLATION OF PROTECTIVE ORDER") &
+                                                booking_type == "PROTECTIVE CUSTODY")                                             ~ "UNKNOWN",
+
+                                            TRUE ~ booking_type)) %>%
+
+  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
+
+temp <- fnc_investigate_booking_recordings_standard(belknap_adm1) # no charge descriptions, which explains changes to booking type and sentence status
 
 ##########
 # Carroll
@@ -232,39 +192,36 @@ carroll_adm1 <- carroll_adm %>% select(-c(los, release_date)) %>% distinct() %>%
          release_type    = toupper(release_type),
          sentence_status = toupper(sentence_status)) %>%
 
-  mutate(sentence_status_standard = case_when(# PRETRIAL
-                                           str_detect("PRE-TRIAL", sentence_status)                                                                       ~ "PRETRIAL",
-                                           str_detect("AWAITING TRIAL", sentence_status)                                                                  ~ "PRETRIAL",
+  mutate(sentence_status_standard = case_when(# PROTECTIVE CUSTODY
+                                              str_detect("PROTECTIVE CUSTODY", charge_desc)                                                                  ~ "PROTECTIVE CUSTODY",
+                                              str_detect("DETAINEE REQUEST", booking_type)               & str_detect("PROTECTIVE CUSTODY", sentence_status) ~ "PROTECTIVE CUSTODY",
+                                              str_detect("INVOLUNTARY EMERGENCY ADMISSION", charge_desc) & str_detect("PROTECTIVE CUSTODY", sentence_status) ~ "PROTECTIVE CUSTODY",
+                                              str_detect("DOMESTIC VIOLENCE OFFENSE", charge_desc)       & str_detect("PROTECTIVE CUSTODY", sentence_status) ~ "PROTECTIVE CUSTODY",
 
-                                           str_detect("BAIL SET", sentence_status)                                                                        ~ "DETAINED/HELD",  # ?
-                                           str_detect("BOND DENIED", sentence_status)                                                                     ~ "DETAINED/HELD",  # ?
-                                           str_detect("DETAINER", sentence_status)                                                                        ~ "DETAINED/HELD",
-                                           str_detect("HELD", sentence_status)                                                                            ~ "DETAINED/HELD",
+                                              # PRETRIAL
+                                              str_detect("PRE-TRIAL", sentence_status)                                                                       ~ "PRETRIAL",
+                                              str_detect("AWAITING TRIAL", sentence_status)                                                                  ~ "PRETRIAL",
 
-                                           str_detect("DISMISSED", sentence_status)                                                                       ~ "OTHER",
-                                           str_detect("SENTENCE SUSPENDED", sentence_status)                                                              ~ "OTHER",
+                                              # SENTENCED
+                                              str_detect("SENTENCED", sentence_status)                                                                       ~ "SENTENCED",
+                                              str_detect("SENTENCED FINES", sentence_status)                                                                 ~ "SENTENCED",
 
-                                           str_detect("SENTENCED", sentence_status)                                                                       ~ "SENTENCED",
-                                           str_detect("SENTENCED FINES", sentence_status)                                                                 ~ "SENTENCED",
+                                              # NH STATE PRISONER
+                                              str_detect("STATE PRISONER", sentence_status)                                                                  ~ "NH STATE PRISONER",
 
-                                           str_detect("STATE PRISONER", sentence_status)                                                                  ~ "NH STATE PRISONER",
+                                              # OTHER
+                                              str_detect("BAIL SET", sentence_status)                                                                        ~ "OTHER",
+                                              str_detect("BOND DENIED", sentence_status)                                                                     ~ "OTHER",
+                                              str_detect("DETAINER", sentence_status)                                                                        ~ "OTHER",
+                                              str_detect("HELD", sentence_status)                                                                            ~ "OTHER",
+                                              str_detect("DISMISSED", sentence_status)                                                                       ~ "OTHER",
+                                              str_detect("SENTENCE SUSPENDED", sentence_status)                                                              ~ "OTHER",
 
-                                           # PROTECTIVE CUSTODY
-                                           str_detect("PROTECTIVE CUSTODY", charge_desc)                                                                  ~ "PROTECTIVE CUSTODY",
-                                           str_detect("DETAINEE REQUEST", booking_type)               & str_detect("PROTECTIVE CUSTODY", sentence_status) ~ "PROTECTIVE CUSTODY",
-                                           str_detect("INVOLUNTARY EMERGENCY ADMISSION", charge_desc) & str_detect("PROTECTIVE CUSTODY", sentence_status) ~ "PROTECTIVE CUSTODY",
-                                           str_detect("DOMESTIC VIOLENCE OFFENSE", charge_desc)       & str_detect("PROTECTIVE CUSTODY", sentence_status) ~ "PROTECTIVE CUSTODY",
+                                              TRUE ~ sentence_status)) %>%
 
-                                           TRUE ~ sentence_status)) %>%
-
-  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type,
-         #booking_type_standard,
-         sentence_status,
-         sentence_status_standard, release_type, booking_date, everything())
+  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
 temp <- fnc_investigate_booking_recordings_standard(carroll_adm1)
-table(carroll_adm1$booking_type_standard)
-table(carroll_adm1$sentence_status_standard)
 
 ##########
 # Cheshire
@@ -324,52 +281,42 @@ cheshire_adm1 <- cheshire_adm %>%
   mutate(pc_hold         = case_when(charge_desc == "TEMPORARY REMOVAL OR TRANSFER" & sentence_status == "PROTECTIVE CUSTODY" ~ "Non-PC Hold", TRUE ~ pc_hold)) %>%
   mutate(sentence_status = case_when(charge_desc == "TEMPORARY REMOVAL OR TRANSFER" & sentence_status == "PROTECTIVE CUSTODY" ~ "UNKNOWN", TRUE ~ sentence_status)) %>%
 
-  mutate(booking_type_standard = case_when(# DUAL
-                                           str_detect("DUAL STATUS", sentence_status)                                       ~ "DUAL",
+  mutate(sentence_status_standard = case_when(# PROTECTIVE CUSTODY
+                                              str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY - DRUGS", charge_desc)         ~ "PROTECTIVE CUSTODY",
+                                              str_detect("PROTECTIVE CUSTODY", sentence_status)                                ~ "PROTECTIVE CUSTODY",
 
-                                           # NH STATE PRISONER
-                                           str_detect("FEDERAL INMATE", sentence_status)                                    ~ "NH STATE PRISONER",
-                                           str_detect("HOLD FOR STATE PRISON", sentence_status)                             ~ "NH STATE PRISONER",
-                                           (is.na(sentence_status) & str_detect("FEDERAL HOLD", booking_type))              ~ "NH STATE PRISONER",
+                                              # PRETRIAL
+                                              str_detect("PRE-TRIAL", sentence_status)                                         ~ "PRETRIAL",
+                                              str_detect("PRE-TRIAL / DRUG COURT", sentence_status)                            ~ "PRETRIAL",
+                                              str_detect("PRE-TRIAL / EM", sentence_status)                                    ~ "PRETRIAL",
 
-                                           # DETAINED/HELD
-                                           str_detect("HOLD FOR OTHER AGENCY", sentence_status)                             ~ "DETAINED/HELD",
-                                           str_detect("DETAINEE REQUEST", sentence_status)                                  ~ "DETAINED/HELD",
+                                              # SENTENCED
+                                              str_detect("SENTENCED", sentence_status)                                         ~ "SENTENCED",
+                                              str_detect("SENTENCED / DRUG COURT", sentence_status)                            ~ "SENTENCED",
+                                              str_detect("SENTENCED / EM", sentence_status)                                    ~ "SENTENCED",
+                                              str_detect("SENTENCED / PROGRAM", sentence_status)                               ~ "SENTENCED",
+                                              str_detect("SENTENCED / WEEKENDS", sentence_status)                              ~ "SENTENCED",
+                                              str_detect("SENTENCED / WORK RELEASE", sentence_status)                          ~ "SENTENCED",
 
-                                           # PRETRIAL
-                                           str_detect("PRE-TRIAL", sentence_status)                                         ~ "PRETRIAL",
-                                           str_detect("PRE-TRIAL / DRUG COURT", sentence_status)                            ~ "PRETRIAL",
-                                           str_detect("PRE-TRIAL / EM", sentence_status)                                    ~ "PRETRIAL",
+                                              # NH STATE PRISONER
+                                              str_detect("FEDERAL INMATE", sentence_status)                                    ~ "NH STATE PRISONER",
+                                              str_detect("HOLD FOR STATE PRISON", sentence_status)                             ~ "NH STATE PRISONER",
+                                              (is.na(sentence_status) & str_detect("FEDERAL HOLD", booking_type))              ~ "NH STATE PRISONER",
 
-                                           # PROTECTIVE CUSTODY
-                                           str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY - DRUGS", charge_desc)         ~ "PROTECTIVE CUSTODY",
-                                           str_detect("PROTECTIVE CUSTODY", sentence_status)                                ~ "PROTECTIVE CUSTODY",
+                                              # OTHER
+                                              str_detect("DUAL STATUS", sentence_status)                                       ~ "OTHER",
+                                             (is.na(sentence_status) & str_detect("FELONY FIRST", booking_type))               ~ "OTHER",
+                                              str_detect("HOLD FOR OTHER AGENCY", sentence_status)                             ~ "OTHER",
+                                              str_detect("DETAINEE REQUEST", sentence_status)                                  ~ "OTHER",
+                                             # no data in sentence status but info in booking type
+                                              is.na(sentence_status)                                                           ~ "UNKNOWN",
+                                              sentence_status == "UNKNOWN"                                                     ~ "UNKNOWN",
 
-                                           # SENTENCED
-                                           str_detect("SENTENCED", sentence_status)                                         ~ "SENTENCED",
-                                           str_detect("SENTENCED / DRUG COURT", sentence_status)                            ~ "SENTENCED",
-                                           str_detect("SENTENCED / EM", sentence_status)                                    ~ "SENTENCED",
-                                           str_detect("SENTENCED / PROGRAM", sentence_status)                               ~ "SENTENCED",
-                                           str_detect("SENTENCED / WEEKENDS", sentence_status)                              ~ "SENTENCED",
-                                           str_detect("SENTENCED / WORK RELEASE", sentence_status)                          ~ "SENTENCED",
+                                           TRUE ~ sentence_status)) %>%
 
-                                           # no data in sentence status but info in booking type
-                                           (is.na(sentence_status) & str_detect("ADULT ORDER OF COMMITMENT", booking_type)) ~ "DETAINED/HELD",
-                                           (is.na(sentence_status) & str_detect("DETAINEE REQUEST", booking_type))          ~ "DETAINED/HELD",
-                                           (is.na(sentence_status) & str_detect("DETAINER", booking_type))                  ~ "DETAINED/HELD",
-                                           (is.na(sentence_status) & str_detect("ELECTRONIC BENCH WARRANT", booking_type))  ~ "DETAINED/HELD",
-                                           (sentence_status == "UNKNOWN" & str_detect("DETAINEE REQUEST", booking_type))    ~ "DETAINED/HELD",
-
-                                           # OTHER
-                                           (is.na(sentence_status) & str_detect("FELONY FIRST", booking_type))              ~ "OTHER",
-
-                                           TRUE ~ booking_type)) %>%
-  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, booking_type_standard, sentence_status, release_type, booking_date, everything())
+  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
 temp <- fnc_investigate_booking_recordings_standard(cheshire_adm1)
-temp
-
-table(cheshire_adm1$booking_type_standard)
 
 ##########
 # Coos
@@ -389,15 +336,16 @@ coos_adm1 <- coos_adm %>% select(-c(los, release_date)) %>% distinct() %>%
          release_type    = toupper(release_type),
          sentence_status = toupper(sentence_status)) %>%
 
-  mutate(booking_type_standard = case_when(sentence_status == "DUAL STATUS" ~ "DUAL",
-                                           sentence_status == "PRETRIAL"    ~ "PRETRIAL",
-                                           sentence_status == "SENTENCED"   ~ "SENTENCED",
+  mutate(sentence_status_standard = case_when(sentence_status == "PRETRIAL"    ~ "PRETRIAL",
+                                              sentence_status == "DUAL STATUS" ~ "OTHER",
+                                              sentence_status == "SENTENCED"   ~ "SENTENCED",
+                                              is.na(sentence_status)           ~ "UNKNOWN",
 
                                            TRUE ~ sentence_status)) %>%
 
-  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, booking_type_standard, sentence_status, release_type, booking_date, everything())
+  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
-table(coos_adm1$booking_type_standard)
+temp <- fnc_investigate_booking_recordings_standard(coos_adm1)
 
 ##########
 # Hillsborough
@@ -417,61 +365,62 @@ hillsborough_adm1 <- hillsborough_adm %>% select(-c(los, release_date)) %>% dist
          release_type    = toupper(release_type),
          sentence_status = toupper(sentence_status)) %>%
 
-  mutate(booking_type_standard = case_when(# SENTENCED
-                                           str_detect("CONVICTED", sentence_status)                                                    ~ "SENTENCED",
-                                           str_detect("CONVICTED ROCK", sentence_status)                                               ~ "SENTENCED",
+  mutate(sentence_status_standard = case_when(# PROTECTIVE CUSTODY
+                                              str_detect("172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII", charge_desc)                    ~ "PROTECTIVE CUSTODY",
+                                              str_detect("TREATMENT AND SERVICES", booking_type) & str_detect("PC RELEASE", release_type) ~ "PROTECTIVE CUSTODY",
+                                              str_detect("NEW ARREST", booking_type) & str_detect("PC RELEASE", release_type)             ~ "PROTECTIVE CUSTODY",
 
-                                           # PRETRIAL
-                                           sentence_status == "PRETRIAL"                                                               ~ "PRETRIAL",
-                                           sentence_status == "PRE TRIAL DRUG COURT (MANCH)"                                           ~ "PRETRIAL",
-                                           sentence_status == "PRE TRIAL DRUG COURT (NASHUA)"                                          ~ "PRETRIAL",
-                                           str_detect("PRE TRIAL ROCK SATCO", sentence_status)                                         ~ "PRETRIAL",
-                                           str_detect("PRETRIAL BELKNAP", sentence_status)                                             ~ "PRETRIAL",
-                                           str_detect("PRETRIAL CARROLL", sentence_status)                                             ~ "PRETRIAL",
-                                           str_detect("PRETRIAL COOS", sentence_status)                                                ~ "PRETRIAL",
-                                           str_detect("PRETRIAL DRUG COURT SATCO", sentence_status)                                    ~ "PRETRIAL",
-                                           str_detect("PRETRIAL GRAFTON", sentence_status)                                             ~ "PRETRIAL",
-                                           str_detect("PRETRIAL GRAFTON SATCO", sentence_status)                                       ~ "PRETRIAL",
-                                           str_detect("PRETRIAL MERRIMACK", sentence_status)                                           ~ "PRETRIAL",
-                                           str_detect("PRETRIAL ROCK", sentence_status)                                                ~ "PRETRIAL",
-                                           str_detect("PRETRIAL SATCO", sentence_status)                                               ~ "PRETRIAL",
-                                           str_detect("PRETRIAL SULLIVAN", sentence_status)                                            ~ "PRETRIAL",
-                                           str_detect("PRETRIAL SULLIVAN", sentence_status)                                            ~ "PRETRIAL",
-                                           str_detect("PRETRIAL SULLIVAN", sentence_status)                                            ~ "PRETRIAL",
+                                              # PRETRIAL
+                                              sentence_status == "PRETRIAL"                                                               ~ "PRETRIAL",
+                                              sentence_status == "PRE TRIAL DRUG COURT (MANCH)"                                           ~ "PRETRIAL",
+                                              sentence_status == "PRE TRIAL DRUG COURT (NASHUA)"                                          ~ "PRETRIAL",
+                                              str_detect("PRE TRIAL ROCK SATCO", sentence_status)                                         ~ "PRETRIAL",
+                                              str_detect("PRETRIAL BELKNAP", sentence_status)                                             ~ "PRETRIAL",
+                                              str_detect("PRETRIAL CARROLL", sentence_status)                                             ~ "PRETRIAL",
+                                              str_detect("PRETRIAL COOS", sentence_status)                                                ~ "PRETRIAL",
+                                              str_detect("PRETRIAL DRUG COURT SATCO", sentence_status)                                    ~ "PRETRIAL",
+                                              str_detect("PRETRIAL GRAFTON", sentence_status)                                             ~ "PRETRIAL",
+                                              str_detect("PRETRIAL GRAFTON SATCO", sentence_status)                                       ~ "PRETRIAL",
+                                              str_detect("PRETRIAL MERRIMACK", sentence_status)                                           ~ "PRETRIAL",
+                                              str_detect("PRETRIAL ROCK", sentence_status)                                                ~ "PRETRIAL",
+                                              str_detect("PRETRIAL SATCO", sentence_status)                                               ~ "PRETRIAL",
+                                              str_detect("PRETRIAL SULLIVAN", sentence_status)                                            ~ "PRETRIAL",
+                                              str_detect("PRETRIAL SULLIVAN", sentence_status)                                            ~ "PRETRIAL",
+                                              str_detect("PRETRIAL SULLIVAN", sentence_status)                                            ~ "PRETRIAL",
 
-                                           # PROTECTIVE CUSTODY
-                                           str_detect("172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII", charge_desc)                    ~ "PROTECTIVE CUSTODY",
-                                           str_detect("TREATMENT AND SERVICES", booking_type) & str_detect("PC RELEASE", release_type) ~ "PROTECTIVE CUSTODY",
-                                           str_detect("NEW ARREST", booking_type) & str_detect("PC RELEASE", release_type)             ~ "PROTECTIVE CUSTODY",
+                                              # SENTENCED
+                                              str_detect("SENTENCED", sentence_status)                                                    ~ "SENTENCED",
+                                              str_detect("SENTENCED-HSC NORTH DRUG COURT SANCTION", sentence_status)                      ~ "SENTENCED",
+                                              str_detect("SENTENCED-HSC SOUTH DRUG COURT SANCTION", sentence_status)                      ~ "SENTENCED",
+                                              str_detect("SENTENCED MERRIMACK", sentence_status)                                          ~ "SENTENCED",
+                                              str_detect("SENTENCED ROCK", sentence_status)                                               ~ "SENTENCED",
+                                              str_detect("SENTENCED ROCK SATCO", sentence_status)                                         ~ "SENTENCED",
+                                              str_detect("SENTENCED SATCO", sentence_status)                                              ~ "SENTENCED",
+                                              str_detect("SENTENCED SULLIVAN", sentence_status)                                           ~ "SENTENCED",
+                                              str_detect("SENTENCED W/HOLD", sentence_status)                                             ~ "SENTENCED",
+                                              str_detect("SENTENCED W/HOLD MERRIMACK", sentence_status)                                   ~ "SENTENCED",
+                                              str_detect("SENTENCED W/HOLD ROCK", sentence_status)                                        ~ "SENTENCED",
+                                              str_detect("SENTENCED W/HOLD SATCO", sentence_status)                                       ~ "SENTENCED",
+                                              str_detect("SENTENCED WALK IN", sentence_status)                                            ~ "SENTENCED",
+                                              str_detect("SENTENCED WEEKENDER", sentence_status)                                          ~ "SENTENCED",
+                                              str_detect("SENTENCED WEEKENDER W/HOLD", sentence_status)                                   ~ "SENTENCED",
+                                              str_detect("CONVICTED", sentence_status)                                                    ~ "SENTENCED", # ?
+                                              str_detect("CONVICTED ROCK", sentence_status)                                               ~ "SENTENCED", # ?
 
-                                           # SENTENCED
-                                           str_detect("SENTENCED", sentence_status)                                                    ~ "SENTENCED",
-                                           str_detect("SENTENCED-HSC NORTH DRUG COURT SANCTION", sentence_status)                      ~ "SENTENCED",
-                                           str_detect("SENTENCED-HSC SOUTH DRUG COURT SANCTION", sentence_status)                      ~ "SENTENCED",
-                                           str_detect("SENTENCED MERRIMACK", sentence_status)                                          ~ "SENTENCED",
-                                           str_detect("SENTENCED ROCK", sentence_status)                                               ~ "SENTENCED",
-                                           str_detect("SENTENCED ROCK SATCO", sentence_status)                                         ~ "SENTENCED",
-                                           str_detect("SENTENCED SATCO", sentence_status)                                              ~ "SENTENCED",
-                                           str_detect("SENTENCED SULLIVAN", sentence_status)                                           ~ "SENTENCED",
-                                           str_detect("SENTENCED W/HOLD", sentence_status)                                             ~ "SENTENCED",
-                                           str_detect("SENTENCED W/HOLD MERRIMACK", sentence_status)                                   ~ "SENTENCED",
-                                           str_detect("SENTENCED W/HOLD ROCK", sentence_status)                                        ~ "SENTENCED",
-                                           str_detect("SENTENCED W/HOLD SATCO", sentence_status)                                       ~ "SENTENCED",
-                                           str_detect("SENTENCED WALK IN", sentence_status)                                            ~ "SENTENCED",
-                                           str_detect("SENTENCED WEEKENDER", sentence_status)                                          ~ "SENTENCED",
-                                           str_detect("SENTENCED WEEKENDER W/HOLD", sentence_status)                                   ~ "SENTENCED",
+                                              # NH STATE PRISONER
+                                              str_detect("STATE INMATE", sentence_status)                                                 ~ "NH STATE PRISONER",
 
-                                           # NH STATE PRISONER
-                                           str_detect("STATE INMATE", sentence_status)                                                 ~ "NH STATE PRISONER",
+                                              # OTHER
+                                              (str_detect("TREATMENT AND SERVICES", sentence_status) & is.na(charge_desc))                ~ "OTHER",
 
-                                           # OTHER
-                                           (str_detect("TREATMENT AND SERVICES", sentence_status) & is.na(charge_desc))                ~ "OTHER",
+                                              # UNKNOWN
+                                              is.na(sentence_status)                                                                      ~ "UNKNOWN",
 
-                                           TRUE ~ sentence_status)) %>%
+                                              TRUE ~ sentence_status)) %>%
 
-  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, booking_type_standard, sentence_status, release_type, booking_date, everything())
+  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
-table(hillsborough_adm1$booking_type_standard)
+temp <- fnc_investigate_booking_recordings_standard(hillsborough_adm1)
 
 ##########
 # Merrimack
@@ -491,15 +440,42 @@ merrimack_adm1 <- merrimack_adm %>% select(-c(los, release_date)) %>% distinct()
          release_type    = toupper(release_type),
          sentence_status = toupper(sentence_status)) %>%
 
-  mutate(booking_type_standard = case_when(#
-                                           # PROTECTIVE CUSTODY
-                                           str_detect("PROTECTIVE CUSTODY", charge_desc)                                                         ~ "PROTECTIVE CUSTODY",
-                                           str_detect("PC-IEA", sentence_status)                                                                 ~ "PROTECTIVE CUSTODY",
-                                           str_detect("DETAINEE REQUEST", booking_type) & str_detect("PROTECTIVE CUSTODY HOLD", sentence_status) ~ "PROTECTIVE CUSTODY",
-                                           str_detect("ARREST WARRANT", booking_type) & str_detect("PROTECTIVE CUSTODY HOLD", sentence_status)   ~ "PROTECTIVE CUSTODY",
+  mutate(sentence_status_standard = case_when(# PROTECTIVE CUSTODY
+                                              str_detect("PROTECTIVE CUSTODY", booking_type) & str_detect("24 HOUR HOLD", sentence_status)          ~ "PROTECTIVE CUSTODY",
+                                              str_detect("PROTECTIVE CUSTODY", charge_desc)                                                         ~ "PROTECTIVE CUSTODY",
+                                              str_detect("PROTECTIVE CUSTODY", sentence_status)                                                     ~ "PROTECTIVE CUSTODY",
+                                              str_detect("PC-IEA", sentence_status)                                                                 ~ "PROTECTIVE CUSTODY",
+                                              str_detect("DETAINEE REQUEST", booking_type) & str_detect("PROTECTIVE CUSTODY HOLD", sentence_status) ~ "PROTECTIVE CUSTODY",
+                                              str_detect("ARREST WARRANT", booking_type) & str_detect("PROTECTIVE CUSTODY HOLD", sentence_status)   ~ "PROTECTIVE CUSTODY",
+                                              is.na(booking_type) & str_detect("PROTECTIVE CUSTODY HOLD", sentence_status)                          ~ "PROTECTIVE CUSTODY",
 
-                                           TRUE ~ booking_type)) %>%
-  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, booking_type_standard, sentence_status, release_type, booking_date, everything())
+                                              # PRETRIAL
+                                              str_detect("PRE-TRIAL FELONY", sentence_status)                                                       ~ "PRETRIAL",
+                                              str_detect("PRE-TRIAL MISDEMEANOR", sentence_status)                                                  ~ "PRETRIAL",
+
+                                              # SENTENCED
+                                              str_detect("SENTENCED FELONY", sentence_status)                                                       ~ "SENTENCED",
+                                              str_detect("SENTENCED MISDEMEANOR", sentence_status)                                                  ~ "SENTENCED",
+                                              str_detect("PRE-TRIAL MISDEMEANOR", sentence_status)                                                  ~ "PRETRIAL",
+
+                                              # NH STATE PRISONER
+
+                                              # OTHER
+                                              (str_detect("24 HOUR HOLD", sentence_status) & booking_type != "PROTECTIVE CUSTODY")                  ~ "OTHER",
+                                              (str_detect("24 HOUR HOLD", sentence_status) & is.na(booking_type))                                   ~ "OTHER",
+                                              str_detect("72 HOUR HOLD", sentence_status)                                                           ~ "OTHER",
+                                              str_detect("DUAL STATUS", sentence_status)                                                            ~ "OTHER",
+                                              str_detect("PAROLE VIOLATION", sentence_status)                                                       ~ "OTHER",
+                                              str_detect("PRE-TRIAL MISDEMEANOR", sentence_status)                                                  ~ "OTHER",
+
+                                              # UNKNOWN
+                                              is.na(sentence_status)                                                                                ~ "UNKNOWN",
+
+                                              TRUE ~ sentence_status)) %>%
+
+  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
+
+temp <- fnc_investigate_booking_recordings_standard(merrimack_adm1)
 
 ##########
 # Rockingham
@@ -519,8 +495,32 @@ rockingham_adm1 <- rockingham_adm %>% select(-c(los, release_date)) %>% distinct
          release_type    = toupper(release_type),
          sentence_status = toupper(sentence_status)) %>%
 
-  mutate(booking_type_standard = case_when(str_detect("PROTECTIVE CUSTODY", charge_desc) ~ "PROTECTIVE CUSTODY")) %>%
-  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, booking_type_standard, sentence_status, release_type, booking_date, everything())
+  mutate(sentence_status_standard = case_when(# PROTECTIVE CUSTODY
+                                              str_detect("PROTECTIVE CUSTODY", charge_desc) ~ "PROTECTIVE CUSTODY",
+
+                                              # PRETRIAL
+                                              str_detect("DIVERSION", sentence_status)      ~ "OTHER",
+                                              str_detect("DIVERSION", sentence_status)      ~ "OTHER",
+
+                                              # SENTENCED
+                                              str_detect("SENTENCED", sentence_status)      ~ "SENTENCED",
+
+                                              # NH STATE PRISONER
+
+                                              # OTHER
+                                              str_detect("ADMIN TRANSFER", sentence_status) ~ "OTHER",
+                                              str_detect("DIVERSION", sentence_status)      ~ "OTHER",
+                                              str_detect("DUAL", sentence_status)           ~ "OTHER",
+                                              str_detect("IAD INMATE", sentence_status)     ~ "OTHER",
+
+                                              # UNKNOWN
+                                              is.na(sentence_status)                        ~ "UNKNOWN",
+
+                                              TRUE ~ sentence_status)) %>%
+
+  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
+
+temp <- fnc_investigate_booking_recordings_standard(rockingham_adm1)
 
 ##########
 # Strafford
@@ -529,8 +529,8 @@ rockingham_adm1 <- rockingham_adm %>% select(-c(los, release_date)) %>% distinct
 # Standardize booking info so it's consistent across counties
 strafford_adm1 <- strafford_adm %>% select(-c(los, release_date)) %>% distinct() %>%
 
-  mutate(booking_type_standard = "Unknown") %>%
-  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, booking_type_standard, sentence_status, release_type, booking_date, everything())
+  mutate(sentence_status_standard = "Unknown") %>%
+  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
 # %>%
 # filter(num_entrances < 72) # seems like an outlier or data entry issue but keep for now
@@ -553,20 +553,31 @@ sullivan_adm1 <- sullivan_adm %>% select(-c(los, release_date)) %>% distinct() %
          release_type    = toupper(release_type),
          sentence_status = toupper(sentence_status)) %>%
 
-  mutate(booking_type_standard = case_when(# PROTECTIVE CUSTODY
-                                           str_detect("PROTECTIVE CUSTODY", booking_type) ~ "PROTECTIVE CUSTODY",
+  mutate(sentence_status_standard = case_when(# PROTECTIVE CUSTODY
+                                              str_detect("PROTECTIVE CUSTODY", booking_type) ~ "PROTECTIVE CUSTODY",
+                                              str_detect("PROTECTIVE CUSTODY", charge_desc)  ~ "PROTECTIVE CUSTODY",
 
-                                           # PRETRIAL
+                                              # PRETRIAL
+                                              str_detect("PRE-TRIAL", sentence_status)       ~ "PRETRIAL",
 
-                                           # SENTENCED
+                                              # SENTENCED
+                                              str_detect("SENTENCED", sentence_status)       ~ "SENTENCED",
+                                              str_detect("SENTENCED T 1", sentence_status)   ~ "SENTENCED",
+                                              str_detect("SENTENCED T 5", sentence_status)   ~ "SENTENCED",
 
+                                              # NH STATE PRISONER
 
+                                              # OTHER
+                                              str_detect("DUAL", sentence_status)            ~ "OTHER",
 
+                                              # UNKNOWN
+                                              is.na(sentence_status)                         ~ "UNKNOWN",
 
+                                              TRUE ~ sentence_status)) %>%
 
-                                           TRUE ~ booking_type)) %>%
+  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
-  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, booking_type_standard, sentence_status, release_type, booking_date, everything())
+temp <- fnc_investigate_booking_recordings_standard(sullivan_adm1)
 
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -687,7 +698,7 @@ bookings_entrances_all <- adm_all %>%
                 los_category,
                 booking_date,
                 booking_type,
-                booking_type_standard,
+                sentence_status_standard,
                 fy,
                 num_entrances,
                 num_entrances_fy,
@@ -725,8 +736,8 @@ bookings_entrances <- bookings_entrances_all %>%
 # Combine booking types by booking id.
 bookings_entrances <- bookings_entrances %>%
   group_by(booking_id) %>%
-  mutate(all_booking_types=paste(sort(unique(booking_type_standard)), collapse=" & ")) %>%
-  select(county: booking_type_standard, all_booking_types, everything()) %>%
+  mutate(all_sentence_statuses=paste(sort(unique(sentence_status_standard)), collapse=" & ")) %>%
+  select(county:sentence_status_standard, all_sentence_statuses, everything()) %>%
   distinct()
 
 # sep by fy year
@@ -835,7 +846,7 @@ charges <- adm_all %>%
                 charge_code,
                 charge_desc,
                 booking_type,
-                booking_type_standard,
+                sentence_status_standard,
                 release_type,
                 sentence_status,
                 los = los_max,

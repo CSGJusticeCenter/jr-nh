@@ -802,6 +802,6 @@ fnc_investigate_booking_recordings <- function(df){
 
 fnc_investigate_booking_recordings_standard <- function(df){
   df1 <- df %>%
-    group_by(booking_type, sentence_status, booking_type_standard, sentence_status_standard) %>%
+    group_by(booking_type, sentence_status, sentence_status_standard) %>%
     summarise(total = n())
 }
