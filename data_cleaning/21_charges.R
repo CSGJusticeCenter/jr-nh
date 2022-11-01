@@ -54,11 +54,38 @@ charge_codes_lookup <- charge_codes.xlsx %>%
   mutate(descriptor = tolower(descriptor),
          statute_title = tolower(statute_title),
          charge_code_clean = tolower(offense_statute)) %>% 
+### first de-dup: where there are pure duplicates, keep record with most recent eff_date
   arrange(charge_code_clean,desc(eff_date)) %>% 
   distinct(charge_code_clean,
            degree,
            .keep_all = TRUE) %>% 
-  select(charge_code_clean, descriptor, statute_title, smart_code, ctl_number, vis, degree)
+  select(charge_code_clean, descriptor, statute_title, smart_code, ctl_number, vis, degree) %>% 
+### clean up degree names for eventual tables or visualization
+### second de-up: 
+### DECIDE HOW TO HANDLE DUPLICATE CHARGES IN LOOKUP FILE -- WITH SAME CODES AND DATES, BUT DIFFERENT DEGREES
+### for now, I'm keeping the most serious charge when there are pure duplicates
+  mutate(degree_clean = case_when(
+    degree=="FA" ~ "A Felony",
+    degree=="FB" ~ "B Felony",
+    degree=="FS" ~ "FS Felony",
+    degree=="FU" ~ "FU Felony",
+    degree=="MA" ~ "A Misdemeanor",
+    degree=="MB" ~ "B Misdemeanor",
+    degree=="V" ~ "Violation",### cleaning degree classes: https://www.russmanlaw.com/new-hampshire-classification-of-offenses
+    TRUE ~ as.character(NA)), ### still need clarification on severity of "FS" and "FU"
+  degree_severity_order = case_when(
+    degree_clean=="A Felony" ~ 1,
+    degree_clean=="B Felony" ~ 2,
+    degree_clean=="FS Felony" ~ 3,
+    degree_clean=="FU Felony" ~ 4,
+    degree_clean=="A Misdemeanor" ~ 5,
+    degree_clean=="B Misdemeanor" ~ 6,
+    degree_clean=="Violation" ~ 7,### ordering degree classes in order of severity: https://www.russmanlaw.com/new-hampshire-classification-of-offenses
+      TRUE ~ as.numeric(NA))) %>%  
+      arrange(charge_code_clean, 
+              degree_severity_order) %>% ### here we are de-duping by charge code, keeping the record with the most serious offense conviction linked
+      distinct(charge_code_clean,
+               .keep_all=TRUE)
   
 
 ##################################
@@ -285,23 +312,19 @@ hillsborough_adm_charge_clean <- hillsborough_adm1 %>%
                names_to = "charge_desc_first_clean_count", 
                values_to = "charge_desc_first_clean_value") %>% ### pivot wide to long for easier cleaning
 ### need to keep first code, drop second code, and tolower across all new charge_code and charge_desc cols
-### remove leading and trailing blanks
   separate(charge_desc_first_clean_value,
            paste("charge_desc_second_clean_value", 1:2, sep="_"), 
-           sep="-", 
+           sep=" - ", ### adding space to either side as some charge codes include dashes without spaces
            extra="drop",
            remove=FALSE) %>% 
-### remove duplicate charge codes from charge description
-  
-### two options for removing charge codes from charge_desc_second_clean_value_2:
-## remove everything after first number (downside: this removes everything for "2nd degree...")
-## remove everything after last letter (downside: leaves leftover codes that end in letters)
-  
-  
-### remove everything after last letter
-  mutate(charge_desc_second_clean_value_2 = str_remove(charge_desc_second_clean_value_2, "[0-9].+")) %>% 
+### remove duplicate charge codes from charge_desc_second_clean_value_2
+## remove everything after first occurrence of consecutive numbers 
+## (this helps avoid removing charge descriptions with numbers like "2nd degree...") 
+  mutate(charge_desc_second_clean_value_2 = str_remove(charge_desc_second_clean_value_2, "[0-9][0-9].+")) %>% 
+### manually clean values that regex didn't properly clean
   mutate(charge_desc_second_clean_value_2 = case_when(
     charge_desc_second_clean_value_1=="LITTER CONTROL" ~ "LITTER CONTROL",
+    charge_desc_second_clean_value_1=="263:1 - 263:1  - LICENSE REQUIRED" ~ "LICENSE REQUIRED",
     charge_desc_second_clean_value_1=="MV DRIVERS SCHOOL 263:44" ~ "MV DRIVERS SCHOOL",
     charge_desc_second_clean_value_1=="Eletronic Bench Warrant" ~ "Electronic Bench Warrant",
     charge_desc_second_clean_value_1=="DUTY TO INFORM 651" ~ "DUTY TO INFORM",
@@ -318,16 +341,12 @@ hillsborough_adm_charge_clean <- hillsborough_adm1 %>%
 ### again remove leading and trailing blanks
   mutate(across(charge_desc_second_clean_value_1:charge_desc_second_clean_value_2, str_trim)) %>% 
   mutate(charge_desc_clean = tolower(charge_desc_second_clean_value_2),
-         charge_code_clean = tolower(charge_desc_second_clean_value_1_num_only)) %>% 
-### fill charge code by charge descriptions (some descriptions are missing a code where others have one)
-  group_by(charge_desc_clean) %>% 
-  fill(charge_code_clean, 
-       .direction = "downup") %>%
-  ungroup()
+         charge_code_clean = tolower(charge_desc_second_clean_value_1_num_only)) 
 
 ### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
   
-### to do: group_by booking and only keep most serious charge
+### will need to group by booking and only keep most serious charge
+### however, we can't de-dup by most serious charge until we've code all missing charges
 hillsborough_adm_charge_clean_join_one <- hillsborough_adm_charge_clean %>% 
   filter(pc_hold=="Non-PC Hold") %>% 
   left_join(charge_codes_lookup, 
@@ -335,6 +354,14 @@ hillsborough_adm_charge_clean_join_one <- hillsborough_adm_charge_clean %>%
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                                  1,
                                                  0))
+
+### code to eventually use to de-dup by most serious charge 
+  # arrange(id,
+  #         booking_id,
+  #         degree_severity_order) %>% ### here we are de-duping by supervision case, keeping the record with the most serious offense conviction linked
+  # distinct(id,
+  #          booking_id,
+  #          .keep_all=TRUE)
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(hillsborough_adm_charge_clean_join_one$missing_charge_data_first_join) ### missing clean charge data for 2646 records
