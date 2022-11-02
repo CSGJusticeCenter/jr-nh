@@ -27,6 +27,11 @@
 
 # - Missing charge code/charge description data by county
 
+# - De-dup hillsborough by most serious charge once all charges are cleaned
+
+# - Is there a way to code charge type (public order, property, drugs/alcohol, violent) using existing codes?
+
+
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
@@ -546,3 +551,23 @@ sullivan_adm_charge_clean_join_one_final <- sullivan_adm_charge_clean_join_one %
 sullivan_adm_charge_clean_final <- rbind(sullivan_adm_charge_clean_join_one_final,sullivan_adm_charge_clean_join_two)
 
 ### final tally for sullivan: missing 2,826 non-pc hold records
+
+################################################################################
+# Extract all charge codes and charge descriptions from records that didn't join
+################################################################################
+
+###hereherehere
+nh_eight_county_charge_join_missing <- rbind(
+  belknap_adm_charge_clean_join_two,
+  carroll_adm_charge_clean_join_two,
+  cheshire_adm_charge_clean_join_two,
+  coos_adm_charge_clean_join_two,
+  hillsborough_adm_charge_clean_join_two,
+  merrimack_adm_charge_clean_join_two,
+  rockingham_adm_charge_clean_join_two,
+  sullivan_adm_charge_clean_join_two) %>% 
+  filter(missing_charge_data_first_join==1) 
+# %>% 
+#   dplyr::select(charge_code_clean,
+#                 charge_desc_clean,)
+
