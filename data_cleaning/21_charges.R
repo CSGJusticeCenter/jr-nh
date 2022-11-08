@@ -25,7 +25,7 @@
 
 # - Fix rbind issue (columns don't match) for join_1 and join_2 dataframes
 
-# - Missing charge code/charge description data by county
+# - Missing charge code/charge description data by county. How should we interpret this? 
 
 # - De-dup hillsborough by most serious charge once all charges are cleaned
 
@@ -58,13 +58,13 @@ charge_codes_lookup <- charge_codes.xlsx %>%
   clean_names() %>%
   mutate(descriptor = tolower(descriptor),
          statute_title = tolower(statute_title),
-         charge_code_clean = tolower(offense_statute)) %>% 
+         charge_code_lookup = tolower(offense_statute)) %>% 
 ### first de-dup: where there are pure duplicates, keep record with most recent eff_date
-  arrange(charge_code_clean,desc(eff_date)) %>% 
-  distinct(charge_code_clean,
+  arrange(charge_code_lookup,desc(eff_date)) %>% 
+  distinct(charge_code_lookup,
            degree,
            .keep_all = TRUE) %>% 
-  select(charge_code_clean, descriptor, statute_title, smart_code, ctl_number, vis, degree) %>% 
+  select(charge_code_lookup, descriptor, statute_title, smart_code, ctl_number, vis, degree) %>% 
 ### clean up degree names for eventual tables or visualization
 ### second de-up: 
 ### DECIDE HOW TO HANDLE DUPLICATE CHARGES IN LOOKUP FILE -- WITH SAME CODES AND DATES, BUT DIFFERENT DEGREES
@@ -87,9 +87,9 @@ charge_codes_lookup <- charge_codes.xlsx %>%
     degree_clean=="B Misdemeanor" ~ 6,
     degree_clean=="Violation" ~ 7,### ordering degree classes in order of severity: https://www.russmanlaw.com/new-hampshire-classification-of-offenses
       TRUE ~ as.numeric(NA))) %>%  
-      arrange(charge_code_clean, 
+      arrange(charge_code_lookup, 
               degree_severity_order) %>% ### here we are de-duping by charge code, keeping the record with the most serious offense conviction linked
-      distinct(charge_code_clean,
+      distinct(charge_code_lookup,
                .keep_all=TRUE)
   
 
@@ -103,17 +103,17 @@ belknap_adm_charge_clean <- belknap_adm1 %>%
            remove = FALSE) %>% 
   mutate(charge_desc_clean = tolower(charge_desc_clean),
          charge_code_clean = tolower(charge_code_clean)) %>% 
+# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
   group_by(charge_desc_clean) %>% 
   fill(charge_code_clean, 
        .direction = "downup") %>%
   ungroup()
-  # fill charge code by charge descriptions (some descriptions are missing a code where others have one)
 
 ### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
 belknap_adm_charge_clean_join_one <- belknap_adm_charge_clean %>% 
   filter(pc_hold=="Non-PC Hold") %>% 
   left_join(charge_codes_lookup, 
-            by = "charge_code_clean") %>% 
+            by = c("charge_code_clean"="charge_code_lookup")) %>% 
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                       1,
                                       0))
@@ -135,7 +135,6 @@ belknap_adm_charge_clean_join_two <- belknap_adm_charge_clean_join_one %>%
             vis, 
             degree, 
             degree_clean, 
-            charge_code_clean,
             degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
@@ -168,17 +167,17 @@ belknap_adm_charge_clean_final <- rbind(belknap_adm_charge_clean_join_one_final,
 carroll_adm_charge_clean <- carroll_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
+# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
   group_by(charge_desc_clean) %>% 
   fill(charge_code_clean, 
        .direction = "downup") %>%
   ungroup()
-# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
 
 ### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
 carroll_adm_charge_clean_join_one <- carroll_adm_charge_clean %>% 
   filter(pc_hold=="Non-PC Hold") %>% 
   left_join(charge_codes_lookup, 
-            by = "charge_code_clean") %>% 
+            by = c("charge_code_clean"="charge_code_lookup")) %>% 
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                                  1,
                                                  0))
@@ -200,7 +199,6 @@ carroll_adm_charge_clean_join_two <- carroll_adm_charge_clean_join_one %>%
             vis, 
             degree, 
             degree_clean, 
-            charge_code_clean,
             degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
@@ -234,17 +232,17 @@ carroll_adm_charge_clean_final <- rbind(carroll_adm_charge_clean_join_one_final,
 cheshire_adm_charge_clean <- cheshire_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
+# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
   group_by(charge_desc_clean) %>% 
   fill(charge_code_clean, 
        .direction = "downup") %>%
   ungroup()
-# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
 
 ### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
 cheshire_adm_charge_clean_join_one <- cheshire_adm_charge_clean %>% 
   filter(pc_hold=="Non-PC Hold") %>% 
   left_join(charge_codes_lookup, 
-            by = "charge_code_clean") %>% 
+            by = c("charge_code_clean"="charge_code_lookup")) %>% 
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                                  1,
                                                  0))
@@ -266,7 +264,6 @@ cheshire_adm_charge_clean_join_two <- cheshire_adm_charge_clean_join_one %>%
             vis, 
             degree, 
             degree_clean, 
-            charge_code_clean,
             degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
@@ -300,17 +297,17 @@ cheshire_adm_charge_clean_final <- rbind(cheshire_adm_charge_clean_join_one_fina
 coos_adm_charge_clean <- coos_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
+# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
   group_by(charge_desc_clean) %>% 
   fill(charge_code_clean, 
        .direction = "downup") %>%
   ungroup()
-# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
 
 ### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
 coos_adm_charge_clean_join_one <- coos_adm_charge_clean %>% 
   filter(pc_hold=="Non-PC Hold") %>% 
   left_join(charge_codes_lookup, 
-            by = "charge_code_clean") %>% 
+            by = c("charge_code_clean"="charge_code_lookup")) %>% 
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                                  1,
                                                  0))
@@ -332,7 +329,6 @@ coos_adm_charge_clean_join_two <- coos_adm_charge_clean_join_one %>%
             vis, 
             degree, 
             degree_clean, 
-            charge_code_clean,
             degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
@@ -403,7 +399,15 @@ hillsborough_adm_charge_clean <- hillsborough_adm1 %>%
 ### again remove leading and trailing blanks
   mutate(across(charge_desc_second_clean_value_1:charge_desc_second_clean_value_2, str_trim)) %>% 
   mutate(charge_desc_clean = tolower(charge_desc_second_clean_value_2),
-         charge_code_clean = tolower(charge_desc_second_clean_value_1_num_only)) 
+         charge_code_clean = tolower(charge_desc_second_clean_value_1_num_only)) %>% 
+  ### de-dup by individual, booking, and charge since we have pivoted wide to long and created duplicates
+  distinct(id,
+           inmate_id,
+           booking_id,
+           booking_date,
+           charge_code_clean,
+           charge_desc_clean,
+           .keep_all = TRUE) 
 
 ### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
   
@@ -412,7 +416,7 @@ hillsborough_adm_charge_clean <- hillsborough_adm1 %>%
 hillsborough_adm_charge_clean_join_one <- hillsborough_adm_charge_clean %>% 
   filter(pc_hold=="Non-PC Hold") %>% 
   left_join(charge_codes_lookup, 
-            by = "charge_code_clean") %>% 
+            by = c("charge_code_clean"="charge_code_lookup")) %>% 
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                                  1,
                                                  0))
@@ -442,8 +446,8 @@ hillsborough_adm_charge_clean_join_two <- hillsborough_adm_charge_clean_join_one
             vis, 
             degree, 
             degree_clean, 
-            charge_code_clean,
-            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
+            degree_severity_order,
+            charge_desc_first_clean_count:charge_desc_second_clean_value_1_num_only)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
@@ -458,7 +462,7 @@ table(hillsborough_adm_charge_clean_join_two$missing_charge_data_second_join) ##
 ### clean first file for rbind
 hillsborough_adm_charge_clean_join_one_final <- hillsborough_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join==0) %>% 
-  dplyr::select(-missing_charge_data_first_join)
+  dplyr::select(-c(missing_charge_data_first_join,charge_desc_first_clean_count:charge_desc_second_clean_value_1_num_only))
 
 ### clean second file for rbind
 hillsborough_adm_charge_clean_join_two_final <- hillsborough_adm_charge_clean_join_two %>% 
@@ -478,7 +482,8 @@ hillsborough_adm_charge_clean_final <- rbind(hillsborough_adm_charge_clean_join_
 ### NOTE: MERRIMACK DOESN'T HAVE ANY CHARGE CODES -- SO WE HAVE TO RELY ON CHARGE DESCRIPTIONS
 
 merrimack_adm_charge_clean <- merrimack_adm1 %>% 
-  mutate(charge_desc_clean = tolower(charge_desc)) 
+  mutate(charge_desc_clean = tolower(charge_desc),
+         charge_code_clean = tolower(charge_code)) 
 
 ### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
 merrimack_adm_charge_clean_join_one <- merrimack_adm_charge_clean %>% 
@@ -487,7 +492,8 @@ merrimack_adm_charge_clean_join_one <- merrimack_adm_charge_clean %>%
             by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                                  1,
-                                                 0)) 
+                                                 0),
+         statute_title = charge_desc_clean) ### create statute_title column for eventual rbind with all other county dataframes) 
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(merrimack_adm_charge_clean_join_one$missing_charge_data_first_join) ### missing clean charge data for 6,000+ records
@@ -506,13 +512,14 @@ merrimack_adm_charge_clean_join_two <- merrimack_adm_charge_clean_join_one %>%
             vis, 
             degree, 
             degree_clean, 
-            charge_code_clean,
+            charge_code_lookup,
             degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
                                                   1,
-                                                  0))
+                                                  0),
+         statute_title = charge_desc_clean) ### create statute_title column for eventual rbind with all other county dataframes
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(merrimack_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~200 of 6,000+ records (there are dupes with the joins)
@@ -541,17 +548,17 @@ merrimack_adm_charge_clean_final <- rbind(merrimack_adm_charge_clean_join_one_fi
 rockingham_adm_charge_clean <- rockingham_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
+# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
   group_by(charge_desc_clean) %>% 
   fill(charge_code_clean, 
        .direction = "downup") %>%
   ungroup()
-# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
 
 ### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
 rockingham_adm_charge_clean_join_one <- rockingham_adm_charge_clean %>% 
   filter(pc_hold=="Non-PC Hold") %>% 
   left_join(charge_codes_lookup, 
-            by = "charge_code_clean") %>% 
+            by = c("charge_code_clean"="charge_code_lookup")) %>% 
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                                  1,
                                                  0))
@@ -573,7 +580,6 @@ rockingham_adm_charge_clean_join_two <- rockingham_adm_charge_clean_join_one %>%
             vis, 
             degree, 
             degree_clean, 
-            charge_code_clean,
             degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
@@ -615,17 +621,17 @@ rockingham_adm_charge_clean_final <- rbind(rockingham_adm_charge_clean_join_one_
 sullivan_adm_charge_clean <- sullivan_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
+# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
   group_by(charge_desc_clean) %>% 
   fill(charge_code_clean, 
        .direction = "downup") %>%
   ungroup()
-# fill charge code by charge descriptions (some descriptions are missing a code where others have one)
 
 ### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
 sullivan_adm_charge_clean_join_one <- sullivan_adm_charge_clean %>% 
   filter(pc_hold=="Non-PC Hold") %>% 
   left_join(charge_codes_lookup, 
-            by = "charge_code_clean") %>% 
+            by = c("charge_code_clean"="charge_code_lookup")) %>% 
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                                  1,
                                                  0))
@@ -647,7 +653,6 @@ sullivan_adm_charge_clean_join_two <- sullivan_adm_charge_clean_join_one %>%
             vis, 
             degree, 
             degree_clean, 
-            charge_code_clean,
             degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
@@ -680,18 +685,51 @@ sullivan_adm_charge_clean_final <- rbind(sullivan_adm_charge_clean_join_one_fina
 # Extract all charge codes and charge descriptions from records that didn't join
 ### Compile list of unique codes and descriptions for (possible) manual coding
 ################################################################################
-
-###hereherehere
 nh_eight_county_charge_join_missing <- rbind(belknap_adm_charge_clean_join_two,
-                                             carroll_adm_charge_clean_join_two,
+                                             carroll_adm_charge_clean_join_two, 
                                              cheshire_adm_charge_clean_join_two,
                                              coos_adm_charge_clean_join_two,
-                                             # hillsborough_adm_charge_clean_join_two,
+                                             hillsborough_adm_charge_clean_join_two,
                                              merrimack_adm_charge_clean_join_two,
                                              rockingham_adm_charge_clean_join_two,
                                              sullivan_adm_charge_clean_join_two) %>% 
-  filter(missing_charge_data_second_join==1)  
-# %>% 
-#   dplyr::select(charge_code_clean,
-#                 charge_desc_clean,)
+  filter(missing_charge_data_second_join==1) %>% 
+  ### fill charge code by charge descriptions (some descriptions are missing a code where others have one)
+  group_by(charge_desc_clean) %>%
+  fill(charge_code_clean,
+         .direction = "downup") %>%
+  ungroup() %>% 
+  ### recode NAs as "Missing" with charge codes and descriptions for frequency table
+  mutate(charge_code_clean = ifelse(is.na(charge_code_clean),"Missing",charge_code_clean),
+         charge_desc_clean = ifelse(is.na(charge_desc_clean),"Missing",charge_desc_clean)) 
 
+
+
+### make frequency table with charge codes/descriptions that did not link to lookup table
+
+### create denominator for entire table
+unique_charge_code_desc_sample_denom <- n_distinct(nh_eight_county_charge_join_missing$id,
+                                                   nh_eight_county_charge_join_missing$inmate_id,
+                                                   nh_eight_county_charge_join_missing$booking_id,
+                                                   nh_eight_county_charge_join_missing$booking_date,
+                                                   nh_eight_county_charge_join_missing$charge_code_clean,
+                                                   nh_eight_county_charge_join_missing$charge_desc_clean)
+### build table
+table_nh_eight_county_missing_charge_counts <- nh_eight_county_charge_join_missing %>% 
+  group_by(charge_code_clean,
+           charge_desc_clean) %>% 
+  summarise(`Unique Charges (N)` = n_distinct(id,
+                                              inmate_id,
+                                              booking_id,
+                                              booking_date,
+                                              charge_code_clean,
+                                              charge_desc_clean),
+            `Unique Charges (%)` = scales::percent(`Unique Charges (N)`/unique_charge_code_desc_sample_denom,
+                                                   accuracy = .1)) %>% 
+  ungroup()
+
+### write out table to excel
+write.xlsx(table_nh_eight_county_missing_charge_counts,
+           file.path(sp_data_path,"Data/Offense Information/offenses_missing_from_lookup_file.xlsx"),
+           asTable = FALSE, 
+           overwrite = TRUE)
