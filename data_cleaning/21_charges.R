@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File:  charges.R
-# Last updated: October 27, 2022
+# Last updated: November 8, 2022
 # Author: Andrew Byrum
 
 # Explore charge data for each jail -- attempting to clean and separate charge code from charge description
@@ -122,16 +122,23 @@ belknap_adm_charge_clean_join_one <- belknap_adm_charge_clean %>%
 table(belknap_adm_charge_clean_join_one$missing_charge_data_first_join) ### only missing clean charge data for 1110 of 41811 records
 
 ### here's a list of the jail-entered charge descriptions where no charge code and/or clean charge data are available
-table(belknap_adm_charge_clean_join_one$charge_desc_clean[belknap_adm_charge_clean_test$missing_charge_data_first_join==1])
+table(belknap_adm_charge_clean_join_one$charge_desc_clean[belknap_adm_charge_clean_join_one$missing_charge_data_first_join==1])
 
 ### for non-pc hold bookings that did not join to the charge lookup table, either because there isn't a charge code
 ### in the jail-provided file or because the charge code in the jail-provided file doesn't match any charge code in 
 ### lookup
 belknap_adm_charge_clean_join_two <- belknap_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join == 1) %>% 
-  select(-c(descriptor, statute_title, smart_code, ctl_number, vis, degree)) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            charge_code_clean,
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
-            by = c("charge_desc_clean" = "descriptor")) %>% 
+            by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
                                                  1,
                                                  0))
@@ -141,8 +148,15 @@ table(belknap_adm_charge_clean_join_two$missing_charge_data_second_join) ### onl
 
 ### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
 belknap_adm_charge_clean_join_one_final <- belknap_adm_charge_clean_join_one %>% 
-  filter(missing_charge_data_first_join==0)
+  filter(missing_charge_data_first_join==0) %>% 
+  dplyr::select(-missing_charge_data_first_join)
 
+### clean second file for rbind
+belknap_adm_charge_clean_join_two_final <- belknap_adm_charge_clean_join_two %>% 
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
+
+### combine df's from first and second attempts to clean
 belknap_adm_charge_clean_final <- rbind(belknap_adm_charge_clean_join_one_final,belknap_adm_charge_clean_join_two)
 
 ### final tally for belknap: missing 1,073 of 41,811 non-pc hold records
@@ -180,7 +194,14 @@ table(carroll_adm_charge_clean_join_one$charge_desc_clean[carroll_adm_charge_cle
 ### lookup
 carroll_adm_charge_clean_join_two <- carroll_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join == 1) %>% 
-  select(-c(descriptor, statute_title, smart_code, ctl_number, vis, degree)) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            charge_code_clean,
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
@@ -190,16 +211,20 @@ carroll_adm_charge_clean_join_two <- carroll_adm_charge_clean_join_one %>%
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(carroll_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~2370 of 2646 records (there are dupes with the joins)
 
-### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
-carroll_adm_charge_clean_join_one_final <- carroll_adm_charge_clean_join_one$ %>% 
+### append second file back to first file
+
+### clean first file for rbind
+carroll_adm_charge_clean_join_one_final <- carroll_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join==0) %>% 
   dplyr::select(-missing_charge_data_first_join)
 
+### clean second file for rbind
 carroll_adm_charge_clean_join_two_final <- carroll_adm_charge_clean_join_two %>% 
-  dplyr::select(-c(missing_charge_data_first_join,missing_charge_data_second_join))
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
 
-### columns not matching because of charge_desc_clean/statute_title?
-carroll_adm_charge_clean_final <- rbind(carroll_adm_charge_clean_join_one_final,carroll_adm_charge_clean_join_two)
+### combine df's from first and second attempts to clean
+carroll_adm_charge_clean_final <- rbind(carroll_adm_charge_clean_join_one_final,carroll_adm_charge_clean_join_two_final)
 
 ### final tally for carroll: missing 1,634 non-pc hold records
 
@@ -235,7 +260,14 @@ table(cheshire_adm_charge_clean_join_one$charge_desc_clean[cheshire_adm_charge_c
 ### lookup
 cheshire_adm_charge_clean_join_two <- cheshire_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join == 1) %>% 
-  select(-c(descriptor, statute_title, smart_code, ctl_number, vis, degree)) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            charge_code_clean,
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
@@ -245,11 +277,20 @@ cheshire_adm_charge_clean_join_two <- cheshire_adm_charge_clean_join_one %>%
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(cheshire_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~2370 of 2646 records (there are dupes with the joins)
 
-### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
-cheshire_adm_charge_clean_join_one_final <- cheshire_adm_charge_clean_join_one %>% 
-  filter(missing_charge_data_first_join==0)
+### append second file back to first file
 
-cheshire_adm_charge_clean_final <- rbind(cheshire_adm_charge_clean_join_one_final,cheshire_adm_charge_clean_join_two)
+### clean first file for rbind
+cheshire_adm_charge_clean_join_one_final <- cheshire_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0) %>% 
+  dplyr::select(-missing_charge_data_first_join)
+
+### clean second file for rbind
+cheshire_adm_charge_clean_join_two_final <- cheshire_adm_charge_clean_join_two %>% 
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
+
+### combine df's from first and second attempts to clean
+cheshire_adm_charge_clean_final <- rbind(cheshire_adm_charge_clean_join_one_final,cheshire_adm_charge_clean_join_two_final)
 
 ### final tally for cheshire: missing 1,711 non-pc hold records
 
@@ -285,7 +326,14 @@ table(coos_adm_charge_clean_join_one$charge_desc_clean[coos_adm_charge_clean_joi
 ### lookup
 coos_adm_charge_clean_join_two <- coos_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join == 1) %>% 
-  select(-c(descriptor, statute_title, smart_code, ctl_number, vis, degree)) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            charge_code_clean,
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
@@ -295,11 +343,20 @@ coos_adm_charge_clean_join_two <- coos_adm_charge_clean_join_one %>%
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(coos_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~2370 of 2646 records (there are dupes with the joins)
 
-### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
-coos_adm_charge_clean_join_one_final <- coos_adm_charge_clean_join_one %>% 
-  filter(missing_charge_data_first_join==0)
+### append second file back to first file
 
-coos_adm_charge_clean_final <- rbind(coos_adm_charge_clean_join_one_final,coos_adm_charge_clean_join_two)
+### clean first file for rbind
+coos_adm_charge_clean_join_one_final <- coos_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0) %>% 
+  dplyr::select(-missing_charge_data_first_join)
+
+### clean second file for rbind
+coos_adm_charge_clean_join_two_final <- coos_adm_charge_clean_join_two %>% 
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
+
+### combine df's from first and second attempts to clean
+coos_adm_charge_clean_final <- rbind(coos_adm_charge_clean_join_one_final,coos_adm_charge_clean_join_two_final)
 
 ### final tally for coos: missing 391 non-pc hold records
 
@@ -359,7 +416,7 @@ hillsborough_adm_charge_clean_join_one <- hillsborough_adm_charge_clean %>%
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                                  1,
                                                  0))
-
+### TO DO
 ### code to eventually use to de-dup by most serious charge 
   # arrange(id,
   #         booking_id,
@@ -379,7 +436,14 @@ table(hillsborough_adm_charge_clean_join_one$charge_desc_clean[hillsborough_adm_
 ### lookup
 hillsborough_adm_charge_clean_join_two <- hillsborough_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join == 1) %>% 
-  select(-c(descriptor, statute_title, smart_code, ctl_number, vis, degree)) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            charge_code_clean,
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
@@ -389,12 +453,21 @@ hillsborough_adm_charge_clean_join_two <- hillsborough_adm_charge_clean_join_one
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(hillsborough_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~2370 of 2646 records (there are dupes with the joins)
 
-### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
-hillsborough_adm_charge_clean_join_one_final <- hillsborough_adm_charge_clean_join_one %>% 
-  filter(missing_charge_data_first_join==0)
+### append second file back to first file
 
+### clean first file for rbind
+hillsborough_adm_charge_clean_join_one_final <- hillsborough_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0) %>% 
+  dplyr::select(-missing_charge_data_first_join)
+
+### clean second file for rbind
+hillsborough_adm_charge_clean_join_two_final <- hillsborough_adm_charge_clean_join_two %>% 
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
+
+### combine df's from first and second attempts to clean
 hillsborough_adm_charge_clean_final <- rbind(hillsborough_adm_charge_clean_join_one_final,
-                                             hillsborough_adm_charge_clean_join_two)
+                                             hillsborough_adm_charge_clean_join_two_final)
 
 ### final tally for hillsborough: missing 391 non-pc hold records
 
@@ -427,9 +500,16 @@ table(merrimack_adm_charge_clean_join_one$charge_desc_clean[merrimack_adm_charge
 ### lookup
 merrimack_adm_charge_clean_join_two <- merrimack_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join == 1) %>% 
-  select(-c(descriptor, smart_code, ctl_number, vis, degree)) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            charge_code_clean,
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
-            by = c("charge_desc_clean" = "descriptor")) %>% 
+            by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
                                                   1,
                                                   0))
@@ -437,11 +517,21 @@ merrimack_adm_charge_clean_join_two <- merrimack_adm_charge_clean_join_one %>%
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(merrimack_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~200 of 6,000+ records (there are dupes with the joins)
 
-### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
-merrimack_adm_charge_clean_join_one_final <- merrimack_adm_charge_clean_join_one %>% 
-  filter(missing_charge_data_first_join==0)
+### append second file back to first file
 
-merrimack_adm_charge_clean_final <- rbind(merrimack_adm_charge_clean_join_one_final,merrimack_adm_charge_clean_join_two)
+### clean first file for rbind
+merrimack_adm_charge_clean_join_one_final <- merrimack_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0) %>% 
+  dplyr::select(-missing_charge_data_first_join)
+
+### clean second file for rbind
+merrimack_adm_charge_clean_join_two_final <- merrimack_adm_charge_clean_join_two %>% 
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
+
+### combine df's from first and second attempts to clean
+merrimack_adm_charge_clean_final <- rbind(merrimack_adm_charge_clean_join_one_final,
+                                          merrimack_adm_charge_clean_join_two_final)
 
 ### final tally for merrimack: missing 6,461 non-pc hold records
 
@@ -477,7 +567,14 @@ table(rockingham_adm_charge_clean_join_one$charge_desc_clean[rockingham_adm_char
 ### lookup
 rockingham_adm_charge_clean_join_two <- rockingham_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join == 1) %>% 
-  select(-c(descriptor, statute_title, smart_code, ctl_number, vis, degree)) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            charge_code_clean,
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
@@ -487,11 +584,21 @@ rockingham_adm_charge_clean_join_two <- rockingham_adm_charge_clean_join_one %>%
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(rockingham_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~1700 of 5500 records (there are dupes with the joins)
 
-### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
-rockingham_adm_charge_clean_join_one_final <- rockingham_adm_charge_clean_join_one %>% 
-  filter(missing_charge_data_first_join==0)
+### append second file back to first file
 
-rockingham_adm_charge_clean_final <- rbind(rockingham_adm_charge_clean_join_one_final,rockingham_adm_charge_clean_join_two)
+### clean first file for rbind
+rockingham_adm_charge_clean_join_one_final <- rockingham_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0) %>% 
+  dplyr::select(-missing_charge_data_first_join)
+
+### clean second file for rbind
+rockingham_adm_charge_clean_join_two_final <- rockingham_adm_charge_clean_join_two %>% 
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
+
+### combine df's from first and second attempts to clean
+rockingham_adm_charge_clean_final <- rbind(rockingham_adm_charge_clean_join_one_final,
+                                           rockingham_adm_charge_clean_join_two_final)
 
 ### final tally for rockingham: missing 2,826 non-pc hold records
 
@@ -534,7 +641,14 @@ table(sullivan_adm_charge_clean_join_one$charge_desc_clean[sullivan_adm_charge_c
 ### lookup
 sullivan_adm_charge_clean_join_two <- sullivan_adm_charge_clean_join_one %>% 
   filter(missing_charge_data_first_join == 1) %>% 
-  select(-c(descriptor, statute_title, smart_code, ctl_number, vis, degree)) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            charge_code_clean,
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
@@ -544,29 +658,39 @@ sullivan_adm_charge_clean_join_two <- sullivan_adm_charge_clean_join_one %>%
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(sullivan_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~44 of 1200 records (there are dupes with the joins)
 
-### append belknap_adm_charge_clean_test_join_two back to belknap_adm_charge_clean_test_join_one
-sullivan_adm_charge_clean_join_one_final <- sullivan_adm_charge_clean_join_one %>% 
-  filter(missing_charge_data_first_join==0)
+### append second file back to first file
 
-sullivan_adm_charge_clean_final <- rbind(sullivan_adm_charge_clean_join_one_final,sullivan_adm_charge_clean_join_two)
+### clean first file for rbind
+sullivan_adm_charge_clean_join_one_final <- sullivan_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0) %>% 
+  dplyr::select(-missing_charge_data_first_join)
+
+### clean second file for rbind
+sullivan_adm_charge_clean_join_two_final <- sullivan_adm_charge_clean_join_two %>% 
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
+
+### combine df's from first and second attempts to clean
+sullivan_adm_charge_clean_final <- rbind(sullivan_adm_charge_clean_join_one_final,
+                                         sullivan_adm_charge_clean_join_two_final)
 
 ### final tally for sullivan: missing 2,826 non-pc hold records
 
 ################################################################################
 # Extract all charge codes and charge descriptions from records that didn't join
+### Compile list of unique codes and descriptions for (possible) manual coding
 ################################################################################
 
 ###hereherehere
-nh_eight_county_charge_join_missing <- rbind(
-  belknap_adm_charge_clean_join_two,
-  carroll_adm_charge_clean_join_two,
-  cheshire_adm_charge_clean_join_two,
-  coos_adm_charge_clean_join_two,
-  hillsborough_adm_charge_clean_join_two,
-  merrimack_adm_charge_clean_join_two,
-  rockingham_adm_charge_clean_join_two,
-  sullivan_adm_charge_clean_join_two) %>% 
-  filter(missing_charge_data_first_join==1) 
+nh_eight_county_charge_join_missing <- rbind(belknap_adm_charge_clean_join_two,
+                                             carroll_adm_charge_clean_join_two,
+                                             cheshire_adm_charge_clean_join_two,
+                                             coos_adm_charge_clean_join_two,
+                                             # hillsborough_adm_charge_clean_join_two,
+                                             merrimack_adm_charge_clean_join_two,
+                                             rockingham_adm_charge_clean_join_two,
+                                             sullivan_adm_charge_clean_join_two) %>% 
+  filter(missing_charge_data_second_join==1)  
 # %>% 
 #   dplyr::select(charge_code_clean,
 #                 charge_desc_clean,)
