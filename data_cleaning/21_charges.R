@@ -35,6 +35,8 @@
 ################################################################################################################################################################
 ################################################################################################################################################################
 ################################################################################################################################################################
+# load packages
+# source("data_cleaning/00_library.R")
 
 # Use cleaned and standardized county-level dataframes created in `12_dataframes.R`
 load(paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",           sep = ""))
@@ -54,6 +56,11 @@ load(paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",          sep = ""))
 ##################################
 # Charge Lookup Table
 ##################################
+
+### import raw charge codes lookup table
+charge_codes.xlsx <- read_excel(paste0(sp_data_path, "/Data/Offense Information/CPI_DMV_COURT_20180412083730.xls"), sheet = "All (C,E)")
+
+### clean lookup table
 charge_codes_lookup <- charge_codes.xlsx %>%
   clean_names() %>%
   mutate(descriptor = tolower(descriptor),
@@ -114,9 +121,11 @@ belknap_adm_charge_clean_join_one <- belknap_adm_charge_clean %>%
   filter(pc_hold=="Non-PC Hold") %>% 
   left_join(charge_codes_lookup, 
             by = c("charge_code_clean"="charge_code_lookup")) %>% 
+### create charge_code_lookup column for eventual rbind with all other county dataframes
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                       1,
-                                      0))
+                                      0),
+         charge_code_lookup = charge_code_clean)
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(belknap_adm_charge_clean_join_one$missing_charge_data_first_join) ### only missing clean charge data for 1110 of 41811 records
@@ -135,7 +144,8 @@ belknap_adm_charge_clean_join_two <- belknap_adm_charge_clean_join_one %>%
             vis, 
             degree, 
             degree_clean, 
-            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
+            degree_severity_order,
+            charge_code_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
   left_join(charge_codes_lookup, 
             by = c("charge_desc_clean" = "statute_title")) %>% 
   mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
@@ -156,7 +166,7 @@ belknap_adm_charge_clean_join_two_final <- belknap_adm_charge_clean_join_two %>%
                    missing_charge_data_second_join))
 
 ### combine df's from first and second attempts to clean
-belknap_adm_charge_clean_final <- rbind(belknap_adm_charge_clean_join_one_final,belknap_adm_charge_clean_join_two)
+belknap_adm_charge_clean_final <- rbind(belknap_adm_charge_clean_join_one_final,belknap_adm_charge_clean_join_two_final)
 
 ### final tally for belknap: missing 1,073 of 41,811 non-pc hold records
 
@@ -493,7 +503,7 @@ merrimack_adm_charge_clean_join_one <- merrimack_adm_charge_clean %>%
   mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
                                                  1,
                                                  0),
-         statute_title = charge_desc_clean) ### create statute_title column for eventual rbind with all other county dataframes) 
+         statute_title = charge_desc_clean) ### create statute_title column for eventual rbind with all other county dataframes
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 table(merrimack_adm_charge_clean_join_one$missing_charge_data_first_join) ### missing clean charge data for 6,000+ records
@@ -732,4 +742,4 @@ table_nh_eight_county_missing_charge_counts <- nh_eight_county_charge_join_missi
 write.xlsx(table_nh_eight_county_missing_charge_counts,
            file.path(sp_data_path,"Data/Offense Information/offenses_missing_from_lookup_file.xlsx"),
            asTable = FALSE, 
-           overwrite = TRUE)
+           overwrite = FALSE)
