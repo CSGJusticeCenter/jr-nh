@@ -78,7 +78,7 @@ sullivan_adm     <- fnc_standardize_counties(sullivan_adm_all,     "Sullivan")
 ################################################################################
 
 ##########
-# Belknap - meeting TBD
+# Belknap
 ##########
 
 booking_recordings_belknap <- fnc_investigate_booking_recordings(belknap_adm)
@@ -134,7 +134,7 @@ belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
                                               str_detect("OVERNIGHT HOLD", booking_type)                                          ~ "OTHER",
                                               str_detect("ADMIN TRANSFER", booking_type)                                          ~ "OTHER",
 
-                                              # UNKNOWN
+                                              # UNKNOWN bc they have charges but were booked as PC which was a mistake (only 11 records)
                                               ((charge_desc == "TEMPORARY REMOVAL OR TRANSFER" |
                                               charge_desc == "RESIST ARREST OR DETENTION 642:2" |
                                               charge_desc == "DISORDERLY CONDUCT 644:2" |
@@ -148,7 +148,9 @@ belknap_adm1 <- belknap_adm %>% select(-c(los, release_date)) %>% distinct() %>%
 
   select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
-temp <- fnc_investigate_booking_recordings_standard(belknap_adm1) # no charge descriptions, which explains changes to booking type and sentence status
+# View new variable
+# Reminder: no charge descriptions are in this table, which explains some PROTECTIVE CUSTODY in booking type and sentence status
+temp <- fnc_investigate_booking_recordings_standard(belknap_adm1)
 
 ##########
 # Carroll
@@ -308,6 +310,8 @@ cheshire_adm1 <- cheshire_adm %>%
                                              (is.na(sentence_status) & str_detect("FELONY FIRST", booking_type))               ~ "OTHER",
                                               str_detect("HOLD FOR OTHER AGENCY", sentence_status)                             ~ "OTHER",
                                               str_detect("DETAINEE REQUEST", sentence_status)                                  ~ "OTHER",
+
+                                             # UNKNOWN
                                              # no data in sentence status but info in booking type
                                               is.na(sentence_status)                                                           ~ "UNKNOWN",
                                               sentence_status == "UNKNOWN"                                                     ~ "UNKNOWN",
@@ -529,7 +533,7 @@ temp <- fnc_investigate_booking_recordings_standard(rockingham_adm1)
 # Standardize booking info so it's consistent across counties
 strafford_adm1 <- strafford_adm %>% select(-c(los, release_date)) %>% distinct() %>%
 
-  mutate(sentence_status_standard = "Unknown") %>%
+  mutate(sentence_status_standard = "UNKNOWN") %>%
   select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
 # %>%
@@ -628,12 +632,11 @@ adm_all <- adm_all %>%
 # Fix los issues
 # Remove negatives because of data entry issues with booking and release dates
 # If release date is missing, then change los to NA instead of Inf
-# Make all charges, booking types, release types, and sentence statuses uppercase
 adm_all <- adm_all %>%
   mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
   filter(los_max >= 0 | is.na(los_max))
 
-# Create los categories.
+# Create los categories
 adm_all <- adm_all %>%
   mutate(los_category =
   case_when(los_max == 0 ~ "0",

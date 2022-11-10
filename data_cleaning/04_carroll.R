@@ -53,4 +53,4 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
          county = "Carroll") %>%
   distinct()
 
-dim(carroll_adm_all); length(unique(carroll_adm_all$inmate_id)) # 5402, 1849
+# dim(carroll_adm_all); length(unique(carroll_adm_all$inmate_id)) # 5402, 1849
