@@ -352,3 +352,11 @@ sentence_status <- adm_all %>%
 sentence_status_19 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2019)
 sentence_status_20 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2020)
 sentence_status_21 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2021)
+
+################################################################################
+
+# Save data
+
+################################################################################
+
+save(adm_all, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda", sep = ""))

@@ -587,4 +587,3 @@ save(merrimack_adm1,    file=paste0(sp_data_path, "/Data/r_data/data_dictionarie
 save(rockingham_adm1,   file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/rockingham_adm.Rda",   sep = ""))
 save(strafford_adm1,    file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/strafford_adm.Rda",    sep = ""))
 save(sullivan_adm1,     file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/sullivan_adm.Rda",     sep = ""))
-save(adm_all,           file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda",          sep = ""))

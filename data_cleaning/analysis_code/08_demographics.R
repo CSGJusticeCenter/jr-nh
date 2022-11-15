@@ -7,12 +7,14 @@
 # Tables, graphs, and numbers for demographics page
 ############################################
 
-#################
-# Age
-#################
+################################################################################
+
+# Age Category
+
+################################################################################
 
 # age category table
-df_nh_age_category <- fnc_variable_table(bookings_entrances_19, bookings_entrances_20, bookings_entrances_21, "race")
+df_nh_age_category <- fnc_variable_table(bookings_entrances_19, bookings_entrances_20, bookings_entrances_21, "age_category")
 df_nh_age_category <- df_nh_age_category %>%
   arrange(variable_name) %>%
   filter(variable_name != "Total") %>%
@@ -26,3 +28,18 @@ nh_age_category <- fnc_reactable_fy(df_nh_age_category,
                                     label_width = 150,
                                     note = "test")
 nh_age_category
+
+################################################################################
+
+# Race
+
+################################################################################
+
+
+
+
+################################################################################
+
+# Gender
+
+################################################################################

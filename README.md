@@ -5,21 +5,21 @@ This project focuses on the prevalence of people with behavioral health needs mo
 # Repository Structure
 
     |-- data_cleaning 
-      |-- 00_library.R                           # Load packages
-      |-- 01_functions.R                         # Custom functions for efficient coding
-      |-- 01_functions_visuals.R                 # Custom functions for efficient coding
-      |-- 02_import.R                            # Import jail data from sharepoint
-      |-- 03_belknap.R                           # Standardize Belknap variables 
-      |-- 04_carroll.R                           # Standardize Carroll variables
-      |-- 05_cheshire.R                          # Standardize Cheshire variables
-      |-- 06_coos.R                              # Standardize Coos variables
-      |-- 07_hillsborough.R                      # Standardize Hillsborough variables
-      |-- 08_merrimack.R                         # Standardize Merrimack variables
-      |-- 09_rockingham.R                        # Standardize Rockingham variables
-      |-- 10_strafford.R                         # Standardize Strafford variables
-      |-- 11_sullivan.R                          # Standardize Sullivan variables
-      |-- 12_standardize_counties.R              # Further standardize charges and booking types
-      |-- 13_dataframes.R                        # Combine jail data and create df's used in analyses
+      |-- 00_library.R                              # Load packages
+      |-- 01_functions.R                            # Custom functions for efficient coding
+      |-- 01_functions_visuals.R                    # Custom functions for efficient coding
+      |-- 02_import.R                               # Import jail data from sharepoint
+      |-- 03_belknap.R                              # Standardize Belknap variables 
+      |-- 04_carroll.R                              # Standardize Carroll variables
+      |-- 05_cheshire.R                             # Standardize Cheshire variables
+      |-- 06_coos.R                                 # Standardize Coos variables
+      |-- 07_hillsborough.R                         # Standardize Hillsborough variables
+      |-- 08_merrimack.R                            # Standardize Merrimack variables
+      |-- 09_rockingham.R                           # Standardize Rockingham variables
+      |-- 10_strafford.R                            # Standardize Strafford variables
+      |-- 11_sullivan.R                             # Standardize Sullivan variables
+      |-- 12_standardize_counties.R                 # Further standardize charges and booking types
+      |-- 13_dataframes.R                           # Combine jail data and create df's used in analyses
       
     |-- data_cleaning -> analysis_code       
       |-- 01_incarceration_patterns_bookings.R      # Analyze booking data and create viz deliverables
@@ -33,6 +33,9 @@ This project focuses on the prevalence of people with behavioral health needs mo
       |-- 09_county_reports_tables.R                # Create tables for county reports
       |-- 10_county_reports_plots.R                 # Create plots for county reports
       |-- 11_generate_county_reports.R              # Generate county report RMD's automatically
+      
+      |-- rdas.R                                    # Files used in rmds
+      |-- render_site                               # Can use this file to run all code and render Netlify site
       
 # Data  
 

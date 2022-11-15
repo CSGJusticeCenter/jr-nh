@@ -29,7 +29,7 @@ fnc_data_setup <- function(df){
            race_label = case_when(race_code == "A"  ~ "AAPI",
                                   race_code == "C"  ~ "AAPI",
                                   race_code == "P"  ~ "AAPI",
-                                  race_code == "K"  ~ "Black Hispanic",
+                                  race_code == "K"  ~ "Black", # Black Hispanic
                                   race_code == "Asian/Pacific Islander" ~ "AAPI",
 
 
@@ -79,9 +79,10 @@ fnc_data_setup <- function(df){
 
   #  18–29, 30–39, and 40
   df1 <- df1 %>% mutate(age_category
-                        = case_when(age <= 29 ~ "18-29 yo",
-                                    age >= 30 & age <= 39 ~ "30-39 yo",
-                                    age >= 40 ~ "40+ yo"))
+                        = case_when(age <= 24 ~ "18-24 yo",
+                                    age >= 25 & age <= 34 ~ "25-34 yo",
+                                    age >= 35 & age <= 49 ~ "35-49 yo",
+                                    age >= 50 ~ "50+ yo"))
 }
 
 # Create booking id
