@@ -551,3 +551,46 @@ fnc_reactable_hus_descriptive_summary <- function(df){
                         freq               = colDef(minWidth = 130, name = "Proportion of Entrances that are HU's", format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"))
                       ))
 }
+
+# Reactable table showing the types of booking types recordings by county
+# Shows how each county records things differently
+fnc_reactable_booking_recordings <- function(df){
+  reactable(df,
+            style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+            pagination = FALSE,
+            theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                   headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+            defaultColDef = reactable::colDef(
+              format = colFormat(separators = TRUE), align = "center"
+            ),
+            compact = TRUE,
+            fullWidth = FALSE,
+            columns = list(
+              booking_type          = colDef(align = "left", minWidth = 300, name = "Booking Type (Original)"),
+              booking_type_standard = colDef(align = "left", minWidth = 300, name = "Booking Type (Standardized)", style = list(fontWeight = "bold")),
+              sentence_status       = colDef(align = "left", minWidth = 300, name = "Sentence Status"),
+              release_type          = colDef(align = "left", minWidth = 300, name = "Release Type"),
+              total                 = colDef(align = "left", minWidth = 300, name = "Number of Occurrences")
+            ))
+}
+fnc_reactable_charges_booking_recordings <- function(df){
+  reactable(df,
+            style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+            pagination = FALSE,
+            theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                   headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+            defaultColDef = reactable::colDef(
+              format = colFormat(separators = TRUE), align = "center"
+            ),
+            compact = TRUE,
+            fullWidth = FALSE,
+            columns = list(
+              charge_desc           = colDef(align = "left", minWidth = 300, name = "Charge Descriptions (Original)"),
+              booking_type          = colDef(align = "left", minWidth = 300, name = "Booking Type (Original)"),
+              booking_type_standard = colDef(align = "left", minWidth = 300, name = "Booking Type (Standardized)", style = list(fontWeight = "bold")),
+              sentence_status       = colDef(align = "left", minWidth = 300, name = "Sentence Status"),
+              release_type          = colDef(align = "left", minWidth = 300, name = "Release Type"),
+              total                 = colDef(align = "left", minWidth = 300, name = "Number of Occurrences")
+            ))
+}
+

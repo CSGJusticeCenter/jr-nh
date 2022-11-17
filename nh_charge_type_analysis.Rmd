@@ -1,0 +1,370 @@
+---
+title: "Charge Type Analysis"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    theme: theme.css
+    self_contained: false
+---
+
+**Counties Included**: All New Hampshire counties except Grafton and Strafford. Strafford is excluded because their data does not include any charge information (neither charge code nor charge description). 
+
+The following incarceration patterns were found using jail administrative data submitted directly to CSG in addition to a NH offense look-up table with offense codes, descriptions, and degrees (e.g., Class A Misdemeanor, etc.).
+
+However, we will not be able to analyze severity/degree of charges with the data we've received. With only offense statute and description, we can’t accurately tell if a given charge is a misdemeanor or felony (or even class A misdemeanor versus class B misdemeanor). For this level of detail, we would need either the ‘Smart Code’ or the ‘ODDSY Code’ – which may not even be known at the time of booking. For instance, there are 8 entries for ‘criminal trespass’/’statute ‘635:2’ in the look-up file – which degrees ranging from violations to class A and B misdemeanors to class B felonies. It appears that the best option, at this point, is to categorize the charges into violent, public order, drugs/alcohol, property, and probation/parole violation. Drawing from approaches used by the NH Department of Safety (see https://crimestats.dos.nh.gov/public/Dim/dimension.aspx) as well as FBI definitions for both NIBRS and UCR data (see https://www.waspc.org/assets/CJIS/trainingmanualsandreference/nibrsvssummaryoverview.pdf), I categorized certain offenses into these categories. For full list of which offenses are grouped into each crime type, see table below.
+
+When cleaning the charge data, I first de-duplicated by individual (id + inmate_id), booking (booking_id), and charge (either charge_code or charge_desc depending on data availability). There appear to be some duplicates across these fields, but we have no way of knowing if two identical charges for the same booking represents a duplicated entry or multiple counts of the same charge. Unfortunately, this will likely just be a limitation of this analysis. After joining the jail charge data to the updated look-up table with crime type data, I de-duplicated the file again by individual and booking -- keeping the most serious charge type. Here is the crime type hierarchy (in order of severity) I used for this decision: violent, property, drug/alcohol, public order, violation of probation/parole, and then other/missing categories. One limitation is that we are not able to account for degree/severity of charge (felony vs. misdemeanor) with this approach. 
+
+
+```{r setup, include=FALSE}
+### set chunk output 
+knitr::opts_chunk$set(
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
+  dev = "ragg_png",
+  cache = FALSE
+  )
+
+### call libraries and functions
+# source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/01_functions_visuals.R")
+source("data_cleaning/00_library_ab_path.R")
+
+# import cleaned charge analytic file (for all eight counties with charge data)
+load(paste0(sp_data_path, "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda", sep = ""))
+
+### import and clean raw charge codes look-up table
+charge_codes_crime_type_lookup <- read_excel(paste0(sp_data_path, "/Data/Offense Information/CPI_DMV_COURT_crime_type_clean.xls"), 
+                                sheet = "charge_lookup_crime_type_full") %>%
+  clean_names() %>%
+  mutate(descriptor_lookup = str_to_title(descriptor),
+         statute_title_lookup = str_to_title(statute_title),
+         charge_code_lookup = str_to_title(offense_statute)) %>% 
+### Based on the jail charge data we've received, I don't think we can look at severity/degree of charges
+### With only offense statute and description, we can't accurately tell if a given charge is a misdemeanor or felony (or even class A misdemeanor versus class B misdemeanor)
+### For this level of detail, we'd need either the 'Smart Code' or the 'ODDSY Code' - which may not even be known at the time of booking
+### For instance, there are 8 entries for 'criminal trespass'/'statute '635:2' in the lookup file - which degrees ranging from violations to class A and B misdemeanors to class B felonies
+### I think the best option, at this point, is to just categorize the charges into violent, public order, drugs/alcohol, and property
+  distinct(statute_title_lookup,
+           crime_type,
+           .keep_all = TRUE) %>% ### de-dup by offense information and crime type 
+  select(charge_code_lookup, descriptor_lookup, statute_title_lookup, crime_type_lookup=crime_type) 
+```
+
+# Raw Charges and Coded Charge Type
+
+Here is a list of all charges that were categorized as either violent, property, drug/alcohol, public order, or probation/parole violations. These are not necessarily charges associated with jail bookings or individuals in the jail data files. 
+
+Note: The charge descriptions still need to be cleaned/standardized in some cases (e.g., "Willful Concealment" and "Willful Concealment and Shoplifting")
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create table of unique statute titles and associated crime/charge type (only for charges with crime type value)
+table_charge_codes_crime_type_lookup <- charge_codes_crime_type_lookup %>% 
+  filter(!is.na(crime_type_lookup)) %>% 
+  dplyr::group_by(statute_title_lookup,
+                  crime_type_lookup) %>% 
+  dplyr::summarise(`Unique Descriptions (N)` = n_distinct(descriptor_lookup)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Charge Description` = statute_title_lookup,
+                `Charge Type` = crime_type_lookup) %>% 
+  select(-`Unique Descriptions (N)`)
+
+### print table via kableextra
+kable(table_charge_codes_crime_type_lookup, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l")
+```
+
+<br><br>
+
+# Bookings by Charge Type (most serious) across New Hampshire
+
+Note: I am considering a booking to be 'unique' if the following values are together unique: id, inmate_id, booking_id, county (including county as we can't verify that each county is using different IDs for individuals and bookings). The count reported in the following tables is the unique number of bookings for which the most serious charge type is a violent charge, property charge, etc.
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+nh_eight_county_charge_clean_final_id <- nh_eight_county_charge_clean_final %>%
+  mutate(unique_booking_id_nh = paste0(id,
+                                       inmate_id,
+                                       booking_id,
+                                       county)) %>% 
+  mutate(descriptor_lookup = str_to_title(descriptor_lookup),
+         statute_title_lookup = str_to_title(statute_title_lookup)) ### clean up descriptor and statute title for tables
+```
+
+<br>
+
+### Violent Offenses, Statewide
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create denominator -- unique bookings for sub-sample
+unique_bookings_violent_denom <- n_distinct(nh_eight_county_charge_clean_final_id$unique_booking_id_nh[nh_eight_county_charge_clean_final_id$crime_type_lookup=="Violent"])
+
+### unique bookings per charge description
+df_nh_violent_offense_desc_count <- nh_eight_county_charge_clean_final_id %>% 
+  filter(crime_type_lookup=="Violent") %>% 
+  dplyr::group_by(statute_title_lookup) %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_violent_denom,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Charge Description` = statute_title_lookup) 
+
+### overall
+df_nh_violent_offense_count_overall <- nh_eight_county_charge_clean_final_id %>% 
+ filter(crime_type_lookup=="Violent") %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_violent_denom,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Charge Description` = "Overall")
+
+### combine tables for kable
+table_nh_violent_offense_desc_count_final <- rbind(df_nh_violent_offense_desc_count,
+                                                   df_nh_violent_offense_count_overall)
+
+### print table via kableextra
+kable(table_nh_violent_offense_desc_count_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(21, bold = TRUE)
+```
+
+<br>
+
+### Property Offenses, Statewide
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create denominator -- unique bookings for sub-sample
+unique_bookings_property_denom <- n_distinct(nh_eight_county_charge_clean_final_id$unique_booking_id_nh[nh_eight_county_charge_clean_final_id$crime_type_lookup=="Property"])
+
+### unique bookings per charge description
+df_nh_property_offense_desc_count <- nh_eight_county_charge_clean_final_id %>% 
+  filter(crime_type_lookup=="Property") %>% 
+  dplyr::group_by(statute_title_lookup) %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_property_denom,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Charge Description` = statute_title_lookup) 
+
+### overall
+df_nh_property_offense_count_overall <- nh_eight_county_charge_clean_final_id %>% 
+ filter(crime_type_lookup=="Property") %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_property_denom,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Charge Description` = "Overall")
+
+### combine tables for kable
+table_nh_property_offense_desc_count_final <- rbind(df_nh_property_offense_desc_count,
+                                                    df_nh_property_offense_count_overall)
+
+### print table via kableextra
+kable(table_nh_property_offense_desc_count_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(21, bold = TRUE)
+```
+
+<br>
+
+### Drug/Alcohol Offenses, Statewide
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create denominator -- unique bookings for sub-sample
+unique_bookings_drug_alc_denom <- n_distinct(nh_eight_county_charge_clean_final_id$unique_booking_id_nh[nh_eight_county_charge_clean_final_id$crime_type_lookup=="Drug/Alcohol"])
+
+### unique bookings per charge description
+df_nh_drug_alc_offense_desc_count <- nh_eight_county_charge_clean_final_id %>% 
+  filter(crime_type_lookup=="Drug/Alcohol") %>% 
+  dplyr::group_by(statute_title_lookup) %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_drug_alc_denom,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Charge Description` = statute_title_lookup) 
+
+### overall
+df_nh_drug_alc_offense_count_overall <- nh_eight_county_charge_clean_final_id %>% 
+ filter(crime_type_lookup=="Drug/Alcohol") %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_drug_alc_denom,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Charge Description` = "Overall")
+
+### combine tables for kable
+table_nh_drug_alc_offense_desc_count_final <- rbind(df_nh_drug_alc_offense_desc_count,
+                                                    df_nh_drug_alc_offense_count_overall)
+
+### print table via kableextra
+kable(table_nh_drug_alc_offense_desc_count_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br>
+
+### Drug/Alcohol Offenses, Statewide 
+
+Note: This table is broken down further as the broader categories above don't say much for drug/alcohol charges
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create denominator -- unique bookings for sub-sample
+unique_bookings_drug_alc_denom <- n_distinct(nh_eight_county_charge_clean_final_id$unique_booking_id_nh[nh_eight_county_charge_clean_final_id$crime_type_lookup=="Drug/Alcohol"])
+
+### unique bookings per charge description
+df_nh_drug_alc_offense_desc_count_2 <- nh_eight_county_charge_clean_final_id %>% 
+  filter(crime_type_lookup=="Drug/Alcohol") %>% 
+  dplyr::group_by(descriptor_lookup) %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_drug_alc_denom,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Charge Description (Detailed)` = descriptor_lookup) 
+
+### overall
+df_nh_drug_alc_offense_count_overall_2 <- nh_eight_county_charge_clean_final_id %>% 
+ filter(crime_type_lookup=="Drug/Alcohol") %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_drug_alc_denom,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Charge Description (Detailed)` = "Overall")
+
+### combine tables for kable
+table_nh_drug_alc_offense_desc_count_final_2 <- rbind(df_nh_drug_alc_offense_desc_count_2,
+                                                      df_nh_drug_alc_offense_count_overall_2)
+
+### print table via kableextra
+kable(table_nh_drug_alc_offense_desc_count_final_2, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(34, bold = TRUE)
+```
+
+<br>
+
+### Public Order Offenses, Statewide
+
+Note: 'Transporting Alcoholic Beverages' appears to be the same as 'Open Container'
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create denominator -- unique bookings for sub-sample
+unique_bookings_public_order_denom <- n_distinct(nh_eight_county_charge_clean_final_id$unique_booking_id_nh[nh_eight_county_charge_clean_final_id$crime_type_lookup=="Public Order"])
+
+### unique bookings per charge description
+df_nh_public_order_offense_desc_count <- nh_eight_county_charge_clean_final_id %>% 
+  filter(crime_type_lookup=="Public Order") %>% 
+  dplyr::group_by(statute_title_lookup) %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_public_order_denom,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Charge Description` = statute_title_lookup) 
+
+### overall
+df_nh_public_order_offense_count_overall <- nh_eight_county_charge_clean_final_id %>% 
+ filter(crime_type_lookup=="Public Order") %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_public_order_denom,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Charge Description` = "Overall")
+
+### combine tables for kable
+table_nh_public_order_offense_desc_count_final <- rbind(df_nh_public_order_offense_desc_count,
+                                                        df_nh_public_order_offense_count_overall)
+
+### print table via kableextra
+kable(table_nh_public_order_offense_desc_count_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(9, bold = TRUE)
+```
+
+<br>
+
+### Probation/Parole Violations, Statewide
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create denominator -- unique bookings for sub-sample
+unique_bookings_vop_denom <- n_distinct(nh_eight_county_charge_clean_final_id$unique_booking_id_nh[nh_eight_county_charge_clean_final_id$crime_type_lookup=="Probation/Parole Violation"])
+
+### unique bookings per charge description
+df_nh_vop_offense_desc_count <- nh_eight_county_charge_clean_final_id %>% 
+  filter(crime_type_lookup=="Probation/Parole Violation") %>% 
+  dplyr::group_by(statute_title_lookup) %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_vop_denom,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Charge Description` = statute_title_lookup) 
+
+### overall
+df_nh_vop_offense_count_overall <- nh_eight_county_charge_clean_final_id %>% 
+ filter(crime_type_lookup=="Probation/Parole Violation") %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = scales::percent(`Unique Bookings (N)`/unique_bookings_vop_denom,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Charge Description` = "Overall")
+
+### combine tables for kable
+table_nh_vop_offense_desc_count_final <- rbind(df_nh_vop_offense_desc_count,
+                                               df_nh_vop_offense_count_overall)
+
+### print table via kableextra
+kable(table_nh_vop_offense_desc_count_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(2, bold = TRUE)
+```
+
+<br><br>
+
+Additional analysis to add: 
+
+* Top 10-20 offenses overall
+
+* Breakdown of charge type (maybe code an 'other') by jail
+
+* HU and charge type analysis
+
+* charge type trends over time
+
+<br><br>

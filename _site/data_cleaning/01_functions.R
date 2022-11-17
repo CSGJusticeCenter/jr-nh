@@ -29,7 +29,7 @@ fnc_data_setup <- function(df){
            race_label = case_when(race_code == "A"  ~ "AAPI",
                                   race_code == "C"  ~ "AAPI",
                                   race_code == "P"  ~ "AAPI",
-                                  race_code == "K"  ~ "Black Hispanic",
+                                  race_code == "K"  ~ "Black", # Black Hispanic
                                   race_code == "Asian/Pacific Islander" ~ "AAPI",
 
 
@@ -79,9 +79,10 @@ fnc_data_setup <- function(df){
 
   #  18–29, 30–39, and 40
   df1 <- df1 %>% mutate(age_category
-                        = case_when(age <= 29 ~ "18-29 yo",
-                                    age >= 30 & age <= 39 ~ "30-39 yo",
-                                    age >= 40 ~ "40+ yo"))
+                        = case_when(age <= 24 ~ "18-24 yo",
+                                    age >= 25 & age <= 34 ~ "25-34 yo",
+                                    age >= 35 & age <= 49 ~ "35-49 yo",
+                                    age >= 50 ~ "50+ yo"))
 }
 
 # Create booking id
@@ -781,4 +782,27 @@ fnc_hus_descriptive_summary <- function(df, hu_variable_name, yesno, county_excl
     left_join(df_summary, by = "county") %>%
     arrange(county %in% "State")
 
+}
+
+# Extract levels of booking type, sentence status, and release type to understand booking information by county
+fnc_investigate_booking_recordings <- function(df){
+  df1 <- df %>%
+    mutate(charge_desc     = as.character(charge_desc),
+           booking_type    = as.character(booking_type),
+           release_type    = as.character(release_type),
+           sentence_status = as.character(sentence_status),
+           charge_desc     = toupper(charge_desc),
+           booking_type    = toupper(booking_type),
+           release_type    = toupper(release_type),
+           sentence_status = toupper(sentence_status)) %>%
+    select(id, booking_id, charge_desc, booking_type, sentence_status, release_type) %>%
+    distinct() %>%
+    group_by(booking_type, sentence_status) %>%
+    summarise(total = n())
+}
+
+fnc_investigate_booking_recordings_standard <- function(df){
+  df1 <- df %>%
+    group_by(booking_type, sentence_status, sentence_status_standard) %>%
+    summarise(total = n())
 }

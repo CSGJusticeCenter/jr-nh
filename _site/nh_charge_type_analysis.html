@@ -87,27 +87,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>JRI New Hampshire Project: JRI New Hampshire</title>
+  <title>JRI New Hampshire Project: Charge Type Analysis</title>
 
 
   <link rel="icon" type="image/png" href="img/favicon.png"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="JRI New Hampshire Project: JRI New Hampshire"/>
+  <meta property="og:title" content="JRI New Hampshire Project: Charge Type Analysis"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="JRI New Hampshire Project"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="JRI New Hampshire Project: JRI New Hampshire"/>
+  <meta property="twitter:title" content="JRI New Hampshire Project: Charge Type Analysis"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","site"]}},"value":[{"type":"character","attributes":{},"value":["JRI New Hampshire"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Charge Type Analysis"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","theme","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"character","attributes":{},"value":["theme.css"]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2367,6 +2367,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2386,7 +2388,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"JRI New Hampshire","authors":[]}
+{"title":"Charge Type Analysis","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2455,7 +2457,7 @@ Research
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>JRI New Hampshire</h1>
+<h1>Charge Type Analysis</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2463,88 +2465,1839 @@ Research
 
 
 <div class="d-article">
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="img/csg-logo.png" width="70%" /></p>
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a href="#raw-charges-and-coded-charge-type">Raw Charges and Coded
+Charge Type</a></li>
+<li><a
+href="#bookings-by-charge-type-most-serious-across-new-hampshire">Bookings
+by Charge Type (most serious) across New Hampshire</a>
+<ul>
+<li><a href="#violent-offenses-statewide">Violent Offenses,
+Statewide</a></li>
+<li><a href="#property-offenses-statewide">Property Offenses,
+Statewide</a></li>
+<li><a href="#drugalcohol-offenses-statewide">Drug/Alcohol Offenses,
+Statewide</a></li>
+<li><a href="#drugalcohol-offenses-statewide-1">Drug/Alcohol Offenses,
+Statewide</a></li>
+<li><a href="#public-order-offenses-statewide">Public Order Offenses,
+Statewide</a></li>
+<li><a href="#probationparole-violations-statewide">Probation/Parole
+Violations, Statewide</a></li>
+</ul></li>
+</ul>
+</nav>
 </div>
-<p>Welcome to the JRI New Hampshire project website. This is a private,
-password protected website that should not be shared externally. Use the
-navigation in the top right corner to view county reports and other
-analyses.</p>
-<p><br></p>
-<p><strong>Project Purpose:</strong></p>
-<p>This project will focus on the prevalence of people with behavioral
-health needs moving through local county jails and the availability and
-impact of existing services and supports for this population
-statewide.</p>
-<p>Goal 1: Improve criminal justice and public health outcomes for
-people with behavioral health conditions who are high utilizers of the
-health and jail systems.</p>
-<p>Goal 2: Reduce gaps in the state’s data systems and information
-sharing capacity by working with agencies and staff to build data
-collection and analysis capacities.</p>
-<p>Matching data from all 10 counties’ jails with data from the
-Department of Health and Human Services (DHHS) would distinguish New
-Hampshire as the first state in the country to conduct a statewide jail
-to Medicaid data analysis.</p>
-<p><br></p>
+<p><strong>Counties Included</strong>: All New Hampshire counties except
+Grafton and Strafford. Strafford is excluded because their data does not
+include any charge information (neither charge code nor charge
+description).</p>
+<p>The following incarceration patterns were found using jail
+administrative data submitted directly to CSG in addition to a NH
+offense look-up table with offense codes, descriptions, and degrees
+(e.g., Class A Misdemeanor, etc.).</p>
+<p>However, we will not be able to analyze severity/degree of charges
+with the data we’ve received. With only offense statute and description,
+we can’t accurately tell if a given charge is a misdemeanor or felony
+(or even class A misdemeanor versus class B misdemeanor). For this level
+of detail, we would need either the ‘Smart Code’ or the ‘ODDSY Code’ –
+which may not even be known at the time of booking. For instance, there
+are 8 entries for ‘criminal trespass’/’statute ‘635:2’ in the look-up
+file – which degrees ranging from violations to class A and B
+misdemeanors to class B felonies. It appears that the best option, at
+this point, is to categorize the charges into violent, public order,
+drugs/alcohol, property, and probation/parole violation. Drawing from
+approaches used by the NH Department of Safety (see <a
+href="https://crimestats.dos.nh.gov/public/Dim/dimension.aspx"
+class="uri">https://crimestats.dos.nh.gov/public/Dim/dimension.aspx</a>)
+as well as FBI definitions for both NIBRS and UCR data (see <a
+href="https://www.waspc.org/assets/CJIS/trainingmanualsandreference/nibrsvssummaryoverview.pdf"
+class="uri">https://www.waspc.org/assets/CJIS/trainingmanualsandreference/nibrsvssummaryoverview.pdf</a>),
+I categorized certain offenses into these categories. For full list of
+which offenses are grouped into each crime type, see table below.</p>
+<p>When cleaning the charge data, I first de-duplicated by individual
+(id + inmate_id), booking (booking_id), and charge (either charge_code
+or charge_desc depending on data availability). There appear to be some
+duplicates across these fields, but we have no way of knowing if two
+identical charges for the same booking represents a duplicated entry or
+multiple counts of the same charge. Unfortunately, this will likely just
+be a limitation of this analysis. After joining the jail charge data to
+the updated look-up table with crime type data, I de-duplicated the file
+again by individual and booking – keeping the most serious charge type.
+Here is the crime type hierarchy (in order of severity) I used for this
+decision: violent, property, drug/alcohol, public order, violation of
+probation/parole, and then other/missing categories. One limitation is
+that we are not able to account for degree/severity of charge (felony
+vs. misdemeanor) with this approach.</p>
+<h1 id="raw-charges-and-coded-charge-type">Raw Charges and Coded Charge
+Type</h1>
+<p>Here is a list of all charges that were categorized as either
+violent, property, drug/alcohol, public order, or probation/parole
+violations. These are not necessarily charges associated with jail
+bookings or individuals in the jail data files.</p>
+<p>Note: The charge descriptions still need to be cleaned/standardized
+in some cases (e.g., “Willful Concealment” and “Willful Concealment and
+Shoplifting”)</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="img/nh-jri-flow.png" width="100%" /></p>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Charge Description
+</th>
+<th style="text-align:center;">
+Charge Type
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Aggravated Felonious Sexual Assault
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Arson
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Assault
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Assaults By Prisoners
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Assualt
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bribery
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Burglary
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Capital Murder
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Causing Or Aiding Suicide
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Commercial Bribery
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Controlled Drug Act; Acts Prohibited
+</td>
+<td style="text-align:center;">
+Drug/Alcohol
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Criminal Mischief
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Criminal Threatening
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Criminal Trespass
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Criminal Trespass On Railroad Property
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Dealing In Counterfeit Goods
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Dealing In Or Possessing Prescription Drugs
+</td>
+<td style="text-align:center;">
+Drug/Alcohol
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Disorderly Conduct
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Domestic Violence
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Felonious Sexual Assault
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+First Degree Assault
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+First Degree Murder
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Fraud
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Fraud On Creditors
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Fraud On Depositors
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Fraudulent Use Of Credit Card
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Gambling
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Homicide
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Identify Fraud
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Indecent Exposure And Lewdness
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Insurance Fraud
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Issuing Bad Checks
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Kidnapping
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Larceny Of Deer Or Bear
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Loitering Or Prowling
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manslaughter
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manslaughter - Reckless
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manufacture Of Methamphetamine
+</td>
+<td style="text-align:center;">
+Drug/Alcohol
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Misapplication Of Property
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Negligent Homicide
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Negligent Homicide - Dui
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Negligent Storage Of Marijuana-Infused Products
+</td>
+<td style="text-align:center;">
+Drug/Alcohol
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Parole Revocation
+</td>
+<td style="text-align:center;">
+Probation/Parole Violation
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Personal Possession Of Marijuana
+</td>
+<td style="text-align:center;">
+Drug/Alcohol
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession Of Drugs
+</td>
+<td style="text-align:center;">
+Drug/Alcohol
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Public Urination Or Defacation
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Receiving Stolen Property
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Reckless Conduct
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Robbery
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sale Of Synthetic Drugs Prohibited
+</td>
+<td style="text-align:center;">
+Drug/Alcohol
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sale Or Distribution Of Synthetic Drug
+</td>
+<td style="text-align:center;">
+Drug/Alcohol
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Second Degree Assault
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Second Degree Murder
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sexual Assault
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Simple Assault
+</td>
+<td style="text-align:center;">
+Violent
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sports Bribery
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft By Deception
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft By Extortion
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft By Misapplication Of Property
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft By Unauthorized Taking
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft Of Lost Or Mislaid Property
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft Of Services
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft Of Utility Service
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Transportation Of Alcoholic Beverages By A Minor
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Transporting Alcoholic Beverages
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Trespass Upon Or Smoking In White Mountain National Forest
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Unauthorized Use Of Propelled Vehicle Or Rented Property
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Unlawful Entry On Property
+</td>
+<td style="text-align:center;">
+Public Order
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Unlawful Possession And Intoxication
+</td>
+<td style="text-align:center;">
+Drug/Alcohol
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Violation Of Probation Or Parole
+</td>
+<td style="text-align:center;">
+Probation/Parole Violation
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Willful Concealment
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Willful Concealment And Shoplifiting
+</td>
+<td style="text-align:center;">
+Property
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h1
+id="bookings-by-charge-type-most-serious-across-new-hampshire">Bookings
+by Charge Type (most serious) across New Hampshire</h1>
+<p>Note: I am considering a booking to be ‘unique’ if the following
+values are together unique: id, inmate_id, booking_id, county (including
+county as we can’t verify that each county is using different IDs for
+individuals and bookings). The count reported in the following tables is
+the unique number of bookings for which the most serious charge type is
+a violent charge, property charge, etc.</p>
+<p><br></p>
+<h3 id="violent-offenses-statewide">Violent Offenses, Statewide</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Charge Description
+</th>
+<th style="text-align:center;">
+Unique Bookings (N)
+</th>
+<th style="text-align:center;">
+Bookings, Percent of Sample (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Aggravated Felonious Sexual Assault
+</td>
+<td style="text-align:center;">
+284
+</td>
+<td style="text-align:center;">
+5.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Assault
+</td>
+<td style="text-align:center;">
+47
+</td>
+<td style="text-align:center;">
+0.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Assaults By Prisoners
+</td>
+<td style="text-align:center;">
+67
+</td>
+<td style="text-align:center;">
+1.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Assualt
+</td>
+<td style="text-align:center;">
+9
+</td>
+<td style="text-align:center;">
+0.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Capital Murder
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Causing Or Aiding Suicide
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Criminal Threatening
+</td>
+<td style="text-align:center;">
+598
+</td>
+<td style="text-align:center;">
+11.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Domestic Violence
+</td>
+<td style="text-align:center;">
+347
+</td>
+<td style="text-align:center;">
+6.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Felonious Sexual Assault
+</td>
+<td style="text-align:center;">
+23
+</td>
+<td style="text-align:center;">
+0.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+First Degree Assault
+</td>
+<td style="text-align:center;">
+246
+</td>
+<td style="text-align:center;">
+4.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+First Degree Murder
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Kidnapping
+</td>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manslaughter
+</td>
+<td style="text-align:center;">
+9
+</td>
+<td style="text-align:center;">
+0.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Negligent Homicide
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Negligent Homicide - Dui
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Robbery
+</td>
+<td style="text-align:center;">
+285
+</td>
+<td style="text-align:center;">
+5.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Second Degree Assault
+</td>
+<td style="text-align:center;">
+589
+</td>
+<td style="text-align:center;">
+11.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Second Degree Murder
+</td>
+<td style="text-align:center;">
+18
+</td>
+<td style="text-align:center;">
+0.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sexual Assault
+</td>
+<td style="text-align:center;">
+84
+</td>
+<td style="text-align:center;">
+1.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Simple Assault
+</td>
+<td style="text-align:center;">
+2,561
+</td>
+<td style="text-align:center;">
+49.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall
+</td>
+<td style="text-align:center;font-weight: bold;">
+5,192
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.0%
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <p><br></p>
-<p><strong>Scope of Work</strong></p>
-<ul>
-<li><p>Facilitating cross-system data match to analyze county jail and
-Medicaid claims data.</p></li>
-<li><p>Analyzing jail data on high utilizers with behavioral health
-needs.</p></li>
-<li><p>Analyzing racial disproportionalities in jail
-incarceration.</p></li>
-<li><p>Conducting focus groups with providers, stakeholders, and jail
-staff.</p></li>
-<li><p>Assessing behavioral health needs, demographic characteristics,
-and available resources.</p></li>
-<li><p>Assessing the collaboration between behavioral health and
-criminal justice agencies.</p></li>
-<li><p>Identifying gaps in data systems to support improved data
-collection and analysis capacities.</p></li>
-<li><p>Identifying alternatives to incarceration programs to provide an
-overview of local available services.</p></li>
-</ul>
-<p><strong>Key Questions</strong></p>
-<p><em>Jail admissions:</em></p>
-<ul>
-<li><p>How many people are booked into New Hampshire jails
-annually?</p></li>
-<li><p>What are the most common jail admission and release
-types?</p></li>
-<li><p>What is the average length of incarceration in jail?</p></li>
-<li><p>How are protective custody holds factored into the jail
-population?</p></li>
-</ul>
-<p><em>High utilizers in jails:</em></p>
-<ul>
-<li><p>What percent of annual jail bookings are for people identified as
-high utilizers?</p></li>
-<li><p>Is this percentage different for protective custody
-bookings?</p></li>
-<li><p>What percent of the daily jail population do high utilizers
-account for?</p></li>
-</ul>
-<p><em>Demographics of the high utilizer population:</em></p>
-<ul>
-<li><p>How does the high utilizer jail population compare to others in
-jail in terms of gender, race, and ethnicity?</p></li>
-<li><p>What other indicators exist among the high utilizer population in
-jail including their Medicaid enrollment status or Medicaid eligibility,
-their housing status, and indicators of substance use and/or mental
-illness?</p></li>
-</ul>
-<p><strong>Project Links</strong></p>
-<ul>
-<li><a href="https://github.com/CSGJusticeCenter/jr-nh">Github
-repository</a></li>
-</ul>
+<h3 id="property-offenses-statewide">Property Offenses, Statewide</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Charge Description
+</th>
+<th style="text-align:center;">
+Unique Bookings (N)
+</th>
+<th style="text-align:center;">
+Bookings, Percent of Sample (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Arson
+</td>
+<td style="text-align:center;">
+40
+</td>
+<td style="text-align:center;">
+1.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Bribery
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Burglary
+</td>
+<td style="text-align:center;">
+481
+</td>
+<td style="text-align:center;">
+15.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Commercial Bribery
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Fraud
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+0.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Fraud On Creditors
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Fraudulent Use Of Credit Card
+</td>
+<td style="text-align:center;">
+130
+</td>
+<td style="text-align:center;">
+4.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Identify Fraud
+</td>
+<td style="text-align:center;">
+43
+</td>
+<td style="text-align:center;">
+1.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Issuing Bad Checks
+</td>
+<td style="text-align:center;">
+30
+</td>
+<td style="text-align:center;">
+1.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Receiving Stolen Property
+</td>
+<td style="text-align:center;">
+450
+</td>
+<td style="text-align:center;">
+14.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft By Deception
+</td>
+<td style="text-align:center;">
+249
+</td>
+<td style="text-align:center;">
+8.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft By Extortion
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft By Misapplication Of Property
+</td>
+<td style="text-align:center;">
+332
+</td>
+<td style="text-align:center;">
+10.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft By Unauthorized Taking
+</td>
+<td style="text-align:center;">
+677
+</td>
+<td style="text-align:center;">
+22.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft Of Lost Or Mislaid Property
+</td>
+<td style="text-align:center;">
+31
+</td>
+<td style="text-align:center;">
+1.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft Of Services
+</td>
+<td style="text-align:center;">
+30
+</td>
+<td style="text-align:center;">
+1.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Theft Of Utility Service
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Unauthorized Use Of Propelled Vehicle Or Rented Property
+</td>
+<td style="text-align:center;">
+13
+</td>
+<td style="text-align:center;">
+0.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Willful Concealment
+</td>
+<td style="text-align:center;">
+536
+</td>
+<td style="text-align:center;">
+17.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Willful Concealment And Shoplifiting
+</td>
+<td style="text-align:center;">
+20
+</td>
+<td style="text-align:center;">
+0.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall
+</td>
+<td style="text-align:center;font-weight: bold;">
+3,075
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.0%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <p><br></p>
+<h3 id="drugalcohol-offenses-statewide">Drug/Alcohol Offenses,
+Statewide</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Charge Description
+</th>
+<th style="text-align:center;">
+Unique Bookings (N)
+</th>
+<th style="text-align:center;">
+Bookings, Percent of Sample (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Controlled Drug Act; Acts Prohibited
+</td>
+<td style="text-align:center;">
+4,246
+</td>
+<td style="text-align:center;">
+97.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Dealing In Or Possessing Prescription Drugs
+</td>
+<td style="text-align:center;">
+37
+</td>
+<td style="text-align:center;">
+0.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession Of Drugs
+</td>
+<td style="text-align:center;">
+17
+</td>
+<td style="text-align:center;">
+0.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Unlawful Possession And Intoxication
+</td>
+<td style="text-align:center;">
+36
+</td>
+<td style="text-align:center;">
+0.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall
+</td>
+<td style="text-align:center;font-weight: bold;">
+4,336
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.0%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="drugalcohol-offenses-statewide-1">Drug/Alcohol Offenses,
+Statewide</h3>
+<p>Note: This table is broken down further as the broader categories
+above don’t say much for drug/alcohol charges</p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Charge Description (Detailed)
+</th>
+<th style="text-align:center;">
+Unique Bookings (N)
+</th>
+<th style="text-align:center;">
+Bookings, Percent of Sample (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Attempted Manufacture Controlled Drug
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Boating While Intoxicated
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Cntrl Drug: Acts Prohibited
+</td>
+<td style="text-align:center;">
+2,116
+</td>
+<td style="text-align:center;">
+48.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Conspiracy Sale C/Drug
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Control Drug Act
+</td>
+<td style="text-align:center;">
+1,107
+</td>
+<td style="text-align:center;">
+25.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Control Premises/ Vehicle C/Drug Kept
+</td>
+<td style="text-align:center;">
+50
+</td>
+<td style="text-align:center;">
+1.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Deal/Possess Prescription Drugs
+</td>
+<td style="text-align:center;">
+37
+</td>
+<td style="text-align:center;">
+0.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Forged Prescription
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Intoxication.
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+0.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Know Present C/Drug
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manfacture Of Methamphetamine
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Manufac Sell Dispense Drug-Death Result
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Penalties For Intoxication Or Under Influence Of Drugs Offenses
+</td>
+<td style="text-align:center;">
+31
+</td>
+<td style="text-align:center;">
+0.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession C/Drug
+</td>
+<td style="text-align:center;">
+629
+</td>
+<td style="text-align:center;">
+14.5%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession C/Drug - Sub
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession C/Drug Intent To Sell
+</td>
+<td style="text-align:center;">
+9
+</td>
+<td style="text-align:center;">
+0.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession N/Drug
+</td>
+<td style="text-align:center;">
+88
+</td>
+<td style="text-align:center;">
+2.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession N/Drug Intent To Sell
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession Of Drugs Intent To Sell
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession Of Drugs.
+</td>
+<td style="text-align:center;">
+47
+</td>
+<td style="text-align:center;">
+1.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession Of Prescription Drugs
+</td>
+<td style="text-align:center;">
+26
+</td>
+<td style="text-align:center;">
+0.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Possession/Transportation Of Drugs
+</td>
+<td style="text-align:center;">
+10
+</td>
+<td style="text-align:center;">
+0.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sale C/Drug
+</td>
+<td style="text-align:center;">
+36
+</td>
+<td style="text-align:center;">
+0.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sale C/Drug W/In 1000ft School
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sale N/Drug
+</td>
+<td style="text-align:center;">
+12
+</td>
+<td style="text-align:center;">
+0.3%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sale Of Control Drugs
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sale Of Drugs
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+0.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sale Of Drugs Death Resulting
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sale Of Kegs Of Malt Beverages
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Sales Of Controlled Drug
+</td>
+<td style="text-align:center;">
+29
+</td>
+<td style="text-align:center;">
+0.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Transport Drugs In Motor Vehicle
+</td>
+<td style="text-align:center;">
+17
+</td>
+<td style="text-align:center;">
+0.4%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Transporting Drugs
+</td>
+<td style="text-align:center;">
+26
+</td>
+<td style="text-align:center;">
+0.6%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Unlawful Possess/Intoxication
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall
+</td>
+<td style="text-align:center;font-weight: bold;">
+4,336
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.0%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="public-order-offenses-statewide">Public Order Offenses,
+Statewide</h3>
+<p>Note: ‘Transporting Alcoholic Beverages’ appears to be the same as
+‘Open Container’</p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Charge Description
+</th>
+<th style="text-align:center;">
+Unique Bookings (N)
+</th>
+<th style="text-align:center;">
+Bookings, Percent of Sample (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Criminal Mischief
+</td>
+<td style="text-align:center;">
+438
+</td>
+<td style="text-align:center;">
+24.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Criminal Trespass
+</td>
+<td style="text-align:center;">
+739
+</td>
+<td style="text-align:center;">
+40.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Disorderly Conduct
+</td>
+<td style="text-align:center;">
+456
+</td>
+<td style="text-align:center;">
+25.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Indecent Exposure And Lewdness
+</td>
+<td style="text-align:center;">
+49
+</td>
+<td style="text-align:center;">
+2.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Loitering Or Prowling
+</td>
+<td style="text-align:center;">
+32
+</td>
+<td style="text-align:center;">
+1.8%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Public Urination Or Defacation
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Transportation Of Alcoholic Beverages By A Minor
+</td>
+<td style="text-align:center;">
+3
+</td>
+<td style="text-align:center;">
+0.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Transporting Alcoholic Beverages
+</td>
+<td style="text-align:center;">
+91
+</td>
+<td style="text-align:center;">
+5.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall
+</td>
+<td style="text-align:center;font-weight: bold;">
+1,811
+</td>
+<td style="text-align:center;font-weight: bold;">
+99.9%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="probationparole-violations-statewide">Probation/Parole
+Violations, Statewide</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Charge Description
+</th>
+<th style="text-align:center;">
+Unique Bookings (N)
+</th>
+<th style="text-align:center;">
+Bookings, Percent of Sample (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Violation Of Probation Or Parole
+</td>
+<td style="text-align:center;">
+3,914
+</td>
+<td style="text-align:center;">
+100.0%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall
+</td>
+<td style="text-align:center;font-weight: bold;">
+3,914
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.0%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<p>Additional analysis to add:</p>
+<ul>
+<li><p>Top 10-20 offenses overall</p></li>
+<li><p>Breakdown of charge type (maybe code an ‘other’) by jail</p></li>
+<li><p>HU and charge type analysis</p></li>
+<li><p>charge type trends over time</p></li>
+</ul>
+<p><br><br></p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
