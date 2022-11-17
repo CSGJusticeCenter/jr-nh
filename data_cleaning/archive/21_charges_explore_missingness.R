@@ -1,25 +1,28 @@
 ############################################
 # Project: JRI New Hampshire
-# File: 21_charges.R
-# Last updated: November 17, 2022
+# File:  charges.R
+# Last updated: November 2022
 # Author: Andrew Byrum
 
 # Explore charge data for each jail -- attempting to clean and separate charge code from charge description
 # Then join cleaned charge data with charge codes file to see how much coverage we have/how much manual coding is required
-# Create lookup table with all charge codes, descriptions, and pertinent charge degrees and charge types
-# Ultimate hope is to link charge codes/descriptions to charge classes (misdemeanor/felony/etc) and charge category (violent, drug, public order, etc.)
+# Ultimate need is to link charge codes/descriptions to charge classes (misdemeanor/felony/etc) and charge category (violent, drug, public order, etc.)
 
-### TO DO/TALK THROUGH: 
+### TO DO: 
 
-# - TO CONFIRM: START WITH adm_all.rda INSTEAD OF INDIVIDUAL COUNTY FILES B/C MARI CLEANED UP CHARGE/PC HOLD FLAGS AFTER JOINING COUNTIES TOGETHER; Double check this
+# - START WITH adm_all.rda INSTEAD OF INDIVIDUAL COUNTY FILES B/C MARI CLEANED UP CHARGE/PC HOLD FLAGS AFTER JOINING COUNTIES TOGETHER; Double check this
+
+# - Clarify with superintendents/jail partners whether charge data represent most serious charge linked to bookings
+# aside from hillsborough, belknap,... where all charges appear to be entered along with a booking
 
 # - De-dup by individual/booking -- keeping most serious crime type? (hierarchy: violent, property, drug/alcohol, public order, vop?)
-# all jails appear to have submitted all charges associated with a given individual/booking (i.e., instances with multiple charges for one booking id)
 
-# - Missing charge code/charge description data by county. How should we interpret this? Only Belknap seems to have somewhat notable missingness: 
-# about 11% of non-pc hold booking have no charge code or charge description
+# - Join all counties together and then fill across lookup table values using charge description 
+# (i.e., to fill in charge codes and charge lookup table values using descriptions that did have a matching code linked)
 
-# - Business rule to confirm: de-duping by individual (id + inmate_id), booking (booking_id), and charge (either charge_code or charge_desc depending on data availability)
+# - Missing charge code/charge description data by county. How should we interpret this? 
+
+# - Business rule: de-duping by individual (id + inmate_id), booking (booking_id), and charge (either charge_code or charge_desc depending on data availability)
 ### There appear to be some duplicates across these fields, but we have no way of knowing if two identical charges for the same booking
 ### represents a duplicated entry or multiple counts of the same charge. Unfortunately, this will likely just be a limitation of this analysis
 
@@ -255,15 +258,13 @@ belknap_adm_charge_clean_final <- rbind(belknap_adm_charge_clean_join_one,
 ### excluding PC holds, see what % of non-pc hold bookings join to lookup table
   
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
-### missing clean charge data for 305 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
+### only missing clean charge data for 305 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
 table(belknap_adm_charge_clean_final$missing_lookup_charge_data,belknap_adm_charge_clean_final$pc_hold) 
 
 
 ##################################
 # Carroll
 ##################################
-
-### clean up carroll file
 carroll_adm_charge_clean <- carroll_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
@@ -384,8 +385,6 @@ table(carroll_adm_charge_clean_final$missing_lookup_charge_data,carroll_adm_char
 ##################################
 # Cheshire
 ##################################
-
-### clean up cheshire file
 cheshire_adm_charge_clean <- cheshire_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
@@ -506,8 +505,6 @@ table(cheshire_adm_charge_clean_final$missing_lookup_charge_data,cheshire_adm_ch
 ##################################
 # Coos
 ##################################
-
-### clean up coos file
 coos_adm_charge_clean <- coos_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
@@ -627,8 +624,6 @@ table(coos_adm_charge_clean_final$missing_lookup_charge_data,coos_adm_charge_cle
 ##################################
 # Hillsborough
 ##################################
-
-### clean up hillsborough file
 hillsborough_adm_charge_clean <- hillsborough_adm1 %>% 
   separate(charge_desc, 
            paste("charge_desc", 1:11, sep="_"), 
@@ -770,13 +765,8 @@ hillsborough_adm_charge_clean_final <- rbind(hillsborough_adm_charge_clean_join_
   ### create missing_lookup_charge_data column to double check missingness with non-pc holds
   mutate(missing_lookup_charge_data = ifelse(is.na(statute_title_lookup)==TRUE,
                                              1,
-                                             0)) %>% 
-  dplyr::select(-c(charge_desc_first_clean_count,
-                   charge_desc_first_clean_value,
-                   charge_desc_second_clean_value_1,
-                   charge_desc_second_clean_value_2,
-                   charge_desc_second_clean_value_1_num_only)) ### remove hillsborough-specific columns for eventual rbind with other jails
-                
+                                             0))
+
 ### excluding PC holds, see what % of non-pc hold bookings join to lookup table
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
@@ -789,104 +779,70 @@ table(hillsborough_adm_charge_clean_final$missing_lookup_charge_data,hillsboroug
 
 ### NOTE: MERRIMACK DOESN'T HAVE ANY CHARGE CODES -- SO WE HAVE TO RELY ON CHARGE DESCRIPTIONS
 
-### clean up merrimack file
 merrimack_adm_charge_clean <- merrimack_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
-         charge_code_clean = tolower(charge_code)) %>% 
-  ### de-duping by individual (id + inmate_id), booking (booking_id), and charge 
-  ### there appear to be some duplicates across these fields, 
-  ### but we have no way of knowing if two identical charges for the same booking
-  ### represents a duplicated entry or multiple counts of the same charge
-  ### unfortunately, this will likely just be a limitation of this analysis
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc,
-           .keep_all = TRUE) 
+         charge_code_clean = tolower(charge_code)) 
 
-####### use two separate joins as jail charge data will join on either statute title or descriptor
-
-### join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
+### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
 merrimack_adm_charge_clean_join_one <- merrimack_adm_charge_clean %>% 
-  left_join(charge_codes_crime_type_lookup, 
-            by = c("charge_desc_clean" = "statute_title_lookup")) %>% 
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc_clean,
-           .keep_all = TRUE) %>% 
-  mutate(statute_title_lookup = ifelse(!is.na(descriptor_lookup) == TRUE,
-                                       charge_desc_clean,
-                                       NA)) ### populate for eventual rbind where all three df's need same columns 
-
-### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
-merrimack_adm_charge_clean_join_two <- merrimack_adm_charge_clean_join_one %>% 
-  filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
-            descriptor_lookup,
-            statute_title_lookup,
-            crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
-  left_join(charge_codes_crime_type_lookup, 
-            by = c("charge_desc_clean" = "descriptor_lookup")) %>% 
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc_clean,
-           .keep_all = TRUE) %>% 
-  mutate(descriptor_lookup = ifelse(!is.na(statute_title_lookup) == TRUE,
-                                    charge_desc_clean,
-                                    NA)) ### populate for eventual rbind where all three df's need same columns 
-
-### combine df's from first and second attempts to join to lookup values
-merrimack_adm_charge_clean_final <- rbind(merrimack_adm_charge_clean_join_one,
-                                             merrimack_adm_charge_clean_join_two) %>% 
-  ### de-dup once more for records that ended up duplicating across the joins
-  ### use arrange to keep records with joining lookup values over identical records with missing lookup values
-  arrange(id,
-          inmate_id,
-          booking_id,
-          statute_title_lookup) %>%
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc_clean,
-           .keep_all = TRUE) %>% 
-  ### as a check, at this point our total record should be identical to the cleaned jail file we started with -- it is
-  ### now we want to de-dup by booking (one booking may have multiple charges associated) 
-  ### keep most serious charge by crime type (hierarchy: violent, property, drug/alcohol, public order, vop)
-  mutate(crime_type_severity_order = case_when(
-    crime_type_lookup=="Violent" ~ 1,
-    crime_type_lookup=="Property" ~ 2,
-    crime_type_lookup=="Drug/Alcohol" ~ 3,
-    crime_type_lookup=="Public Order" ~ 4,
-    crime_type_lookup=="Probation/Parole Violation" ~ 5,
-    is.na(crime_type_lookup)==TRUE ~ 6,
-    TRUE ~ as.numeric(NA))) %>%
-  arrange(id,
-          inmate_id,
-          booking_id,
-          crime_type_severity_order) %>% 
-  ### de-dup by booking, keeping the record with the most serious crime type
-  distinct(id,
-           inmate_id,
-           booking_id,
-           .keep_all=TRUE) %>% 
-  ### create missing_lookup_charge_data column to double check missingness with non-pc holds
-  mutate(missing_lookup_charge_data = ifelse(is.na(statute_title_lookup)==TRUE,
-                                             1,
-                                             0))
-
-### excluding PC holds, see what % of non-pc hold bookings join to lookup table
+  filter(pc_hold=="Non-PC Hold") %>% 
+  left_join(charge_codes_lookup, 
+            by = c("charge_desc_clean" = "statute_title")) %>% 
+  mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
+                                                 1,
+                                                 0),
+         statute_title = charge_desc_clean) ### create statute_title column for eventual rbind with all other county dataframes
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
-### missing clean charge data for 125 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
-table(merrimack_adm_charge_clean_final$missing_lookup_charge_data,merrimack_adm_charge_clean_final$pc_hold)
+table(merrimack_adm_charge_clean_join_one$missing_charge_data_first_join) ### missing clean charge data for 6,000+ records
+
+### here's a list of the jail-entered charge descriptions where no charge code and/or clean charge data are available
+table(merrimack_adm_charge_clean_join_one$charge_desc_clean[merrimack_adm_charge_clean_join_one$missing_charge_data_first_join==1])
+
+### for non-pc hold bookings that did not join to the charge lookup table, either because there isn't a charge code
+### in the jail-provided file or because the charge code in the jail-provided file doesn't match any charge code in 
+### lookup
+merrimack_adm_charge_clean_join_two <- merrimack_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join == 1) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            charge_code_lookup,
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
+  left_join(charge_codes_lookup, 
+            by = c("charge_desc_clean" = "statute_title")) %>% 
+  mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
+                                                  1,
+                                                  0),
+         statute_title = charge_desc_clean) ### create statute_title column for eventual rbind with all other county dataframes
+
+### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
+table(merrimack_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~200 of 6,000+ records (there are dupes with the joins)
+
+### append second file back to first file
+
+### clean first file for rbind
+merrimack_adm_charge_clean_join_one_final <- merrimack_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0) %>% 
+  dplyr::select(-missing_charge_data_first_join)
+
+### clean second file for rbind
+merrimack_adm_charge_clean_join_two_final <- merrimack_adm_charge_clean_join_two %>% 
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
+
+### combine df's from first and second attempts to clean
+merrimack_adm_charge_clean_final <- rbind(merrimack_adm_charge_clean_join_one_final,
+                                          merrimack_adm_charge_clean_join_two_final)
+
+### final tally for merrimack: missing 6,461 non-pc hold records
 
 ##################################
 # Rockingham
 ##################################
-
-### clean up rockingham file
 rockingham_adm_charge_clean <- rockingham_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
@@ -894,114 +850,61 @@ rockingham_adm_charge_clean <- rockingham_adm1 %>%
   group_by(charge_desc_clean) %>% 
   fill(charge_code_clean, 
        .direction = "downup") %>%
-  ungroup() %>% 
-  ### de-duping by individual (id + inmate_id), booking (booking_id), and charge 
-  ### there appear to be some duplicates across these fields, 
-  ### but we have no way of knowing if two identical charges for the same booking
-  ### represents a duplicated entry or multiple counts of the same charge
-  ### unfortunately, this will likely just be a limitation of this analysis
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc,
-           .keep_all = TRUE) 
+  ungroup()
 
-####### use three separate joins as jail charge data will join on either charge code, statute title, or descriptor
-
-### join to charge_codes_lookup via charge_code_lookup
+### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
 rockingham_adm_charge_clean_join_one <- rockingham_adm_charge_clean %>% 
-  left_join(charge_codes_crime_type_lookup, 
+  filter(pc_hold=="Non-PC Hold") %>% 
+  left_join(charge_codes_lookup, 
             by = c("charge_code_clean"="charge_code_lookup")) %>% 
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_code_clean,
-           .keep_all = TRUE) %>% 
-  mutate(charge_code_lookup = ifelse(!is.na(descriptor_lookup) == TRUE,
-                                     charge_code_clean,
-                                     NA)) ### populate for eventual rbind where all three df's need same columns
-
-### join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
-rockingham_adm_charge_clean_join_two <- rockingham_adm_charge_clean_join_one %>% 
-  filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
-            descriptor_lookup,
-            statute_title_lookup,
-            crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
-  left_join(charge_codes_crime_type_lookup, 
-            by = c("charge_desc_clean" = "statute_title_lookup")) %>% 
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc_clean,
-           .keep_all = TRUE) %>% 
-  mutate(statute_title_lookup = ifelse(!is.na(descriptor_lookup) == TRUE,
-                                       charge_desc_clean,
-                                       NA)) ### populate for eventual rbind where all three df's need same columns 
-
-### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
-rockingham_adm_charge_clean_join_three <- rockingham_adm_charge_clean_join_two %>% 
-  filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
-            descriptor_lookup,
-            statute_title_lookup,
-            crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
-  left_join(charge_codes_crime_type_lookup, 
-            by = c("charge_desc_clean" = "descriptor_lookup")) %>% 
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc_clean,
-           .keep_all = TRUE) %>% 
-  mutate(descriptor_lookup = ifelse(!is.na(statute_title_lookup) == TRUE,
-                                    charge_desc_clean,
-                                    NA)) ### populate for eventual rbind where all three df's need same columns 
-
-### combine df's from first, second, and third attempts to join to lookup values
-rockingham_adm_charge_clean_final <- rbind(rockingham_adm_charge_clean_join_one,
-                                             rockingham_adm_charge_clean_join_two,
-                                             rockingham_adm_charge_clean_join_three) %>% 
-  ### de-dup once more for records that ended up duplicating across the joins
-  ### use arrange to keep records with joining lookup values over identical records with missing lookup values
-  arrange(id,
-          inmate_id,
-          booking_id,
-          statute_title_lookup) %>%
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc_clean,
-           .keep_all = TRUE) %>% 
-  ### as a check, at this point our total record should be identical to the cleaned jail file we started with -- it is
-  ### now we want to de-dup by booking (one booking may have multiple charges associated) 
-  ### keep most serious charge by crime type (hierarchy: violent, property, drug/alcohol, public order, vop)
-  mutate(crime_type_severity_order = case_when(
-    crime_type_lookup=="Violent" ~ 1,
-    crime_type_lookup=="Property" ~ 2,
-    crime_type_lookup=="Drug/Alcohol" ~ 3,
-    crime_type_lookup=="Public Order" ~ 4,
-    crime_type_lookup=="Probation/Parole Violation" ~ 5,
-    is.na(crime_type_lookup)==TRUE ~ 6,
-    TRUE ~ as.numeric(NA))) %>%
-  arrange(id,
-          inmate_id,
-          booking_id,
-          crime_type_severity_order) %>% 
-  ### de-dup by booking, keeping the record with the most serious crime type
-  distinct(id,
-           inmate_id,
-           booking_id,
-           .keep_all=TRUE) %>% 
-  ### create missing_lookup_charge_data column to double check missingness with non-pc holds
-  mutate(missing_lookup_charge_data = ifelse(is.na(statute_title_lookup)==TRUE,
-                                             1,
-                                             0))
-
-### excluding PC holds, see what % of non-pc hold bookings join to lookup table
+  mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
+                                                 1,
+                                                 0))
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
-### missing clean charge data for 16 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
-table(rockingham_adm_charge_clean_final$missing_lookup_charge_data,rockingham_adm_charge_clean_final$pc_hold)
+table(rockingham_adm_charge_clean_join_one$missing_charge_data_first_join) ### missing clean charge data for ~5500 records
+
+### here's a list of the jail-entered charge descriptions where no charge code and/or clean charge data are available
+table(rockingham_adm_charge_clean_join_one$charge_desc_clean[rockingham_adm_charge_clean_join_one$missing_charge_data_first_join==1])
+
+### for non-pc hold bookings that did not join to the charge lookup table, either because there isn't a charge code
+### in the jail-provided file or because the charge code in the jail-provided file doesn't match any charge code in 
+### lookup
+rockingham_adm_charge_clean_join_two <- rockingham_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join == 1) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
+  left_join(charge_codes_lookup, 
+            by = c("charge_desc_clean" = "statute_title")) %>% 
+  mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
+                                                  1,
+                                                  0))
+
+### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
+table(rockingham_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~1700 of 5500 records (there are dupes with the joins)
+
+### append second file back to first file
+
+### clean first file for rbind
+rockingham_adm_charge_clean_join_one_final <- rockingham_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0) %>% 
+  dplyr::select(-missing_charge_data_first_join)
+
+### clean second file for rbind
+rockingham_adm_charge_clean_join_two_final <- rockingham_adm_charge_clean_join_two %>% 
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
+
+### combine df's from first and second attempts to clean
+rockingham_adm_charge_clean_final <- rbind(rockingham_adm_charge_clean_join_one_final,
+                                           rockingham_adm_charge_clean_join_two_final)
+
+### final tally for rockingham: missing 2,826 non-pc hold records
 
 ##################################
 # Strafford
@@ -1013,8 +916,6 @@ table(rockingham_adm_charge_clean_final$missing_lookup_charge_data,rockingham_ad
 ##################################
 # Sullivan
 ##################################
-
-### clean up sullivan file
 sullivan_adm_charge_clean <- sullivan_adm1 %>% 
   mutate(charge_desc_clean = tolower(charge_desc),
          charge_code_clean = tolower(charge_code)) %>% 
@@ -1022,147 +923,61 @@ sullivan_adm_charge_clean <- sullivan_adm1 %>%
   group_by(charge_desc_clean) %>% 
   fill(charge_code_clean, 
        .direction = "downup") %>%
-  ungroup() %>%
-  ungroup() %>% 
-  ### de-duping by individual (id + inmate_id), booking (booking_id), and charge 
-  ### there appear to be some duplicates across these fields, 
-  ### but we have no way of knowing if two identical charges for the same booking
-  ### represents a duplicated entry or multiple counts of the same charge
-  ### unfortunately, this will likely just be a limitation of this analysis
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc,
-           .keep_all = TRUE) 
+  ungroup()
 
-####### use three separate joins as jail charge data will join on either charge code, statute title, or descriptor
-
-### join to charge_codes_lookup via charge_code_lookup
+### drop PC holds, join to charge lookup table, and see what % of non-pc hold bookings join to lookup table
 sullivan_adm_charge_clean_join_one <- sullivan_adm_charge_clean %>% 
-  left_join(charge_codes_crime_type_lookup, 
+  filter(pc_hold=="Non-PC Hold") %>% 
+  left_join(charge_codes_lookup, 
             by = c("charge_code_clean"="charge_code_lookup")) %>% 
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_code_clean,
-           .keep_all = TRUE) %>% 
-  mutate(charge_code_lookup = ifelse(!is.na(descriptor_lookup) == TRUE,
-                                     charge_code_clean,
-                                     NA)) ### populate for eventual rbind where all three df's need same columns
-
-### join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
-sullivan_adm_charge_clean_join_two <- sullivan_adm_charge_clean_join_one %>% 
-  filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
-            descriptor_lookup,
-            statute_title_lookup,
-            crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
-  left_join(charge_codes_crime_type_lookup, 
-            by = c("charge_desc_clean" = "statute_title_lookup")) %>% 
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc_clean,
-           .keep_all = TRUE) %>% 
-  mutate(statute_title_lookup = ifelse(!is.na(descriptor_lookup) == TRUE,
-                                       charge_desc_clean,
-                                       NA)) ### populate for eventual rbind where all three df's need same columns 
-
-### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
-sullivan_adm_charge_clean_join_three <- sullivan_adm_charge_clean_join_two %>% 
-  filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
-            descriptor_lookup,
-            statute_title_lookup,
-            crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
-  left_join(charge_codes_crime_type_lookup, 
-            by = c("charge_desc_clean" = "descriptor_lookup")) %>% 
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc_clean,
-           .keep_all = TRUE) %>% 
-  mutate(descriptor_lookup = ifelse(!is.na(statute_title_lookup) == TRUE,
-                                    charge_desc_clean,
-                                    NA)) ### populate for eventual rbind where all three df's need same columns 
-
-### combine df's from first, second, and third attempts to join to lookup values
-sullivan_adm_charge_clean_final <- rbind(sullivan_adm_charge_clean_join_one,
-                                           sullivan_adm_charge_clean_join_two,
-                                           sullivan_adm_charge_clean_join_three) %>% 
-  ### de-dup once more for records that ended up duplicating across the joins
-  ### use arrange to keep records with joining lookup values over identical records with missing lookup values
-  arrange(id,
-          inmate_id,
-          booking_id,
-          statute_title_lookup) %>%
-  distinct(id,
-           inmate_id,
-           booking_id,
-           charge_desc_clean,
-           .keep_all = TRUE) %>% 
-  ### as a check, at this point our total record should be identical to the cleaned jail file we started with -- it is
-  ### now we want to de-dup by booking (one booking may have multiple charges associated) 
-  ### keep most serious charge by crime type (hierarchy: violent, property, drug/alcohol, public order, vop)
-  mutate(crime_type_severity_order = case_when(
-    crime_type_lookup=="Violent" ~ 1,
-    crime_type_lookup=="Property" ~ 2,
-    crime_type_lookup=="Drug/Alcohol" ~ 3,
-    crime_type_lookup=="Public Order" ~ 4,
-    crime_type_lookup=="Probation/Parole Violation" ~ 5,
-    is.na(crime_type_lookup)==TRUE ~ 6,
-    TRUE ~ as.numeric(NA))) %>%
-  arrange(id,
-          inmate_id,
-          booking_id,
-          crime_type_severity_order) %>% 
-  ### de-dup by booking, keeping the record with the most serious crime type
-  distinct(id,
-           inmate_id,
-           booking_id,
-           .keep_all=TRUE) %>% 
-  ### create missing_lookup_charge_data column to double check missingness with non-pc holds
-  mutate(missing_lookup_charge_data = ifelse(is.na(statute_title_lookup)==TRUE,
-                                             1,
-                                             0))
-
-### excluding PC holds, see what % of non-pc hold bookings join to lookup table
+  mutate(missing_charge_data_first_join = ifelse(is.na(smart_code),
+                                                 1,
+                                                 0))
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
-### missing clean charge data for 26 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
-table(sullivan_adm_charge_clean_final$missing_lookup_charge_data,sullivan_adm_charge_clean_final$pc_hold)
+table(sullivan_adm_charge_clean_join_one$missing_charge_data_first_join) ### missing clean charge data for ~1200 records
 
-#######################################################
-# Join all eight counties together (excluding strafford)
-#######################################################
-nh_eight_county_charge_clean_final <- rbind(belknap_adm_charge_clean_final,
-                                             carroll_adm_charge_clean_final,
-                                             cheshire_adm_charge_clean_final,
-                                             coos_adm_charge_clean_final,
-                                             hillsborough_adm_charge_clean_final,
-                                             merrimack_adm_charge_clean_final,
-                                             rockingham_adm_charge_clean_final,
-                                             sullivan_adm_charge_clean_final)
+### here's a list of the jail-entered charge descriptions where no charge code and/or clean charge data are available
+table(sullivan_adm_charge_clean_join_one$charge_desc_clean[sullivan_adm_charge_clean_join_one$missing_charge_data_first_join==1])
 
+### for non-pc hold bookings that did not join to the charge lookup table, either because there isn't a charge code
+### in the jail-provided file or because the charge code in the jail-provided file doesn't match any charge code in 
+### lookup
+sullivan_adm_charge_clean_join_two <- sullivan_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join == 1) %>% 
+  select(-c(descriptor, 
+            smart_code, 
+            ctl_number, 
+            vis, 
+            degree, 
+            degree_clean, 
+            degree_severity_order)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) when joining back  left_join(charge_codes_lookup, 
+  left_join(charge_codes_lookup, 
+            by = c("charge_desc_clean" = "statute_title")) %>% 
+  mutate(missing_charge_data_second_join = ifelse(is.na(smart_code),
+                                                  1,
+                                                  0))
 
-#######################################################
-# Write out analytic files 
-#######################################################
+### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
+table(sullivan_adm_charge_clean_join_two$missing_charge_data_second_join) ### recovered ~44 of 1200 records (there are dupes with the joins)
 
-### individual county files
-save(belknap_adm_charge_clean_final, file=paste0(sp_data_path, "/Data/r_data/offenses_clean/county/belknap_offenses_clean.Rda", sep = ""))
-save(carroll_adm_charge_clean_final, file=paste0(sp_data_path, "/Data/r_data/offenses_clean/county/carroll_offenses_clean.Rda", sep = ""))
-save(cheshire_adm_charge_clean_final, file=paste0(sp_data_path, "/Data/r_data/offenses_clean/county/cheshire_offenses_clean.Rda", sep = ""))
-save(coos_adm_charge_clean_final, file=paste0(sp_data_path, "/Data/r_data/offenses_clean/county/coos_offenses_clean.Rda", sep = ""))
-save(hillsborough_adm_charge_clean_final, file=paste0(sp_data_path, "/Data/r_data/offenses_clean/county/hillsborough_offenses_clean.Rda", sep = ""))
-save(merrimack_adm_charge_clean_final, file=paste0(sp_data_path, "/Data/r_data/offenses_clean/county/merrimack_offenses_clean.Rda", sep = ""))
-save(rockingham_adm_charge_clean_final, file=paste0(sp_data_path, "/Data/r_data/offenses_clean/county/rockingham_offenses_clean.Rda", sep = ""))
-save(sullivan_adm_charge_clean_final, file=paste0(sp_data_path, "/Data/r_data/offenses_clean/county/sullivan_offenses_clean.Rda", sep = ""))
+### append second file back to first file
 
-### overall file
-save(nh_eight_county_charge_clean_final, file=paste0(sp_data_path, "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda", sep = ""))
+### clean first file for rbind
+sullivan_adm_charge_clean_join_one_final <- sullivan_adm_charge_clean_join_one %>% 
+  filter(missing_charge_data_first_join==0) %>% 
+  dplyr::select(-missing_charge_data_first_join)
 
+### clean second file for rbind
+sullivan_adm_charge_clean_join_two_final <- sullivan_adm_charge_clean_join_two %>% 
+  dplyr::select(-c(missing_charge_data_first_join,
+                   missing_charge_data_second_join))
 
+### combine df's from first and second attempts to clean
+sullivan_adm_charge_clean_final <- rbind(sullivan_adm_charge_clean_join_one_final,
+                                         sullivan_adm_charge_clean_join_two_final)
+
+### final tally for sullivan: missing 2,826 non-pc hold records
 
 
 
