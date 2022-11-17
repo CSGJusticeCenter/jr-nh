@@ -11,7 +11,7 @@
 
 ### TO DO/TALK THROUGH: 
 
-# - TO CONFIRM: START WITH adm_all.rda INSTEAD OF INDIVIDUAL COUNTY FILES B/C MARI CLEANED UP CHARGE/PC HOLD FLAGS AFTER JOINING COUNTIES TOGETHER; Double check this
+# - TO DOUBLE CHECK: START WITH adm_all.rda INSTEAD OF INDIVIDUAL COUNTY FILES B/C MARI CLEANED UP CHARGE/PC HOLD FLAGS AFTER JOINING COUNTIES TOGETHER?
 
 # - De-dup by individual/booking -- keeping most serious crime type? (hierarchy: violent, property, drug/alcohol, public order, vop?)
 # all jails appear to have submitted all charges associated with a given individual/booking (i.e., instances with multiple charges for one booking id)
