@@ -87,27 +87,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>JRI New Hampshire Project: Charge Type Analysis</title>
+  <title>JRI New Hampshire Project: Charge Analysis</title>
 
 
   <link rel="icon" type="image/png" href="img/favicon.png"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="JRI New Hampshire Project: Charge Type Analysis"/>
+  <meta property="og:title" content="JRI New Hampshire Project: Charge Analysis"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="JRI New Hampshire Project"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="JRI New Hampshire Project: Charge Type Analysis"/>
+  <meta property="twitter:title" content="JRI New Hampshire Project: Charge Analysis"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Charge Type Analysis"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","theme","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"character","attributes":{},"value":["theme.css"]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Charge Analysis"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","theme","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"character","attributes":{},"value":["theme.css"]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2388,7 +2388,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Charge Type Analysis","authors":[]}
+{"title":"Charge Analysis","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2457,7 +2457,7 @@ Research
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Charge Type Analysis</h1>
+<h1>Charge Analysis</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2513,22 +2513,22 @@ calculations)</a></li>
 Grafton and Strafford. Strafford is excluded because their data does not
 include any charge information (neither charge code nor charge
 description).</p>
-<p>The following incarceration patterns were found using jail
-administrative data submitted directly to CSG in addition to a NH
-offense look-up table with offense codes, descriptions, and degrees
-(e.g., Class A Misdemeanor, etc.).</p>
-<p>However, we will not be able to analyze severity/degree of charges
-with the data we’ve received. With only offense statute and description,
-we can’t accurately tell if a given charge is a misdemeanor or felony
-(or even class A misdemeanor versus class B misdemeanor). For this level
-of detail, we would need either the ‘Smart Code’ or the ‘ODDSY Code’ –
+<p>The following analysis uses jail administrative data submitted
+directly to CSG in addition to a NH offense look-up table with offense
+codes, descriptions, and degrees (e.g., Class A Misdemeanor, etc.).
+However, we will not be able to analyze severity/degree of charges with
+the data we’ve received. With only offense statute and description, we
+can’t accurately tell if a given charge is a misdemeanor or felony (or
+even class A misdemeanor versus class B misdemeanor). For this level of
+detail, we would need either the ‘Smart Code’ or the ‘ODDSY Code’ –
 which may not even be known at the time of booking. For instance, there
 are 8 entries for ‘criminal trespass’/’statute ‘635:2’ in the look-up
 file – which degrees ranging from violations to class A and B
-misdemeanors to class B felonies. It appears that the best option, at
-this point, is to categorize the charges into violent, public order,
-drugs/alcohol, property, and probation/parole violation. Drawing from
-approaches used by the NH Department of Safety (see <a
+misdemeanors to class B felonies.</p>
+<p>It appears that the best option, at this point, is to categorize the
+charges into violent, public order, drugs/alcohol, property, and
+probation/parole violation. Drawing from approaches used by the NH
+Department of Safety (see <a
 href="https://crimestats.dos.nh.gov/public/Dim/dimension.aspx"
 class="uri">https://crimestats.dos.nh.gov/public/Dim/dimension.aspx</a>)
 as well as FBI definitions for both NIBRS and UCR data (see <a
@@ -2536,20 +2536,31 @@ href="https://www.waspc.org/assets/CJIS/trainingmanualsandreference/nibrsvssumma
 class="uri">https://www.waspc.org/assets/CJIS/trainingmanualsandreference/nibrsvssummaryoverview.pdf</a>),
 I categorized certain offenses into these categories. For full list of
 which offenses are grouped into each crime type, see table below.</p>
-<p>When cleaning the charge data, I first de-duplicated by individual
-(id + inmate_id), booking (booking_id), and charge (either charge_code
-or charge_desc depending on data availability). There appear to be some
-duplicates across these fields, but we have no way of knowing if two
-identical charges for the same booking represents a duplicated entry or
-multiple counts of the same charge. Unfortunately, this will likely just
-be a limitation of this analysis. After joining the jail charge data to
-the updated look-up table with crime type data, I de-duplicated the file
-again by individual and booking – keeping the most serious charge type.
-Here is the crime type hierarchy (in order of severity) I used for this
-decision: violent, property, drug/alcohol, public order, violation of
-probation/parole, and then other/missing categories. One limitation is
-that we are not able to account for degree/severity of charge (felony
-vs. misdemeanor) with this approach.</p>
+<p><strong>Business Rules</strong>: When cleaning the charge data, I
+first de-duplicated by individual (id + inmate_id), booking
+(booking_id), and charge (either charge_code or charge_desc depending on
+data availability). There appear to be some duplicates across these
+fields, but we have no way of knowing if two identical charges for the
+same booking represents a duplicated entry or multiple counts of the
+same charge. Unfortunately, this will likely just be a limitation of
+this analysis. After joining the jail charge data to the updated look-up
+table with crime type data, I de-duplicated the file again by individual
+and booking – keeping the most serious charge type. Here is the crime
+type hierarchy (in order of severity) I used for this decision: violent,
+property, drug/alcohol, public order, violation of probation/parole, and
+then other/missing categories. One limitation is that we are not able to
+account for degree/severity of charge (felony vs. misdemeanor) with this
+approach. Does this make sense?</p>
+<p><strong>Remaining Questions</strong>:</p>
+<ul>
+<li>There is missing charge code/charge description data across most
+counties. How should we interpret this? Belknap seems to have the
+hightest rates of missingness with about 11% of non-PC hold booking have
+no charge code or charge description. In general, how should we
+interpret missing charge data? Why is it missing? Is it missing at
+random?</li>
+</ul>
+<p><br></p>
 <h1 id="raw-charges-and-coded-charge-type">Raw Charges and Coded Charge
 Type</h1>
 <p>Here is a list of all charges that were categorized as either

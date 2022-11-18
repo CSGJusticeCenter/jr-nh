@@ -1,5 +1,5 @@
 ---
-title: "Charge Type Analysis"
+title: "Charge Analysis"
 output: 
   distill::distill_article:
     toc: true
@@ -10,11 +10,18 @@ output:
 
 **Counties Included**: All New Hampshire counties except Grafton and Strafford. Strafford is excluded because their data does not include any charge information (neither charge code nor charge description). 
 
-The following incarceration patterns were found using jail administrative data submitted directly to CSG in addition to a NH offense look-up table with offense codes, descriptions, and degrees (e.g., Class A Misdemeanor, etc.).
+The following analysis uses jail administrative data submitted directly to CSG in addition to a NH offense look-up table with offense codes, descriptions, and degrees (e.g., Class A Misdemeanor, etc.). However, we will not be able to analyze severity/degree of charges with the data we've received. With only offense statute and description, we can’t accurately tell if a given charge is a misdemeanor or felony (or even class A misdemeanor versus class B misdemeanor). For this level of detail, we would need either the ‘Smart Code’ or the ‘ODDSY Code’ – which may not even be known at the time of booking. For instance, there are 8 entries for ‘criminal trespass’/’statute ‘635:2’ in the look-up file – which degrees ranging from violations to class A and B misdemeanors to class B felonies. 
 
-However, we will not be able to analyze severity/degree of charges with the data we've received. With only offense statute and description, we can’t accurately tell if a given charge is a misdemeanor or felony (or even class A misdemeanor versus class B misdemeanor). For this level of detail, we would need either the ‘Smart Code’ or the ‘ODDSY Code’ – which may not even be known at the time of booking. For instance, there are 8 entries for ‘criminal trespass’/’statute ‘635:2’ in the look-up file – which degrees ranging from violations to class A and B misdemeanors to class B felonies. It appears that the best option, at this point, is to categorize the charges into violent, public order, drugs/alcohol, property, and probation/parole violation. Drawing from approaches used by the NH Department of Safety (see https://crimestats.dos.nh.gov/public/Dim/dimension.aspx) as well as FBI definitions for both NIBRS and UCR data (see https://www.waspc.org/assets/CJIS/trainingmanualsandreference/nibrsvssummaryoverview.pdf), I categorized certain offenses into these categories. For full list of which offenses are grouped into each crime type, see table below.
+It appears that the best option, at this point, is to categorize the charges into violent, public order, drugs/alcohol, property, and probation/parole violation. Drawing from approaches used by the NH Department of Safety (see https://crimestats.dos.nh.gov/public/Dim/dimension.aspx) as well as FBI definitions for both NIBRS and UCR data (see https://www.waspc.org/assets/CJIS/trainingmanualsandreference/nibrsvssummaryoverview.pdf), I categorized certain offenses into these categories. For full list of which offenses are grouped into each crime type, see table below.
 
-When cleaning the charge data, I first de-duplicated by individual (id + inmate_id), booking (booking_id), and charge (either charge_code or charge_desc depending on data availability). There appear to be some duplicates across these fields, but we have no way of knowing if two identical charges for the same booking represents a duplicated entry or multiple counts of the same charge. Unfortunately, this will likely just be a limitation of this analysis. After joining the jail charge data to the updated look-up table with crime type data, I de-duplicated the file again by individual and booking -- keeping the most serious charge type. Here is the crime type hierarchy (in order of severity) I used for this decision: violent, property, drug/alcohol, public order, violation of probation/parole, and then other/missing categories. One limitation is that we are not able to account for degree/severity of charge (felony vs. misdemeanor) with this approach. 
+**Business Rules**: When cleaning the charge data, I first de-duplicated by individual (id + inmate_id), booking (booking_id), and charge (either charge_code or charge_desc depending on data availability). There appear to be some duplicates across these fields, but we have no way of knowing if two identical charges for the same booking represents a duplicated entry or multiple counts of the same charge. Unfortunately, this will likely just be a limitation of this analysis. After joining the jail charge data to the updated look-up table with crime type data, I de-duplicated the file again by individual and booking -- keeping the most serious charge type. Here is the crime type hierarchy (in order of severity) I used for this decision: violent, property, drug/alcohol, public order, violation of probation/parole, and then other/missing categories. One limitation is that we are not able to account for degree/severity of charge (felony vs. misdemeanor) with this approach. Does this make sense?
+
+
+**Remaining Questions**:
+
+* There is missing charge code/charge description data across most counties. How should we interpret this? Belknap seems to have the hightest rates of missingness with about 11% of non-PC hold booking have no charge code or charge description. In general, how should we interpret missing charge data? Why is it missing? Is it missing at random? 
+
+<br>
 
 
 ```{r setup, include=FALSE}
