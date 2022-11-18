@@ -19,7 +19,7 @@ It appears that the best option, at this point, is to categorize the charges int
 
 **Remaining Questions**:
 
-* There is missing charge code/charge description data across most counties. How should we interpret this? Belknap seems to have the hightest rates of missingness with about 11% of non-PC hold booking have no charge code or charge description. In general, how should we interpret missing charge data? Why is it missing? Is it missing at random? 
+* There is missing charge code/charge description data across most counties. How should we interpret this? Belknap seems to have the highest rates of missingness with about 11% of non-PC hold booking have no charge code or charge description. In general, how should we interpret missing charge data? Why is it missing? Is it missing at random? 
 
 <br>
 
