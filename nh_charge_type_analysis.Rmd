@@ -34,11 +34,19 @@ knitr::opts_chunk$set(
   cache = FALSE
   )
 
+
 ### call libraries and functions
 # source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/01_functions_visuals.R")
 source("data_cleaning/00_library_ab_path.R")
+
+### call additional geo-specific libraries needed for mapping
+library(easypackages)
+libraries("sf","acs","tigris","mapview","rgeos","raster")
+
+### set theme
+theme_set(theme_minimal())
 
 # import cleaned charge analytic file (for all eight counties with charge data)
 load(paste0(sp_data_path, "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda", sep = ""))
@@ -58,7 +66,7 @@ charge_codes_crime_type_lookup <- read_excel(paste0(sp_data_path, "/Data/Offense
   distinct(statute_title_lookup,
            crime_type,
            .keep_all = TRUE) %>% ### de-dup by offense information and crime type 
-  select(charge_code_lookup, descriptor_lookup, statute_title_lookup, crime_type_lookup=crime_type) 
+  dplyr::select(charge_code_lookup, descriptor_lookup, statute_title_lookup, crime_type_lookup=crime_type) 
 ```
 
 # Raw Charges and Coded Charge Type
@@ -77,7 +85,7 @@ table_charge_codes_crime_type_lookup <- charge_codes_crime_type_lookup %>%
   ungroup() %>% 
   dplyr::rename(`Charge Description` = statute_title_lookup,
                 `Charge Type` = crime_type_lookup) %>% 
-  select(-`Unique Descriptions (N)`)
+  dplyr::select(-`Unique Descriptions (N)`)
 
 ### print table via kableextra
 kable(table_charge_codes_crime_type_lookup, 
@@ -729,3 +737,456 @@ kable(table_hu_charge_type_summary_final_fy,
 
 <br><br>
 
+# Charge Type Visuals
+
+Note: I am considering a booking to be 'unique' if the following values are together unique: id, inmate_id, booking_id, county (including county as we can't verify that each county is using different IDs for individuals and bookings). The count reported in the following tables is the unique number of bookings for which the most serious charge type is a violent charge, property charge, etc. If the charge(s) for a given booking do not fall into one of the charge type category, the charge is represented as "Other" in these visualizations.
+
+<br>
+
+### Charge Type across State (Non-PC Holds Only)
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### create denominator -- unique bookings for entire df
+unique_bookings_all_denom <- n_distinct(nh_eight_county_charge_clean_final_crime_type_recode_non_pc$unique_booking_id_nh)
+
+### unique bookings per charge type
+df_nh_charge_type_overall <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  dplyr::group_by(crime_type_clean) %>% 
+  dplyr::summarise(`Unique Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings, Percent of Sample (%)` = `Unique Bookings (N)`/unique_bookings_all_denom) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Charge Type` = crime_type_clean) %>% 
+  arrange(desc(`Unique Bookings (N)`)) 
+
+### bar plot
+ggplot(data = df_nh_charge_type_overall, aes(y = `Bookings, Percent of Sample (%)`, x = reorder(`Charge Type`,-`Unique Bookings (N)`), fill = forcats::fct_rev(`Charge Type`))) + 
+  geom_bar(stat = "identity",  color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), max(.45))) +
+  geom_label(
+    aes(
+      y = `Bookings, Percent of Sample (%)`,
+      label = scales::percent(`Bookings, Percent of Sample (%)`,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.ticks.length = unit(0, "cm"),
+        strip.text = element_markdown(),
+    strip.text.x = element_markdown(),
+    strip.text.y = element_markdown()) + 
+    coord_flip() 
+
+
+```
+
+<br><br>
+
+### Charge Type over Time (Non-PC Holds Only)
+
+Note: These booking frequencies by charge type are grouped by fiscal year of booking and exclude both probation/parole charges as well as unclassified charges (i.e., "other")
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### unique bookings per charge type by fiscal year
+df_fy_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  filter(crime_type_clean!="Other",
+         crime_type_clean!="Probation/Parole Violation") %>% 
+  dplyr::group_by(fy) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Violent` = n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
+                   `Property` = n_distinct(unique_booking_id_nh[crime_type_clean=="Property"])/`Unique Non-PC Bookings (N)`,
+                   `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`,
+                   `Public Order` = n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`Fiscal Year` = fy) 
+
+
+### pivot df long for ggplot 
+df_fy_charge_type_summary_long <- df_fy_charge_type_summary %>%
+  gather(charge_type, percent, `Violent`:`Public Order`) %>% 
+  mutate(`Fiscal Year` = factor(`Fiscal Year`,
+                                levels = c(2019,2020,2021))) %>% 
+  mutate(percent_label = scales::percent(percent, 
+                                         accuracy = 1))
+
+
+### ggplot
+ggplot(data = df_fy_charge_type_summary_long, 
+       aes(y = percent, 
+           x = `Fiscal Year`, 
+           fill = forcats::fct_rev(charge_type))) + 
+  geom_bar(stat = "identity", 
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("#2F7084",
+                               "#1F4A58",
+                               "#87C2D4",
+                               "#61C280")) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+   geom_label(aes(y = percent,
+      label = percent_label,
+      fontface = "bold"),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = "Charge Type",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+```
+
+<br><br>
+
+### Charge Type by Jail (Non-PC Holds Only), Bar Plot
+
+Note: These booking frequencies by charge type are grouped by county of booking and exclude both probation/parole charges as well as unclassified charges (i.e., "other")
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### unique bookings per charge type by county
+df_county_level_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  filter(crime_type_clean!="Other",
+         crime_type_clean!="Probation/Parole Violation") %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Violent` = n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
+                   `Property` = n_distinct(unique_booking_id_nh[crime_type_clean=="Property"])/`Unique Non-PC Bookings (N)`,
+                   `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`,
+                   `Public Order` = n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`County` = county) 
+
+### pivot df long for ggplot 
+df_county_level_charge_type_summary_long <- df_county_level_charge_type_summary %>%
+  gather(charge_type, percent, `Violent`:`Public Order`) %>% 
+  mutate(percent_label = scales::percent(percent, 
+                                         accuracy = 1))
+
+
+### ggplot
+ggplot(data = df_county_level_charge_type_summary_long, 
+       aes(y = percent, 
+           x = `County`, 
+           fill = forcats::fct_rev(charge_type))) + 
+  geom_bar(stat = "identity", 
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("#2F7084",
+                               "#1F4A58",
+                               "#87C2D4",
+                               "#61C280")) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  geom_label(aes(y = percent,
+      label = percent_label,
+      fontface = "bold"),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = "Charge Type",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+```
+
+<br><br>
+
+### % Drug/Alcohol Charges by Jail (Non-PC Holds Only), Map
+
+Note: This analysis of the % of bookings which are drug/alcohol charges are presented by county of booking and include both probation/parole charges as well as unclassified charges (i.e., "other") unlike the prior two visuals. This map highlights county-level variation but grouping counties into four equally sized groups or quartiles.
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### read in nh county-level shape file    
+nh_county_shape <- read_sf("C:\\Users\\abyrum\\OneDrive - The Council of State Governments\\Geospatial_Mapping\\US County Geo Data\\tl_2019_us_county\\tl_2019_us_county.shp") %>%
+  clean_names() %>% 
+  filter(statefp=="33") %>% ### filter by state fip code 
+  dplyr::rename(county=name, 
+                county_fip=countyfp)
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### set constants for maps
+default_font_color <- "#4e4d47"
+default_font_family <- "Arial"
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### create static map theme (based on https://timogrossenbacher.ch/2019/04/bivariate-maps-with-ggplot2-and-sf/)
+theme_map <- function(...) {
+  theme_minimal() +
+  theme(
+    text = element_text(family = default_font_family,
+                        color = default_font_color),
+    # remove all axes
+    axis.line = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    # add a subtle grid
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    # borders and margins
+    plot.margin = unit(c(.5, .5, .2, .5), "cm"),
+    panel.border = element_blank(),
+    panel.spacing = unit(c(-.1, 0.2, .2, 0.2), "cm"),
+    # titles
+    legend.title = element_text(size = 11),
+    legend.text = element_text(size = 9, hjust = 0,
+                               color = default_font_color),
+    plot.title = element_text(size = 15, hjust = 0.5,
+                              color = default_font_color),
+    # plot.subtitle = element_text(size = 10, hjust = 0.5,
+    #                              color = default_font_color,
+    #                              margin = margin(b = -0.1,
+    #                                              t = -0.1,
+    #                                              l = 2,
+    #                                              unit = "cm"),
+    #                              debug = F),
+    # captions
+    # plot.caption = element_text(size = 7,
+    #                             hjust = .5,
+    #                             margin = margin(t = 0.2,
+    #                                             b = 0,
+    #                                             unit = "cm"),
+    #                             color = default_font_color),
+    ...
+  )
+}
+```
+
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### unique bookings per charge type by county
+df_county_level_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() 
+
+### merge new district shapefile to nh data to attach geography and render the file map-able
+df_county_level_charge_type_summary_geo <- merge(nh_county_shape, 
+                                                 df_county_level_charge_type_summary, 
+                                                 by = "county")
+
+### create quantiles object
+no_classes <- 4
+
+### extract quantiles from var we're mapping
+quantiles <- df_county_level_charge_type_summary_geo %>%
+  pull(`Drug/Alcohol`) %>%
+  quantile(probs = seq(0, 1, length.out = no_classes + 1), na.rm=TRUE) %>%
+  as.vector() 
+
+### make labels for map's legend
+label_drug_alcohol_percent <- c("17% and Greater","12% to 17%","9% to 12%","9% and Lower")
+
+### create a new variable with the specified quantiles
+df_county_level_charge_type_summary_geo_to_map <- df_county_level_charge_type_summary_geo %>%
+  mutate(percent_drug_alcohol_quartile = cut(-`Drug/Alcohol`,
+                               breaks = -quantiles,
+                               right = TRUE,
+                               labels = label_drug_alcohol_percent,
+                               include.lowest = T)) 
+
+
+### map via ggplot 
+ggplot(
+  # define main data source
+  data = df_county_level_charge_type_summary_geo_to_map
+) +
+  scale_alpha(name = "",
+              range = c(0.6, 0),
+              guide = F) + # suppress legend
+  # add main fill aesthetic
+  # use thin white stroke for municipality borders
+  geom_sf(
+    mapping = aes(
+      fill = percent_drug_alcohol_quartile
+      ),
+    color = "white",
+    size = 0.1
+  ) +
+ scale_fill_manual(
+    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+    name = "% Bookings for Drug/Alcohol\n Charges",
+    na.value = "grey50",
+    guide = guide_legend(
+     keyheight = unit(5, units = "mm"),
+     title.position = "top",
+     reverse = F # display highest on top
+  )) +
+  # use thicker white stroke for borders
+  geom_sf(
+    data = df_county_level_charge_type_summary_geo_to_map,
+    fill = "transparent",
+    color = "white",
+    size = 1.25
+  )  +
+  geom_label(
+     data = df_county_level_charge_type_summary_geo_to_map, 
+     aes(geometry = geometry, 
+         label = county),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 4,
+    fontface = "bold",
+    stat = "sf_coordinates") +
+  labs(x = NULL,
+       y = NULL,
+       title = NULL,
+       subtitle = NULL,
+       caption = NULL) +
+  theme_map()
+```
+
+<br><br>
+
+### % Public Order Charges by Jail (Non-PC Holds Only), Map
+
+Note: This analysis of the % of bookings which are public order charges are presented by county of booking and include both probation/parole charges as well as unclassified charges (i.e., "other") unlike the prior two visuals. This map highlights county-level variation but grouping counties into four equally sized groups or quartiles.
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### unique bookings per charge type by county
+df_county_level_public_order_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Public Order` = n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() 
+
+### merge new district shapefile to nh data to attach geography and render the file map-able
+df_county_level_public_order_summary_geo <- merge(nh_county_shape, 
+                                                 df_county_level_public_order_summary, 
+                                                 by = "county")
+
+### create quantiles object
+no_classes <- 4
+
+### extract quantiles from var we're mapping
+quantiles <- df_county_level_public_order_summary_geo %>%
+  pull(`Public Order`) %>%
+  quantile(probs = seq(0, 1, length.out = no_classes + 1), na.rm=TRUE) %>%
+  as.vector() 
+
+### make labels for map's legend
+label_drug_alcohol_percent <- c("7% and Greater","5% to 7%","4% to 5%","4% and Lower")
+
+### create a new variable with the specified quantiles
+df_county_level_charge_type_summary_geo_to_map <- df_county_level_charge_type_summary_geo %>%
+  mutate(percent_drug_alcohol_quartile = cut(-`Drug/Alcohol`,
+                               breaks = -quantiles,
+                               right = TRUE,
+                               labels = label_drug_alcohol_percent,
+                               include.lowest = T)) 
+
+
+### map via ggplot 
+ggplot(
+  # define main data source
+  data = df_county_level_charge_type_summary_geo_to_map
+) +
+  scale_alpha(name = "",
+              range = c(0.6, 0),
+              guide = F) + # suppress legend
+  # add main fill aesthetic
+  # use thin white stroke for municipality borders
+  geom_sf(
+    mapping = aes(
+      fill = percent_drug_alcohol_quartile
+      ),
+    color = "white",
+    size = 0.1
+  ) +
+ scale_fill_manual(
+    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+    name = "% Bookings for Public Order\n Charges",
+    na.value = "grey50",
+    guide = guide_legend(
+     keyheight = unit(5, units = "mm"),
+     title.position = "top",
+     reverse = F # display highest on top
+  )) +
+  # use thicker white stroke for borders
+  geom_sf(
+    data = df_county_level_charge_type_summary_geo_to_map,
+    fill = "transparent",
+    color = "white",
+    size = 1.25
+  )  +
+  geom_label(
+     data = df_county_level_charge_type_summary_geo_to_map, 
+     aes(geometry = geometry, 
+         label = county),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 4,
+    fontface = "bold",
+    stat = "sf_coordinates") +
+  labs(x = NULL,
+       y = NULL,
+       title = NULL,
+       subtitle = NULL,
+       caption = NULL) +
+  theme_map()
+```
+
+<br><br>
