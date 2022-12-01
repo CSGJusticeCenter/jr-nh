@@ -84,9 +84,9 @@ adm_all <- adm_all %>%
 all_nas <- adm_all %>%
   filter(county != "Strafford") %>%
   filter(is.na(charge_desc) &
-           is.na(booking_type) &
-           is.na(release_type) &
-           is.na(sentence_status))
+         is.na(booking_type) &
+         is.na(release_type) &
+         is.na(sentence_status))
 adm_all <- adm_all %>% anti_join(all_nas) %>% distinct()
 # dim(adm_all); length(unique(adm_all$booking_id)); length(unique(adm_all$id)) # 73093 dim, 51545 bookings, 32177 individuals
 

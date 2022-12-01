@@ -1,10 +1,11 @@
+
 ############################################
 # Project: JRI New Hampshire
 # File: medicaid.R
 # Last updated: November 29, 2022
 # Author: Mari Roberts
 
-# Clean and create dataframes for Medicaid analysis.
+# Merge descriptions for diagnoses from data dictionary
 ############################################
 
 # clean data dictionary to be able to match secondary diagnoses codes to descriptions
@@ -121,52 +122,3 @@ medicaid_encounters <- medicaid_encounters.xlsx %>%
          dx_scndry_desc9,
          dx_scndry_desc10)
 
-################################################################################
-
-# Check for movement between jails
-
-################################################################################
-
-# check to see if people are moving between jails
-# get ids
-belknap_ids <- belknap_medicaid.xlsx %>% clean_names() %>%
-  select(unique_person_id) %>%
-  distinct()
-carroll_ids <- carroll_medicaid.xlsx %>% clean_names() %>%
-  select(unique_person_id) %>%
-  distinct()
-cheshire_ids <- cheshire_medicaid.xlsx %>% clean_names() %>%
-  select(unique_person_id) %>%
-  distinct()
-coos_ids <- coos_medicaid.xlsx %>% clean_names() %>%
-  select(unique_person_id) %>%
-  distinct()
-hillsborough_ids <- hillsborough_medicaid.xlsx %>% clean_names() %>%
-  select(unique_person_id) %>%
-  distinct()
-merrimack_ids <- merrimack_medicaid.xlsx %>% clean_names() %>%
-  select(unique_person_id) %>%
-  distinct()
-rockingham_ids <- rockingham_medicaid.xlsx %>% clean_names() %>%
-  select(unique_person_id) %>%
-  distinct()
-strafford_ids <- strafford_medicaid.xlsx %>% clean_names() %>%
-  select(unique_person_id) %>%
-  distinct()
-sullivan_ids <- sullivan_medicaid.xlsx %>% clean_names() %>%
-  select(unique_person_id) %>%
-  distinct()
-
-# combine data
-combined <- rbind(belknap_ids,
-                  carroll_ids,
-                  cheshire_ids,
-                  coos_ids,
-                  hillsborough_ids,
-                  merrimack_ids,
-                  rockingham_ids,
-                  strafford_ids,
-                  sullivan_ids)
-
-# see duplicated rows/these are people moving between jails
-duplicate_rows <- unique(combined[duplicated(combined), ])
