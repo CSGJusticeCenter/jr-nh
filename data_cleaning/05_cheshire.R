@@ -72,6 +72,11 @@ cheshire_adm <- fnc_add_data_labels(cheshire_adm)
 # Remove duplicates
 cheshire_adm <- cheshire_adm %>% distinct()
 
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+cheshire_adm <- cheshire_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
 ###################################
 
 # Standardize sentence statuses across counties so they have these categories:
@@ -222,11 +227,18 @@ cheshire_medicaid <- cheshire_medicaid %>%
   mutate(booking_id = paste("Cheshire", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
 
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+cheshire_adm <- cheshire_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
+# # Does the medicaid file have the same number of unique individuals as the adm? Off by 116
+# length(unique(cheshire_adm1$id)); length(unique(cheshire_medicaid$unique_person_id))
+
 ################################################################################
 
 # Save files
 
 ################################################################################
-
 
 save(cheshire_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/cheshire_adm.Rda", sep = ""))

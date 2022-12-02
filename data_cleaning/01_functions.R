@@ -73,9 +73,9 @@ fnc_data_setup <- function(df){
                   county,
                   fy) %>%
     mutate(race = ifelse(race == "Unknown", NA, race),
-           age = as.numeric(age))
-    # filter(age >= 18) %>%
-    # mutate(age = ifelse(age > 100, NA, age))
+           age = as.numeric(age)) %>%
+    filter(age >= 18) %>%
+    mutate(age = ifelse(age > 100, NA, age))
 
   #  18–29, 30–39, and 40
   df1 <- df1 %>% mutate(age_category

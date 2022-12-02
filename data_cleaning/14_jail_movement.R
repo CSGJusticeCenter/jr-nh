@@ -10,31 +10,31 @@
 
 # check to see if people are moving between jails
 # get ids
-belknap_ids <- belknap_medicaid %
+belknap_ids <- belknap_medicaid %>%
   select(unique_person_id) %>%
   distinct()
-carroll_ids <- carroll_medicaid %
+carroll_ids <- carroll_medicaid %>%
   select(unique_person_id) %>%
   distinct()
-cheshire_ids <- cheshire_medicaid %
+cheshire_ids <- cheshire_medicaid %>%
   select(unique_person_id) %>%
   distinct()
-coos_ids <- coos_medicaid %
+coos_ids <- coos_medicaid %>%
   select(unique_person_id) %>%
   distinct()
-hillsborough_ids <- hillsborough_medicaid %
+hillsborough_ids <- hillsborough_medicaid %>%
   select(unique_person_id) %>%
   distinct()
-merrimack_ids <- merrimack_medicaid %
+merrimack_ids <- merrimack_medicaid %>%
   select(unique_person_id) %>%
   distinct()
-rockingham_ids <- rockingham_medicaid %
+rockingham_ids <- rockingham_medicaid %>%
   select(unique_person_id) %>%
   distinct()
-strafford_ids <- strafford_medicaid %
+strafford_ids <- strafford_medicaid %>%
   select(unique_person_id) %>%
   distinct()
-sullivan_ids <- sullivan_medicaid %
+sullivan_ids <- sullivan_medicaid %>%
   select(unique_person_id) %>%
   distinct()
 

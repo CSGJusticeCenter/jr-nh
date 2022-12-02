@@ -7,6 +7,16 @@
 # Combine county data and create dataframes used in analyses and visualizations
 ############################################
 
+source("data_cleaning/03_belknap.R")
+source("data_cleaning/04_carroll.R")
+source("data_cleaning/05_cheshire.R")
+source("data_cleaning/06_coos.R")
+source("data_cleaning/07_hillsborough.R")
+source("data_cleaning/08_merrimack.R")
+source("data_cleaning/09_rockingham.R")
+source("data_cleaning/10_strafford.R")
+source("data_cleaning/11_sullivan.R")
+
 # Combine jail data
 adm_all <- rbind(belknap_adm1,
                  carroll_adm1,
@@ -17,7 +27,7 @@ adm_all <- rbind(belknap_adm1,
                  rockingham_adm1,
                  strafford_adm1,
                  sullivan_adm1)
-# dim(adm_all) # 73183
+# dim(adm_all) # 73179
 
 # If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.
@@ -133,12 +143,6 @@ bookings_entrances_all <- adm_all %>%
 # People can have multiple booking types when entering jail (some are PC hold + criminal charge)
 # dups <- bookings_entrances_all[duplicated(bookings_entrances_all$booking_id)|duplicated(bookings_entrances_all$booking_id, fromLast=TRUE),] # 7932
 
-##########
-
-# Booking & Entrances
-
-##########
-
 # Some people can be booked for a criminal charge but also be held for protective custody.
 # Determine if PC hold happened in booking event.
 bookings_entrances <- bookings_entrances_all %>%
@@ -244,119 +248,12 @@ counties <- adm_all$county %>%
 
 ################################################################################
 
-# Charges dataframe - not using for now
-
-################################################################################
-
-# create dataframe that includes charge descriptions
-charges <- adm_all %>%
-  dplyr::select(county,
-                id,
-                race,
-                yob,
-                age,
-                age_category,
-                gender,
-                booking_id,
-                booking_date,
-                charge_code,
-                charge_desc,
-                booking_type,
-                sentence_status_standard,
-                release_type,
-                sentence_status,
-                los = los_max,
-                los_category,
-                fy,
-                num_entrances,
-                high_utilizer_4_times,
-                high_utilizer_1_pct,
-                high_utilizer_5_pct,
-                high_utilizer_10_pct,
-                pc_hold_booking,
-                pc_hold_charge,
-                pc_hold_sentence,
-                pc_hold_release,
-                pc_hold) %>%
-  distinct()
-
-# save booking dates
-all_booking_dates <- bookings_entrances %>%
-  select(county, id, booking_id, booking_date, month_year_text, month_year, fy) %>%
-  distinct()
-
-# save charges in a spreadsheet for manual work
-manual_charge_categories <- charges %>% ungroup() %>%
-  select(charge_code, charge_desc, booking_type, release_type, sentence_status) %>%
-  distinct() %>%
-  group_by(charge_code, charge_desc) %>%
-  summarise(total = n())
-
-# match descriptions without a code with charge codes - USEFUL?
-charge_codes <- charge_codes.xlsx %>%
-  clean_names() %>%
-  mutate(descriptor = toupper(descriptor)) %>%
-  select(smart_code, ctl_number, vis, descriptor, offense_statute, degree) %>%
-  distinct()
-manual_charge_categories_with_codes <- merge(manual_charge_categories, charge_codes, by.x = "charge_desc", by.y = "descriptor", all.x = TRUE)
-
-# save charges in a spreadsheet for manual work
-manual_charge_categories_with_booking_details <- charges %>% ungroup() %>%
-  select(charge_code, charge_desc, booking_type, release_type, sentence_status) %>%
-  distinct() %>%
-  group_by(charge_code, charge_desc, booking_type, release_type, sentence_status) %>%
-  summarise(total = n())
-
-# save files to SP for collaboration
-write.xlsx(manual_charge_categories,
-           file=paste0(sp_data_path, "/Data/Offense Information/Manual_charge_categories.xlsx",                      sep = ""))
-write.xlsx(manual_charge_categories_with_codes,
-           file=paste0(sp_data_path, "/Data/Offense Information/Manual_charge_categories_with_codes.xlsx",           sep = ""))
-write.xlsx(manual_charge_categories_with_booking_details,
-           file=paste0(sp_data_path, "/Data/Offense Information/Manual_charge_categories_with_booking_details.xlsx", sep = ""))
-
-################################################################################
-
-# Release types data frame - not using for now
-
-################################################################################
-
-release_type <- adm_all %>%
-  select(county,
-         id,
-         fy,
-         booking_id,
-         release_type) %>%
-  distinct()
-
-# sep by fy year
-release_type_19 <- release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2019)
-release_type_20 <- release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2020)
-release_type_21 <- release_type %>% select(county, id, fy, booking_id, release_type) %>% distinct() %>% filter(fy == 2021)
-
-################################################################################
-
-# Sentence statuses data frame - not using for now
-
-################################################################################
-
-sentence_status <- adm_all %>%
-  select(county,
-         id,
-         fy,
-         booking_id,
-         sentence_status) %>%
-  distinct()
-
-# sep by fy year
-sentence_status_19 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2019)
-sentence_status_20 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2020)
-sentence_status_21 <- sentence_status %>% select(county, id, fy, booking_id, sentence_status) %>% distinct() %>% filter(fy == 2021)
-
-################################################################################
-
 # Save data
 
 ################################################################################
 
-save(adm_all, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda", sep = ""))
+save(adm_all,            file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda",            sep = ""))
+save(bookings_entrances, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/bookings_entrances.Rda", sep = ""))
+save(entrances,          file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/entrances.Rda",          sep = ""))
+save(booking_no_pc_hold, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/booking_no_pc_hold.Rda", sep = ""))
+save(df_pch,             file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/df_pch.Rda",             sep = ""))

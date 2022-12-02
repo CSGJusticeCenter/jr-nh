@@ -72,6 +72,11 @@ merrimack_adm <- fnc_add_data_labels(merrimack_adm)
 # Remove duplicates
 merrimack_adm <- merrimack_adm %>% distinct()
 
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+merrimack_adm <- merrimack_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
 ###################################
 
 # Standardize sentence statuses across counties so they have these categories:
@@ -177,6 +182,14 @@ merrimack_medicaid$booking_id <- merrimack_medicaid %>% group_indices(unique_per
 merrimack_medicaid <- merrimack_medicaid %>%
   mutate(booking_id = paste("Merrimack", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
+
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+merrimack_adm <- merrimack_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
+# # Does the medicaid file have the same number of unique individuals as the adm? Off by 49
+# length(unique(merrimack_adm1$id)); length(unique(merrimack_medicaid$unique_person_id))
 
 ################################################################################
 

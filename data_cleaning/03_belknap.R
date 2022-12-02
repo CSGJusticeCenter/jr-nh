@@ -72,6 +72,11 @@ belknap_adm <- fnc_add_data_labels(belknap_adm)
 # Remove duplicates
 belknap_adm <- belknap_adm %>% distinct()
 
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+belknap_adm <- belknap_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
 ###################################
 
 # Standardize sentence statuses across counties so they have these categories:
@@ -205,11 +210,18 @@ belknap_medicaid <- belknap_medicaid %>%
   mutate(booking_id = paste("Belknap", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
 
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+belknap_medicaid <- belknap_medicaid %>%
+  filter(booking_date > "2018-06-30" & booking_date < "2021-07-01")
+
+# # Does the medicaid file have the same number of unique individuals as the adm? Off by 1
+# length(unique(belknap_adm1$id)); length(unique(belknap_medicaid$unique_person_id))
+
 ################################################################################
 
 # Save files
 
 ################################################################################
-
 
 save(belknap_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/belknap_adm.Rda", sep = ""))
