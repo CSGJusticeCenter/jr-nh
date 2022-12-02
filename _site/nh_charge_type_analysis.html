@@ -2512,16 +2512,20 @@ calculations)</a></li>
 across State (Non-PC Holds Only)</a></li>
 <li><a href="#charge-type-over-time-non-pc-holds-only-1">Charge Type
 over Time (Non-PC Holds Only)</a></li>
-<li><a href="#charge-type-by-jail-non-pc-holds-only-bar-plot">Charge
-Type by Jail (Non-PC Holds Only), Bar Plot</a></li>
-<li><a
-href="#charge-type-by-high-utilizer-grouping-non-pc-holds-only-bar-plot-based-on-all-three-years-of-data">Charge
-Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on
-all three years of data)</a></li>
+<li><a href="#charge-type-by-county-non-pc-holds-only-bar-plot">Charge
+Type by County (Non-PC Holds Only), Bar Plot</a></li>
 <li><a href="#drugalcohol-charges-by-jail-non-pc-holds-only-map">%
 Drug/Alcohol Charges by Jail (Non-PC Holds Only), Map</a></li>
 <li><a href="#public-order-charges-by-jail-non-pc-holds-only-map">%
 Public Order Charges by Jail (Non-PC Holds Only), Map</a></li>
+<li><a
+href="#charge-type-by-high-utilizer-grouping-non-pc-holds-only-bar-plot-based-on-all-three-years-of-data">Charge
+Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on
+all three years of data)</a></li>
+<li><a
+href="#probationparole-violation-charges-by-jail-for-high-utlizers-based-on-all-three-years-of-data-map">%
+Probation/Parole Violation Charges by Jail for High Utlizers (based on
+all three years of data) , Map</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -5667,12 +5671,34 @@ year of booking and exclude unclassified charges (i.e., “other”)</p>
 <p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-16-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
-<h3 id="charge-type-by-jail-non-pc-holds-only-bar-plot">Charge Type by
-Jail (Non-PC Holds Only), Bar Plot</h3>
+<h3 id="charge-type-by-county-non-pc-holds-only-bar-plot">Charge Type by
+County (Non-PC Holds Only), Bar Plot</h3>
 <p>Note: These booking frequencies by charge type are grouped by county
 of booking and exclude unclassified charges (i.e., “other”)</p>
 <div class="layout-chunk" data-layout="l-body-outset">
 <p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-17-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h3 id="drugalcohol-charges-by-jail-non-pc-holds-only-map">%
+Drug/Alcohol Charges by Jail (Non-PC Holds Only), Map</h3>
+<p>Note: This analysis of the % of bookings which are drug/alcohol
+charges are presented by county of booking and include both
+probation/parole charges as well as unclassified charges (i.e., “other”)
+unlike the prior two visuals. This map highlights county-level variation
+but grouping counties into four equally sized groups or quartiles.</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-21-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h3 id="public-order-charges-by-jail-non-pc-holds-only-map">% Public
+Order Charges by Jail (Non-PC Holds Only), Map</h3>
+<p>Note: This analysis of the % of bookings which are public order
+charges are presented by county of booking and include both
+probation/parole charges as well as unclassified charges (i.e., “other”)
+unlike the prior two visuals. This map highlights county-level variation
+but grouping counties into four equally sized groups or quartiles.</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-22-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <h3
@@ -5700,29 +5726,19 @@ entrances for all 3 years of sample (really this is 5% to 10%)</p></li>
 entrances for all 3 years of sample</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body-outset">
-<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-18-1.png" width="624" /></p>
-</div>
-<p><br><br></p>
-<h3 id="drugalcohol-charges-by-jail-non-pc-holds-only-map">%
-Drug/Alcohol Charges by Jail (Non-PC Holds Only), Map</h3>
-<p>Note: This analysis of the % of bookings which are drug/alcohol
-charges are presented by county of booking and include both
-probation/parole charges as well as unclassified charges (i.e., “other”)
-unlike the prior two visuals. This map highlights county-level variation
-but grouping counties into four equally sized groups or quartiles.</p>
-<div class="layout-chunk" data-layout="l-body-outset">
-<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-22-1.png" width="624" /></p>
-</div>
-<p><br><br></p>
-<h3 id="public-order-charges-by-jail-non-pc-holds-only-map">% Public
-Order Charges by Jail (Non-PC Holds Only), Map</h3>
-<p>Note: This analysis of the % of bookings which are public order
-charges are presented by county of booking and include both
-probation/parole charges as well as unclassified charges (i.e., “other”)
-unlike the prior two visuals. This map highlights county-level variation
-but grouping counties into four equally sized groups or quartiles.</p>
-<div class="layout-chunk" data-layout="l-body-outset">
 <p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-23-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h3
+id="probationparole-violation-charges-by-jail-for-high-utlizers-based-on-all-three-years-of-data-map">%
+Probation/Parole Violation Charges by Jail for High Utlizers (based on
+all three years of data) , Map</h3>
+<p>Note: This analysis of the % of bookings which are probation/parole
+violations for the top 10% of HU are presented by county of booking.
+This map highlights county-level variation but grouping counties into
+four equally sized groups or quartiles.</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-24-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <div class="sourceCode" id="cb1"><pre

@@ -879,7 +879,7 @@ ggplot(data = df_fy_charge_type_summary_long,
 
 <br><br>
 
-### Charge Type by Jail (Non-PC Holds Only), Bar Plot
+### Charge Type by County (Non-PC Holds Only), Bar Plot
 
 Note: These booking frequencies by charge type are grouped by county of booking and exclude unclassified charges (i.e., "other")
 
@@ -909,105 +909,6 @@ df_county_level_charge_type_summary_long <- df_county_level_charge_type_summary 
 ggplot(data = df_county_level_charge_type_summary_long, 
        aes(y = percent, 
            x = `County`, 
-           fill = forcats::fct_rev(charge_type))) + 
-  geom_bar(stat = "identity", 
-           color = "gray80") +
-  scale_x_discrete(limits = rev) +
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c("#2F7084",
-                               "#1F4A58",
-                               "#E17619",
-                               "#87C2D4",
-                               "#61C280")) +
-  guides(fill = guide_legend(reverse = TRUE,
-                             title.position = "top",
-                             label.position = "bottom",
-                             keywidth = 3,
-                             nrow = 1)) +
-  geom_label(aes(y = percent,
-      label = percent_label,
-      fontface = "bold"),
-    position = position_stack(vjust = .5),
-    size = 5,
-    colour = "white",
-    show.legend = FALSE) +
-  labs(x = NULL, y = NULL,
-       fill = "Charge Type",
-       caption = NULL,
-       title = NULL,
-       subtitle = NULL) +
-  theme(legend.position = "top",
-        legend.title.align=0.5,
-        plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5),
-        plot.caption = element_text(hjust = 0.5),
-        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
-        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
-        axis.ticks.length = unit(0, "cm"),
-        panel.grid.major.y = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor = element_blank()) +
-  coord_flip()
-
-```
-
-<br><br>
-
-### Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
-
-Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense?
-
-Below is the preliminary grouping I am using to confirm with the team. With this approach, this is not overlap of groups -- one individual is in one of the four groups (i.e., someone in the top 1% of jail entrances is only included in the 1% grouping, not the 5% and 10% grouping). I'm thinking that this may help us better see any differences between groupings of high utilizers, if they exist. Open to suggestions, though!
-
-* **Top 1%:** individual is in top 1% of jail entrances for all 3 years of sample
-
-* **Top 5%:** individual is in top 5% of jail entrances for all 3 years of sample (really this is 1% to 5%)
-
-* **Top 10%:** individual is in top 10% of jail entrances for all 3 years of sample (really this is 5% to 10%)
-
-* **Non-HU:** individual is not in top 10% of jail entrances for all 3 years of sample
-
-```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
-### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
-nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
-  filter(crime_type_clean!="Other") %>% 
-  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
-  mutate(hu_group_exclusive = case_when( 
-    high_utilizer_10_pct=="No" ~ 4,
-    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
-    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
-    high_utilizer_1_pct=="Yes" ~ 1,
-    TRUE ~ as.numeric(NA)),
-    hu_group_exclusive = factor(hu_group_exclusive,
-         levels = c(1,2,3,4),
-         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
-    
-
-### unique bookings per charge type by HU grouping
-df_hu_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode %>% 
-  filter(crime_type_clean!="Other") %>% 
-  dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
-                   `Violent` = n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
-                   `Property` = n_distinct(unique_booking_id_nh[crime_type_clean=="Property"])/`Unique Non-PC Bookings (N)`,
-                   `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`,
-                   `Public Order` = n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`,
-                    `Probation/Parole Violation` = n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`) %>% 
-  ungroup() %>% 
-  distinct() %>% 
-  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
-
-### pivot df long for ggplot 
-df_hu_charge_type_summary_long <- df_hu_charge_type_summary %>%
-  gather(charge_type, percent, `Violent`:`Probation/Parole Violation`) %>% 
-  mutate(percent_label = scales::percent(percent, 
-                                         accuracy = 1))
-
-
-### ggplot
-ggplot(data = df_hu_charge_type_summary_long, 
-       aes(y = percent, 
-           x = `High Utilizer Percentiles`, 
            fill = forcats::fct_rev(charge_type))) + 
   geom_bar(stat = "identity", 
            color = "gray80") +
@@ -1298,6 +1199,223 @@ ggplot(
   )  +
   geom_label(
      data = df_county_level_public_order_summary_geo_to_map, 
+     aes(geometry = geometry, 
+         label = county),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 4,
+    fontface = "bold",
+    stat = "sf_coordinates") +
+  labs(x = NULL,
+       y = NULL,
+       title = NULL,
+       subtitle = NULL,
+       caption = NULL) +
+  theme_map()
+```
+
+<br><br>
+
+### Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
+
+Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense?
+
+Below is the preliminary grouping I am using to confirm with the team. With this approach, this is not overlap of groups -- one individual is in one of the four groups (i.e., someone in the top 1% of jail entrances is only included in the 1% grouping, not the 5% and 10% grouping). I'm thinking that this may help us better see any differences between groupings of high utilizers, if they exist. Open to suggestions, though!
+
+* **Top 1%:** individual is in top 1% of jail entrances for all 3 years of sample
+
+* **Top 5%:** individual is in top 5% of jail entrances for all 3 years of sample (really this is 1% to 5%)
+
+* **Top 10%:** individual is in top 10% of jail entrances for all 3 years of sample (really this is 5% to 10%)
+
+* **Non-HU:** individual is not in top 10% of jail entrances for all 3 years of sample
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  filter(crime_type_clean!="Other") %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when( 
+    high_utilizer_10_pct=="No" ~ 4,
+    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct=="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
+    
+
+### unique bookings per charge type by HU grouping
+df_hu_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode %>% 
+  filter(crime_type_clean!="Other") %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Violent` = n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
+                   `Property` = n_distinct(unique_booking_id_nh[crime_type_clean=="Property"])/`Unique Non-PC Bookings (N)`,
+                   `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`,
+                   `Public Order` = n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`,
+                    `Probation/Parole Violation` = n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+### pivot df long for ggplot 
+df_hu_charge_type_summary_long <- df_hu_charge_type_summary %>%
+  gather(charge_type, percent, `Violent`:`Probation/Parole Violation`) %>% 
+  mutate(percent_label = scales::percent(percent, 
+                                         accuracy = 1))
+
+
+### ggplot
+ggplot(data = df_hu_charge_type_summary_long, 
+       aes(y = percent, 
+           x = `High Utilizer Percentiles`, 
+           fill = forcats::fct_rev(charge_type))) + 
+  geom_bar(stat = "identity", 
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("#2F7084",
+                               "#1F4A58",
+                               "#E17619",
+                               "#87C2D4",
+                               "#61C280")) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  geom_label(aes(y = percent,
+      label = percent_label,
+      fontface = "bold"),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = "Charge Type",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+```
+
+<br><br>
+
+### % Probation/Parole Violation Charges by Jail for High Utlizers (based on all three years of data) , Map
+
+Note: This analysis of the % of bookings which are probation/parole violations for the top 10% of HU are presented by county of booking. This map highlights county-level variation but grouping counties into four equally sized groups or quartiles.
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_pb_pa_violation_map <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  filter(crime_type_clean!="Other") %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when( 
+    high_utilizer_10_pct=="No" ~ 2,
+    high_utilizer_10_pct=="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2),
+         labels = c("Top 10%", "Non-HU")))
+    
+
+### unique bookings per charge type by HU grouping
+df_hu_charge_type_probation_parole_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_pb_pa_violation_map %>% 
+  filter(crime_type_clean!="Other") %>% 
+  dplyr::group_by(county,hu_group_exclusive) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Violent` = n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
+                   `Property` = n_distinct(unique_booking_id_nh[crime_type_clean=="Property"])/`Unique Non-PC Bookings (N)`,
+                   `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`,
+                   `Public Order` = n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`,
+                    `Probation/Parole Violation` = n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  filter(hu_group_exclusive!="Top 10%")
+
+### merge new district shapefile to nh data to attach geography and render the file map-able
+df_hu_charge_type_probation_parole_summary_geo <- left_join(nh_county_shape, 
+                                                 df_hu_charge_type_probation_parole_summary, 
+                                                 by = "county")
+
+### create quantiles object
+no_classes <- 4
+
+### extract quantiles from var we're mapping
+quantiles <- df_hu_charge_type_probation_parole_summary_geo %>%
+  pull(`Probation/Parole Violation`) %>%
+  quantile(probs = seq(0, 1, length.out = no_classes + 1), 
+           na.rm=TRUE) %>%
+  as.vector() 
+
+### make labels for map's legend
+label_pb_pa_violation_percent <- c("21% and Greater","17% to 21%","15% to 17%","15% and Lower")
+
+### create a new variable with the specified quantiles
+df_hu_charge_type_probation_parole_summary_geo_to_map <- df_hu_charge_type_probation_parole_summary_geo %>%
+  mutate(percent_pb_pa_violation_quartile = cut(-`Probation/Parole Violation`,
+                               breaks = -quantiles,
+                               right = TRUE,
+                               labels = label_pb_pa_violation_percent,
+                               include.lowest = T)) 
+
+
+### map via ggplot 
+ggplot(
+  # define main data source
+  data = df_hu_charge_type_probation_parole_summary_geo_to_map
+) +
+  scale_alpha(name = "",
+              range = c(0.6, 0),
+              guide = F) + # suppress legend
+  # add main fill aesthetic
+  # use thin white stroke for municipality borders
+  geom_sf(
+    mapping = aes(
+      fill = percent_pb_pa_violation_quartile
+      ),
+    color = "white",
+    size = 0.1
+  ) +
+ scale_fill_manual(
+    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+    name = "% Bookings for Probation/Parole\n Violations\n(Top 10% of High Utilizers)",
+    na.value = "grey50",
+    guide = guide_legend(
+     keyheight = unit(5, units = "mm"),
+     title.position = "top",
+     reverse = F # display highest on top
+  )) +
+  # use white stroke borders for county boundaries
+  geom_sf(
+    data = df_hu_charge_type_probation_parole_summary_geo_to_map,
+    fill = "transparent",
+    color = "white",
+    size = 1
+  )  +
+  # use additional state-level shapefile for state border
+  geom_sf(
+    data = nh_state_shape,
+    fill = "transparent",
+    color = "black",
+    size = .3
+  )  +
+  geom_label(
+     data = df_hu_charge_type_probation_parole_summary_geo_to_map, 
      aes(geometry = geometry, 
          label = county),
     family = "Franklin Gothic Demi",
