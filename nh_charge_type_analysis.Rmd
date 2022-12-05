@@ -1023,7 +1023,7 @@ theme_map <- function(...) {
 }
 ```
 
-```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
 ### unique bookings per charge type by county
 df_county_level_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
   dplyr::group_by(county) %>% 
@@ -1122,7 +1122,7 @@ ggplot(
 
 Note: This analysis of the % of bookings which are public order charges are presented by county of booking and include both probation/parole charges as well as unclassified charges (i.e., "other") unlike the prior two visuals. This map highlights county-level variation but grouping counties into four equally sized groups or quartiles.
 
-```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
 ### unique bookings per charge type by county
 df_county_level_public_order_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
   dplyr::group_by(county) %>% 
@@ -1319,7 +1319,7 @@ ggplot(data = df_hu_charge_type_summary_long,
 
 Note: This analysis of the % of bookings which are probation/parole violations for the top 10% of HU are presented by county of booking. This map highlights county-level variation but grouping counties into four equally sized groups or quartiles.
 
-```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
 ### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
 nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_pb_pa_violation_map <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
   filter(crime_type_clean!="Other") %>% 

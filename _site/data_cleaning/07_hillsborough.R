@@ -71,6 +71,11 @@ hillsborough_adm <- fnc_add_data_labels(hillsborough_adm)
 # Remove duplicates
 hillsborough_adm <- hillsborough_adm %>% distinct()
 
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+hillsborough_adm <- hillsborough_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
 ###################################
 
 # Standardize sentence statuses across counties so they have these categories:
@@ -191,7 +196,10 @@ hillsborough_adm1 <- hillsborough_adm1 %>%
 # clean names
 hillsborough_medicaid <- hillsborough_medicaid.xlsx %>%
   clean_names() %>%
-  distinct()
+  distinct() %>%
+  rename(booking_date = bkg_date,
+         release_date = rel_date,
+         county = source_id)
 
 # create a unique booking id per person per booking date
 hillsborough_medicaid$booking_id <- hillsborough_medicaid %>% group_indices(unique_person_id, booking_date)
@@ -199,11 +207,18 @@ hillsborough_medicaid <- hillsborough_medicaid %>%
   mutate(booking_id = paste("Hillsborough", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
 
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+hillsborough_adm <- hillsborough_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
+# # Does the medicaid file have the same number of unique individuals as the adm? Off by 20
+# length(unique(hillsborough_adm1$id)); length(unique(hillsborough_medicaid$unique_person_id))
+
 ################################################################################
 
 # Save files
 
 ################################################################################
-
 
 save(hillsborough_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/hillsborough_adm.Rda", sep = ""))

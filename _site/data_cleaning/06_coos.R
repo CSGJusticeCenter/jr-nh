@@ -69,6 +69,11 @@ coos_adm <- fnc_sex_labels(coos_adm)
 # Add data labels
 coos_adm <- fnc_add_data_labels(coos_adm)
 
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+coos_adm <- coos_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
 ###################################
 
 # Standardize sentence statuses across counties so they have these categories:
@@ -156,11 +161,18 @@ coos_medicaid <- coos_medicaid %>%
   mutate(booking_id = paste("Coos", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
 
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+coos_adm <- coos_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
+# # Does the medicaid file have the same number of unique individuals as the adm? Off by 9
+# length(unique(coos_adm1$id)); length(unique(coos_medicaid$unique_person_id))
+
 ################################################################################
 
 # Save files
 
 ################################################################################
-
 
 save(coos_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/coos_adm.Rda", sep = ""))

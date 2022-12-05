@@ -19,6 +19,7 @@ sullivan_adm_all <- clean_names(sullivan_adm.xlsx)
 sullivan_adm_all$booking_date_time <- as.POSIXct(sullivan_adm_all$booking_date_time, format = '%m/%d/%Y %H:%M')
 sullivan_adm_all$booking_date_time <- format(sullivan_adm_all$booking_date_time, "%m/%d/%Y")
 sullivan_adm_all$booking_date_time <- as.Date(sullivan_adm_all$booking_date_time, format = "%m/%d/%Y")
+
 sullivan_adm_all$release_date_time <- as.POSIXct(sullivan_adm_all$release_date_time, format = '%m/%d/%Y %H:%M')
 sullivan_adm_all$release_date_time <- format(sullivan_adm_all$release_date_time, "%m/%d/%Y")
 sullivan_adm_all$release_date_time <- as.Date(sullivan_adm_all$release_date_time, format = "%m/%d/%Y")
@@ -79,6 +80,11 @@ sullivan_adm <- fnc_add_data_labels(sullivan_adm)
 
 # Remove duplicates
 sullivan_adm <- sullivan_adm %>% distinct()
+
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+sullivan_adm <- sullivan_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
 ###################################
 
@@ -162,13 +168,32 @@ sullivan_adm1 <- sullivan_adm1 %>%
 # clean names
 sullivan_medicaid <- sullivan_medicaid.xlsx %>%
   clean_names() %>%
-  distinct()
+  distinct() %>%
+  rename(booking_date = booking,
+         county = source_id)
+
+# fix date formats
+sullivan_medicaid$booking_date <- as.POSIXct(sullivan_medicaid$booking_date, format = '%m/%d/%Y %H:%M')
+sullivan_medicaid$booking_date <- format(sullivan_medicaid$booking_date, "%m/%d/%Y")
+sullivan_medicaid$booking_date <- as.Date(sullivan_medicaid$booking_date, format = "%m/%d/%Y")
+
+sullivan_medicaid$release_date <- as.POSIXct(sullivan_medicaid$release_date, format = '%m/%d/%Y %H:%M')
+sullivan_medicaid$release_date <- format(sullivan_medicaid$release_date, "%m/%d/%Y")
+sullivan_medicaid$release_date <- as.Date(sullivan_medicaid$release_date, format = "%m/%d/%Y")
 
 # create a unique booking id per person per booking date
 sullivan_medicaid$booking_id <- sullivan_medicaid %>% group_indices(unique_person_id, booking_date)
 sullivan_medicaid <- sullivan_medicaid %>%
   mutate(booking_id = paste("Sullivan", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
+
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+sullivan_adm <- sullivan_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
+# # Does the medicaid file have the same number of unique individuals as the adm? Off by 90
+# length(unique(sullivan_adm1$id)); length(unique(sullivan_medicaid$unique_person_id))
 
 ################################################################################
 
