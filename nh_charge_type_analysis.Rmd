@@ -21,7 +21,15 @@ It appears that the best option, at this point, is to categorize the charges int
 
 * There is missing charge code/charge description data across most counties. How should we interpret this? Belknap seems to have the highest rates of missingness with about 11% of non-PC hold booking have no charge code or charge description. In general, how should we interpret missing charge data? Why is it missing? Is it missing at random? 
 
+* Is there consistency in when/how charges are entered as probation or parole violations? If there is not an additional charge linked to the booking, does this likely indicate a technical violation? Or does it vary by county?
+
 <br>
+
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill")
+```
 
 ```{r setup, include=FALSE}
 ### set chunk output 
@@ -40,9 +48,9 @@ knitr::opts_chunk$set(
 # source("data_cleaning/01_functions_visuals.R")
 source("data_cleaning/00_library_ab_path.R")
 
-### call additional geo-specific libraries needed for mapping
-library(easypackages)
-libraries("sf","acs","tigris","mapview","rgeos","raster")
+# ### call additional geo-specific libraries needed for mapping
+# library(easypackages)
+# libraries("sf","acs","tigris","mapview","rgeos","raster")
 
 ### set theme
 theme_set(theme_minimal())
@@ -231,7 +239,7 @@ kable(table_nh_property_offense_desc_count_final,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(21, bold = TRUE)
+  row_spec(22, bold = TRUE)
 ```
 
 <br>
@@ -1315,7 +1323,7 @@ ggplot(data = df_hu_charge_type_summary_long,
 
 <br><br>
 
-### % Probation/Parole Violation Charges by Jail for High Utlizers (based on all three years of data) , Map
+### % Probation/Parole Violation Charges by Jail for High Utlizers (based on all three years of data), Map
 
 Note: This analysis of the % of bookings which are probation/parole violations for the top 10% of HU are presented by county of booking. This map highlights county-level variation but grouping counties into four equally sized groups or quartiles.
 
