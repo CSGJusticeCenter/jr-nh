@@ -37,7 +37,7 @@ knitr::opts_chunk$set(
   echo=FALSE, 
   message=FALSE, 
   warning=FALSE,
-  dev = "ragg_png",
+  dev = "png",
   cache = FALSE
   )
 
@@ -1099,13 +1099,13 @@ ggplot(
     color = "white",
     size = 1
   )  +
-  # use additional state-level shapefile for state border
-  geom_sf(
-    data = nh_state_shape,
-    fill = "transparent",
-    color = "black",
-    size = .3
-  )  +
+  # # use additional state-level shapefile for state border
+  # geom_sf(
+  #   data = nh_state_shape,
+  #   fill = "transparent",
+  #   color = "black",
+  #   size = .3
+  # )  +
   geom_label(
      data = df_county_level_charge_type_summary_geo_to_map, 
      aes(geometry = geometry, 
@@ -1198,13 +1198,13 @@ ggplot(
     color = "white",
     size = 1
   )  +
-  # use additional state-level shapefile for state border
-  geom_sf(
-    data = nh_state_shape,
-    fill = "transparent",
-    color = "black",
-    size = .3
-  )  +
+  # # use additional state-level shapefile for state border
+  # geom_sf(
+  #   data = nh_state_shape,
+  #   fill = "transparent",
+  #   color = "black",
+  #   size = .3
+  # )  +
   geom_label(
      data = df_county_level_public_order_summary_geo_to_map, 
      aes(geometry = geometry, 
@@ -1328,7 +1328,7 @@ ggplot(data = df_hu_charge_type_summary_long,
 Note: This analysis of the % of bookings which are probation/parole violations for the top 10% of HU are presented by county of booking. This map highlights county-level variation but grouping counties into four equally sized groups or quartiles.
 
 ```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
-### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+### to recode high utilizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
 nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_pb_pa_violation_map <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
   filter(crime_type_clean!="Other") %>% 
   ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
@@ -1415,13 +1415,13 @@ ggplot(
     color = "white",
     size = 1
   )  +
-  # use additional state-level shapefile for state border
-  geom_sf(
-    data = nh_state_shape,
-    fill = "transparent",
-    color = "black",
-    size = .3
-  )  +
+  # # use additional state-level shapefile for state border
+  # geom_sf(
+  #   data = nh_state_shape,
+  #   fill = "transparent",
+  #   color = "black",
+  #   size = .3
+  # )  +
   geom_label(
      data = df_hu_charge_type_probation_parole_summary_geo_to_map, 
      aes(geometry = geometry, 
