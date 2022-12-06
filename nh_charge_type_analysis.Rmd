@@ -17,7 +17,7 @@ It appears that the best option, at this point, is to categorize the charges int
 **Business Rules**: When cleaning the charge data, I first de-duplicated by individual (id + inmate_id), booking (booking_id), and charge (either charge_code or charge_desc depending on data availability). There appear to be some duplicates across these fields, but we have no way of knowing if two identical charges for the same booking represents a duplicated entry or multiple counts of the same charge. Unfortunately, this will likely just be a limitation of this analysis. After joining the jail charge data to the updated look-up table with crime type data, I de-duplicated the file again by individual and booking -- keeping the most serious charge type. Here is the crime type hierarchy (in order of severity) I used for this decision: violent, property, drug/alcohol, public order, violation of probation/parole, and then other/missing categories. One limitation is that we are not able to account for degree/severity of charge (felony vs. misdemeanor) with this approach. Does this make sense?
 
 
-**Remaining Questions**:
+**Remaining Questions for Superintendents**:
 
 * There is missing charge code/charge description data across most counties. How should we interpret this? Belknap seems to have the highest rates of missingness with about 11% of non-PC hold booking have no charge code or charge description. In general, how should we interpret missing charge data? Why is it missing? Is it missing at random? 
 
