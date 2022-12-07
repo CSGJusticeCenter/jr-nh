@@ -205,7 +205,8 @@ hillsborough_medicaid <- hillsborough_medicaid.xlsx %>%
 hillsborough_medicaid$booking_id <- hillsborough_medicaid %>% group_indices(unique_person_id, booking_date)
 hillsborough_medicaid <- hillsborough_medicaid %>%
   mutate(booking_id = paste("Hillsborough", "booking", booking_id, sep = "_")) %>%
-  select(unique_person_id, booking_id, everything())
+  select(unique_person_id, booking_id, everything()) %>%
+  select(-encrypted_id)
 
 # remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021

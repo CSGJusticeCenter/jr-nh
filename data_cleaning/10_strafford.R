@@ -134,7 +134,8 @@ strafford_adm1 <- strafford_adm1 %>%
 # clean names
 strafford_medicaid <- strafford_medicaid.xlsx %>%
   clean_names() %>%
-  distinct()
+  distinct() %>%
+  rename(county = source_id)
 
 # create a unique booking id per person per booking date
 strafford_medicaid$booking_id <- strafford_medicaid %>% group_indices(unique_person_id, booking_date)

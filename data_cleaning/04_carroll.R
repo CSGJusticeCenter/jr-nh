@@ -225,7 +225,8 @@ carroll_medicaid <- carroll_medicaid %>%
          release_date = release_dt_tm,
          county = source_id) %>%
   mutate(booking_id = paste("Carroll", "booking", booking_id, sep = "_")) %>%
-  select(unique_person_id, booking_id, everything())
+  select(unique_person_id, booking_id, everything()) %>%
+  select(-encrypted_id)
 
 # remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
