@@ -88,6 +88,10 @@ merrimack_adm <- merrimack_adm %>%
 
   mutate(sentence_status_standard = case_when(
 
+    charge_desc != "PROTECTIVE CUSTODY HOLD" & booking_type == "ADULT ORDER OF COMMITMENT" & sentence_status == "PC-IEA" ~ "UNKNOWN", # los too long, not PC hold
+
+    charge_desc == "PROTECTIVE CUSTODY" & booking_type == "PROTECTIVE CUSTODY" &
+       sentence_status == "24 HOUR HOLD"                                              ~ "PROTECTIVE CUSTODY",
     charge_desc == "PROTECTIVE CUSTODY" & booking_type == "ADULT ORDER OF COMMITMENT" ~ "PROTECTIVE CUSTODY",
     charge_desc == "PROTECTIVE CUSTODY" & booking_type == "ARREST WARRANT"            ~ "PROTECTIVE CUSTODY",
     charge_desc == "PROTECTIVE CUSTODY" & booking_type == "DETAINEE REQUEST" &

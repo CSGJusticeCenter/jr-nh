@@ -8,7 +8,7 @@ This project focuses on the prevalence of people with behavioral health needs mo
       |-- 00_library.R                              # Load packages
       |-- 01_functions.R                            # Custom functions for efficient coding
       |-- 01_functions_visuals.R                    # Custom functions for efficient coding
-      |-- 02_import.R                               # Import jail data from sharepoint
+      |-- 02_import.R                               # Import jail and medicaid data from sharepoint and D:
       |-- 03_belknap.R                              # Standardize and clean Belknap files 
       |-- 04_carroll.R                              # Standardize and clean Carroll files
       |-- 05_cheshire.R                             # Standardize and clean Cheshire files

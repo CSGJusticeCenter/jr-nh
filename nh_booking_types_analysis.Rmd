@@ -26,6 +26,35 @@ source("data_cleaning/rdas.R")
 The following booking patterns were found using jail administrative data submitted directly to CSG.
 
 ```{r}
-table(bookings_entrances$sentence_status_standard)
+df_sentence_statuses <- bookings_entrances %>% select(sentence_status_standard, booking_id) %>% distinct()
+df_sentence_statuses <- data.frame(summarytools::freq(df_sentence_statuses$sentence_status_standard, order = "freq", cum.percent = FALSE))
+df_sentence_statuses <- df_sentence_statuses %>% tibble::rownames_to_column("sentence_status_standard") %>%
+  dplyr::select(sentence_status_standard,
+                count = Freq,
+                pct   = X..Valid) 
+df_sentence_statuses
+```
+
+```{r}
+# Df of total number of entrances by county
+df_entrances_county <- bookings_entrances %>%
+  dplyr::ungroup() %>%
+  dplyr::select(booking_id, county) %>%
+  dplyr::distinct() %>%
+  dplyr::group_by(county) %>%
+  dplyr::summarise(total = n())
+
+# Number of sentence types by county for all three years
+df_sentence_statuses_county <- bookings_entrances %>%
+  dplyr::ungroup() %>%
+  dplyr::select(booking_id, county, sentence_status_standard) %>%
+  dplyr::distinct() %>%
+  dplyr::group_by(county, sentence_status_standard) %>%
+  dplyr::summarise(total = n())
+
+# Reshape table for viewing
+df_sentence_statuses_county <- df_sentence_statuses_county %>% spread(sentence_status_standard, total) %>% clean_names() %>% 
+  left_join(df_entrances_county, by = "county")
+df_sentence_statuses_county
 ```
 
