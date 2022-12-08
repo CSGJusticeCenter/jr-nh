@@ -67,8 +67,27 @@ strafford_adm <- fnc_los(strafford_adm)
 df_hu <- fnc_create_high_utilizer_variables(strafford_adm)
 strafford_adm <- left_join(strafford_adm, df_hu, by = c("id", "fy"))
 
-# Create a PC hold variables
-strafford_adm <- fnc_pc_hold_variables(strafford_adm)
+###################################
+
+# Standardize sentence statuses across counties so they have these categories:
+# 1) PROTECTIVE CUSTODY
+# 2) PRETRIAL
+# 3) SENTENCED
+# 4) NH STATE PRISONER
+# 4) UNKNOWN
+# 5) OTHER
+
+###################################
+
+# Standardize booking info so it's consistent across counties
+strafford_adm <- strafford_adm %>% select(-c(los, release_date)) %>% distinct() %>%
+
+  mutate(sentence_status_standard = "UNKNOWN") %>%
+  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
+
+# create pc hold variable
+strafford_adm <- strafford_adm %>%
+  mutate(pc_hold = NA)
 
 # Add sex code labels
 strafford_adm <- fnc_sex_labels(strafford_adm)
@@ -84,28 +103,69 @@ strafford_adm <- strafford_adm %>% distinct()
 strafford_adm <- strafford_adm %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
-###################################
-
-# Standardize sentence statuses across counties so they have these categories:
-# 1) PROTECTIVE CUSTODY
-# 2) PRETRIAL
-# 3) SENTENCED
-# 4) NH STATE PRISONER
-# 4) UNKNOWN
-# 5) OTHER
-
-###################################
-
-# Standardize booking info so it's consistent across counties
-strafford_adm1 <- strafford_adm %>% select(-c(los, release_date)) %>% distinct() %>%
-
-  mutate(sentence_status_standard = "UNKNOWN") %>%
-  select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
-
 # create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for strafford
-strafford_adm1 <- strafford_adm1 %>%
+strafford_adm <- strafford_adm %>%
   mutate(drug_court_pretrial  = NA,
          drug_court_sentenced = NA)
+
+# If race or gender are NA in some bookings but present in others, use the recorded race or gender.
+# If races or genders are different for the same person, make NA since we don't know which is correct.
+strafford_adm <- strafford_adm %>%
+
+  # Race
+  dplyr::group_by(id) %>%
+  fill(race, .direction = "downup") %>%
+  distinct() %>%
+  group_by(id) %>%
+  mutate(different_race_recorded = n_distinct(race) == 1) %>%
+  mutate(race = ifelse(different_race_recorded == FALSE, NA, race)) %>%
+  distinct() %>%
+
+  # Gender
+  dplyr::group_by(id) %>%
+  fill(gender, .direction = "downup") %>%
+  distinct() %>%
+  group_by(id) %>%
+  mutate(different_gender_recorded = n_distinct(gender) == 1) %>%
+  mutate(gender = ifelse(different_gender_recorded == FALSE, NA, gender)) %>%
+  distinct() %>%
+  select(-different_gender_recorded, -different_race_recorded)
+
+# Fix los issues
+# Remove negatives because of data entry issues with booking and release dates
+# If release date is missing, then change los to NA instead of Inf
+strafford_adm <- strafford_adm %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max))
+
+# Create los categories
+strafford_adm <- strafford_adm %>%
+  mutate(los_category =
+           case_when(los_max == 0 ~ "0",
+                     los_max == 1 ~ "1",
+                     los_max == 2 ~ "2",
+                     los_max == 3 ~ "3",
+                     los_max == 4 ~ "4",
+                     los_max == 5 ~ "5",
+                     los_max >= 6   & los_max <= 10  ~ "6-10",
+                     los_max >= 11  & los_max <= 30  ~ "11-30",
+                     los_max >= 31  & los_max <= 50  ~ "31-50",
+                     los_max >= 50  & los_max <= 100 ~ "50-100",
+                     los_max >= 101 & los_max <= 180 ~ "101-180",
+                     los_max >  180              ~ "Over 180")) %>%
+  mutate(los_category = factor(los_category,
+                               levels = c("0",
+                                          "1",
+                                          "2",
+                                          "3",
+                                          "4",
+                                          "5",
+                                          "6-10",
+                                          "11-30",
+                                          "31-50",
+                                          "50-100",
+                                          "101-180",
+                                          "Over 180")))
 
 ################################################################################
 
@@ -145,11 +205,11 @@ strafford_medicaid <- strafford_medicaid %>%
 
 # remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-strafford_adm <- strafford_adm %>%
+strafford_medicaid <- strafford_medicaid %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
 # # Does the medicaid file have the same number of unique individuals as the adm? Off by 88
-# length(unique(strafford_adm1$id)); length(unique(strafford_medicaid$unique_person_id))
+# length(unique(strafford_adm$id)); length(unique(strafford_medicaid$unique_person_id))
 
 ################################################################################
 
@@ -158,4 +218,4 @@ strafford_adm <- strafford_adm %>%
 ################################################################################
 
 
-save(strafford_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/strafford_adm.Rda", sep = ""))
+save(strafford_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/strafford_adm.Rda", sep = ""))

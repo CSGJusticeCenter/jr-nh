@@ -60,20 +60,6 @@ coos_adm <- fnc_los(coos_adm)
 df_hu <- fnc_create_high_utilizer_variables(coos_adm)
 coos_adm <- left_join(coos_adm, df_hu, by = c("id", "fy"))
 
-# Create a PC hold variables
-coos_adm <- fnc_pc_hold_variables(coos_adm)
-
-# Add sex code labels
-coos_adm <- fnc_sex_labels(coos_adm)
-
-# Add data labels
-coos_adm <- fnc_add_data_labels(coos_adm)
-
-# remove bookings before and after study dates
-# July 1, 2018, to June 30, 2021
-coos_adm <- coos_adm %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
-
 ###################################
 
 # Standardize sentence statuses across counties so they have these categories:
@@ -89,7 +75,7 @@ coos_adm <- coos_adm %>%
 booking_recordings_coos <- fnc_investigate_booking_recordings(coos_adm)
 
 # Standardize booking info so it's consistent across counties
-coos_adm1 <- coos_adm %>% select(-c(los, release_date)) %>% distinct() %>%
+coos_adm <- coos_adm %>% select(-c(los, release_date)) %>% distinct() %>%
 
   mutate(charge_desc     = as.character(charge_desc),
          booking_type    = as.character(booking_type),
@@ -110,10 +96,94 @@ coos_adm1 <- coos_adm %>% select(-c(los, release_date)) %>% distinct() %>%
   select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything()) %>%
   distinct()
 
+# create pc hold variable
+coos_adm <- coos_adm %>%
+  mutate(pc_hold = "Non-PC Hold")
+
+# Add sex code labels
+coos_adm <- fnc_sex_labels(coos_adm)
+
+# Add data labels
+coos_adm <- fnc_add_data_labels(coos_adm)
+
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+coos_adm <- coos_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
 # create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for coos
-coos_adm1 <- coos_adm1 %>%
+coos_adm <- coos_adm %>%
   mutate(drug_court_pretrial  = NA,
          drug_court_sentenced = NA)
+
+# If race or gender are NA in some bookings but present in others, use the recorded race or gender.
+# If races or genders are different for the same person, make NA since we don't know which is correct.
+coos_adm <- coos_adm %>%
+
+  # Race
+  dplyr::group_by(id) %>%
+  fill(race, .direction = "downup") %>%
+  distinct() %>%
+  group_by(id) %>%
+  mutate(different_race_recorded = n_distinct(race) == 1) %>%
+  mutate(race = ifelse(different_race_recorded == FALSE, NA, race)) %>%
+  distinct() %>%
+
+  # Gender
+  dplyr::group_by(id) %>%
+  fill(gender, .direction = "downup") %>%
+  distinct() %>%
+  group_by(id) %>%
+  mutate(different_gender_recorded = n_distinct(gender) == 1) %>%
+  mutate(gender = ifelse(different_gender_recorded == FALSE, NA, gender)) %>%
+  distinct() %>%
+  select(-different_gender_recorded, -different_race_recorded)
+
+# Fix los issues
+# Remove negatives because of data entry issues with booking and release dates
+# If release date is missing, then change los to NA instead of Inf
+coos_adm <- coos_adm %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max))
+
+# Create los categories
+coos_adm <- coos_adm %>%
+  mutate(los_category =
+           case_when(los_max == 0 ~ "0",
+                     los_max == 1 ~ "1",
+                     los_max == 2 ~ "2",
+                     los_max == 3 ~ "3",
+                     los_max == 4 ~ "4",
+                     los_max == 5 ~ "5",
+                     los_max >= 6   & los_max <= 10  ~ "6-10",
+                     los_max >= 11  & los_max <= 30  ~ "11-30",
+                     los_max >= 31  & los_max <= 50  ~ "31-50",
+                     los_max >= 50  & los_max <= 100 ~ "50-100",
+                     los_max >= 101 & los_max <= 180 ~ "101-180",
+                     los_max >  180              ~ "Over 180")) %>%
+  mutate(los_category = factor(los_category,
+                               levels = c("0",
+                                          "1",
+                                          "2",
+                                          "3",
+                                          "4",
+                                          "5",
+                                          "6-10",
+                                          "11-30",
+                                          "31-50",
+                                          "50-100",
+                                          "101-180",
+                                          "Over 180")))
+
+# Remove rows with all missing data (37 entries).
+# Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
+# Don't remove Strafford since all of their info is blank except for dates.
+all_nas <- coos_adm %>%
+  filter(is.na(charge_desc) &
+           is.na(booking_type) &
+           is.na(release_type) &
+           is.na(sentence_status))
+coos_adm <- coos_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -163,11 +233,11 @@ coos_medicaid <- coos_medicaid %>%
 
 # remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-coos_adm <- coos_adm %>%
+coos_medicaid <- coos_medicaid %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
 # # Does the medicaid file have the same number of unique individuals as the adm? Off by 9
-# length(unique(coos_adm1$id)); length(unique(coos_medicaid$unique_person_id))
+# length(unique(coos_adm$id)); length(unique(coos_medicaid$unique_person_id))
 
 ################################################################################
 
@@ -175,4 +245,4 @@ coos_adm <- coos_adm %>%
 
 ################################################################################
 
-save(coos_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/coos_adm.Rda", sep = ""))
+save(coos_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/coos_adm.Rda", sep = ""))

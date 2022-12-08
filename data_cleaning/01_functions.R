@@ -107,59 +107,59 @@ fnc_los <- function(df){
 }
 
 ###########
-# Create protective custody hold variables
+# Create protective custody hold variables - not using anymore
 ###########
 
-# Some PC holds are indicated in the charge description but labeled as pretrial in the booking type, or they are indicated in another field.
-# Account for this by creating multiple pc hold variables (pc_hold_booking, pc_hold_charge, pc_hold_sentence, pc_hold_release).
-# Create an overall pc_hold variable depending on any indication of pc hold in bookings, charges, release types, and sentence statuses.
-fnc_pc_hold_variables <- function(df){
-
-  df1 <- df %>%
-    mutate(pc_hold_booking  = case_when(booking_type == "PROTECTIVE CUSTODY"                           ~ "PC Hold",
-                                        is.na(booking_type)                                            ~ "NA",
-                                        TRUE                                                           ~ "Non-PC Hold"),
-
-           pc_hold_charge   = case_when(charge_desc == "PROTECTIVE CUSTODY"         |
-                                        charge_desc == "PROTECTIVE CUSTODY/INTOXICATION" |
-                                        charge_desc == "PROTECTIVE CUSTODY - DRUGS" |
-                                        charge_desc == "Treatment and Services: Protective Custody" |
-                                        charge_desc == "172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII" ~ "PC Hold",
-                                        is.na(charge_desc)                                             ~ "NA",
-                                        TRUE                                                           ~ "Non-PC Hold"),
-
-           pc_hold_sentence = case_when(sentence_status == "PROTECTIVE CUSTODY" |
-                                        sentence_status == "PROTECTIVE CUSTODY HOLD" |
-                                        sentence_status == "PC-IEA"                                    ~ "PC Hold",
-                                        is.na(sentence_status)                                         ~ "NA",
-                                        TRUE                                                           ~ "Non-PC Hold"),
-
-           pc_hold_release  = case_when(release_type == "PC Release"                                   ~ "PC Hold",
-                                        is.na(release_type)                                            ~ "NA",
-                                        TRUE                                                           ~ "Non-PC Hold"))
-
-  df1 <- df1 %>%
-
-    mutate(pc_hold          = case_when(pc_hold_booking == "PC Hold" |
-                                        pc_hold_charge == "PC Hold"|
-                                        pc_hold_sentence == "PC Hold" |
-                                        pc_hold_release == "PC Hold"                                   ~ "PC Hold",
-
-                                        pc_hold_booking == "NA" &
-                                        pc_hold_charge == "NA" &
-                                        pc_hold_sentence == "NA" &
-                                        pc_hold_release == "NA"                                        ~ "NA",
-
-                                        (pc_hold_booking == "Non-PC Hold" |
-                                           pc_hold_charge == "Non-PC Hold"|
-                                           pc_hold_sentence == "Non-PC Hold" |
-                                           pc_hold_release == "Non-PC Hold") &
-                                        (pc_hold_booking != "PC Hold" |
-                                           pc_hold_charge != "PC Hold" |
-                                           pc_hold_sentence != "PC Hold" |
-                                           pc_hold_release != "PC Hold")                               ~ "Non-PC Hold",
-                                        TRUE                                                           ~ "Non-PC Hold"))
-}
+# # Some PC holds are indicated in the charge description but labeled as pretrial in the booking type, or they are indicated in another field.
+# # Account for this by creating multiple pc hold variables (pc_hold_booking, pc_hold_charge, pc_hold_sentence, pc_hold_release).
+# # Create an overall pc_hold variable depending on any indication of pc hold in bookings, charges, release types, and sentence statuses.
+# fnc_pc_hold_variables <- function(df){
+#
+#   df1 <- df %>%
+#     mutate(pc_hold_booking  = case_when(booking_type == "PROTECTIVE CUSTODY"                           ~ "PC Hold",
+#                                         is.na(booking_type)                                            ~ "NA",
+#                                         TRUE                                                           ~ "Non-PC Hold"),
+#
+#            pc_hold_charge   = case_when(charge_desc == "PROTECTIVE CUSTODY"         |
+#                                         charge_desc == "PROTECTIVE CUSTODY/INTOXICATION" |
+#                                         charge_desc == "PROTECTIVE CUSTODY - DRUGS" |
+#                                         charge_desc == "Treatment and Services: Protective Custody" |
+#                                         charge_desc == "172B:1 XIII - PROTECTIVE CUSTODY 172-B:1 XIII" ~ "PC Hold",
+#                                         is.na(charge_desc)                                             ~ "NA",
+#                                         TRUE                                                           ~ "Non-PC Hold"),
+#
+#            pc_hold_sentence = case_when(sentence_status == "PROTECTIVE CUSTODY" |
+#                                         sentence_status == "PROTECTIVE CUSTODY HOLD" |
+#                                         sentence_status == "PC-IEA"                                    ~ "PC Hold",
+#                                         is.na(sentence_status)                                         ~ "NA",
+#                                         TRUE                                                           ~ "Non-PC Hold"),
+#
+#            pc_hold_release  = case_when(release_type == "PC Release"                                   ~ "PC Hold",
+#                                         is.na(release_type)                                            ~ "NA",
+#                                         TRUE                                                           ~ "Non-PC Hold"))
+#
+#   df1 <- df1 %>%
+#
+#     mutate(pc_hold          = case_when(pc_hold_booking == "PC Hold" |
+#                                         pc_hold_charge == "PC Hold"|
+#                                         pc_hold_sentence == "PC Hold" |
+#                                         pc_hold_release == "PC Hold"                                   ~ "PC Hold",
+#
+#                                         pc_hold_booking == "NA" &
+#                                         pc_hold_charge == "NA" &
+#                                         pc_hold_sentence == "NA" &
+#                                         pc_hold_release == "NA"                                        ~ "NA",
+#
+#                                         (pc_hold_booking == "Non-PC Hold" |
+#                                            pc_hold_charge == "Non-PC Hold"|
+#                                            pc_hold_sentence == "Non-PC Hold" |
+#                                            pc_hold_release == "Non-PC Hold") &
+#                                         (pc_hold_booking != "PC Hold" |
+#                                            pc_hold_charge != "PC Hold" |
+#                                            pc_hold_sentence != "PC Hold" |
+#                                            pc_hold_release != "PC Hold")                               ~ "Non-PC Hold",
+#                                         TRUE                                                           ~ "Non-PC Hold"))
+# }
 
 ###########
 # Add high utilizer variables
@@ -278,10 +278,11 @@ fnc_add_data_labels <- function(df){
            charge_desc,
            booking_date,
            booking_type,
-           release_date,
+           #release_date,
            release_type,
            sentence_status,
-           los,
+           sentence_status_standard,
+           #los,
            los_max,
            county,
            fy,
@@ -295,24 +296,26 @@ fnc_add_data_labels <- function(df){
            high_utilizer_1_pct_fy,
            high_utilizer_5_pct_fy,
            high_utilizer_10_pct_fy,
-           pc_hold_booking,
-           pc_hold_charge,
-           pc_hold_sentence,
-           pc_hold_release,
+           # pc_hold_booking,
+           # pc_hold_charge,
+           # pc_hold_sentence,
+           # pc_hold_release,
            pc_hold)
 
   # Change data types
-  df1$id                  <- as.character(df1$id)
-  df1$inmate_id           <- as.character(df1$inmate_id)
-  df1$yob                 <- as.numeric(df1$yob)
-  df1$race_code           <- as.factor(df1$race_code)
-  df1$race                <- as.character(df1$race)
-  df1$gender              <- as.factor(df1$gender)
-  df1$charge_code         <- as.character(df1$charge_code)
-  df1$charge_desc         <- as.character(df1$charge_desc)
-  df1$booking_type        <- as.character(df1$booking_type)
-  df1$release_type        <- as.character(df1$release_type)
-  df1$sentence_status     <- as.character(df1$sentence_status)
+  df1$id                       <- as.character(df1$id)
+  df1$inmate_id                <- as.character(df1$inmate_id)
+  df1$yob                      <- as.numeric(df1$yob)
+  df1$race_code                <- as.factor(df1$race_code)
+  df1$race                     <- as.character(df1$race)
+  df1$gender                   <- as.factor(df1$gender)
+  df1$charge_code              <- as.character(df1$charge_code)
+  df1$charge_desc              <- as.character(df1$charge_desc)
+  df1$booking_type             <- as.character(df1$booking_type)
+  df1$release_type             <- as.character(df1$release_type)
+  df1$sentence_status          <- as.character(df1$sentence_status)
+  df1$sentence_status_standard <- as.character(df1$sentence_status_standard)
+
   df1$fy                  <- as.numeric(df1$fy)
   df1$high_utilizer_4_times    <- as.character(df1$high_utilizer_4_times)
   df1$high_utilizer_1_pct      <- as.character(df1$high_utilizer_1_pct)
@@ -322,15 +325,15 @@ fnc_add_data_labels <- function(df){
   df1$high_utilizer_1_pct_fy   <- as.character(df1$high_utilizer_1_pct_fy)
   df1$high_utilizer_5_pct_fy   <- as.character(df1$high_utilizer_5_pct_fy)
   df1$high_utilizer_10_pct_fy  <- as.character(df1$high_utilizer_10_pct_fy)
-  df1$pc_hold_booking     <- as.factor(df1$pc_hold_booking)
-  df1$pc_hold_charge      <- as.factor(df1$pc_hold_charge)
-  df1$pc_hold_sentence    <- as.factor(df1$pc_hold_sentence)
-  df1$pc_hold_release     <- as.factor(df1$pc_hold_release)
+  # df1$pc_hold_booking     <- as.factor(df1$pc_hold_booking)
+  # df1$pc_hold_charge      <- as.factor(df1$pc_hold_charge)
+  # df1$pc_hold_sentence    <- as.factor(df1$pc_hold_sentence)
+  # df1$pc_hold_release     <- as.factor(df1$pc_hold_release)
   df1$pc_hold             <- as.factor(df1$pc_hold)
   df1$county              <- as.character(df1$county)
   df1$age                 <- as.numeric(df1$age)
   df1$age_category        <- as.factor(df1$age_category)
-  df1$los                 <- as.numeric(df1$los)
+  #df1$los                 <- as.numeric(df1$los)
   df1$los_max             <- as.numeric(df1$los_max)
 
   # Data labels
@@ -347,10 +350,11 @@ fnc_add_data_labels <- function(df){
                   charge_desc         = "Charge description",
                   booking_date        = "Booking date",
                   booking_type        = "Booking type",
-                  release_date        = "Release date",
+                  #release_date        = "Release date",
                   release_type        = "Release type",
                   sentence_status     = "Sentence status",
-                  los                 = "Length of stay (days)",
+                  sentence_status     = "Sentence status standardized",
+                  #los                 = "Length of stay (days)",
                   los_max             = "Maximum length of stay (days) to account for release date errors",
                   county              = "County",
                   fy                  = "Fiscal year",
@@ -365,10 +369,10 @@ fnc_add_data_labels <- function(df){
                   high_utilizer_1_pct_fy   = "Is a high utilizer (in top 1% percentile of jail entrances by FY)",
                   high_utilizer_5_pct_fy   = "Is a high utilizer (in top 5% percentile of jail entrances by FY)",
                   high_utilizer_10_pc_fy   = "Is a high utilizer (in top 10% percentile of jail entrances by FY)",
-                  pc_hold_booking          = "Protective custody hold (booking type)",
-                  pc_hold_charge           = "Protective custody hold (charge type)",
-                  pc_hold_sentence         = "Protective custody hold (sentence status)",
-                  pc_hold_release          = "Protective custody hold (release type)",
+                  # pc_hold_booking          = "Protective custody hold (booking type)",
+                  # pc_hold_charge           = "Protective custody hold (charge type)",
+                  # pc_hold_sentence         = "Protective custody hold (sentence status)",
+                  # pc_hold_release          = "Protective custody hold (release type)",
                   pc_hold                  = "Protective custody hold (in booking type, charge type, sentence status, or release type)")
   # Add labels to data
   df1 <- labelled::set_variable_labels(df1, .labels = var.labels)
