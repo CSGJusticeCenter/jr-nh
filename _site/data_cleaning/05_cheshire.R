@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: cheshire.R
-# Last updated: December 1, 2022
+# Last updated: December 8, 2022
 # Author: Mari Roberts
 
 # Standardize files across counties
@@ -60,23 +60,6 @@ cheshire_adm <- fnc_los(cheshire_adm)
 df_hu <- fnc_create_high_utilizer_variables(cheshire_adm)
 cheshire_adm <- left_join(cheshire_adm, df_hu, by = c("id", "fy"))
 
-# Create a PC hold variables
-cheshire_adm <- fnc_pc_hold_variables(cheshire_adm)
-
-# Add sex code labels
-cheshire_adm <- fnc_sex_labels(cheshire_adm)
-
-# Add data labels
-cheshire_adm <- fnc_add_data_labels(cheshire_adm)
-
-# Remove duplicates
-cheshire_adm <- cheshire_adm %>% distinct()
-
-# remove bookings before and after study dates
-# July 1, 2018, to June 30, 2021
-cheshire_adm <- cheshire_adm %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
-
 ###################################
 
 # Standardize sentence statuses across counties so they have these categories:
@@ -123,9 +106,7 @@ booking_recordings_cheshire <- fnc_investigate_booking_recordings(cheshire_adm)
 # If charge is temporary removal or transfer and sentence status indicates PC hold then it isn't a PC hold.
 # Change sentence status to unknown for these since they aren't PC holds.
 # Standardize booking info so it's consistent across counties
-cheshire_adm1 <- cheshire_adm %>%
-  select(-c(los, release_date)) %>%
-  distinct() %>%
+cheshire_adm <- cheshire_adm %>%
 
   mutate(charge_desc     = as.character(charge_desc),
          booking_type    = as.character(booking_type),
@@ -136,16 +117,18 @@ cheshire_adm1 <- cheshire_adm %>%
          release_type    = toupper(release_type),
          sentence_status = toupper(sentence_status)) %>%
 
-  mutate(pc_hold         = as.character(pc_hold)) %>%
   mutate(sentence_status = as.character(sentence_status)) %>%
   mutate(booking_type    = as.character(booking_type)) %>%
 
-  mutate(pc_hold         = case_when(charge_desc == "TEMPORARY REMOVAL OR TRANSFER" & sentence_status == "PROTECTIVE CUSTODY" ~ "Non-PC Hold", TRUE ~ pc_hold)) %>%
-  mutate(sentence_status = case_when(charge_desc == "TEMPORARY REMOVAL OR TRANSFER" & sentence_status == "PROTECTIVE CUSTODY" ~ "UNKNOWN", TRUE ~ sentence_status)) %>%
+  mutate(sentence_status_standard = case_when(
+    # PROTECTIVE CUSTODY
+    charge_desc == "PROTECTIVE CUSTODY" | charge_desc == "PROTECTIVE CUSTODY - DRUGS" & los <= 2 ~ "PROTECTIVE CUSTODY",
 
-  mutate(sentence_status_standard = case_when(# PROTECTIVE CUSTODY
-    str_detect("PROTECTIVE CUSTODY|PROTECTIVE CUSTODY - DRUGS", charge_desc)         ~ "PROTECTIVE CUSTODY",
-    str_detect("PROTECTIVE CUSTODY", sentence_status)                                ~ "PROTECTIVE CUSTODY",
+    # This was a mistake to label them as PC hold - checked with county
+    # When you view these charge descriptions, there are three records. One for a transfer, one for public urination, and another for a dui
+    sentence_status == "PROTECTIVE CUSTODY" &
+      charge_desc != "PROTECTIVE CUSTODY - DRUGS" &
+      charge_desc != "PROTECTIVE CUSTODY"                                            ~ "UNKNOWN",
 
     # PRETRIAL
     str_detect("PRE-TRIAL", sentence_status)                                         ~ "PRETRIAL",
@@ -167,9 +150,10 @@ cheshire_adm1 <- cheshire_adm %>%
 
     # OTHER
     str_detect("DUAL STATUS", sentence_status)                                       ~ "OTHER",
-    (is.na(sentence_status) & str_detect("FELONY FIRST", booking_type))               ~ "OTHER",
+    (is.na(sentence_status) & str_detect("FELONY FIRST", booking_type))              ~ "OTHER",
     str_detect("HOLD FOR OTHER AGENCY", sentence_status)                             ~ "OTHER",
     str_detect("DETAINEE REQUEST", sentence_status)                                  ~ "OTHER",
+    str_detect("DETAINER", sentence_status)                                          ~ "OTHER",
 
     # UNKNOWN
     # no data in sentence status but info in booking type
@@ -180,10 +164,99 @@ cheshire_adm1 <- cheshire_adm %>%
 
   select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
+# create pc hold variable
+cheshire_adm <- cheshire_adm %>%
+  mutate(pc_hold = ifelse(
+    sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold")) %>%
+  select(-c(los, release_date))
+
+# Add sex code labels
+cheshire_adm <- fnc_sex_labels(cheshire_adm)
+
+# Add data labels
+cheshire_adm <- fnc_add_data_labels(cheshire_adm)
+
+# Remove duplicates
+cheshire_adm <- cheshire_adm %>% distinct()
+
+# remove bookings before and after study dates
+# July 1, 2018, to June 30, 2021
+cheshire_adm <- cheshire_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+
 # create pretrial drug court and sentenced drug court variables
-cheshire_adm1 <- cheshire_adm1 %>%
+cheshire_adm <- cheshire_adm %>%
   mutate(drug_court_pretrial  = ifelse(sentence_status == "PRE-TRIAL / DRUG COURT", 1, 0),
          drug_court_sentenced = ifelse(sentence_status == "SENTENCED / DRUG COURT", 1, 0))
+
+# If race or gender are NA in some bookings but present in others, use the recorded race or gender.
+# If races or genders are different for the same person, make NA since we don't know which is correct.
+cheshire_adm <- cheshire_adm %>%
+
+  # Race
+  dplyr::group_by(id) %>%
+  fill(race, .direction = "downup") %>%
+  distinct() %>%
+  group_by(id) %>%
+  mutate(different_race_recorded = n_distinct(race) == 1) %>%
+  mutate(race = ifelse(different_race_recorded == FALSE, NA, race)) %>%
+  distinct() %>%
+
+  # Gender
+  dplyr::group_by(id) %>%
+  fill(gender, .direction = "downup") %>%
+  distinct() %>%
+  group_by(id) %>%
+  mutate(different_gender_recorded = n_distinct(gender) == 1) %>%
+  mutate(gender = ifelse(different_gender_recorded == FALSE, NA, gender)) %>%
+  distinct() %>%
+  select(-different_gender_recorded, -different_race_recorded)
+
+# Fix los issues
+# Remove negatives because of data entry issues with booking and release dates
+# If release date is missing, then change los to NA instead of Inf
+cheshire_adm <- cheshire_adm %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max))
+
+# Create los categories
+cheshire_adm <- cheshire_adm %>%
+  mutate(los_category =
+           case_when(los_max == 0 ~ "0",
+                     los_max == 1 ~ "1",
+                     los_max == 2 ~ "2",
+                     los_max == 3 ~ "3",
+                     los_max == 4 ~ "4",
+                     los_max == 5 ~ "5",
+                     los_max >= 6   & los_max <= 10  ~ "6-10",
+                     los_max >= 11  & los_max <= 30  ~ "11-30",
+                     los_max >= 31  & los_max <= 50  ~ "31-50",
+                     los_max >= 50  & los_max <= 100 ~ "50-100",
+                     los_max >= 101 & los_max <= 180 ~ "101-180",
+                     los_max >  180              ~ "Over 180")) %>%
+  mutate(los_category = factor(los_category,
+                               levels = c("0",
+                                          "1",
+                                          "2",
+                                          "3",
+                                          "4",
+                                          "5",
+                                          "6-10",
+                                          "11-30",
+                                          "31-50",
+                                          "50-100",
+                                          "101-180",
+                                          "Over 180")))
+
+# Remove rows with all missing data (37 entries).
+# Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
+# Don't remove Strafford since all of their info is blank except for dates.
+all_nas <- cheshire_adm %>%
+  filter(is.na(charge_desc) &
+           is.na(booking_type) &
+           is.na(release_type) &
+           is.na(sentence_status))
+cheshire_adm <- cheshire_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -229,11 +302,11 @@ cheshire_medicaid <- cheshire_medicaid %>%
 
 # remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-cheshire_adm <- cheshire_adm %>%
+cheshire_medicaid <- cheshire_medicaid %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
 # # Does the medicaid file have the same number of unique individuals as the adm? Off by 116
-# length(unique(cheshire_adm1$id)); length(unique(cheshire_medicaid$unique_person_id))
+# length(unique(cheshire_adm$id)); length(unique(cheshire_medicaid$unique_person_id))
 
 ################################################################################
 
@@ -241,4 +314,4 @@ cheshire_adm <- cheshire_adm %>%
 
 ################################################################################
 
-save(cheshire_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/cheshire_adm.Rda", sep = ""))
+save(cheshire_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/cheshire_adm.Rda", sep = ""))

@@ -18,87 +18,16 @@ source("data_cleaning/10_strafford.R")
 source("data_cleaning/11_sullivan.R")
 
 # Combine jail data
-adm_all <- rbind(belknap_adm1,
-                 carroll_adm1,
-                 cheshire_adm1,
-                 coos_adm1,
-                 hillsborough_adm1,
-                 merrimack_adm1,
-                 rockingham_adm1,
-                 strafford_adm1,
-                 sullivan_adm1)
-# dim(adm_all) # 73179
-
-# If race or gender are NA in some bookings but present in others, use the recorded race or gender.
-# If races or genders are different for the same person, make NA since we don't know which is correct.
-adm_all <- adm_all %>%
-
-  # Race
-  dplyr::group_by(id) %>%
-  fill(race, .direction = "downup") %>%
-  distinct() %>%
-  group_by(id) %>%
-  mutate(different_race_recorded = n_distinct(race) == 1) %>%
-  mutate(race = ifelse(different_race_recorded == FALSE, NA, race)) %>%
-  distinct() %>%
-
-  # Gender
-  dplyr::group_by(id) %>%
-  fill(gender, .direction = "downup") %>%
-  distinct() %>%
-  group_by(id) %>%
-  mutate(different_gender_recorded = n_distinct(gender) == 1) %>%
-  mutate(gender = ifelse(different_gender_recorded == FALSE, NA, gender)) %>%
-  distinct() %>%
-  select(-different_gender_recorded, -different_race_recorded)
-
-# Fix los issues
-# Remove negatives because of data entry issues with booking and release dates
-# If release date is missing, then change los to NA instead of Inf
-adm_all <- adm_all %>%
-  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
-  filter(los_max >= 0 | is.na(los_max))
-
-# Create los categories
-adm_all <- adm_all %>%
-  mutate(los_category =
-           case_when(los_max == 0 ~ "0",
-                     los_max == 1 ~ "1",
-                     los_max == 2 ~ "2",
-                     los_max == 3 ~ "3",
-                     los_max == 4 ~ "4",
-                     los_max == 5 ~ "5",
-                     los_max >= 6   & los_max <= 10  ~ "6-10",
-                     los_max >= 11  & los_max <= 30  ~ "11-30",
-                     los_max >= 31  & los_max <= 50  ~ "31-50",
-                     los_max >= 50  & los_max <= 100 ~ "50-100",
-                     los_max >= 101 & los_max <= 180 ~ "101-180",
-                     los_max >  180              ~ "Over 180")) %>%
-  mutate(los_category = factor(los_category,
-                               levels = c("0",
-                                          "1",
-                                          "2",
-                                          "3",
-                                          "4",
-                                          "5",
-                                          "6-10",
-                                          "11-30",
-                                          "31-50",
-                                          "50-100",
-                                          "101-180",
-                                          "Over 180")))
-
-# Remove rows with all missing data (37 entries).
-# Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
-# Don't remove Strafford since all of their info is blank except for dates.
-all_nas <- adm_all %>%
-  filter(county != "Strafford") %>%
-  filter(is.na(charge_desc) &
-         is.na(booking_type) &
-         is.na(release_type) &
-         is.na(sentence_status))
-adm_all <- adm_all %>% anti_join(all_nas) %>% distinct()
-# dim(adm_all); length(unique(adm_all$booking_id)); length(unique(adm_all$id)) # 73093 dim, 51545 bookings, 32177 individuals
+adm_all <- rbind(belknap_adm,
+                 carroll_adm,
+                 cheshire_adm,
+                 coos_adm,
+                 hillsborough_adm,
+                 merrimack_adm,
+                 rockingham_adm,
+                 strafford_adm,
+                 sullivan_adm)
+dim(adm_all); length(unique(adm_all$booking_id)); length(unique(adm_all$id)) # 73093 dim, 51545 bookings, 32177 individuals
 
 ################################################################################
 
@@ -132,9 +61,6 @@ bookings_entrances_all <- adm_all %>%
                 high_utilizer_1_pct,
                 high_utilizer_5_pct,
                 high_utilizer_10_pct,
-                pc_hold_booking,
-                pc_hold_charge,
-                pc_hold_sentence,
                 pc_hold) %>%
   mutate(month_year_text = format(as.Date(booking_date, "%d/%m/%Y"), "%b %Y"),
          month_year      = as.Date(as.yearmon(month_year_text))) %>%

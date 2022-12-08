@@ -8,6 +8,18 @@
 # Merge descriptions for diagnoses from data dictionary
 ############################################
 
+# clean names of medicaid categories
+medicaid_categories <- medicaid_categories.xlsx %>%
+  clean_names() %>%
+  distinct()
+
+# clean names of medicaid enrollment and merge with categories
+medicaid_enrollment <- medicaid_enrollment.xlsx %>%
+  clean_names() %>%
+  distinct() %>%
+  rename(eligibility_code = eligibility_category) %>%
+  left_join(medicaid_categories, by = "eligibility_code")
+
 # clean data dictionary to be able to match secondary diagnoses codes to descriptions
 medicaid_dictionary <- medicaid_dictionary.xlsx %>%
   clean_names() %>%
@@ -22,7 +34,8 @@ medicaid_encounters <- medicaid_encounters.xlsx %>%
   clean_names() %>%
   mutate(year = year(first_dos_dt)) %>%
 
-  # subset to data after 2015 which is when they started using the ICD code system
+  ####################### TO DO use ICD-9 for everything prior to 2015 - TO DO########################################
+  #subset to data after 2015 which is when they started using the ICD code system
   filter(year > 2015) %>%
 
   # remove periods
@@ -122,3 +135,13 @@ medicaid_encounters <- medicaid_encounters.xlsx %>%
          dx_scndry_desc9,
          dx_scndry_desc10)
 
+# Combine jail medicaid data files
+medicaid_jail_all <- rbind(# belknap_medicaid,    # MISSING RACE VARIABLE - Uma will provide updated file
+                           carroll_medicaid,
+                           cheshire_medicaid,
+                           # coos_medicaid,       # MISSING RACE AND GENDER VARIABLE - waiting to hear back from jail
+                           hillsborough_medicaid,
+                           merrimack_medicaid,
+                           rockingham_medicaid,
+                           strafford_medicaid,
+                           sullivan_medicaid)

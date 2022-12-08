@@ -3,6 +3,7 @@
 load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/raw_adm_data_availability_table.Rda", sep = ""))
 
 # Data dictionaries
+load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda",               sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/belknap_adm.Rda",           sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/carroll_adm.Rda",           sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/cheshire_adm.Rda",          sep = ""))
