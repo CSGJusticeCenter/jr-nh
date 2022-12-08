@@ -9,33 +9,32 @@ This project focuses on the prevalence of people with behavioral health needs mo
       |-- 01_functions.R                            # Custom functions for efficient coding
       |-- 01_functions_visuals.R                    # Custom functions for efficient coding
       |-- 02_import.R                               # Import jail data from sharepoint
-      |-- 03_belknap.R                              # Standardize Belknap variables 
-      |-- 04_carroll.R                              # Standardize Carroll variables
-      |-- 05_cheshire.R                             # Standardize Cheshire variables
-      |-- 06_coos.R                                 # Standardize Coos variables
-      |-- 07_hillsborough.R                         # Standardize Hillsborough variables
-      |-- 08_merrimack.R                            # Standardize Merrimack variables
-      |-- 09_rockingham.R                           # Standardize Rockingham variables
-      |-- 10_strafford.R                            # Standardize Strafford variables
-      |-- 11_sullivan.R                             # Standardize Sullivan variables
-      |-- 12_standardize_counties.R                 # Further standardize charges and booking types
-      |-- 13_dataframes.R                           # Combine jail data and create df's used in analyses
+      |-- 03_belknap.R                              # Standardize and clean Belknap files 
+      |-- 04_carroll.R                              # Standardize and clean Carroll files
+      |-- 05_cheshire.R                             # Standardize and clean Cheshire files
+      |-- 06_coos.R                                 # Standardize and clean Coos files
+      |-- 07_hillsborough.R                         # Standardize and clean Hillsborough files
+      |-- 08_merrimack.R                            # Standardize and clean Merrimack files
+      |-- 09_rockingham.R                           # Standardize and clean Rockingham files
+      |-- 10_strafford.R                            # Standardize and clean Strafford files
+      |-- 11_sullivan.R                             # Standardize and clean Sullivan files
+      |-- 12_dataframes.R                           # Combine jail data and create df's used in analyses
+      |-- rdas.R                                    # Files used in rmds
+      |-- render_site                               # Can use this file to run all code and render Netlify site
+      
       
     |-- data_cleaning -> analysis_code       
       |-- 01_incarceration_patterns_bookings.R      # Analyze booking data and create viz deliverables
       |-- 02_incarceration_patterns_entrances.R     # Analyze entrances data and create viz deliverables
-      |-- 03_pc_holds.R                             # Analyze PC holds
-      |-- 04_high_utilizers.R                       # Analyze HU's (1%, 5%, 10%)
-      |-- 05_non_high_utilizers.R                   # Analyze non-HU's (1%, 5%, 10%)
-      |-- 06_los.R                                  # Analyze LOS
+      |-- 03_pc_holds.R                             # Analyze PC holds and create viz deliverables
+      |-- 04_high_utilizers.R                       # Analyze HU's (1%, 5%, 10%) and create viz deliverables
+      |-- 05_non_high_utilizers.R                   # Analyze non-HU's (1%, 5%, 10%) and create viz deliverables
+      |-- 06_los.R                                  # Analyze LOS and create viz deliverables
       |-- 07_data_availability.R                    # Table that shows data availability by county
-      |-- 08_demographics.R                         # Analyze demographics
+      |-- 08_demographics.R                         # Analyze demographics and create viz deliverables
       |-- 09_county_reports_tables.R                # Create tables for county reports
       |-- 10_county_reports_plots.R                 # Create plots for county reports
       |-- 11_generate_county_reports.R              # Generate county report RMD's automatically
-      
-      |-- rdas.R                                    # Files used in rmds
-      |-- render_site                               # Can use this file to run all code and render Netlify site
       
 # Data  
 
