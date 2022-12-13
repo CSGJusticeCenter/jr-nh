@@ -174,7 +174,7 @@ belknap_adm_charge_clean_join_one <- belknap_adm_charge_clean %>%
 ### join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
 belknap_adm_charge_clean_join_two <- belknap_adm_charge_clean_join_one %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -192,7 +192,7 @@ belknap_adm_charge_clean_join_two <- belknap_adm_charge_clean_join_one %>%
 ### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
 belknap_adm_charge_clean_join_three <- belknap_adm_charge_clean_join_two %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -211,6 +211,19 @@ belknap_adm_charge_clean_join_three <- belknap_adm_charge_clean_join_two %>%
 belknap_adm_charge_clean_final <- rbind(belknap_adm_charge_clean_join_one,
                                         belknap_adm_charge_clean_join_two,
                                         belknap_adm_charge_clean_join_three) %>% 
+  ### create booking-level flag that indicates at least one charge was a drug/alcohol charge 
+  ### doing this before de-duping allows us to know this regardless of whether it was the 
+  ### most serious offense for a given booking
+  mutate(drug_alcohol_charge_flag = ifelse(crime_type_lookup=="Drug/Alcohol",
+                                           1,0),
+         drug_alcohol_charge_flag = ifelse(is.na(drug_alcohol_charge_flag),0,drug_alcohol_charge_flag)) %>% 
+  group_by(id,
+           inmate_id,
+           booking_id) %>% ### group by booking
+  mutate(booking_drug_alcohol_charge_present_flag = max(drug_alcohol_charge_flag,
+                                                        na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::select(-drug_alcohol_charge_flag) %>% ### drop charge level flag, keep booking level flag
 ### de-dup once more for records that ended up duplicating across the joins
 ### use arrange to keep records with joining lookup values over identical records with missing lookup values
   arrange(id,
@@ -300,7 +313,7 @@ carroll_adm_charge_clean_join_one <- carroll_adm_charge_clean %>%
 ### join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
 carroll_adm_charge_clean_join_two <- carroll_adm_charge_clean_join_one %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -318,7 +331,7 @@ carroll_adm_charge_clean_join_two <- carroll_adm_charge_clean_join_one %>%
 ### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
 carroll_adm_charge_clean_join_three <- carroll_adm_charge_clean_join_two %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -337,6 +350,19 @@ carroll_adm_charge_clean_join_three <- carroll_adm_charge_clean_join_two %>%
 carroll_adm_charge_clean_final <- rbind(carroll_adm_charge_clean_join_one,
                                         carroll_adm_charge_clean_join_two,
                                         carroll_adm_charge_clean_join_three) %>% 
+  ### create booking-level flag that indicates at least one charge was a drug/alcohol charge 
+  ### doing this before de-duping allows us to know this regardless of whether it was the 
+  ### most serious offense for a given booking
+  mutate(drug_alcohol_charge_flag = ifelse(crime_type_lookup=="Drug/Alcohol",
+                                           1,0),
+         drug_alcohol_charge_flag = ifelse(is.na(drug_alcohol_charge_flag),0,drug_alcohol_charge_flag)) %>% 
+  group_by(id,
+           inmate_id,
+           booking_id) %>% ### group by booking
+  mutate(booking_drug_alcohol_charge_present_flag = max(drug_alcohol_charge_flag,
+                                                        na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::select(-drug_alcohol_charge_flag) %>% ### drop charge level flag, keep booking level flag 
   ### de-dup once more for records that ended up duplicating across the joins
   ### use arrange to keep records with joining lookup values over identical records with missing lookup values
   arrange(id,
@@ -424,7 +450,7 @@ cheshire_adm_charge_clean_join_one <- cheshire_adm_charge_clean %>%
 ### join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
 cheshire_adm_charge_clean_join_two <- cheshire_adm_charge_clean_join_one %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -442,7 +468,7 @@ cheshire_adm_charge_clean_join_two <- cheshire_adm_charge_clean_join_one %>%
 ### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
 cheshire_adm_charge_clean_join_three <- cheshire_adm_charge_clean_join_two %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -461,6 +487,19 @@ cheshire_adm_charge_clean_join_three <- cheshire_adm_charge_clean_join_two %>%
 cheshire_adm_charge_clean_final <- rbind(cheshire_adm_charge_clean_join_one,
                                         cheshire_adm_charge_clean_join_two,
                                         cheshire_adm_charge_clean_join_three) %>% 
+  ### create booking-level flag that indicates at least one charge was a drug/alcohol charge 
+  ### doing this before de-duping allows us to know this regardless of whether it was the 
+  ### most serious offense for a given booking
+  mutate(drug_alcohol_charge_flag = ifelse(crime_type_lookup=="Drug/Alcohol",
+                                           1,0),
+         drug_alcohol_charge_flag = ifelse(is.na(drug_alcohol_charge_flag),0,drug_alcohol_charge_flag)) %>% 
+  group_by(id,
+           inmate_id,
+           booking_id) %>% ### group by booking
+  mutate(booking_drug_alcohol_charge_present_flag = max(drug_alcohol_charge_flag,
+                                                        na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::select(-drug_alcohol_charge_flag) %>% ### drop charge level flag, keep booking level flag 
   ### de-dup once more for records that ended up duplicating across the joins
   ### use arrange to keep records with joining lookup values over identical records with missing lookup values
   arrange(id,
@@ -549,7 +588,7 @@ coos_adm_charge_clean_join_one <- coos_adm_charge_clean %>%
 ### join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
 coos_adm_charge_clean_join_two <- coos_adm_charge_clean_join_one %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -567,7 +606,7 @@ coos_adm_charge_clean_join_two <- coos_adm_charge_clean_join_one %>%
 ### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
 coos_adm_charge_clean_join_three <- coos_adm_charge_clean_join_two %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -586,6 +625,19 @@ coos_adm_charge_clean_join_three <- coos_adm_charge_clean_join_two %>%
 coos_adm_charge_clean_final <- rbind(coos_adm_charge_clean_join_one,
                                          coos_adm_charge_clean_join_two,
                                          coos_adm_charge_clean_join_three) %>% 
+  ### create booking-level flag that indicates at least one charge was a drug/alcohol charge 
+  ### doing this before de-duping allows us to know this regardless of whether it was the 
+  ### most serious offense for a given booking
+  mutate(drug_alcohol_charge_flag = ifelse(crime_type_lookup=="Drug/Alcohol",
+                                           1,0),
+         drug_alcohol_charge_flag = ifelse(is.na(drug_alcohol_charge_flag),0,drug_alcohol_charge_flag)) %>% 
+  group_by(id,
+           inmate_id,
+           booking_id) %>% ### group by booking
+  mutate(booking_drug_alcohol_charge_present_flag = max(drug_alcohol_charge_flag,
+                                                        na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::select(-drug_alcohol_charge_flag) %>% ### drop charge level flag, keep booking level flag 
   ### de-dup once more for records that ended up duplicating across the joins
   ### use arrange to keep records with joining lookup values over identical records with missing lookup values
   arrange(id,
@@ -742,6 +794,19 @@ hillsborough_adm_charge_clean_join_three <- hillsborough_adm_charge_clean_join_t
 hillsborough_adm_charge_clean_final <- rbind(hillsborough_adm_charge_clean_join_one,
                                      hillsborough_adm_charge_clean_join_two,
                                      hillsborough_adm_charge_clean_join_three) %>% 
+  ### create booking-level flag that indicates at least one charge was a drug/alcohol charge 
+  ### doing this before de-duping allows us to know this regardless of whether it was the 
+  ### most serious offense for a given booking
+  mutate(drug_alcohol_charge_flag = ifelse(crime_type_lookup=="Drug/Alcohol",
+                                           1,0),
+         drug_alcohol_charge_flag = ifelse(is.na(drug_alcohol_charge_flag),0,drug_alcohol_charge_flag)) %>% 
+  group_by(id,
+           inmate_id,
+           booking_id) %>% ### group by booking
+  mutate(booking_drug_alcohol_charge_present_flag = max(drug_alcohol_charge_flag,
+                                                        na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::select(-drug_alcohol_charge_flag) %>% ### drop charge level flag, keep booking level flag 
   ### de-dup once more for records that ended up duplicating across the joins
   ### use arrange to keep records with joining lookup values over identical records with missing lookup values
   arrange(id,
@@ -831,7 +896,7 @@ merrimack_adm_charge_clean_join_one <- merrimack_adm_charge_clean %>%
 ### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
 merrimack_adm_charge_clean_join_two <- merrimack_adm_charge_clean_join_one %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -849,6 +914,19 @@ merrimack_adm_charge_clean_join_two <- merrimack_adm_charge_clean_join_one %>%
 ### combine df's from first and second attempts to join to lookup values
 merrimack_adm_charge_clean_final <- rbind(merrimack_adm_charge_clean_join_one,
                                              merrimack_adm_charge_clean_join_two) %>% 
+  ### create booking-level flag that indicates at least one charge was a drug/alcohol charge 
+  ### doing this before de-duping allows us to know this regardless of whether it was the 
+  ### most serious offense for a given booking
+  mutate(drug_alcohol_charge_flag = ifelse(crime_type_lookup=="Drug/Alcohol",
+                                           1,0),
+         drug_alcohol_charge_flag = ifelse(is.na(drug_alcohol_charge_flag),0,drug_alcohol_charge_flag)) %>% 
+  group_by(id,
+           inmate_id,
+           booking_id) %>% ### group by booking
+  mutate(booking_drug_alcohol_charge_present_flag = max(drug_alcohol_charge_flag,
+                                                        na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::select(-drug_alcohol_charge_flag) %>% ### drop charge level flag, keep booking level flag 
   ### de-dup once more for records that ended up duplicating across the joins
   ### use arrange to keep records with joining lookup values over identical records with missing lookup values
   arrange(id,
@@ -936,7 +1014,7 @@ rockingham_adm_charge_clean_join_one <- rockingham_adm_charge_clean %>%
 ### join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
 rockingham_adm_charge_clean_join_two <- rockingham_adm_charge_clean_join_one %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -954,7 +1032,7 @@ rockingham_adm_charge_clean_join_two <- rockingham_adm_charge_clean_join_one %>%
 ### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
 rockingham_adm_charge_clean_join_three <- rockingham_adm_charge_clean_join_two %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -973,6 +1051,19 @@ rockingham_adm_charge_clean_join_three <- rockingham_adm_charge_clean_join_two %
 rockingham_adm_charge_clean_final <- rbind(rockingham_adm_charge_clean_join_one,
                                              rockingham_adm_charge_clean_join_two,
                                              rockingham_adm_charge_clean_join_three) %>% 
+  ### create booking-level flag that indicates at least one charge was a drug/alcohol charge 
+  ### doing this before de-duping allows us to know this regardless of whether it was the 
+  ### most serious offense for a given booking
+  mutate(drug_alcohol_charge_flag = ifelse(crime_type_lookup=="Drug/Alcohol",
+                                           1,0),
+         drug_alcohol_charge_flag = ifelse(is.na(drug_alcohol_charge_flag),0,drug_alcohol_charge_flag)) %>% 
+  group_by(id,
+           inmate_id,
+           booking_id) %>% ### group by booking
+  mutate(booking_drug_alcohol_charge_present_flag = max(drug_alcohol_charge_flag,
+                                                        na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::select(-drug_alcohol_charge_flag) %>% ### drop charge level flag, keep booking level flag 
   ### de-dup once more for records that ended up duplicating across the joins
   ### use arrange to keep records with joining lookup values over identical records with missing lookup values
   arrange(id,
@@ -1068,7 +1159,7 @@ sullivan_adm_charge_clean_join_one <- sullivan_adm_charge_clean %>%
 ### join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
 sullivan_adm_charge_clean_join_two <- sullivan_adm_charge_clean_join_one %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -1086,7 +1177,7 @@ sullivan_adm_charge_clean_join_two <- sullivan_adm_charge_clean_join_one %>%
 ### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
 sullivan_adm_charge_clean_join_three <- sullivan_adm_charge_clean_join_two %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -1105,6 +1196,19 @@ sullivan_adm_charge_clean_join_three <- sullivan_adm_charge_clean_join_two %>%
 sullivan_adm_charge_clean_final <- rbind(sullivan_adm_charge_clean_join_one,
                                            sullivan_adm_charge_clean_join_two,
                                            sullivan_adm_charge_clean_join_three) %>% 
+  ### create booking-level flag that indicates at least one charge was a drug/alcohol charge 
+  ### doing this before de-duping allows us to know this regardless of whether it was the 
+  ### most serious offense for a given booking
+  mutate(drug_alcohol_charge_flag = ifelse(crime_type_lookup=="Drug/Alcohol",
+                                           1,0),
+         drug_alcohol_charge_flag = ifelse(is.na(drug_alcohol_charge_flag),0,drug_alcohol_charge_flag)) %>% 
+  group_by(id,
+           inmate_id,
+           booking_id) %>% ### group by booking
+  mutate(booking_drug_alcohol_charge_present_flag = max(drug_alcohol_charge_flag,
+                                                        na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::select(-drug_alcohol_charge_flag) %>% ### drop charge level flag, keep booking level flag 
   ### de-dup once more for records that ended up duplicating across the joins
   ### use arrange to keep records with joining lookup values over identical records with missing lookup values
   arrange(id,

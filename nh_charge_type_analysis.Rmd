@@ -571,7 +571,7 @@ kable(df_nh_other_offense_desc_count_top_20,
 
 <br>
 
-## Charge Data Tables
+## Charge Data Tables (most serious charge)
 
 
 ### Charge Type by Jail (Non-PC Holds Only)
@@ -591,9 +591,9 @@ df_county_level_charge_type_summary <- nh_eight_county_charge_clean_final_crime_
                                                                        accuracy = .1),
                     `Bookings for Probation/Parole Violation (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
                    `Bookings for Other Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Other"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1)) %>% 
@@ -614,9 +614,9 @@ df_county_level_charge_type_summary_statewide <- nh_eight_county_charge_clean_fi
                                                                        accuracy = .1),
                     `Bookings for Probation/Parole Violation (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
                    `Bookings for Other Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Other"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1)) %>% 
@@ -659,9 +659,9 @@ df_fy_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recod
                                                                        accuracy = .1),
                     `Bookings for Probation/Parole Violation (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
                    `Bookings for Other Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Other"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1)) %>% 
@@ -682,9 +682,9 @@ df_fy_charge_type_summary_statewide <- nh_eight_county_charge_clean_final_crime_
                                                                        accuracy = .1),
                     `Bookings for Probation/Parole Violation (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
                    `Bookings for Other Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Other"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1)) %>% 
@@ -752,9 +752,9 @@ df_hu_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recod
                                                                        accuracy = .1),
                     `Bookings for Probation/Parole Violation (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
                    `Bookings for Other Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Other"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1)) %>% 
@@ -775,9 +775,9 @@ df_hu_charge_type_summary_overall <- nh_eight_county_charge_clean_final_crime_ty
                                                                        accuracy = .1),
                     `Bookings for Probation/Parole Violation (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
                    `Bookings for Other Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Other"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1)) %>% 
@@ -800,7 +800,6 @@ kable(table_hu_charge_type_summary_final,
 ```
 
 <br><br>
-
 
 ### Charge Type for Individuals who are High Utilizers (based on single fiscal year calculations) 
 
@@ -846,9 +845,9 @@ df_hu_charge_type_summary_fy <- nh_eight_county_charge_clean_final_crime_type_re
                                                                        accuracy = .1),
                     `Bookings for Probation/Parole Violation (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
                    `Bookings for Other Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Other"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1)) %>% 
@@ -869,9 +868,9 @@ df_hu_charge_type_summary_overall_fy <- nh_eight_county_charge_clean_final_crime
                                                                        accuracy = .1),
                     `Bookings for Probation/Parole Violation (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
-                   `Bookings for Other Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
+                   `Bookings for Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1),
                    `Bookings for Other Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Other"])/`Unique Non-PC Bookings (N)`,
                                                                        accuracy = .1)) %>% 
@@ -895,7 +894,156 @@ kable(table_hu_charge_type_summary_final_fy,
 
 <br><br>
 
-## Charge Data Visuals
+## Charge Data Tables (% of bookings with a drug/alcohol charge)
+
+Note: The following tables report on the percentage of bookings with at least one drug/alcohol charge, regardless of whether it was the most serious charge recorded.
+
+<br>
+
+### % of Booking with any Drug/Alcohol Charge by Jail (Non-PC Holds Only)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique bookings with drug/alcohol charge by county
+df_county_level_drug_alcohol_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings with any Drug/Alcohol Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[booking_drug_alcohol_charge_present_flag==1])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`County` = county) 
+
+### overall bookings with drug/alcohol charge  for nh
+df_county_level_drug_alcohol_summary_statewide <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings with any Drug/Alcohol Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[booking_drug_alcohol_charge_present_flag==1])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`County` = "Statewide")
+
+### combine tables for kable
+table_county_level_drug_alcohol_summary_final <- rbind(df_county_level_drug_alcohol_summary,
+                                               df_county_level_drug_alcohol_summary_statewide)
+
+### print table via kableextra
+kable(table_county_level_drug_alcohol_summary_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(9, bold = TRUE)
+```
+
+<br><br>
+
+### % Bookings with any Drug/Alcohol Charge over Time (Non-PC Holds Only)
+
+Note: These booking frequencies by charge type are grouped by fiscal year of booking
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique bookings with drug/alcohol charge  by fiscal year
+df_fy_drug_alcohol_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  dplyr::group_by(fy) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings with any Drug/Alcohol Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[booking_drug_alcohol_charge_present_flag==1])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`Fiscal Year` = fy) 
+
+### overall bookings with drug/alcohol charge  for nh
+df_fy_drug_alcohol_summary_statewide <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings with any Drug/Alcohol Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[booking_drug_alcohol_charge_present_flag==1])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Fiscal Year` = "Overall")
+
+### combine tables for kable
+table_fy_drug_alcohol_summary_final <- rbind(df_fy_drug_alcohol_summary,
+                                            df_fy_drug_alcohol_summary_statewide)
+
+### print table via kableextra
+kable(table_fy_drug_alcohol_summary_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(4, bold = TRUE)
+```
+
+<br><br>
+
+### % Bookings with any Drug/Alcohol Charge for Individuals who are High Utilizers (based on all three years of data) 
+
+Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense?
+
+Below is the preliminary grouping I am using to confirm with the team. With this approach, this is not overlap of groups -- one individual is in one of the four groups (i.e., someone in the top 1% of jail entrances is only included in the 1% grouping, not the 5% and 10% grouping). I'm thinking that this may help us better see any differences between groupings of high utilizers, if they exist. Open to suggestions, though!
+
+* **Top 1%:** individual is in top 1% of jail entrances for all 3 years of sample
+
+* **Top 5%:** individual is in top 5% of jail entrances for all 3 years of sample (really this is 1% to 5%)
+
+* **Top 10%:** individual is in top 10% of jail entrances for all 3 years of sample (really this is 5% to 10%)
+
+* **Non-HU:** individual is not in top 10% of jail entrances for all 3 years of sample
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when( 
+    high_utilizer_10_pct=="No" ~ 4,
+    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct=="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
+    
+
+### unique bookings with drug/alcohol charge by HU grouping
+df_hu_drug_alcohol_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings with any Drug/Alcohol Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[booking_drug_alcohol_charge_present_flag==1])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+### overall bookings with drug/alcohol charge  for nh
+df_hu_drug_alcohol_summary_overall <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings with any Drug/Alcohol Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[booking_drug_alcohol_charge_present_flag==1])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`High Utilizer Percentiles` = "Overall")
+
+### combine tables for kable
+table_hu_drug_alcohol_summary_final <- rbind(df_hu_drug_alcohol_summary,
+                                            df_hu_drug_alcohol_summary_overall)
+
+### print table via kableextra
+kable(table_hu_drug_alcohol_summary_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+## Charge Data Visuals (most serious charge)
 
 Note: I am considering a booking to be 'unique' if the following values are together unique: id, inmate_id, booking_id, county (including county as we can't verify that each county is using different IDs for individuals and bookings). The count reported in the following tables is the unique number of bookings for which the most serious charge type is a violent charge, property charge, etc. If the charge(s) for a given booking do not fall into one of the charge type category, the charge is represented as "Other" in these visualizations.
 
@@ -1113,9 +1261,62 @@ ggplot(data = df_county_level_charge_type_summary_long,
 
 <br><br>
 
-### % Drug/Alcohol Charges by Jail (Non-PC Holds Only), Map
+### % Bookings with any Drug/Alcohol Charge by County (Non-PC Holds Only), Bar Plot
 
-Note: This analysis of the % of bookings which are drug/alcohol charges are presented by county of booking and include both probation/parole charges as well as unclassified charges (i.e., "other") unlike the prior two visuals. This map highlights county-level variation but grouping counties into four equally sized groups or quartiles.
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### unique bookings with drug/alcohol charge by county
+df_county_level_drug_alcohol_plot <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings with any Drug/Alcohol Charge (%)` = n_distinct(unique_booking_id_nh[booking_drug_alcohol_charge_present_flag==1])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`County` = county) 
+
+### bar plot
+ggplot(data = df_county_level_drug_alcohol_plot, aes(y = `Bookings with any Drug/Alcohol Charge (%)`, x = `County`, fill = forcats::fct_rev(`County`))) + 
+  geom_bar(stat = "identity",  color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), max(.4))) +
+  geom_label(
+    aes(
+      y = `Bookings with any Drug/Alcohol Charge (%)`,
+      label = scales::percent(`Bookings with any Drug/Alcohol Charge (%)`,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.ticks.length = unit(0, "cm"),
+        strip.text = element_markdown(),
+    strip.text.x = element_markdown(),
+    strip.text.y = element_markdown()) + 
+    coord_flip() 
+
+```
+
+<br><br>
+
+### % Bookings with Drug/Alcohol Charges by Jail (Non-PC Holds Only), Map
+
+Note: This analysis of the % of bookings with drug/alcohol charges (regardless of most serious charge) are presented by county of booking. This map highlights county-level variation by grouping counties into four equally sized groups or quartiles.
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
 ### read in nh county-level shape file    
@@ -1134,7 +1335,7 @@ nh_state_shape <- nh_county_shape %>%
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
-### set constants for maps
+### set constants for mapping
 default_font_color <- "#4e4d47"
 default_font_family <- "Arial"
 ```
@@ -1184,34 +1385,34 @@ theme_map <- function(...) {
 ```
 
 ```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
-### unique bookings per charge type by county
-df_county_level_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
-  dplyr::group_by(county) %>% 
-  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
-                   `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`) %>% 
-  ungroup() %>% 
-  distinct() 
+# ### unique bookings per charge type by county
+# df_county_level_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+#   dplyr::group_by(county) %>% 
+#   dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+#                    `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`) %>% 
+#   ungroup() %>% 
+#   distinct() 
 
 ### merge new district shapefile to nh data to attach geography and render the file map-able
-df_county_level_charge_type_summary_geo <- left_join(nh_county_shape, 
-                                                 df_county_level_charge_type_summary, 
-                                                 by = "county")
+df_county_level_charge_type_summary_geo <- left_join(nh_county_shape,
+                                                     df_county_level_drug_alcohol_plot,
+                                                     by = c("county"="County"))
 
 ### create quantiles object
 no_classes <- 4
 
 ### extract quantiles from var we're mapping
 quantiles <- df_county_level_charge_type_summary_geo %>%
-  pull(`Drug/Alcohol`) %>%
+  pull(`Bookings with any Drug/Alcohol Charge (%)`) %>%
   quantile(probs = seq(0, 1, length.out = no_classes + 1), na.rm=TRUE) %>%
   as.vector() 
 
 ### make labels for map's legend
-label_drug_alcohol_percent <- c("17% and Greater","12% to 17%","9% to 12%","9% and Lower")
+label_drug_alcohol_percent <- c("28% and Greater","20% to 28%","14% to 20%","14% and Lower")
 
 ### create a new variable with the specified quantiles
 df_county_level_charge_type_summary_geo_to_map <- df_county_level_charge_type_summary_geo %>%
-  mutate(percent_drug_alcohol_quartile = cut(-`Drug/Alcohol`,
+  mutate(percent_drug_alcohol_quartile = cut(-`Bookings with any Drug/Alcohol Charge (%)`,
                                breaks = -quantiles,
                                right = TRUE,
                                labels = label_drug_alcohol_percent,
@@ -1237,7 +1438,7 @@ ggplot(
   ) +
  scale_fill_manual(
     values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
-    name = "% Bookings for Drug/Alcohol\n Charges",
+    name = "% Bookings with Drug/Alcohol\n Charges",
     na.value = "grey50",
     guide = guide_legend(
      keyheight = unit(5, units = "mm"),
@@ -1280,7 +1481,7 @@ ggplot(
 
 ### % Public Order Charges by Jail (Non-PC Holds Only), Map
 
-Note: This analysis of the % of bookings which are public order charges are presented by county of booking and include both probation/parole charges as well as unclassified charges (i.e., "other") unlike the prior two visuals. This map highlights county-level variation but grouping counties into four equally sized groups or quartiles.
+Note: This analysis of the % of bookings where the most serious charge is a public order charge. This map highlights county-level variation by grouping counties into four equally sized groups or quartiles.
 
 ```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
 ### unique bookings per charge type by county
@@ -1479,16 +1680,14 @@ ggplot(data = df_hu_charge_type_summary_long,
 
 <br><br>
 
-### % Probation/Parole Violation Charges by Jail for High Utlizers (based on all three years of data), Map
+### % Probation/Parole Violation, FTA/Bail, and Public Order Charges by Jail for High Utlizers (based on all three years of data), Map
 
-Note: This analysis of the % of bookings which are probation/parole violations for the top 10% of HU are presented by county of booking. This map highlights county-level variation but grouping counties into four equally sized groups or quartiles. Analysis excludes FTA/Bail, temporary hold, and unclassified charges (i.e., "other").
+Note: This analysis of the % of bookings where the most serious charge is either a probation/parole violation, failure to appear (FTA) or bail related, or public order for the top 10% of HU. Statewide, these three types of charges appear to disproportionality occur with bookings for high/frequent utilizers. This map explores county-level variation by grouping counties into four equally sized groups or quartiles.
+
 
 ```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
 ### to recode high utilizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
 nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_pb_pa_violation_map <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
-  filter(!crime_type_clean%in%c("Other",
-                                "FTA/Bail",
-                                "Temporary Hold")) %>% 
   ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
   mutate(hu_group_exclusive = case_when( 
     high_utilizer_10_pct=="No" ~ 2,
@@ -1500,52 +1699,45 @@ nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_pb_pa_viol
     
 
 ### unique bookings per charge type by HU grouping
-df_hu_charge_type_probation_parole_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_pb_pa_violation_map %>% 
-  filter(!crime_type_clean%in%c("Other",
-                                "FTA/Bail",
-                                "Temporary Hold")) %>% 
+df_hu_charge_type_hu_map_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_pb_pa_violation_map %>% 
   dplyr::group_by(county,hu_group_exclusive) %>% 
   dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
-                   `Violent` = n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
-                   `Property` = n_distinct(unique_booking_id_nh[crime_type_clean=="Property"])/`Unique Non-PC Bookings (N)`,
-                   `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`,
-                   `Public Order` = n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`,
-                    `Probation/Parole Violation` = n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`) %>% 
+                   `Public Order/FTA/Bail/VOP` = n_distinct(unique_booking_id_nh[crime_type_clean%in%c("Public Order","FTA/Bail","Probation/Parole Violation")])/`Unique Non-PC Bookings (N)`) %>% 
   ungroup() %>% 
   distinct() %>% 
   filter(hu_group_exclusive!="Top 10%")
 
 ### merge new district shapefile to nh data to attach geography and render the file map-able
-df_hu_charge_type_probation_parole_summary_geo <- left_join(nh_county_shape, 
-                                                 df_hu_charge_type_probation_parole_summary, 
+df_hu_charge_type_hu_map_summary_geo <- left_join(nh_county_shape, 
+                                                 df_hu_charge_type_hu_map_summary, 
                                                  by = "county")
 
 ### create quantiles object
 no_classes <- 4
 
 ### extract quantiles from var we're mapping
-quantiles <- df_hu_charge_type_probation_parole_summary_geo %>%
-  pull(`Probation/Parole Violation`) %>%
+quantiles <- df_hu_charge_type_hu_map_summary_geo %>%
+  pull(`Public Order/FTA/Bail/VOP`) %>%
   quantile(probs = seq(0, 1, length.out = no_classes + 1), 
            na.rm=TRUE) %>%
   as.vector() 
 
 ### make labels for map's legend
-label_pb_pa_violation_percent <- c("21% and Greater","17% to 21%","15% to 17%","15% and Lower")
+label_vop_fta_bail_public_percent <- c("26% and Greater","21% to 26%","20% to 21%","20% and Lower")
 
 ### create a new variable with the specified quantiles
-df_hu_charge_type_probation_parole_summary_geo_to_map <- df_hu_charge_type_probation_parole_summary_geo %>%
-  mutate(percent_pb_pa_violation_quartile = cut(-`Probation/Parole Violation`,
+df_hu_charge_type_hu_map_summary_geo_to_map <- df_hu_charge_type_hu_map_summary_geo %>%
+  mutate(percent_vop_fta_bail_public_quartile = cut(-`Public Order/FTA/Bail/VOP`,
                                breaks = -quantiles,
                                right = TRUE,
-                               labels = label_pb_pa_violation_percent,
+                               labels = label_vop_fta_bail_public_percent,
                                include.lowest = T)) 
 
 
 ### map via ggplot 
 ggplot(
   # define main data source
-  data = df_hu_charge_type_probation_parole_summary_geo_to_map
+  data = df_hu_charge_type_hu_map_summary_geo_to_map
 ) +
   scale_alpha(name = "",
               range = c(0.6, 0),
@@ -1554,14 +1746,14 @@ ggplot(
   # use thin white stroke for municipality borders
   geom_sf(
     mapping = aes(
-      fill = percent_pb_pa_violation_quartile
+      fill = percent_vop_fta_bail_public_quartile
       ),
     color = "white",
     size = 0.1
   ) +
  scale_fill_manual(
     values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
-    name = "% Bookings for Probation/Parole\n Violations\n(Top 10% of High Utilizers)",
+    name = "% Bookings for VOP, FTA/Bail, or Public Order\n(Top 10% of High Utilizers)",
     na.value = "grey50",
     guide = guide_legend(
      keyheight = unit(5, units = "mm"),
@@ -1570,7 +1762,7 @@ ggplot(
   )) +
   # use white stroke borders for county boundaries
   geom_sf(
-    data = df_hu_charge_type_probation_parole_summary_geo_to_map,
+    data = df_hu_charge_type_hu_map_summary_geo_to_map,
     fill = "transparent",
     color = "white",
     size = 1
@@ -1583,7 +1775,7 @@ ggplot(
   #   size = .3
   # )  +
   geom_label(
-     data = df_hu_charge_type_probation_parole_summary_geo_to_map, 
+     data = df_hu_charge_type_hu_map_summary_geo_to_map, 
      aes(geometry = geometry, 
          label = county),
     family = "Franklin Gothic Demi",
