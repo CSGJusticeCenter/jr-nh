@@ -11,9 +11,7 @@
 
 ### TO DO/TALK THROUGH: 
 
-# - TO DOUBLE CHECK: START WITH adm_all.rda INSTEAD OF INDIVIDUAL COUNTY FILES B/C MARI CLEANED UP CHARGE/PC HOLD FLAGS AFTER JOINING COUNTIES TOGETHER?
-
-# - De-dup by individual/booking -- keeping most serious crime type? (hierarchy: violent, property, drug/alcohol, public order, vop?)
+# - De-dup by individual/booking -- keeping most serious crime type? (hierarchy: violent, property, drug/alcohol, public order, vop, fta/bail, temp. hold, other)
 # all jails appear to have submitted all charges associated with a given individual/booking (i.e., instances with multiple charges for one booking id)
 
 # - Missing charge code/charge description data by county. How should we interpret this? Only Belknap seems to have somewhat notable missingness: 
@@ -96,7 +94,7 @@ charge_codes_crime_type_lookup <- charge_codes.xlsx %>%
            statute_title_lookup,
            crime_type,
            .keep_all = TRUE) %>% ### de-dup by offense information and crime type 
-  select(charge_code_lookup, descriptor_lookup, statute_title_lookup, crime_type_lookup=crime_type) 
+  dplyr::select(charge_code_lookup, descriptor_lookup, statute_title_lookup, crime_type_lookup=crime_type) 
 
 
 ### removing degree and cleaning of degree from syntax for reasons stated above;
@@ -228,13 +226,15 @@ belknap_adm_charge_clean_final <- rbind(belknap_adm_charge_clean_join_one,
 ### now we want to de-dup by booking (one booking may have multiple charges associated) 
 ### keep most serious charge by crime type (hierarchy: violent, property, drug/alcohol, public order, vop)
   mutate(crime_type_severity_order = case_when(
-        crime_type_lookup=="Violent" ~ 1,
-        crime_type_lookup=="Property" ~ 2,
-        crime_type_lookup=="Drug/Alcohol" ~ 3,
-        crime_type_lookup=="Public Order" ~ 4,
-        crime_type_lookup=="Probation/Parole Violation" ~ 5,
-        is.na(crime_type_lookup)==TRUE ~ 6,
-        TRUE ~ as.numeric(NA))) %>%
+    crime_type_lookup=="Violent" ~ 1,
+    crime_type_lookup=="Property" ~ 2,
+    crime_type_lookup=="Drug/Alcohol" ~ 3,
+    crime_type_lookup=="Public Order" ~ 4,
+    crime_type_lookup=="Probation/Parole Violation" ~ 5,
+    crime_type_lookup=="FTA/Bail" ~ 6,
+    crime_type_lookup=="Temporary Hold" ~ 7,
+    is.na(crime_type_lookup)==TRUE ~ 8,
+    TRUE ~ as.numeric(NA))) %>%
   arrange(id,
           inmate_id,
           booking_id,
@@ -254,6 +254,7 @@ belknap_adm_charge_clean_final <- rbind(belknap_adm_charge_clean_join_one,
   
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 ### missing clean charge data for 305 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
+### 305/2680 (i.e. what % of non-pc holds have missing charge data) = 11.3%
 table(belknap_adm_charge_clean_final$missing_lookup_charge_data,belknap_adm_charge_clean_final$pc_hold) 
 
 
@@ -356,7 +357,9 @@ carroll_adm_charge_clean_final <- rbind(carroll_adm_charge_clean_join_one,
     crime_type_lookup=="Drug/Alcohol" ~ 3,
     crime_type_lookup=="Public Order" ~ 4,
     crime_type_lookup=="Probation/Parole Violation" ~ 5,
-    is.na(crime_type_lookup)==TRUE ~ 6,
+    crime_type_lookup=="FTA/Bail" ~ 6,
+    crime_type_lookup=="Temporary Hold" ~ 7,
+    is.na(crime_type_lookup)==TRUE ~ 8,
     TRUE ~ as.numeric(NA))) %>%
   arrange(id,
           inmate_id,
@@ -478,7 +481,9 @@ cheshire_adm_charge_clean_final <- rbind(cheshire_adm_charge_clean_join_one,
     crime_type_lookup=="Drug/Alcohol" ~ 3,
     crime_type_lookup=="Public Order" ~ 4,
     crime_type_lookup=="Probation/Parole Violation" ~ 5,
-    is.na(crime_type_lookup)==TRUE ~ 6,
+    crime_type_lookup=="FTA/Bail" ~ 6,
+    crime_type_lookup=="Temporary Hold" ~ 7,
+    is.na(crime_type_lookup)==TRUE ~ 8,
     TRUE ~ as.numeric(NA))) %>%
   arrange(id,
           inmate_id,
@@ -499,6 +504,7 @@ cheshire_adm_charge_clean_final <- rbind(cheshire_adm_charge_clean_join_one,
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 ### missing clean charge data for 3 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
+### 3/2981 (i.e. what % of non-pc holds have missing charge data) = 0.01%
 table(cheshire_adm_charge_clean_final$missing_lookup_charge_data,cheshire_adm_charge_clean_final$pc_hold)
 
 ##################################
@@ -600,7 +606,9 @@ coos_adm_charge_clean_final <- rbind(coos_adm_charge_clean_join_one,
     crime_type_lookup=="Drug/Alcohol" ~ 3,
     crime_type_lookup=="Public Order" ~ 4,
     crime_type_lookup=="Probation/Parole Violation" ~ 5,
-    is.na(crime_type_lookup)==TRUE ~ 6,
+    crime_type_lookup=="FTA/Bail" ~ 6,
+    crime_type_lookup=="Temporary Hold" ~ 7,
+    is.na(crime_type_lookup)==TRUE ~ 8,
     TRUE ~ as.numeric(NA))) %>%
   arrange(id,
           inmate_id,
@@ -697,7 +705,7 @@ hillsborough_adm_charge_clean_join_one <- hillsborough_adm_charge_clean %>%
 ### join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
 hillsborough_adm_charge_clean_join_two <- hillsborough_adm_charge_clean_join_one %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -715,7 +723,7 @@ hillsborough_adm_charge_clean_join_two <- hillsborough_adm_charge_clean_join_one
 ### join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
 hillsborough_adm_charge_clean_join_three <- hillsborough_adm_charge_clean_join_two %>% 
   filter(is.na(descriptor_lookup) == TRUE) %>% 
-  select(-c(charge_code_lookup,
+  dplyr::select(-c(charge_code_lookup,
             descriptor_lookup,
             statute_title_lookup,
             crime_type_lookup)) %>% ### remove these columns to avoid duplicates (e.g. .x and .y) for rbind  
@@ -754,7 +762,9 @@ hillsborough_adm_charge_clean_final <- rbind(hillsborough_adm_charge_clean_join_
     crime_type_lookup=="Drug/Alcohol" ~ 3,
     crime_type_lookup=="Public Order" ~ 4,
     crime_type_lookup=="Probation/Parole Violation" ~ 5,
-    is.na(crime_type_lookup)==TRUE ~ 6,
+    crime_type_lookup=="FTA/Bail" ~ 6,
+    crime_type_lookup=="Temporary Hold" ~ 7,
+    is.na(crime_type_lookup)==TRUE ~ 8,
     TRUE ~ as.numeric(NA))) %>%
   arrange(id,
           inmate_id,
@@ -778,7 +788,8 @@ hillsborough_adm_charge_clean_final <- rbind(hillsborough_adm_charge_clean_join_
 ### excluding PC holds, see what % of non-pc hold bookings join to lookup table
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
-### missing clean charge data for 42 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
+### missing clean charge data for 101 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
+### 101/10239 (i.e. what % of non-pc holds have missing charge data) = 1%
 table(hillsborough_adm_charge_clean_final$missing_lookup_charge_data,hillsborough_adm_charge_clean_final$pc_hold)
 
 ##################################
@@ -858,7 +869,9 @@ merrimack_adm_charge_clean_final <- rbind(merrimack_adm_charge_clean_join_one,
     crime_type_lookup=="Drug/Alcohol" ~ 3,
     crime_type_lookup=="Public Order" ~ 4,
     crime_type_lookup=="Probation/Parole Violation" ~ 5,
-    is.na(crime_type_lookup)==TRUE ~ 6,
+    crime_type_lookup=="FTA/Bail" ~ 6,
+    crime_type_lookup=="Temporary Hold" ~ 7,
+    is.na(crime_type_lookup)==TRUE ~ 8,
     TRUE ~ as.numeric(NA))) %>%
   arrange(id,
           inmate_id,
@@ -878,6 +891,7 @@ merrimack_adm_charge_clean_final <- rbind(merrimack_adm_charge_clean_join_one,
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 ### missing clean charge data for 125 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
+### 125/4504 (i.e. what % of non-pc holds have missing charge data) = 2.7%
 table(merrimack_adm_charge_clean_final$missing_lookup_charge_data,merrimack_adm_charge_clean_final$pc_hold)
 
 ##################################
@@ -979,7 +993,9 @@ rockingham_adm_charge_clean_final <- rbind(rockingham_adm_charge_clean_join_one,
     crime_type_lookup=="Drug/Alcohol" ~ 3,
     crime_type_lookup=="Public Order" ~ 4,
     crime_type_lookup=="Probation/Parole Violation" ~ 5,
-    is.na(crime_type_lookup)==TRUE ~ 6,
+    crime_type_lookup=="FTA/Bail" ~ 6,
+    crime_type_lookup=="Temporary Hold" ~ 7,
+    is.na(crime_type_lookup)==TRUE ~ 8,
     TRUE ~ as.numeric(NA))) %>%
   arrange(id,
           inmate_id,
@@ -999,6 +1015,7 @@ rockingham_adm_charge_clean_final <- rbind(rockingham_adm_charge_clean_join_one,
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 ### missing clean charge data for 16 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
+### 16/6076 (i.e. what % of non-pc holds have missing charge data) = 0.3%
 table(rockingham_adm_charge_clean_final$missing_lookup_charge_data,rockingham_adm_charge_clean_final$pc_hold)
 
 ##################################
@@ -1108,7 +1125,9 @@ sullivan_adm_charge_clean_final <- rbind(sullivan_adm_charge_clean_join_one,
     crime_type_lookup=="Drug/Alcohol" ~ 3,
     crime_type_lookup=="Public Order" ~ 4,
     crime_type_lookup=="Probation/Parole Violation" ~ 5,
-    is.na(crime_type_lookup)==TRUE ~ 6,
+    crime_type_lookup=="FTA/Bail" ~ 6,
+    crime_type_lookup=="Temporary Hold" ~ 7,
+    is.na(crime_type_lookup)==TRUE ~ 8,
     TRUE ~ as.numeric(NA))) %>%
   arrange(id,
           inmate_id,
@@ -1128,6 +1147,8 @@ sullivan_adm_charge_clean_final <- rbind(sullivan_adm_charge_clean_join_one,
 
 ### let's see how many non-pc holdings are still missing charge data after cleaning and joining to the lookup table
 ### missing clean charge data for 26 non-PC bookings -- all of which are missing charge codes and descriptions in jail-provided data
+### 26/1441 (i.e. what % of non-pc holds have missing charge data) = 1.8%
+
 table(sullivan_adm_charge_clean_final$missing_lookup_charge_data,sullivan_adm_charge_clean_final$pc_hold)
 
 #######################################################
