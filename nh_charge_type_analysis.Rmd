@@ -14,7 +14,7 @@ The following analysis uses jail administrative data submitted directly to CSG i
 
 It appears that the best option, at this point, is to categorize the charges into violent, public order, drugs/alcohol, property, and probation/parole violation. Drawing from approaches used by the NH Department of Safety (see https://crimestats.dos.nh.gov/public/Dim/dimension.aspx) as well as FBI definitions for both NIBRS and UCR data (see https://www.waspc.org/assets/CJIS/trainingmanualsandreference/nibrsvssummaryoverview.pdf), I categorized certain offenses into these categories. For full list of which offenses are grouped into each crime type, see table below.
 
-**Business Rules**: When cleaning the charge data, I first de-duplicated by individual (id + inmate_id), booking (booking_id), and charge (either charge_code or charge_desc depending on data availability). There appear to be some duplicates across these fields, but we have no way of knowing if two identical charges for the same booking represents a duplicated entry or multiple counts of the same charge. Unfortunately, this will likely just be a limitation of this analysis. After joining the jail charge data to the updated look-up table with crime type data, I de-duplicated the file again by individual and booking -- keeping the most serious charge type. Here is the crime type hierarchy (in order of severity) I used for this decision: violent, property, drug/alcohol, public order, violation of probation/parole, Failure to Appear/Bail, Temporary Hold, and then other/missing categories. One limitation is that we are not able to account for degree/severity of charge (felony vs. misdemeanor) with this approach. Does this make sense?
+**Business Rules**: When cleaning the charge data, I first de-duplicated by individual (id + inmate_id), booking (booking_id), and charge (either charge_code or charge_desc depending on data availability). There appear to be some duplicates across these fields, but we have no way of knowing if two identical charges for the same booking represents a duplicated entry or multiple counts of the same charge. Unfortunately, this will likely just be a limitation of this analysis. After joining the jail charge data to the updated look-up table with crime type data, I de-duplicated the file again by individual and booking -- keeping the most serious charge type. Here is the crime type hierarchy (in order of severity) I used for this decision: violent, property, drug/alcohol, public order, violation of probation/parole, Failure to Appear/Bail, Temporary Hold, and then other/missing categories. One limitation is that we are not able to account for degree/severity of charge (felony vs. misdemeanor) with this approach. 
 
 
 **Remaining Questions for Superintendents**:
@@ -1043,9 +1043,9 @@ kable(table_hu_drug_alcohol_summary_final,
 
 <br><br>
 
-## Charge Data Visuals (most serious charge)
+## Charge Data Visuals
 
-Note: I am considering a booking to be 'unique' if the following values are together unique: id, inmate_id, booking_id, county (including county as we can't verify that each county is using different IDs for individuals and bookings). The count reported in the following tables is the unique number of bookings for which the most serious charge type is a violent charge, property charge, etc. If the charge(s) for a given booking do not fall into one of the charge type category, the charge is represented as "Other" in these visualizations.
+Note: I am considering a booking to be 'unique' if the following values are together unique: id, inmate_id, booking_id, county (including county as we can't verify that each county is using different IDs for individuals and bookings).
 
 <br>
 
