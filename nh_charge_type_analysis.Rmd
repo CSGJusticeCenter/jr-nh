@@ -1106,7 +1106,83 @@ ggplot(data = df_nh_charge_type_overall, aes(y = `Bookings, Percent of Sample (%
 
 <br><br>
 
-### Figure 2. Charge Type over Time (Non-PC Holds Only)
+### Figure 2. Charge Type by Jail (Non-PC Holds Only), Bar Plot
+
+Note: These booking frequencies by charge type are grouped by county of booking and exclude FTA/Bail, temporary hold, and unclassified charges (i.e., "other")
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### unique bookings per charge type by county
+df_county_level_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  filter(!crime_type_clean%in%c("Other",
+                                "FTA/Bail",
+                                "Temporary Hold")) %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Violent` = n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
+                   `Property` = n_distinct(unique_booking_id_nh[crime_type_clean=="Property"])/`Unique Non-PC Bookings (N)`,
+                   `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`,
+                   `Public Order` = n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`,
+                   `Probation/Parole Violation` = n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`County` = county) 
+
+### pivot df long for ggplot 
+df_county_level_charge_type_summary_long <- df_county_level_charge_type_summary %>%
+  gather(charge_type, percent, `Violent`:`Probation/Parole Violation`) %>% 
+  mutate(percent_label = scales::percent(percent, 
+                                         accuracy = 1))
+
+
+### ggplot
+ggplot(data = df_county_level_charge_type_summary_long, 
+       aes(y = percent, 
+           x = `County`, 
+           fill = forcats::fct_rev(charge_type))) + 
+  geom_bar(stat = "identity", 
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("#2F7084",
+                               "#1F4A58",
+                               "#E17619",
+                               "#87C2D4",
+                               "#61C280")) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  geom_label(aes(y = percent,
+      label = percent_label,
+      fontface = "bold"),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = "Charge Type",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+```
+
+<br><br>
+
+### Figure 3. Charge Type over Time (Non-PC Holds Only)
 
 Note: These booking frequencies by charge type are grouped by fiscal year of booking and exclude FTA/Bail, temporary hold, and unclassified charges (i.e., "other")
 
@@ -1185,83 +1261,7 @@ ggplot(data = df_fy_charge_type_summary_long,
 
 <br><br>
 
-### Figure 3. Charge Type by County (Non-PC Holds Only), Bar Plot
-
-Note: These booking frequencies by charge type are grouped by county of booking and exclude FTA/Bail, temporary hold, and unclassified charges (i.e., "other")
-
-```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
-### unique bookings per charge type by county
-df_county_level_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
-  filter(!crime_type_clean%in%c("Other",
-                                "FTA/Bail",
-                                "Temporary Hold")) %>% 
-  dplyr::group_by(county) %>% 
-  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
-                   `Violent` = n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
-                   `Property` = n_distinct(unique_booking_id_nh[crime_type_clean=="Property"])/`Unique Non-PC Bookings (N)`,
-                   `Drug/Alcohol` = n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`,
-                   `Public Order` = n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`,
-                   `Probation/Parole Violation` = n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`) %>% 
-  ungroup() %>% 
-  distinct() %>% 
-  dplyr::rename(`County` = county) 
-
-### pivot df long for ggplot 
-df_county_level_charge_type_summary_long <- df_county_level_charge_type_summary %>%
-  gather(charge_type, percent, `Violent`:`Probation/Parole Violation`) %>% 
-  mutate(percent_label = scales::percent(percent, 
-                                         accuracy = 1))
-
-
-### ggplot
-ggplot(data = df_county_level_charge_type_summary_long, 
-       aes(y = percent, 
-           x = `County`, 
-           fill = forcats::fct_rev(charge_type))) + 
-  geom_bar(stat = "identity", 
-           color = "gray80") +
-  scale_x_discrete(limits = rev) +
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c("#2F7084",
-                               "#1F4A58",
-                               "#E17619",
-                               "#87C2D4",
-                               "#61C280")) +
-  guides(fill = guide_legend(reverse = TRUE,
-                             title.position = "top",
-                             label.position = "bottom",
-                             keywidth = 3,
-                             nrow = 1)) +
-  geom_label(aes(y = percent,
-      label = percent_label,
-      fontface = "bold"),
-    position = position_stack(vjust = .5),
-    size = 5,
-    colour = "white",
-    show.legend = FALSE) +
-  labs(x = NULL, y = NULL,
-       fill = "Charge Type",
-       caption = NULL,
-       title = NULL,
-       subtitle = NULL) +
-  theme(legend.position = "top",
-        legend.title.align=0.5,
-        plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5),
-        plot.caption = element_text(hjust = 0.5),
-        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
-        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
-        axis.ticks.length = unit(0, "cm"),
-        panel.grid.major.y = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor = element_blank()) +
-  coord_flip()
-
-```
-
-<br><br>
-
-### Figure 4. Percent of Bookings with any Drug/Alcohol Charge by County (Non-PC Holds Only), Bar Plot
+### Figure 4. Percent of Bookings with any Drug/Alcohol Charge by Jail (Non-PC Holds Only), Bar Plot
 
 ```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
 ### unique bookings with drug/alcohol charge by county
