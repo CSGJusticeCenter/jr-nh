@@ -574,7 +574,7 @@ kable(df_nh_other_offense_desc_count_top_20,
 ## Charge Data Tables (most serious charge)
 
 
-### Charge Type by Jail (Non-PC Holds Only)
+### Table 1. Charge Type by Jail (Non-PC Holds Only)
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### unique bookings per charge type by county
@@ -640,7 +640,7 @@ kable(table_county_level_charge_type_summary_final,
 
 <br><br>
 
-### Charge Type over Time (Non-PC Holds Only)
+### Table 2. Charge Type over Time (Non-PC Holds Only)
 
 Note: These booking frequencies by charge type are grouped by fiscal year of booking
 
@@ -708,7 +708,7 @@ kable(table_fy_charge_type_summary_final,
 
 <br><br>
 
-### Charge Type for Individuals who are High Utilizers (based on all three years of data) 
+### Table 3. Charge Type for Individuals who are High Utilizers (based on all three years of data) 
 
 Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense?
 
@@ -801,7 +801,7 @@ kable(table_hu_charge_type_summary_final,
 
 <br><br>
 
-### Charge Type for Individuals who are High Utilizers (based on single fiscal year calculations) 
+### Table 4. Charge Type for Individuals who are High Utilizers (based on single fiscal year calculations) 
 
 Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense?
 
@@ -900,7 +900,7 @@ Note: The following tables report on the percentage of bookings with at least on
 
 <br>
 
-### % of Booking with any Drug/Alcohol Charge by Jail (Non-PC Holds Only)
+### Table 5. Percent of Booking with any Drug/Alcohol Charge by Jail (Non-PC Holds Only)
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### unique bookings with drug/alcohol charge by county
@@ -938,7 +938,7 @@ kable(table_county_level_drug_alcohol_summary_final,
 
 <br><br>
 
-### % Bookings with any Drug/Alcohol Charge over Time (Non-PC Holds Only)
+### Table 6. Percent of Bookings with any Drug/Alcohol Charge over Time (Non-PC Holds Only)
 
 Note: These booking frequencies by charge type are grouped by fiscal year of booking
 
@@ -978,7 +978,7 @@ kable(table_fy_drug_alcohol_summary_final,
 
 <br><br>
 
-### % Bookings with any Drug/Alcohol Charge for Individuals who are High Utilizers (based on all three years of data) 
+### Table 7. Percent of Bookings with any Drug/Alcohol Charge for Individuals who are High Utilizers (based on all three years of data) 
 
 Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense?
 
@@ -1049,7 +1049,7 @@ Note: I am considering a booking to be 'unique' if the following values are toge
 
 <br>
 
-### Charge Type across State (Non-PC Holds Only)
+### Figure 1. Charge Type across State (Non-PC Holds Only)
 
 ```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
 ### create denominator -- unique bookings for entire df
@@ -1106,7 +1106,7 @@ ggplot(data = df_nh_charge_type_overall, aes(y = `Bookings, Percent of Sample (%
 
 <br><br>
 
-### Charge Type over Time (Non-PC Holds Only)
+### Figure 2. Charge Type over Time (Non-PC Holds Only)
 
 Note: These booking frequencies by charge type are grouped by fiscal year of booking and exclude FTA/Bail, temporary hold, and unclassified charges (i.e., "other")
 
@@ -1185,7 +1185,7 @@ ggplot(data = df_fy_charge_type_summary_long,
 
 <br><br>
 
-### Charge Type by County (Non-PC Holds Only), Bar Plot
+### Figure 3. Charge Type by County (Non-PC Holds Only), Bar Plot
 
 Note: These booking frequencies by charge type are grouped by county of booking and exclude FTA/Bail, temporary hold, and unclassified charges (i.e., "other")
 
@@ -1261,7 +1261,7 @@ ggplot(data = df_county_level_charge_type_summary_long,
 
 <br><br>
 
-### % Bookings with any Drug/Alcohol Charge by County (Non-PC Holds Only), Bar Plot
+### Figure 4. Percent of Bookings with any Drug/Alcohol Charge by County (Non-PC Holds Only), Bar Plot
 
 ```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
 ### unique bookings with drug/alcohol charge by county
@@ -1314,7 +1314,7 @@ ggplot(data = df_county_level_drug_alcohol_plot, aes(y = `Bookings with any Drug
 
 <br><br>
 
-### % Bookings with Drug/Alcohol Charges by Jail (Non-PC Holds Only), Map
+### Figure 5. Percent of Bookings with Drug/Alcohol Charges by Jail (Non-PC Holds Only), Map
 
 Note: This analysis of the % of bookings with drug/alcohol charges (regardless of most serious charge) are presented by county of booking. This map highlights county-level variation by grouping counties into four equally sized groups or quartiles.
 
@@ -1479,7 +1479,7 @@ ggplot(
 
 <br><br>
 
-### % Public Order Charges by Jail (Non-PC Holds Only), Map
+### Figure 6. Percent of Public Order Charges by Jail (Non-PC Holds Only), Map
 
 Note: This analysis of the % of bookings where the most serious charge is a public order charge. This map highlights county-level variation by grouping counties into four equally sized groups or quartiles.
 
@@ -1577,7 +1577,7 @@ ggplot(
 
 <br><br>
 
-### Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
+### Figure 7. Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
 
 Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense? Analysis excludes FTA/Bail, temporary hold, and unclassified charges (i.e., "other").
 
@@ -1680,7 +1680,7 @@ ggplot(data = df_hu_charge_type_summary_long,
 
 <br><br>
 
-### % Probation/Parole Violation, FTA/Bail, and Public Order Charges by Jail for High Utlizers (based on all three years of data), Map
+### Figure 8. Percent of Charges that are Probation/Parole Violation, FTA/Bail, and Public Order by Jail for High Utlizers (based on all three years of data), Map
 
 Note: This analysis of the % of bookings where the most serious charge is either a probation/parole violation, failure to appear (FTA) or bail related, or public order for the top 10% of HU. Statewide, these three types of charges appear to disproportionality occur with bookings for high/frequent utilizers. This map explores county-level variation by grouping counties into four equally sized groups or quartiles.
 
