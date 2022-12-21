@@ -87,27 +87,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>JRI New Hampshire Project: Racial Disparities</title>
+  <title>JRI New Hampshire Project: Racial/Ethnic Disparity Analysis</title>
 
 
   <link rel="icon" type="image/png" href="img/favicon.png"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="JRI New Hampshire Project: Racial Disparities"/>
+  <meta property="og:title" content="JRI New Hampshire Project: Racial/Ethnic Disparity Analysis"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="JRI New Hampshire Project"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="JRI New Hampshire Project: Racial Disparities"/>
+  <meta property="twitter:title" content="JRI New Hampshire Project: Racial/Ethnic Disparity Analysis"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Racial Disparities"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Racial/Ethnic Disparity Analysis"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2366,7 +2366,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2386,7 +2388,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Racial Disparities","authors":[]}
+{"title":"Racial/Ethnic Disparity Analysis","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2408,6 +2410,8 @@ Overall Trends
 <a href="nh_incarceration_patterns.html">Incarceration Patterns</a>
 <a href="nh_pc_holds.html">Protective Custody Holds</a>
 <a href="nh_high_utilizers_analysis.html">High Utilizers</a>
+<a href="nh_booking_types_analysis.html">Booking Types</a>
+<a href="nh_charge_type_analysis.html">Charge Types</a>
 <a href="nh_demographics_analysis.html">Demographics</a>
 <a href="nh_medicaid_analysis.html">Medicaid</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
@@ -2454,7 +2458,7 @@ Research
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Racial Disparities</h1>
+<h1>Racial/Ethnic Disparity Analysis</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2462,7 +2466,845 @@ Research
 
 
 <div class="d-article">
-<p>Coming soon.</p>
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a href="#descriptive-analysis-of-racialethnic-disparity"
+id="toc-descriptive-analysis-of-racialethnic-disparity">Descriptive
+Analysis of Racial/Ethnic Disparity</a>
+<ul>
+<li><a href="#frequency-tables-raceethnicity"
+id="toc-frequency-tables-raceethnicity">Frequency Tables,
+Race/Ethnicity</a>
+<ul>
+<li><a href="#raceethnicity-new-hampshire-adult-population-2020-census"
+id="toc-raceethnicity-new-hampshire-adult-population-2020-census">Race/Ethnicity,
+New Hampshire Adult Population (2020 Census)</a></li>
+<li><a href="#raceethnicity-of-jail-booking-population"
+id="toc-raceethnicity-of-jail-booking-population">Race/Ethnicity of Jail
+Booking Population</a></li>
+<li><a
+href="#raceethnicity-of-jail-booking-population-pc-hold-versus-non-pc-hold"
+id="toc-raceethnicity-of-jail-booking-population-pc-hold-versus-non-pc-hold">Race/Ethnicity
+of Jail Booking Population: PC-Hold versus non-PC Hold</a></li>
+<li><a
+href="#raceethnicity-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population-top-10-threshold"
+id="toc-raceethnicity-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population-top-10-threshold">Race/Ethnicity
+of New Hampshire Overall Adult Population, Jail Population, and High
+Jail Utilizer Population (top 10% threshold)</a></li>
+</ul></li>
+<li><a href="#relative-rate-index-rri"
+id="toc-relative-rate-index-rri">Relative Rate Index (RRI)</a>
+<ul>
+<li><a
+href="#statewide-rri-table-overall-jail-population-and-high-utilizer-population-using-top-10-threshold"
+id="toc-statewide-rri-table-overall-jail-population-and-high-utilizer-population-using-top-10-threshold">Statewide
+RRI Table: overall jail population and high utilizer population (using
+top 10% threshold)</a></li>
+<li><a
+href="#statewide-rri-visual-overall-jail-population-and-high-utilizer-population-using-top-10-threshold"
+id="toc-statewide-rri-visual-overall-jail-population-and-high-utilizer-population-using-top-10-threshold">Statewide
+RRI Visual: overall jail population and high utilizer population (using
+top 10% threshold)</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+</div>
+<h1 id="descriptive-analysis-of-racialethnic-disparity">Descriptive
+Analysis of Racial/Ethnic Disparity</h1>
+<p><strong>Note:</strong> Data source for New Hampshire adult population
+is the 2020 Census (<a
+href="https://www.census.gov/programs-surveys/decennial-census/decade/2020/2020-census-main.html"
+class="uri">https://www.census.gov/programs-surveys/decennial-census/decade/2020/2020-census-main.html</a>)</p>
+<p><br></p>
+<p><em>This page includes the following descriptive analysis:</em></p>
+<p><em>Frequency Tables</em></p>
+<ul>
+<li><p>Frequency table of race/ethnicity for New Hampshire adult
+population</p></li>
+<li><p>Frequency table of race/ethnicity for jail population (overall,
+PC/Non-PC bookings, and high jail utilizers)</p></li>
+</ul>
+<p><em>Relative Rate Index (RRI)</em></p>
+<p>The Relative Rate Index (RRI) provides a measure of disparity in
+outcomes for different racial and ethnic groups by comparing the rates
+at which individuals of different races/ethnic groups experience
+supervision and revocation. To calculate the RRI, the rate of each
+outcome of interest for individuals who are Asian/Pacific Islander,
+Black, or Hispanic is divided by the rate at which the outcome occurs
+for individuals who are White. For example, the RRI for jail booking
+rate uses the booking rate for Hispanic adults (e.g., number of
+individuals in jail who are Hispanic per 10,000 adult New Hampshirites
+who are Hispanic) and divides it by the booking rate for White adults
+(e.g., number of individuals in jail who are White per 10,000 adult New
+Hampshirites who are White) to create a comparison of the two rates.</p>
+<p>A RRI of 1 indicates no disparity. RRIs greater than 1 indicate the
+outcome occurs more frequently for individuals who are Asian/Pacific
+Islander, Black, or Hispanic, and an RRI less than 1 indicates an
+outcome occurs less frequently than for individuals who are White. All
+rates are calculated at the individual level.</p>
+<ul>
+<li><p>Relative rate index, overall jail population (using New Hampshire
+adult population data as denominator)</p></li>
+<li><p>Relative rate index, overall high jail utilizer population (using
+top 10% threshold) (using New Hampshire adult population data as
+denominator)</p></li>
+<li><p>TBD: Relative rate index, rate of Medicaid Behavioral Health
+needs (<em>this analysis will be separately using the matched medicaid
+data from DHHS, using matched jail population as
+denominator</em>)</p></li>
+</ul>
+<p>Here is a visualization, developed by Sara Bastomski, breaking down
+the calculation of an unadjusted relative rate index (unadjusted means
+that we have not run any regression models to account for additional
+individual-level factors such as gender, age, offense, or criminal
+history). The numbers will look a little different than what is
+presented later because we have rounded in this example.</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="img/nh_rri_example_viz.PNG" width="908" /></p>
+</div>
+<p><br><br></p>
+<h2 id="frequency-tables-raceethnicity">Frequency Tables,
+Race/Ethnicity</h2>
+<p><br></p>
+<h3
+id="raceethnicity-new-hampshire-adult-population-2020-census">Race/Ethnicity,
+New Hampshire Adult Population (2020 Census)</h3>
+<div class="layout-chunk" data-layout="l-body-outset">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Race/Ethnicity
+</th>
+<th style="text-align:center;">
+State Population Estimate (n)
+</th>
+<th style="text-align:center;">
+State Population Estimate (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+AAPI
+</td>
+<td style="text-align:center;">
+28,523
+</td>
+<td style="text-align:center;">
+2.5
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+American Indian or Alaska Native
+</td>
+<td style="text-align:center;">
+3,031
+</td>
+<td style="text-align:center;">
+0.3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Black
+</td>
+<td style="text-align:center;">
+14,841
+</td>
+<td style="text-align:center;">
+1.3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Hispanic
+</td>
+<td style="text-align:center;">
+39,800
+</td>
+<td style="text-align:center;">
+3.6
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+White
+</td>
+<td style="text-align:center;">
+1,005,446
+</td>
+<td style="text-align:center;">
+89.7
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h3 id="raceethnicity-of-jail-booking-population">Race/Ethnicity of Jail
+Booking Population</h3>
+<p>Note: This table is unique by individual, not booking. These data do
+not allow for analysis of individuals across jails, but we can use the
+DHHS-provided Medicaid data for that. Percentages are column
+percentages, not row percentages</p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Race/Ethnicity
+</th>
+<th style="text-align:center;">
+Individuals Booked into Jail (N)
+</th>
+<th style="text-align:center;">
+Individuals Booked into Jail (%)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 10% (N)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 10% (%)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 5% (N)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 5% (%)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 1% (N)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 1% (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+AAPI
+</td>
+<td style="text-align:center;">
+137
+</td>
+<td style="text-align:center;">
+0.58
+</td>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+0.28
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+0.40
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+American Indian or Alaska Native
+</td>
+<td style="text-align:center;">
+63
+</td>
+<td style="text-align:center;">
+0.27
+</td>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+0.28
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+0.20
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.56
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Black
+</td>
+<td style="text-align:center;">
+1,486
+</td>
+<td style="text-align:center;">
+6.26
+</td>
+<td style="text-align:center;">
+104
+</td>
+<td style="text-align:center;">
+4.93
+</td>
+<td style="text-align:center;">
+37
+</td>
+<td style="text-align:center;">
+3.73
+</td>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+3.33
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Hispanic
+</td>
+<td style="text-align:center;">
+670
+</td>
+<td style="text-align:center;">
+2.82
+</td>
+<td style="text-align:center;">
+29
+</td>
+<td style="text-align:center;">
+1.38
+</td>
+<td style="text-align:center;">
+12
+</td>
+<td style="text-align:center;">
+1.21
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.56
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Missing
+</td>
+<td style="text-align:center;">
+477
+</td>
+<td style="text-align:center;">
+2.01
+</td>
+<td style="text-align:center;">
+23
+</td>
+<td style="text-align:center;">
+1.09
+</td>
+<td style="text-align:center;">
+5
+</td>
+<td style="text-align:center;">
+0.50
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Other
+</td>
+<td style="text-align:center;">
+26
+</td>
+<td style="text-align:center;">
+0.11
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.05
+</td>
+<td style="text-align:center;">
+1
+</td>
+<td style="text-align:center;">
+0.10
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+White
+</td>
+<td style="text-align:center;">
+20,879
+</td>
+<td style="text-align:center;">
+87.96
+</td>
+<td style="text-align:center;">
+1,939
+</td>
+<td style="text-align:center;">
+91.98
+</td>
+<td style="text-align:center;">
+930
+</td>
+<td style="text-align:center;">
+93.84
+</td>
+<td style="text-align:center;">
+172
+</td>
+<td style="text-align:center;">
+95.56
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall
+</td>
+<td style="text-align:center;font-weight: bold;">
+23,738
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+<td style="text-align:center;font-weight: bold;">
+2,108
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+<td style="text-align:center;font-weight: bold;">
+991
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+<td style="text-align:center;font-weight: bold;">
+180
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h3
+id="raceethnicity-of-jail-booking-population-pc-hold-versus-non-pc-hold">Race/Ethnicity
+of Jail Booking Population: PC-Hold versus non-PC Hold</h3>
+<p>Note: Unlike most of the other analysis, this table is unique by
+booking, not individual given that we are exploring booking type here.
+Percentages are column percentages, not row percentages. Bookings with
+missing PC Hold information are excluded from this analysis</p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Race/Ethnicity
+</th>
+<th style="text-align:center;">
+Overall Jail Bookings (N)
+</th>
+<th style="text-align:center;">
+Overall Jail Bookings (%)
+</th>
+<th style="text-align:center;">
+PC Hold Bookings (N)
+</th>
+<th style="text-align:center;">
+PC Hold Bookings (%)
+</th>
+<th style="text-align:center;">
+Non-PC Hold Bookings (N)
+</th>
+<th style="text-align:center;">
+Non-PC Hold Bookings (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+AAPI
+</td>
+<td style="text-align:center;">
+207
+</td>
+<td style="text-align:center;">
+0.53
+</td>
+<td style="text-align:center;">
+35
+</td>
+<td style="text-align:center;">
+0.47
+</td>
+<td style="text-align:center;">
+172
+</td>
+<td style="text-align:center;">
+0.54
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+American Indian or Alaska Native
+</td>
+<td style="text-align:center;">
+115
+</td>
+<td style="text-align:center;">
+0.29
+</td>
+<td style="text-align:center;">
+31
+</td>
+<td style="text-align:center;">
+0.42
+</td>
+<td style="text-align:center;">
+84
+</td>
+<td style="text-align:center;">
+0.26
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Black
+</td>
+<td style="text-align:center;">
+2,319
+</td>
+<td style="text-align:center;">
+5.89
+</td>
+<td style="text-align:center;">
+220
+</td>
+<td style="text-align:center;">
+2.98
+</td>
+<td style="text-align:center;">
+2,098
+</td>
+<td style="text-align:center;">
+6.57
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Hispanic
+</td>
+<td style="text-align:center;">
+853
+</td>
+<td style="text-align:center;">
+2.17
+</td>
+<td style="text-align:center;">
+142
+</td>
+<td style="text-align:center;">
+1.92
+</td>
+<td style="text-align:center;">
+711
+</td>
+<td style="text-align:center;">
+2.23
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Missing
+</td>
+<td style="text-align:center;">
+594
+</td>
+<td style="text-align:center;">
+1.51
+</td>
+<td style="text-align:center;">
+98
+</td>
+<td style="text-align:center;">
+1.33
+</td>
+<td style="text-align:center;">
+496
+</td>
+<td style="text-align:center;">
+1.55
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Other
+</td>
+<td style="text-align:center;">
+38
+</td>
+<td style="text-align:center;">
+0.10
+</td>
+<td style="text-align:center;">
+6
+</td>
+<td style="text-align:center;">
+0.08
+</td>
+<td style="text-align:center;">
+32
+</td>
+<td style="text-align:center;">
+0.10
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+White
+</td>
+<td style="text-align:center;">
+35,217
+</td>
+<td style="text-align:center;">
+89.51
+</td>
+<td style="text-align:center;">
+6,854
+</td>
+<td style="text-align:center;">
+92.80
+</td>
+<td style="text-align:center;">
+28,333
+</td>
+<td style="text-align:center;">
+88.74
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall
+</td>
+<td style="text-align:center;font-weight: bold;">
+39,343
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+<td style="text-align:center;font-weight: bold;">
+7,386
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+<td style="text-align:center;font-weight: bold;">
+31,926
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h3
+id="raceethnicity-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population-top-10-threshold">Race/Ethnicity
+of New Hampshire Overall Adult Population, Jail Population, and High
+Jail Utilizer Population (top 10% threshold)</h3>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_racial_disparities_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h2 id="relative-rate-index-rri">Relative Rate Index (RRI)</h2>
+<h3
+id="statewide-rri-table-overall-jail-population-and-high-utilizer-population-using-top-10-threshold">Statewide
+RRI Table: overall jail population and high utilizer population (using
+top 10% threshold)</h3>
+<p><em>Note:</em> The “overall rate” displayed below reflects the number
+of unique individuals booked into jail or who met the threshold of ‘high
+utilizer’ during the study window (2019-2021) per 10,000 adult New
+Hampshirites – using 2020 Census population data. These rates are
+calculated by race/ethnicity; in other words, we calculate the AAPI rate
+by calculating the number of individuals who identified as AAPI booked
+into jail across New Hampshire per 10,000 adults in the state who
+identify as AAPI. This allows us to compare rates across racial/ethnic
+groups and ultimately calculate the relative rate index (RRI).</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Race/Ethnicity
+</th>
+<th style="text-align:center;">
+Individuals Booked into Jail (per 10k NH adults)
+</th>
+<th style="text-align:center;">
+Individuals Booked into Jail RRI (to White individuals)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 10% (per 10k NH adults)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 10% RRI (to White individuals)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+AAPI
+</td>
+<td style="text-align:center;">
+48.0
+</td>
+<td style="text-align:center;">
+0.23
+</td>
+<td style="text-align:center;">
+2.1
+</td>
+<td style="text-align:center;">
+0.11
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+American Indian or Alaska Native
+</td>
+<td style="text-align:center;">
+207.9
+</td>
+<td style="text-align:center;">
+1.00
+</td>
+<td style="text-align:center;">
+19.8
+</td>
+<td style="text-align:center;">
+1.03
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Black
+</td>
+<td style="text-align:center;">
+1,001.3
+</td>
+<td style="text-align:center;">
+4.82
+</td>
+<td style="text-align:center;">
+70.1
+</td>
+<td style="text-align:center;">
+3.63
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Hispanic
+</td>
+<td style="text-align:center;">
+168.3
+</td>
+<td style="text-align:center;">
+0.81
+</td>
+<td style="text-align:center;">
+7.3
+</td>
+<td style="text-align:center;">
+0.38
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+White
+</td>
+<td style="text-align:center;">
+207.7
+</td>
+<td style="text-align:center;">
+NA
+</td>
+<td style="text-align:center;">
+19.3
+</td>
+<td style="text-align:center;">
+NA
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h3
+id="statewide-rri-visual-overall-jail-population-and-high-utilizer-population-using-top-10-threshold">Statewide
+RRI Visual: overall jail population and high utilizer population (using
+top 10% threshold)</h3>
+<p><em>Interpretation:</em></p>
+<ul>
+<li><p>Looking at the relative rate indices for individuals booked into
+jail by race/ethnicity, where the dotted line represents the reference
+group of White clients, we see notable disproportionality between Black
+individuals and White individuals. For example, Black individuals are
+4.8 times more likely to be booked into jail in New Hampshire than White
+individuals. AAPI individuals are notably less likely to be booked into
+jail or be a high utilizer of jail compared to White
+individuals.</p></li>
+<li><p>For any discussion with stakeholders, we probably want to note
+that in exploring proportionality of the jail population via the
+relative rate index, we are also capturing any disproportionality that
+happens upstream of being booked into jail. And since it may come up in
+discussion, we also aren’t controlling for other factors here – like
+offense or criminal history. We could expand this analysis to account
+for offense type.</p></li>
+</ul>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_racial_disparities_files/figure-html5/unnamed-chunk-9-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
