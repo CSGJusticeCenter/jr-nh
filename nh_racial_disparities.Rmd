@@ -63,7 +63,7 @@ load(paste0(sp_data_path,
 
 Here is a visualization, developed by Sara Bastomski, breaking down the calculation of an unadjusted relative rate index (unadjusted means that we have not run any regression models to account for additional individual-level factors such as gender, age, offense, or criminal history). The numbers will look a little different than what is presented later because we have rounded in this example. 
 
-```{r layout="l-screen-inset",echo=FALSE,message=FALSE,warning=FALSE}
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
 knitr::include_graphics("img/nh_rri_example_viz.png")
 ```
 
@@ -479,6 +479,8 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
                              label.position = "bottom",
                              keywidth = 3,
                              nrow = 1)) +
+  # facet_grid(`Race/Ethnicity` ~ ., scales="free_y", space="free_y", switch="y") +
+  # guides(fill = FALSE) + 
   geom_label_repel(aes(label = format(round(as.numeric(rri), 
                                             digits = 1), 
                                       nsmall=1), 
