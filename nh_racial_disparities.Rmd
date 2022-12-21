@@ -27,6 +27,8 @@ libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer"
 
 -   Frequency table of race/ethnicity for jail population (overall, PC/Non-PC bookings, and high jail utilizers)
 
+<br>
+
 *Relative Rate Index (RRI)*
 
 The Relative Rate Index (RRI) provides a measure of disparity in outcomes for different racial and ethnic groups by comparing the rates at which individuals of different races/ethnic groups experience supervision and revocation. To calculate the RRI, the rate of each outcome of interest for individuals who are Asian/Pacific Islander, Black, or Hispanic is divided by the rate at which the outcome occurs for individuals who are White. For example, the RRI for jail booking rate uses the booking rate for Hispanic adults (e.g., number of individuals in jail who are Hispanic per 10,000 adult New Hampshirites who are Hispanic) and divides it by the booking rate for White adults (e.g., number of individuals in jail who are White per 10,000 adult New Hampshirites who are White) to create a comparison of the two rates.
@@ -61,7 +63,7 @@ load(paste0(sp_data_path,
 
 Here is a visualization, developed by Sara Bastomski, breaking down the calculation of an unadjusted relative rate index (unadjusted means that we have not run any regression models to account for additional individual-level factors such as gender, age, offense, or criminal history). The numbers will look a little different than what is presented later because we have rounded in this example. 
 
-```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+```{r layout="l-screen-inset",echo=FALSE,message=FALSE,warning=FALSE}
 knitr::include_graphics("img/nh_rri_example_viz.png")
 ```
 
@@ -429,11 +431,11 @@ df_nh_race_eth_rri_overall_to_plot <- df_nh_race_eth_rri_analytic_table  %>%
   dplyr::select(`Race/Ethnicity`,`Individuals Booked into Jail RRI (to White individuals)`,`High Jail Utilizer, top 10% RRI (to White individuals)`) %>% 
   gather(rri_measure, rri, `Individuals Booked into Jail RRI (to White individuals)`:`High Jail Utilizer, top 10% RRI (to White individuals)`) %>% 
   mutate(rri_measure = case_when(
-    rri_measure=="Individuals Booked into Jail RRI (to White individuals)" ~ "Overall Jail Population",
-    rri_measure=="High Jail Utilizer, top 10% RRI (to White individuals)" ~ "High Jail Utilizer Population",
+    rri_measure=="Individuals Booked into Jail RRI (to White individuals)" ~ "Overall\nJail\nPopulation",
+    rri_measure=="High Jail Utilizer, top 10% RRI (to White individuals)" ~ "High\nUtilizer\nPopulation",
     TRUE ~ "NA")) %>%
     mutate(rri_measure = factor(rri_measure,
-                                levels = c("Overall Jail Population","High Jail Utilizer Population"))) %>% 
+                                levels = c("Overall\nJail\nPopulation","High\nUtilizer\nPopulation"))) %>% 
   dplyr::filter(`Race/Ethnicity`!="White")
 
 ### plot
