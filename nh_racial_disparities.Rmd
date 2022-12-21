@@ -496,7 +496,7 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
                   show.legend = FALSE) +
   annotate("text", 
            x = 2.55, 
-           y = 2.78, 
+           y = 2.65, 
            label = "This line represents White individuals (reference group)", 
            colour = "#000000", 
            size = 3, 
