@@ -278,7 +278,11 @@ medicaid_encounters_pre_2015 <- medicaid_encounters.xlsx %>%
 ### combine medicaid_encounters_post_2015 and medicaid_encounters_pre_2015 
 medicaid_encounters <- rbind(medicaid_encounters_pre_2015,
                              medicaid_encounters_post_2015)
-  
+
+# save out to external hard drive
+write_rds(medicaid_encounters,
+          "D:/Analytic/medicaid_encounters.rds")
+
   
 # Combine jail medicaid data files
 # update: we now have race/gender data for belknap and coos
@@ -292,3 +296,6 @@ medicaid_jail_all <- rbind(belknap_medicaid,
                            strafford_medicaid,
                            sullivan_medicaid)
                            
+# save out to external hard drive
+write_rds(medicaid_jail_all,
+          "D:/Analytic/medicaid_jail_all.rds")
