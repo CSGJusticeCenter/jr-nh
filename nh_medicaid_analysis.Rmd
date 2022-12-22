@@ -7,15 +7,64 @@ output:
     self_contained: false
 ---
 
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill")
+```
+
 ```{r setup, include=FALSE}
+### set chunk output 
 knitr::opts_chunk$set(
   echo=FALSE, 
   message=FALSE, 
   warning=FALSE,
-  #dev = "ragg_png",
+  dev = "ragg_png",
   cache = FALSE
   )
 ```
 
-Coming soon.
+```{r include=FALSE}
+### import adm_all -- jail administrative that we'll compare to the numbers from the medicaid match files
+load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda", 
+            sep = "")) 
 
+adm_all_dedup <- adm_all %>% 
+  ### de-dup by individual and booking -- these are the two units of analysis for comparisons to the medicaid data
+  ### here we are de-duping bookings with multiple charges as we don't need that information for this comparison
+  distinct(id, 
+           booking_id,
+           .keep_all = TRUE) 
+
+
+### import medicaid_jail_all -- medicaid jail data that we'll compare to the numbers from the jail administrative files
+### this file lives on the external hard drive (created and exported in `13_medicaid.R`)
+medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds")
+```         
+
+# counts of unique individuals and bookings in administrative jail data files alongside Medicaid match unique individuals and bookings by jail and statewide 
+
+HERE
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create table of unique statute titles and associated crime/charge type (only for charges with crime type value)
+table_charge_codes_crime_type_lookup <- charge_codes_crime_type_lookup_for_table %>% 
+  filter(!is.na(crime_type_lookup)) %>% 
+  dplyr::group_by(statute_title_lookup,
+                  crime_type_lookup) %>% 
+  dplyr::summarise(`Unique Descriptions (N)` = n_distinct(descriptor_lookup)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Charge Description` = statute_title_lookup,
+                `Charge Type` = crime_type_lookup) %>% 
+  dplyr::select(-`Unique Descriptions (N)`)
+
+### print table via kableextra
+kable(table_charge_codes_crime_type_lookup, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l")
+```

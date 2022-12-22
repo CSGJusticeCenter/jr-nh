@@ -1,5 +1,5 @@
 ---
-title: "Racial/Ethnic Disparity Analysis"
+title: "Racial/Ethnic Disparity and Disproportionality Analysis"
 output: 
   distill::distill_article:
     toc: true
@@ -13,7 +13,7 @@ library(easypackages)
 libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","gtsummary")
 ```
 
-# Descriptive Analysis of Racial/Ethnic Disparity
+# Descriptive Analysis of Racial/Ethnic Disproportionality
 
 **Note:** Data source for New Hampshire adult population is the 2020 Census (<https://www.census.gov/programs-surveys/decennial-census/decade/2020/2020-census-main.html>)
 
