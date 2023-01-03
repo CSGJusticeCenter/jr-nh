@@ -22,6 +22,9 @@ knitr::opts_chunk$set(
   dev = "ragg_png",
   cache = FALSE
   )
+
+### set path using csg_sp_path
+sp_data_path <- csg_sp_path(file.path("JR_NH"))
 ```
 
 ```{r include=FALSE}
@@ -29,42 +32,149 @@ knitr::opts_chunk$set(
 load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda", 
             sep = "")) 
 
+### de-dup by individual and booking -- these are the two units of analysis for comparisons to the medicaid data
+### here we are de-duping bookings with multiple charges as we don't need that information for this comparison
 adm_all_dedup <- adm_all %>% 
-  ### de-dup by individual and booking -- these are the two units of analysis for comparisons to the medicaid data
-  ### here we are de-duping bookings with multiple charges as we don't need that information for this comparison
+  ungroup() %>% 
   distinct(id, 
            booking_id,
-           .keep_all = TRUE) 
-
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(id,
+                                    booking_id)) ### creating unique booking id with both individual and booking IDs
 
 ### import medicaid_jail_all -- medicaid jail data that we'll compare to the numbers from the jail administrative files
 ### this file lives on the external hard drive (created and exported in `13_medicaid.R`)
-medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds")
+medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
+
+medicaid_jail_all_dedup <- medicaid_jail_all %>% 
+  distinct(unique_person_id, 
+           booking_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id,
+                                    booking_id)) ### creating unique booking id with both individual and booking IDs
 ```         
 
-# counts of unique individuals and bookings in administrative jail data files alongside Medicaid match unique individuals and bookings by jail and statewide 
+# Medicaid Data Descriptives
 
-HERE
+
+## Table 1. Unique individuals and bookings in administrative jail data versus Medicaid jail data
+
+Note: With Medicaid data, the count of unique individuals in each jail will not add up to the statewide total as some individuals were booked at multiple jails. Thus, they appear in multiple individual jail counts, but only once in the statewide count. For this reason, it is probably best to only compare differences in unique individuals at the jail-level. 
+
+**To figure out: carroll + cheshire differences?**
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
-### create table of unique statute titles and associated crime/charge type (only for charges with crime type value)
-table_charge_codes_crime_type_lookup <- charge_codes_crime_type_lookup_for_table %>% 
-  filter(!is.na(crime_type_lookup)) %>% 
-  dplyr::group_by(statute_title_lookup,
-                  crime_type_lookup) %>% 
-  dplyr::summarise(`Unique Descriptions (N)` = n_distinct(descriptor_lookup)) %>% 
-  ungroup() %>% 
-  dplyr::rename(`Charge Description` = statute_title_lookup,
-                `Charge Type` = crime_type_lookup) %>% 
-  dplyr::select(-`Unique Descriptions (N)`)
+### create table of unique individuals and bookings by county using the adm_all_dedup file
 
+# by county
+adm_all_dedup_county_table <- adm_all_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Unique Individuals, Jail Data (N)` = n_distinct(id),
+                   `Unique Bookings, Jail Data (N)` = n_distinct(unique_person_booking_id))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+adm_all_dedup_overall_table <- adm_all_dedup %>% 
+  dplyr::summarise(`Unique Individuals, Jail Data (N)` = n_distinct(id),
+                   `Unique Bookings, Jail Data (N)` = n_distinct(unique_person_booking_id))  %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# join county and statewide files 
+adm_all_dedup_county_statewide_count_table <- rbind(adm_all_dedup_county_table,
+                                                    adm_all_dedup_overall_table)
+
+### create table of unique individuals and bookings by county using the medicaid_jail_all file
+
+# by county
+medicaid_jail_all_county_table <- medicaid_jail_all_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Unique Individuals, Medicaid Data (N)` = n_distinct(unique_person_id),
+                   `Unique Bookings, Medicaid Data (N)` = n_distinct(unique_person_booking_id))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+medicaid_jail_all_overall_table <- medicaid_jail_all_dedup %>% 
+  dplyr::summarise(`Unique Individuals, Medicaid Data (N)` = n_distinct(unique_person_id),
+                   `Unique Bookings, Medicaid Data (N)` = n_distinct(unique_person_booking_id))  %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# join county and statewide files 
+medicaid_jail_all_county_statewide_count_table <- rbind(medicaid_jail_all_county_table,
+                                                    medicaid_jail_all_overall_table)
+
+### now cbind adm_all_dedup_county_statewide_count_table and medicaid_jail_all_county_statewide_count_table
+jail_adm_medicaid_count_table <- inner_join(adm_all_dedup_county_statewide_count_table,
+                                       medicaid_jail_all_county_statewide_count_table,
+                                       by = "Jail") %>% 
+  mutate(`Difference in Unique Individuals (N)` = abs(`Unique Individuals, Jail Data (N)` - `Unique Individuals, Medicaid Data (N)`),
+         `Difference in Unique Bookings (N)` = abs(`Unique Bookings, Jail Data (N)` - `Unique Bookings, Medicaid Data (N)`)) %>% 
+  dplyr::select(`Jail`,
+                `Unique Individuals, Jail Data (N)`,
+                `Unique Individuals, Medicaid Data (N)`,
+                `Difference in Unique Individuals (N)`,
+                `Unique Bookings, Jail Data (N)`,
+                `Unique Bookings, Medicaid Data (N)`,
+                `Difference in Unique Bookings (N)`) 
+  
 ### print table via kableextra
-kable(table_charge_codes_crime_type_lookup, 
+kable(jail_adm_medicaid_count_table, 
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
   kable_styling(bootstrap_options = c("striped", 
                                        "hover", 
                                        "condensed", 
                                        "responsive"), 
-                 row_label_position = "l")
+                 row_label_position = "l") %>% 
+  row_spec(10, bold = TRUE)
 ```
+
+<br><br>
+
+## Table 2. Percentage of individuals/bookings in Medicaid data with Medicaid Match 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file
+
+# by county
+medicaid_jail_percent_match_county_table <- medicaid_jail_all_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Overall Bookings (N)` = n_distinct(unique_person_id,
+                                                      booking_id),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ Medicaid Match (%)` = scales::percent(`Bookings w/ Medicaid Match (N)`/`Overall Bookings (N)`))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+medicaid_jail_percent_match_overall_table <- medicaid_jail_all_dedup %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Overall Bookings (N)` = n_distinct(unique_person_id,
+                                                      booking_id),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ Medicaid Match (%)` = scales::percent(`Bookings w/ Medicaid Match (N)`/`Overall Bookings (N)`))  %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_percent_match_county_statewide_table <- rbind(medicaid_jail_percent_match_county_table,
+                                                    medicaid_jail_percent_match_overall_table)
+
+### print table via kableextra
+kable(medicaid_jail_percent_match_county_statewide_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(10, bold = TRUE)
+```
+
+<br><br>

@@ -26,7 +26,7 @@ medicaid_enrollment.xlsx <- read_csv("D:/Medicaid Enrollment Data For County Mat
 # eligibility categories descriptions
 medicaid_categories.xlsx <- read_excel("D:/Categories of Eligibility Description.xlsx")
 
-# mediciad data dictionary
+# medicaid data dictionary (icd-10)
 medicaid_dictionary.xlsx <- read_excel(paste0(sp_data_path, "/Data/DHHS_data_dictionary.xlsx"), sheet = "DX_to_CCSR_Mapping", skip = 1)
 
 ###################
@@ -40,7 +40,7 @@ belknap_medicaid.xlsx  <- read_excel("D:/Belknap County Jail Data From DHHS.xlsx
 # Carroll County
 ###################
 
-# carrol county separates their data into releases and bookings which will be joined
+# carroll county separates their data into releases and bookings which will be joined
 carroll_releases.xlsx  <- read_excel(paste0(sp_data_path, "/Data/Carroll County/CSG release data 7.1.2018-6.30.2021.xls"))
 carroll_bookings.xlsx  <- read_excel(paste0(sp_data_path, "/Data/Carroll County/CSG data 7.1.2018-6.30-2021.xls"))
 carroll_medicaid.xlsx  <- read_excel("D:/Carroll County Jail Data From DHHS.xlsx")

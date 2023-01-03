@@ -243,15 +243,16 @@ sullivan_adm <- sullivan_adm %>% anti_join(all_nas) %>% distinct()
 sullivan_medicaid <- sullivan_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
-  rename(booking_date = booking,
+  rename(booking_date = booking_date_time,
+         release_date = release_date_time,
          county = source_id)
 
 # fix date formats
-sullivan_medicaid$booking_date <- as.POSIXct(sullivan_medicaid$booking_date, format = '%m/%d/%Y %H:%M')
+sullivan_medicaid$booking_date <- as.POSIXct(sullivan_medicaid$booking_date, format = '%m/%d/%Y %H:%M:%S')
 sullivan_medicaid$booking_date <- format(sullivan_medicaid$booking_date, "%m/%d/%Y")
 sullivan_medicaid$booking_date <- as.Date(sullivan_medicaid$booking_date, format = "%m/%d/%Y")
 
-sullivan_medicaid$release_date <- as.POSIXct(sullivan_medicaid$release_date, format = '%m/%d/%Y %H:%M')
+sullivan_medicaid$release_date <- as.POSIXct(sullivan_medicaid$release_date, format = '%m/%d/%Y %H:%M:%S')
 sullivan_medicaid$release_date <- format(sullivan_medicaid$release_date, "%m/%d/%Y")
 sullivan_medicaid$release_date <- as.Date(sullivan_medicaid$release_date, format = "%m/%d/%Y")
 
