@@ -217,4 +217,4 @@ strafford_medicaid <- strafford_medicaid %>%
 
 ################################################################################
 
-save(strafford_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/strafford_adm.Rda", sep = ""))
+save(strafford_adm1, file=paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda", sep = ""))

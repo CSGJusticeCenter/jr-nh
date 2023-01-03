@@ -16,18 +16,19 @@ source("data_cleaning/08_merrimack.R")
 source("data_cleaning/09_rockingham.R")
 source("data_cleaning/10_strafford.R")
 source("data_cleaning/11_sullivan.R")
+source("data_cleaning/12_charges.R")
 
 # Combine jail data
-adm_all <- rbind(belknap_adm,
-                 carroll_adm,
-                 cheshire_adm,
-                 coos_adm,
-                 hillsborough_adm,
-                 merrimack_adm,
-                 rockingham_adm,
-                 strafford_adm,
-                 sullivan_adm)
-dim(adm_all); length(unique(adm_all$booking_id)); length(unique(adm_all$id)) # 73093 dim, 51545 bookings, 32177 individuals
+adm_all <- plyr::rbind.fill(belknap_adm_charge_clean_final,
+                            carroll_adm_charge_clean_final,
+                            cheshire_adm_charge_clean_final,
+                            coos_adm_charge_clean_final,
+                            hillsborough_adm_charge_clean_final,
+                            merrimack_adm_charge_clean_final,
+                            rockingham_adm_charge_clean_final,
+                            strafford_adm, # no charge file
+                            sullivan_adm_charge_clean_final)
+dim(adm_all); length(unique(adm_all$booking_id)); length(unique(adm_all$id)) # 51555 dim, 51545 bookings, 32177 individuals
 
 ################################################################################
 

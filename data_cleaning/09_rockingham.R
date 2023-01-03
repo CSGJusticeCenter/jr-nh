@@ -264,4 +264,4 @@ rockingham_medicaid <- rockingham_medicaid %>%
 
 ################################################################################
 
-save(rockingham_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/rockingham_adm.Rda", sep = ""))
+save(rockingham_adm1, file=paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda", sep = ""))

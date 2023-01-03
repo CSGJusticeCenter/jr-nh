@@ -286,4 +286,4 @@ belknap_medicaid <- belknap_medicaid %>%
 
 ################################################################################
 
-save(belknap_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/belknap_adm.Rda", sep = ""))
+save(belknap_adm1, file=paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda", sep = ""))

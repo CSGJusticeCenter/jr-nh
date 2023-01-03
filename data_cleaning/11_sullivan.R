@@ -276,5 +276,4 @@ sullivan_medicaid <- sullivan_medicaid %>%
 
 ################################################################################
 
-
-save(sullivan_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/sullivan_adm.Rda", sep = ""))
+save(sullivan_adm1, file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda", sep = ""))
