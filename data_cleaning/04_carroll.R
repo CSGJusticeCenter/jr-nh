@@ -250,7 +250,7 @@ all_nas <- carroll_adm %>%
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
-carroll_adm <- carroll_adm %>% anti_join(all_nas) %>% distinct()
+carroll_adm1 <- carroll_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -296,7 +296,7 @@ carroll_medicaid <- carroll_medicaid %>%
          release_date = release_dt_tm,
          county = source_id) %>%
   mutate(booking_id = paste("Carroll", "booking", booking_id, sep = "_")) %>%
-  select(unique_person_id, booking_id, everything()) 
+  select(unique_person_id, booking_id, everything())
 # %>%
 #   select(-encrypted_id)
 
@@ -314,4 +314,4 @@ carroll_medicaid <- carroll_medicaid %>%
 
 ################################################################################
 
-save(carroll_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/carroll_adm.Rda", sep = ""))
+save(carroll_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/carroll_adm.Rda", sep = ""))

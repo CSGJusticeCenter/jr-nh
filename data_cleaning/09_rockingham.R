@@ -206,7 +206,7 @@ all_nas <- rockingham_adm %>%
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
-rockingham_adm <- rockingham_adm %>% anti_join(all_nas) %>% distinct()
+rockingham_adm1 <- rockingham_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -264,5 +264,4 @@ rockingham_medicaid <- rockingham_medicaid %>%
 
 ################################################################################
 
-
-save(rockingham_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/rockingham_adm.Rda", sep = ""))
+save(rockingham_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/rockingham_adm.Rda", sep = ""))

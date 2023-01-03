@@ -183,7 +183,7 @@ all_nas <- coos_adm %>%
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
-coos_adm <- coos_adm %>% anti_join(all_nas) %>% distinct()
+coos_adm1 <- coos_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -245,4 +245,4 @@ coos_medicaid <- coos_medicaid %>%
 
 ################################################################################
 
-save(coos_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/coos_adm.Rda", sep = ""))
+save(coos_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/coos_adm.Rda", sep = ""))

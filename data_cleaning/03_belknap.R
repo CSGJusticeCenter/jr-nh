@@ -234,7 +234,7 @@ all_nas <- belknap_adm %>%
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
-belknap_adm <- belknap_adm %>% anti_join(all_nas) %>% distinct()
+belknap_adm1 <- belknap_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -286,4 +286,4 @@ belknap_medicaid <- belknap_medicaid %>%
 
 ################################################################################
 
-save(belknap_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/belknap_adm.Rda", sep = ""))
+save(belknap_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/belknap_adm.Rda", sep = ""))

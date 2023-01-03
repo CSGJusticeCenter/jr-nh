@@ -139,7 +139,7 @@ strafford_adm <- strafford_adm %>%
   filter(los_max >= 0 | is.na(los_max))
 
 # Create los categories
-strafford_adm <- strafford_adm %>%
+strafford_adm1 <- strafford_adm %>%
   mutate(los_category =
            case_when(los_max == 0 ~ "0",
                      los_max == 1 ~ "1",
@@ -217,5 +217,4 @@ strafford_medicaid <- strafford_medicaid %>%
 
 ################################################################################
 
-
-save(strafford_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/strafford_adm.Rda", sep = ""))
+save(strafford_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/strafford_adm.Rda", sep = ""))

@@ -258,7 +258,7 @@ all_nas <- hillsborough_adm %>%
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
-hillsborough_adm <- hillsborough_adm %>% anti_join(all_nas) %>% distinct()
+hillsborough_adm1 <- hillsborough_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -296,7 +296,7 @@ hillsborough_medicaid <- hillsborough_medicaid.xlsx %>%
 hillsborough_medicaid$booking_id <- hillsborough_medicaid %>% group_indices(unique_person_id, booking_date)
 hillsborough_medicaid <- hillsborough_medicaid %>%
   mutate(booking_id = paste("Hillsborough", "booking", booking_id, sep = "_")) %>%
-  select(unique_person_id, booking_id, everything()) 
+  select(unique_person_id, booking_id, everything())
 # %>%
 #   select(-encrypted_id)
 
@@ -314,4 +314,4 @@ hillsborough_medicaid <- hillsborough_medicaid %>%
 
 ################################################################################
 
-save(hillsborough_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/hillsborough_adm.Rda", sep = ""))
+save(hillsborough_adm1, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/hillsborough_adm.Rda", sep = ""))

@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
   )
 
 ### set path using csg_sp_path
-sp_data_path <- csg_sp_path(file.path("JR_NH"))
+sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
 ```
 
 ```{r include=FALSE}
