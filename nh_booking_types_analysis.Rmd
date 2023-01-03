@@ -48,7 +48,7 @@ kable(df_sentence_statuses,
   row_spec(7, bold = TRUE)
 ```
 
-## Table 2. Booking Types by County
+## Table 2. Booking Types by County (N)
 
 ```{r}
 # Df of total number of entrances by county
@@ -69,15 +69,34 @@ df_sentence_statuses_county <- bookings_entrances %>%
 
 # Reshape table for viewing
 df_sentence_statuses_county <- df_sentence_statuses_county %>% spread(sentence_status_standard, total) %>% clean_names() %>% 
-  left_join(df_entrances_county, by = "county") %>% 
   select(County                   = county,
          `Pretrial (N)`           = pretrial,
          `Protective Custody (N)` = protective_custody,
          `Sentenced (N)`          = sentenced,
          `Other (N)`              = other,
          `NH State Prisoner (N)`  = nh_state_prisoner,
-         `<NA> (N)`               = unknown)
+         `Unknown (N)`            = unknown) %>% 
+  left_join(df_entrances_county, by = c("County" = "county")) %>% 
+  rename(`Total Entrances (N)` = total)
 
+df_sentence_statuses_county_pct <- df_sentence_statuses_county %>% 
+  mutate(`Pretrial %`             = percent(`Pretrial (N)`/`Total Entrances (N)`),
+         `Protective Custody (%)` = percent(`Protective Custody (N)`/`Total Entrances (N)`),
+         `Sentenced (%)`          = percent(`Sentenced (N)`/`Total Entrances (N)`),
+         `Other (%)`              = percent(`Other (N)`/`Total Entrances (N)`),
+         `NH State Prisoner (%)`  = percent(`NH State Prisoner (N)`/`Total Entrances (N)`),
+         `Unknown (%)`            = percent(`Unknown (N)`/`Total Entrances (N)`)
+         ) %>% 
+  select(-c(
+         `Pretrial (N)`,
+         `Protective Custody (N)`,
+         `Sentenced (N)`,
+         `Other (N)`,
+         `NH State Prisoner (N)`,
+         `Unknown (N)`,
+         `Total Entrances (N)`
+  ))
+  
 kable(df_sentence_statuses_county, 
       format.args = list(big.mark = ","), 
       align=rep('l')) %>%
@@ -85,6 +104,34 @@ kable(df_sentence_statuses_county,
                                        "hover", 
                                        "condensed", 
                                        "responsive"), 
-                 row_label_position = "l") 
+                 row_label_position = "l") %>% 
+   column_spec(1, bold = T, width = "12em") %>% 
+   column_spec(2, width = "8em") %>% 
+   column_spec(3, width = "8em") %>% 
+   column_spec(4, width = "8em") %>% 
+   column_spec(5, width = "8em") %>% 
+   column_spec(6, width = "8em") %>% 
+   column_spec(7, width = "8em") %>% 
+   column_spec(8, width = "8em")
+```
+
+## Table 3. Booking Types by County (%)
+
+```{r}
+kable(df_sentence_statuses_county_pct, 
+      format.args = list(big.mark = ","), 
+      align=rep('l')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+   column_spec(1, bold = T, width = "12em") %>% 
+   column_spec(2, width = "8em") %>% 
+   column_spec(3, width = "8em") %>% 
+   column_spec(4, width = "8em") %>% 
+   column_spec(5, width = "8em") %>% 
+   column_spec(6, width = "8em") %>% 
+   column_spec(7, width = "8em") 
 ```
 

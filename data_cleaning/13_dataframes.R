@@ -179,8 +179,8 @@ counties <- adm_all$county %>%
 
 ################################################################################
 
-save(adm_all,            file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda",            sep = ""))
-save(bookings_entrances, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/bookings_entrances.Rda", sep = ""))
-save(entrances,          file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/entrances.Rda",          sep = ""))
-save(booking_no_pc_hold, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/booking_no_pc_hold.Rda", sep = ""))
-save(df_pch,             file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/df_pch.Rda",             sep = ""))
+save(adm_all,            file=paste0(sp_data_path, "/Data/r_data/adm_all.Rda",            sep = ""))
+save(bookings_entrances, file=paste0(sp_data_path, "/Data/r_data/bookings_entrances.Rda", sep = ""))
+save(entrances,          file=paste0(sp_data_path, "/Data/r_data/entrances.Rda",          sep = ""))
+save(booking_no_pc_hold, file=paste0(sp_data_path, "/Data/r_data/booking_no_pc_hold.Rda", sep = ""))
+save(df_pch,             file=paste0(sp_data_path, "/Data/r_data/df_pch.Rda",             sep = ""))
