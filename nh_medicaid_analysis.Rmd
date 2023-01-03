@@ -24,12 +24,12 @@ knitr::opts_chunk$set(
   )
 
 ### set path using csg_sp_path
-sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
+sp_data_path <- csg_sp_path(file.path("JR_NH"))
 ```
 
 ```{r include=FALSE}
 ### import adm_all -- jail administrative that we'll compare to the numbers from the medicaid match files
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda", 
+load(paste0(sp_data_path, "/Data/r_data/adm_all.Rda", 
             sep = "")) 
 
 ### de-dup by individual and booking -- these are the two units of analysis for comparisons to the medicaid data
