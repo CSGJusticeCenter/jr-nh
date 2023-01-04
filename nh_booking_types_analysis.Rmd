@@ -199,14 +199,13 @@ df1 <- adm_all %>% group_by(crime_type_lookup, sentence_status_standard) %>% sum
            sentence_status_standard == "PROTECTIVE CUSTODY" ~ "Protective Custody",
            sentence_status_standard == "SENTENCED" ~ "Sentenced",
            sentence_status_standard == "OTHER" ~ "Other",
-           sentence_status_standard == "NH STATE PRISONER" ~ "NH State Prisoner",
-           is.na(sentence_status_standard) == "Unknown")) 
+           sentence_status_standard == "NH STATE PRISONER" ~ "NH State Prisoner")) 
 df1$sentence_status_standard <- factor(df1$sentence_status_standard,levels = c("Pretrial",
                                                                                "Protective Custody",
                                                                                "Sentenced",
                                                                                "Other",
                                                                                "NH State Prisoner",
-                                                                               "Unknown"))
+                                                                               "<NA>"))
 
 df1 <- spread(df1, key = sentence_status_standard, value = total)
 df1 <- df1 %>% rename(`Crime Type` = crime_type_lookup)
