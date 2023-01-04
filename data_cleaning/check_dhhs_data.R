@@ -8,13 +8,10 @@
 length(unique(carroll_adm1$inmate_id))  # 1849
 length(unique(carroll_adm1$booking_id)) # 3746
 
-
 length(unique(carroll_medicaid $unique_person_id)) # 1825
 length(unique(carroll_medicaid $booking_id))       # 2646
 
-
 3746 - 2646 #  1100
-
 
 temp_medicaid <- carroll_medicaid %>% select(dhhs_id = unique_person_id,
                                              booking_date,
@@ -86,12 +83,8 @@ dim(temp_joined_nas)
 length(unique(cheshire_adm1$id))         # 2809
 length(unique(cheshire_adm1$booking_id)) # 4069
 
-length(unique(cheshire_medicaid$unique_person_id)) # 2693
-length(unique(cheshire_medicaid$booking_id))       # 2727
-
-
-4069 - 2727 #  1342
-
+length(unique(cheshire_medicaid$unique_person_id)) # 2475
+length(unique(cheshire_medicaid$booking_id))       # 3799
 
 temp_medicaid <- cheshire_medicaid %>% select(dhhs_id = unique_person_id,
                                               booking_date,
@@ -128,14 +121,12 @@ temp_joined <- merge(temp_adm, temp_medicaid, by = c("booking_date", "jail_dob_y
 
 ################################################################################
 
-length(unique(cheshire_medicaid$unique_person_id)) # 2693
-length(unique(cheshire_medicaid$booking_id))       # 2727
+length(unique(cheshire_medicaid$unique_person_id)) # 2475
+length(unique(cheshire_medicaid$booking_id))       # 3799
 
 cheshire_data <- adm_all %>% filter(county == "Cheshire")
 length(unique(cheshire_data$id))         # 2809
 length(unique(cheshire_data$booking_id)) # 4069
-
-4069-2727 # 1342
 
 temp_medicaid <- cheshire_medicaid %>% select(dhhs_id = unique_person_id,
                                               booking_date,
