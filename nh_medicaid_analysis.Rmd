@@ -11,9 +11,10 @@ output:
 ### call libraries
 library(easypackages)
 libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill")
+
 ```
 
-```{r setup, include=FALSE}
+```{r include=FALSE}
 ### set chunk output 
 knitr::opts_chunk$set(
   echo=FALSE, 
@@ -25,6 +26,7 @@ knitr::opts_chunk$set(
 
 ### set path using csg_sp_path
 sp_data_path <- csg_sp_path(file.path("JR_NH"))
+
 ```
 
 ```{r include=FALSE}
@@ -41,6 +43,17 @@ adm_all_dedup <- adm_all %>%
            .keep_all = TRUE) %>% 
   mutate(unique_person_booking_id = paste0(id,
                                     booking_id)) ### creating unique booking id with both individual and booking IDs
+
+### why are Mari and my carroll numbers different?
+### why are our cheshire comparisons different?
+### is one of our carroll files the wrong county? dhhs?
+
+### create df specific to carroll and cheshire for additional exploration 
+carroll_adm <- adm_all %>% 
+  filter(county=="Carroll")
+
+cheshire_adm <- adm_all %>% 
+  filter(county=="Cheshire")
 
 ### import medicaid_jail_all -- medicaid jail data that we'll compare to the numbers from the jail administrative files
 ### this file lives on the external hard drive (created and exported in `13_medicaid.R`)
@@ -127,7 +140,9 @@ kable(jail_adm_medicaid_count_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(10, bold = TRUE)
+  row_spec(10, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(7, bold = TRUE)
 ```
 
 <br><br>
@@ -174,7 +189,9 @@ kable(medicaid_jail_percent_match_county_statewide_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(10, bold = TRUE)
+  row_spec(10, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(7, bold = TRUE)
 ```
 
 <br><br>

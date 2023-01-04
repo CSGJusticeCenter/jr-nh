@@ -256,7 +256,7 @@ all_nas <- cheshire_adm %>%
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
-cheshire_adm <- cheshire_adm %>% anti_join(all_nas) %>% distinct()
+cheshire_adm1 <- cheshire_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -314,4 +314,4 @@ cheshire_medicaid <- cheshire_medicaid %>%
 
 ################################################################################
 
-save(cheshire_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/cheshire_adm.Rda", sep = ""))
+save(cheshire_adm1, file=paste0(sp_data_path, "/Data/r_data/cheshire_adm.Rda", sep = ""))

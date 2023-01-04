@@ -231,7 +231,7 @@ all_nas <- merrimack_adm %>%
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
-merrimack_adm <- merrimack_adm %>% anti_join(all_nas) %>% distinct()
+merrimack_adm1 <- merrimack_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -287,4 +287,4 @@ merrimack_medicaid <- merrimack_medicaid %>%
 
 ################################################################################
 
-save(merrimack_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/merrimack_adm.Rda", sep = ""))
+save(merrimack_adm1, file=paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda", sep = ""))

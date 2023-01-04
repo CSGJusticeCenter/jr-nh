@@ -213,7 +213,7 @@ all_nas <- sullivan_adm %>%
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
-sullivan_adm <- sullivan_adm %>% anti_join(all_nas) %>% distinct()
+sullivan_adm1 <- sullivan_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -276,5 +276,4 @@ sullivan_medicaid <- sullivan_medicaid %>%
 
 ################################################################################
 
-
-save(sullivan_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/sullivan_adm.Rda", sep = ""))
+save(sullivan_adm1, file=paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda", sep = ""))

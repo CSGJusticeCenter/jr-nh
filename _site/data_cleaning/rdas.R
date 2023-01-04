@@ -3,18 +3,18 @@
 load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/raw_adm_data_availability_table.Rda", sep = ""))
 
 # Data dictionaries
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/adm_all.Rda",               sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/bookings_entrances.Rda",    sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/adm_all.Rda",               sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/bookings_entrances.Rda",    sep = ""))
 
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/belknap_adm.Rda",           sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/carroll_adm.Rda",           sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/cheshire_adm.Rda",          sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/coos_adm.Rda",              sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/hillsborough_adm.Rda",      sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/merrimack_adm.Rda",         sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/rockingham_adm.Rda",        sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/strafford_adm.Rda",         sep = ""))
-load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/sullivan_adm.Rda",          sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/belknap_adm.Rda",      sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda",      sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/cheshire_adm.Rda",     sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/coos_adm.Rda",         sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/hillsborough_adm.Rda", sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda",    sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda",   sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda",    sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
 
 # County Pages
 load(paste0(sp_data_path, "/Data/r_data/county_pages/county_hu_1_pct_prop.Rda",  sep = ""))

@@ -15,11 +15,10 @@
 # Clean variable names
 carroll_adm_all <- clean_names(carroll_bookings.xlsx)
 
-# Not using releases for now because of merge issues
 # carroll_releases <- clean_names(carroll_releases.xlsx)
 # carroll_bookings <- clean_names(carroll_bookings.xlsx)
-# Merge two adm files together
-# carroll_adm_all <- merge(carroll_releases, carroll_bookings, by = c("inmate_id", "release_dt_tm"), all.x = TRUE)
+# # Merge two adm files together
+# carroll_adm_all <- merge(carroll_releases, carroll_bookings, by = c("inmate_id", "release_dt_tm"), all.y = TRUE)
 
 # Change date formats for booking and release dataes
 carroll_adm_all$booking_dt_tm <- .POSIXct(carroll_adm_all$booking_dt_tm, tz="UTC")
@@ -250,7 +249,7 @@ all_nas <- carroll_adm %>%
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
-carroll_adm <- carroll_adm %>% anti_join(all_nas) %>% distinct()
+carroll_adm1 <- carroll_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
@@ -296,7 +295,7 @@ carroll_medicaid <- carroll_medicaid %>%
          release_date = release_dt_tm,
          county = source_id) %>%
   mutate(booking_id = paste("Carroll", "booking", booking_id, sep = "_")) %>%
-  select(unique_person_id, booking_id, everything()) 
+  select(unique_person_id, booking_id, everything())
 # %>%
 #   select(-encrypted_id)
 
@@ -305,7 +304,7 @@ carroll_medicaid <- carroll_medicaid %>%
 carroll_medicaid <- carroll_medicaid %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
-# # Does the medicaid file have the same number of unique individuals as the adm? Off by 5
+# # Does the medicaid file have the same number of unique individuals as the adm?
 # length(unique(carroll_adm$id)); length(unique(carroll_medicaid$unique_person_id))
 
 ################################################################################
@@ -314,4 +313,4 @@ carroll_medicaid <- carroll_medicaid %>%
 
 ################################################################################
 
-save(carroll_adm, file=paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/carroll_adm.Rda", sep = ""))
+save(carroll_adm1, file=paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda", sep = ""))
