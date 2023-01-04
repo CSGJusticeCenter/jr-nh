@@ -81,7 +81,7 @@ temp_joined <- merge(temp_adm, temp_medicaid, by = c("booking_date", "jail_dob_y
 
 ################################################################################
 
-length(unique(cheshire_adm1$inmate_id))  # 2464
+length(unique(cheshire_adm1$id))         # 2809
 length(unique(cheshire_adm1$booking_id)) # 4069
 
 length(unique(cheshire_medicaid$unique_person_id)) # 2693
