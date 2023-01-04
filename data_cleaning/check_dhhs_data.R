@@ -73,7 +73,9 @@ temp_adm <- adm_all %>% filter(county == "Carroll") %>%
 str(temp_medicaid)
 str(temp_adm)
 
-temp_joined <- merge(temp_adm, temp_medicaid, by = c("booking_date", "jail_dob_year", "jail_sex", "jail_race"))
+temp_joined <- merge(temp_adm, temp_medicaid, by = c("booking_date", "jail_dob_year", "jail_sex", "jail_race"), all.x = TRUE)
+temp_joined_nas <- temp_joined %>% filter(is.na(dhhs_id)) %>% select(id) %>% distinct()
+dim(temp_joined_nas)
 
 ################################################################################
 
@@ -163,4 +165,6 @@ temp_adm <- adm_all %>% filter(county == "Cheshire") %>%
 str(temp_medicaid)
 str(temp_adm)
 
-temp_joined <- merge(temp_adm, temp_medicaid, by = c("booking_date", "jail_dob_year", "jail_sex", "jail_race"))
+temp_joined <- merge(temp_adm, temp_medicaid, by = c("booking_date", "jail_dob_year", "jail_sex", "jail_race"), all.x = TRUE)
+temp_joined_nas <- temp_joined %>% filter(is.na(dhhs_id)) %>% select(id) %>% distinct()
+dim(temp_joined_nas) # 738 individuals in the CSG data that could not be matched
