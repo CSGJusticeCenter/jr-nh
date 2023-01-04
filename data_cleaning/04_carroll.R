@@ -304,7 +304,7 @@ carroll_medicaid <- carroll_medicaid %>%
 carroll_medicaid <- carroll_medicaid %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
-# # Does the medicaid file have the same number of unique individuals as the adm? Off by 5
+# # Does the medicaid file have the same number of unique individuals as the adm?
 # length(unique(carroll_adm$id)); length(unique(carroll_medicaid$unique_person_id))
 
 ################################################################################
