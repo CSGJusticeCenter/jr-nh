@@ -278,17 +278,17 @@ belknap_medicaid <- belknap_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
   rename(county = source_id) %>%
-  mutate(jail_race = case_when(race == "A"  ~ "Asian/Pacific Islander",
-                               race == "B"  ~ "Black",
-                               race == "C"  ~ "Asian/Pacific Islander",       # Chinese
-                               race == "H"  ~ "Hispanic",
-                               race == "I"  ~ "American Indian/Alaskan Native",
-                               race == "NH" ~ "Unknown",                      # Delete
-                               race == "O"  ~ "Unknown",                      # Other
-                               race == "P"  ~ "Unknown",                      # Portuguese
-                               race == "U"  ~ "Unknown",
-                               race == "W"  ~ "White",
-                               race == "X"  ~ "Unknown"                       # Delete
+  mutate(jail_race = case_when(jail_race == "A"  ~ "Asian/Pacific Islander",
+                               jail_race == "B"  ~ "Black",
+                               jail_race == "C"  ~ "Asian/Pacific Islander",       # Chinese
+                               jail_race == "H"  ~ "Hispanic",
+                               jail_race == "I"  ~ "American Indian/Alaskan Native",
+                               jail_race == "NH" ~ "Unknown",                      # Delete
+                               jail_race == "O"  ~ "Unknown",                      # Other
+                               jail_race == "P"  ~ "Unknown",                      # Portuguese
+                               jail_race == "U"  ~ "Unknown",
+                               jail_race == "W"  ~ "White",
+                               jail_race == "X"  ~ "Unknown"                       # Delete
   ))
 
 # create a unique booking id per person per booking date

@@ -309,11 +309,11 @@ carroll_medicaid <- carroll_medicaid %>%
 # create race labels
 carroll_medicaid <- carroll_medicaid %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
-  mutate(jail_race = case_when(race == "A"  ~ "Asian/Pacific Islander",
-                               race == "B"  ~ "Black",
-                               race == "I"  ~ "American Indian/Alaskan Native",
-                               race == "U"  ~ "Unknown",
-                               race == "W"  ~ "White"))
+  mutate(jail_race = case_when(jail_race == "A"  ~ "Asian/Pacific Islander",
+                               jail_race == "B"  ~ "Black",
+                               jail_race == "I"  ~ "American Indian/Alaskan Native",
+                               jail_race == "U"  ~ "Unknown",
+                               jail_race == "W"  ~ "White"))
 
 # # Does the medicaid file have the same number of unique individuals as the adm?
 # length(unique(carroll_adm$id)); length(unique(carroll_medicaid$unique_person_id))

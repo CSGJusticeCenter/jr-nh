@@ -260,16 +260,16 @@ sullivan_medicaid <- sullivan_medicaid.xlsx %>%
          county = source_id) %>%
   mutate(
     jail_race = case_when(
-      race == "A"  ~ "Asian/Pacific Islander",
-      race == "B"  ~ "Black",
-      race == "H"  ~ "Hispanic",
-      race == "I"  ~ "American Indian/Alaskan Native",
-      race == "K"  ~ "Black",                          # Black Hispanic
-      race == "L"  ~ "White",                          # White Hispanic
-      race == "N"  ~ "American Indian/Alaskan Native", # American Indian/Alaskan Native Hispanic
-      race == "P"  ~ "Asian/Pacific Islander",
-      race == "U"  ~ "Unknown",
-      race == "W"  ~ "White"
+      jail_race == "A"  ~ "Asian/Pacific Islander",
+      jail_race == "B"  ~ "Black",
+      jail_race == "H"  ~ "Hispanic",
+      jail_race == "I"  ~ "American Indian/Alaskan Native",
+      jail_race == "K"  ~ "Black",                          # Black Hispanic
+      jail_race == "L"  ~ "White",                          # White Hispanic
+      jail_race == "N"  ~ "American Indian/Alaskan Native", # American Indian/Alaskan Native Hispanic
+      jail_race == "P"  ~ "Asian/Pacific Islander",
+      jail_race == "U"  ~ "Unknown",
+      jail_race == "W"  ~ "White"
     ))
 
 # fix date formats

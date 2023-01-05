@@ -220,12 +220,12 @@ coos_adm1 <- coos_adm %>% anti_join(all_nas) %>% distinct()
 coos_medicaid <- coos_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
-  mutate(jail_race = case_when(race == "A"  ~ "Asian/Pacific Islander",
-                               race == "B"  ~ "Black",
-                               race == "H"  ~ "Hispanic",
-                               race == "I"  ~ "American Indian/Alaskan Native",
-                               race == "U"  ~ "Unknown",
-                               race == "W"  ~ "White"
+  mutate(jail_race = case_when(jail_race == "A"  ~ "Asian/Pacific Islander",
+                               jail_race == "B"  ~ "Black",
+                               jail_race == "H"  ~ "Hispanic",
+                               jail_race == "I"  ~ "American Indian/Alaskan Native",
+                               jail_race == "U"  ~ "Unknown",
+                               jail_race == "W"  ~ "White"
   ))
 
 # Change date formats for booking and release dataes

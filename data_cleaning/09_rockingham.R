@@ -253,13 +253,13 @@ rockingham_medicaid <- rockingham_medicaid.xlsx %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
          jail_race = case_when(
-           race == "A" ~ "Asian/Pacific Islander",
-           race == "B" ~ "Black",
-           race == "H" ~ "Hispanic",
-           race == "I" ~ "American Indian/Alaskan Native",
-           race == "O" ~ "Unknown",
-           race == "U" ~ "Unknown",
-           race == "W" ~ "White"
+           jail_race == "A" ~ "Asian/Pacific Islander",
+           jail_race == "B" ~ "Black",
+           jail_race == "H" ~ "Hispanic",
+           jail_race == "I" ~ "American Indian/Alaskan Native",
+           jail_race == "O" ~ "Unknown",
+           jail_race == "U" ~ "Unknown",
+           jail_race == "W" ~ "White"
          ))
 
 # create a unique booking id per person per booking date

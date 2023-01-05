@@ -298,12 +298,12 @@ hillsborough_medicaid <- hillsborough_medicaid.xlsx %>%
   rename(booking_date = bkg_date,
          release_date = rel_date,
          county = source_id) %>%
-  mutate(jail_race = case_when(race == "Asian/Pacific Islander"         ~ "Asian/Pacific Islander",
-                               race == "Black"                          ~ "Black",
-                               race == "American Indian/Alaskan Native" ~ "American Indian/Alaskan Native",
-                               race == "Not Specified"                  ~ "Unknown",
-                               race == "Unknown"                        ~ "Unknown",
-                               race == "White"                          ~ "White"
+  mutate(jail_race = case_when(jail_race == "Asian/Pacific Islander"         ~ "Asian/Pacific Islander",
+                               jail_race == "Black"                          ~ "Black",
+                               jail_race == "American Indian/Alaskan Native" ~ "American Indian/Alaskan Native",
+                               jail_race == "Not Specified"                  ~ "Unknown",
+                               jail_race == "Unknown"                        ~ "Unknown",
+                               jail_race == "White"                          ~ "White"
   ))
 
 # create a unique booking id per person per booking date
