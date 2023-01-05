@@ -68,7 +68,7 @@ rockingham_adm <- fnc_los(rockingham_adm)
 
 # Create high utilizer variables
 df_hu <- fnc_create_high_utilizer_variables(rockingham_adm)
-rockingham_adm <- left_join(rockingham_adm, df_hu, by = c("id", "fy"))
+rockingham_adm <- left_join(rockingham_adm, df_hu, by = c("id"))
 
 ###################################
 

@@ -67,7 +67,7 @@ cheshire_adm <- fnc_los(cheshire_adm)
 
 # Create high utilizer variables
 df_hu <- fnc_create_high_utilizer_variables(cheshire_adm)
-cheshire_adm <- left_join(cheshire_adm, df_hu, by = c("id", "fy"))
+cheshire_adm <- left_join(cheshire_adm, df_hu, by = c("id"))
 
 ###################################
 

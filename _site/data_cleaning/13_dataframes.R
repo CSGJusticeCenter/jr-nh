@@ -57,7 +57,6 @@ bookings_entrances_all <- adm_all %>%
                 sentence_status_standard,
                 fy,
                 num_entrances,
-                num_entrances_fy,
                 high_utilizer_4_times,
                 high_utilizer_1_pct,
                 high_utilizer_5_pct,
@@ -134,8 +133,11 @@ booking_no_pc_hold <- bookings_entrances_all %>%
          los,
          los_category,
          high_utilizer_4_times,
-         high_utilizer_1_pct, high_utilizer_5_pct, high_utilizer_10_pct,
-         month_year_text, month_year) %>%
+         high_utilizer_1_pct,
+         high_utilizer_5_pct,
+         high_utilizer_10_pct,
+         month_year_text,
+         month_year) %>%
   filter(county != "Strafford") %>%
   droplevels() %>%
   distinct()
