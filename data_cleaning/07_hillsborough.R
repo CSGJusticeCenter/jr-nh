@@ -303,8 +303,12 @@ hillsborough_medicaid <- hillsborough_medicaid.xlsx %>%
                                jail_race == "American Indian/Alaskan Native" ~ "American Indian/Alaskan Native",
                                jail_race == "Not Specified"                  ~ "Unknown",
                                jail_race == "Unknown"                        ~ "Unknown",
-                               jail_race == "White"                          ~ "White"
-  ))
+                               jail_race == "White"                          ~ "White"),
+         jail_sex = case_when(jail_sex == "Female"        ~ "Female",
+                              jail_sex == "Male"          ~ "Male",
+                              jail_sex == "Not Specified" ~ "Unknown")
+  ) %>%
+  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
 # create a unique booking id per person per booking date
 hillsborough_medicaid$booking_id <- hillsborough_medicaid %>% group_indices(unique_person_id, booking_date)

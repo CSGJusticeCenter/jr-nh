@@ -313,7 +313,11 @@ carroll_medicaid <- carroll_medicaid %>%
                                jail_race == "B"  ~ "Black",
                                jail_race == "I"  ~ "American Indian/Alaskan Native",
                                jail_race == "U"  ~ "Unknown",
-                               jail_race == "W"  ~ "White"))
+                               jail_race == "W"  ~ "White"),
+         jail_sex = case_when(jail_sex == "F"  ~ "Female",
+                              jail_sex == "M"  ~ "Male")
+  ) %>%
+  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
 # # Does the medicaid file have the same number of unique individuals as the adm?
 # length(unique(carroll_adm$id)); length(unique(carroll_medicaid$unique_person_id))

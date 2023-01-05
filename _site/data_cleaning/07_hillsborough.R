@@ -15,7 +15,13 @@
 hillsborough_adm_all <- hillsborough_adm.xlsx %>%
   clean_names() %>%
   mutate(charge_code = NA,
-         race_label = NA) %>%
+         race_label = case_when(race == "Asian/Pacific Islander"         ~ "Asian/Pacific Islander",
+                                race == "Black"                          ~ "Black",
+                                race == "American Indian/Alaskan Native" ~ "American Indian/Alaskan Native",
+                                race == "Not Specified"                  ~ "Unknown",
+                                race == "Unknown"                        ~ "Unknown",
+                                race == "White"                          ~ "White"
+         )) %>%
   dplyr::select(id = x1,
                 inmate_id = ccn,
                 yob,
@@ -285,12 +291,24 @@ hillsborough_adm1 <- hillsborough_adm %>% anti_join(all_nas) %>% distinct()
 ################################################################################
 
 # clean names
+# create race labels
 hillsborough_medicaid <- hillsborough_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
   rename(booking_date = bkg_date,
          release_date = rel_date,
-         county = source_id)
+         county = source_id) %>%
+  mutate(jail_race = case_when(jail_race == "Asian/Pacific Islander"         ~ "Asian/Pacific Islander",
+                               jail_race == "Black"                          ~ "Black",
+                               jail_race == "American Indian/Alaskan Native" ~ "American Indian/Alaskan Native",
+                               jail_race == "Not Specified"                  ~ "Unknown",
+                               jail_race == "Unknown"                        ~ "Unknown",
+                               jail_race == "White"                          ~ "White"),
+         jail_sex = case_when(jail_sex == "Female"        ~ "Female",
+                              jail_sex == "Male"          ~ "Male",
+                              jail_sex == "Not Specified" ~ "Unknown")
+  ) %>%
+  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
 # create a unique booking id per person per booking date
 hillsborough_medicaid$booking_id <- hillsborough_medicaid %>% group_indices(unique_person_id, booking_date)

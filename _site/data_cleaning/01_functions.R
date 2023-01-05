@@ -25,35 +25,7 @@ fnc_data_setup <- function(df){
                           booking_date >= "2019-07-01" & booking_date <= "2020-06-30" ~ 2020,
                           booking_date >= "2020-07-01" & booking_date <= "2021-06-30" ~ 2021),
            age = fy - yob,
-           los = difftime(as.POSIXct(release_date), as.POSIXct(booking_date, tz="UTC"), units="days"),
-           race_label = case_when(race_code == "A"  ~ "AAPI",
-                                  race_code == "C"  ~ "AAPI",
-                                  race_code == "P"  ~ "AAPI",
-                                  race_code == "K"  ~ "Black", # Black Hispanic
-                                  race_code == "Asian/Pacific Islander" ~ "AAPI",
-
-
-                                  race_code == "B"  ~ "Black",
-                                  race_code == "Black" ~ "Black",
-
-                                  race_code == "H"  ~ "Hispanic",
-                                  race_code == "L"  ~ "Hispanic",
-
-                                  race_code == "I"  ~ "American Indian Alaska Native",
-                                  race_code == "American Indian/Alaskan Native" ~ "American Indian Alaska Native",
-
-                                  race_code == "U"  ~ "Unknown",
-                                  race_code == "NH" ~ "Unknown",
-                                  race_code == "N"  ~ "Unknown",
-                                  race_code == "X"  ~ "Unknown",
-                                  race_code == "Not Specified" ~ "Unknown",
-                                  race_code == "Unknown" ~ "Unknown",
-
-                                  race_code == "O"  ~ "Other",
-                                  race_code == "P"  ~ "Other",
-
-                                  race_code == "W"  ~ "White",
-                                  race_code == "White" ~ "White")) %>%
+           los = difftime(as.POSIXct(release_date), as.POSIXct(booking_date, tz="UTC"), units="days")) %>%
     filter(fy == 2019 | fy == 2020 | fy == 2021) %>%
     dplyr::select(id,
                   inmate_id,

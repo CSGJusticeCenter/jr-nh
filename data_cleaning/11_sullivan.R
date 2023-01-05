@@ -270,7 +270,12 @@ sullivan_medicaid <- sullivan_medicaid.xlsx %>%
       jail_race == "P"  ~ "Asian/Pacific Islander",
       jail_race == "U"  ~ "Unknown",
       jail_race == "W"  ~ "White"
-    ))
+    ),
+    jail_sex = case_when(jail_sex == "F"  ~ "Female",
+                         jail_sex == "M"  ~ "Male",
+                         jail_sex == "U"  ~ "Unknown")
+  ) %>%
+  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
 # fix date formats
 sullivan_medicaid$booking_date <- as.POSIXct(sullivan_medicaid$booking_date, format = '%m/%d/%Y %H:%M:%S')

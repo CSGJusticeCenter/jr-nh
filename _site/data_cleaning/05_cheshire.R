@@ -14,7 +14,16 @@
 
 cheshire_adm_all <- cheshire_adm.xlsx %>%
   clean_names() %>%
-  mutate(race_label = NA) %>%
+  mutate(race_label = case_when(
+    race == "A"  ~ "Asian/Pacific Islander",
+    race == "B"  ~ "Black",
+    race == "H"  ~ "Hispanic",
+    race == "I"  ~ "American Indian/Alaskan Native",
+    race == "L"  ~ "Hispanic",
+    race == "P"  ~ "Asian/Pacific Islander",
+    race == "U"  ~ "Unknown",
+    race == "W"  ~ "White"
+         )) %>%
   dplyr::select(id,
                 inmate_id,
                 yob,
@@ -283,6 +292,7 @@ cheshire_adm1 <- cheshire_adm %>% anti_join(all_nas) %>% distinct()
 ################################################################################
 
 # clean names
+# create race labels
 cheshire_medicaid <- cheshire_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
@@ -292,7 +302,20 @@ cheshire_medicaid <- cheshire_medicaid.xlsx %>%
   mutate(booking_date = format(booking_date, format = "%m/%d/%Y"),
          release_date = format(release_date, format = "%m/%d/%Y")) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
-         release_date = as.Date(release_date, format = "%m/%d/%Y"))
+         release_date = as.Date(release_date, format = "%m/%d/%Y")) %>%
+  mutate(jail_race = case_when(jail_race == "A"  ~ "Asian/Pacific Islander",
+                               jail_race == "B"  ~ "Black",
+                               jail_race == "H"  ~ "Hispanic",
+                               jail_race == "I"  ~ "American Indian/Alaskan Native",
+                               jail_race == "L"  ~ "Hispanic",
+                               jail_race == "P"  ~ "Asian/Pacific Islander",
+                               jail_race == "U"  ~ "Unknown",
+                               jail_race == "W"  ~ "White"),
+         jail_sex = case_when(jail_sex == "F"     ~ "Female",
+                              jail_sex == "M"     ~ "Male",
+                              jail_sex == "TRANF" ~ "Transgender")
+  ) %>%
+  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
 # create a unique booking id per person per booking date
 cheshire_medicaid$booking_id <- cheshire_medicaid %>% group_indices(unique_person_id, booking_date)

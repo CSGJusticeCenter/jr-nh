@@ -26,8 +26,19 @@ sullivan_adm_all$release_date_time <- as.Date(sullivan_adm_all$release_date_time
 
 # clean variable names
 sullivan_adm_all <- sullivan_adm_all %>%
-  mutate(race_label = NA,
-         release_type = NA) %>%
+  mutate(release_type = NA,
+         race_label = case_when(
+           race == "A"  ~ "Asian/Pacific Islander",
+           race == "B"  ~ "Black",
+           race == "H"  ~ "Hispanic",
+           race == "I"  ~ "American Indian/Alaskan Native",
+           race == "K"  ~ "Black",                          # Black Hispanic
+           race == "L"  ~ "White",                          # White Hispanic
+           race == "N"  ~ "American Indian/Alaskan Native", # American Indian/Alaskan Native Hispanic
+           race == "P"  ~ "Asian/Pacific Islander",
+           race == "U"  ~ "Unknown",
+           race == "W"  ~ "White"
+         )) %>%
   dplyr::select(id = id_number_inmate_number,
                 inmate_id = inmate_num,
                 yob = year,
@@ -240,12 +251,31 @@ sullivan_adm1 <- sullivan_adm %>% anti_join(all_nas) %>% distinct()
 ################################################################################
 
 # clean names
+# create race labels
 sullivan_medicaid <- sullivan_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
   rename(booking_date = booking_date_time,
          release_date = release_date_time,
-         county = source_id)
+         county = source_id) %>%
+  mutate(
+    jail_race = case_when(
+      jail_race == "A"  ~ "Asian/Pacific Islander",
+      jail_race == "B"  ~ "Black",
+      jail_race == "H"  ~ "Hispanic",
+      jail_race == "I"  ~ "American Indian/Alaskan Native",
+      jail_race == "K"  ~ "Black",                          # Black Hispanic
+      jail_race == "L"  ~ "White",                          # White Hispanic
+      jail_race == "N"  ~ "American Indian/Alaskan Native", # American Indian/Alaskan Native Hispanic
+      jail_race == "P"  ~ "Asian/Pacific Islander",
+      jail_race == "U"  ~ "Unknown",
+      jail_race == "W"  ~ "White"
+    ),
+    jail_sex = case_when(jail_sex == "F"  ~ "Female",
+                         jail_sex == "M"  ~ "Male",
+                         jail_sex == "U"  ~ "Unknown")
+  ) %>%
+  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
 # fix date formats
 sullivan_medicaid$booking_date <- as.POSIXct(sullivan_medicaid$booking_date, format = '%m/%d/%Y %H:%M:%S')

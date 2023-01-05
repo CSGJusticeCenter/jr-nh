@@ -25,27 +25,48 @@ medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds")
 
 The following demographic trends were found using jail administrative data from DHHS, which has unique ids to account for people booked at more than one jail.
 
-## Table 1. Age 
+## Table 1. Race by Gender, State-wide 
 
 ```{r}
-df1 <- table(medicaid_jail_all$jail_race, medicaid_jail_all$jail_sex)
+temp <- medicaid_jail_all %>% filter(jail_race != "Unknown" & jail_sex != "Unknown")
+df1 <- table(temp$jail_race, temp$jail_sex)
 table1 <- prop.table(df1, 1)
 table1 <- as.data.frame(cbind(df1, table1))
-table1 <- table1 %>% rownames_to_column("")
+table1 <- table1 %>% rownames_to_column("Race")
+
+reactable(table1,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          pagination = FALSE,
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left", minWidth = 100,
+            footer = function(values, name) {
+              if (name %in% c("NH State Prisoner (N)", "Other (N)", "Pretrial (N)", "Protective Custody (N)", "Sentenced (N)", "Unknown (N)")) {
+                htmltools::div(paste0("", formatC(
+                  x = sum(values),
+                  digits = 0,
+                  big.mark = ",",
+                  format = "f"
+                )))
+              }
+            },
+            footerStyle = list(fontWeight = "bold")
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            Race          = colDef(name = "Race", minWidth = 250, style = list(fontWeight = "bold")),
+            
+            Female      = colDef(name = "Female (N)", minWidth = 100),
+            Male        = colDef(name = "Male (N)", minWidth = 100),
+            Transgender = colDef(name = "Transgender (N)", minWidth = 100),
+
+            Female.1      = colDef(name = "Female (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 1)),
+            Male.1        = colDef(name = "Male (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 1)),
+            Transgender.1 = colDef(name = "Transgender (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 1))
+            )
+          ) %>%
+add_source(paste(""), font_style = "italic", font_size = 14)
 ```
 
-<br>
-
-## Table 2. Race
-
-```{r}
-
-```
-
-<br>
-
-## Table 3. Gender
-
-```{r}
-
-```

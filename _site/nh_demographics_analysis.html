@@ -2367,6 +2367,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+  <script src="site_libs/react-17.0.0/react.min.js"></script>
+  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
+  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+  <script src="site_libs/reactable-binding-0.2.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2408,6 +2414,8 @@ Overall Trends
 <a href="nh_incarceration_patterns.html">Incarceration Patterns</a>
 <a href="nh_pc_holds.html">Protective Custody Holds</a>
 <a href="nh_high_utilizers_analysis.html">High Utilizers</a>
+<a href="nh_booking_types_analysis.html">Booking Types</a>
+<a href="nh_charge_type_analysis.html">Charge Types</a>
 <a href="nh_demographics_analysis.html">Demographics</a>
 <a href="nh_medicaid_analysis.html">Medicaid</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
@@ -2466,15 +2474,22 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#age" id="toc-age">Age</a></li>
-<li><a href="#race" id="toc-race">Race</a></li>
-<li><a href="#gender" id="toc-gender">Gender</a></li>
+<li><a href="#table-1.-race-by-gender-state-wide"
+id="toc-table-1.-race-by-gender-state-wide">Table 1. Race by Gender,
+State-wide</a></li>
 </ul>
 </nav>
 </div>
-<h1 id="age">Age</h1>
-<h1 id="race">Race</h1>
-<h1 id="gender">Gender</h1>
+<p>The following demographic trends were found using jail administrative
+data from DHHS, which has unique ids to account for people booked at
+more than one jail.</p>
+<h2 id="table-1.-race-by-gender-state-wide">Table 1. Race by Gender,
+State-wide</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-ac160a2cb2d67d87ac92" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-ac160a2cb2d67d87ac92">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Race":["American Indian/Alaskan Native","Asian/Pacific Islander","Black","Hispanic","White"],"Female":[82,63,327,247,10663],"Male":[97,239,2865,4030,30247],"Transgender":[0,0,0,0,6],"Female.1":[0.458100558659218,0.208609271523179,0.102443609022556,0.0577507598784195,0.260607097467983],"Male.1":[0.541899441340782,0.791390728476821,0.897556390977444,0.942249240121581,0.739246260631538],"Transgender.1":[0,0,0,0,0.00014664190047903]},"columns":[{"accessor":"Race","name":"Race","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":250,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Female","name":"Female (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Male","name":"Male (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Transgender","name":"Transgender (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Female.1","name":"Female (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Male.1","name":"Male (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Transgender.1","name":"Transgender (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"defaultPageSize":5,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"9946d73049479e57ad504b3e937b6105","key":"9946d73049479e57ad504b3e937b6105"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

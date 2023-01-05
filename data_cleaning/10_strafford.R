@@ -214,7 +214,11 @@ strafford_medicaid <- strafford_medicaid.xlsx %>%
       jail_race == "O" ~ "Unknown",
       jail_race == "U" ~ "Unknown",
       jail_race == "W" ~ "White"
-    ))
+    ),
+    jail_sex = case_when(jail_sex == "F"  ~ "Female",
+                         jail_sex == "M"  ~ "Male")
+  ) %>%
+  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
 # create a unique booking id per person per booking date
 strafford_medicaid$booking_id <- strafford_medicaid %>% group_indices(unique_person_id, booking_date)

@@ -225,8 +225,11 @@ coos_medicaid <- coos_medicaid.xlsx %>%
                                jail_race == "H"  ~ "Hispanic",
                                jail_race == "I"  ~ "American Indian/Alaskan Native",
                                jail_race == "U"  ~ "Unknown",
-                               jail_race == "W"  ~ "White"
-  ))
+                               jail_race == "W"  ~ "White"),
+         jail_sex = case_when(jail_sex == "F"     ~ "Female",
+                              jail_sex == "M"     ~ "Male")
+  ) %>%
+  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
 # Change date formats for booking and release dataes
 coos_medicaid$booking_dt_tm <- .POSIXct(coos_medicaid$booking_dt_tm, tz="UTC")
