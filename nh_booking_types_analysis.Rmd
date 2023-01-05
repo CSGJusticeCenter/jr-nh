@@ -25,9 +25,9 @@ source("data_cleaning/rdas.R")
 
 # Booking Types
 
-The following booking patterns were found using jail administrative data submitted directly to CSG.
+The following booking patterns were found using jail administrative data submitted directly to CSG.DHHS matched data does not have information on booking types.
 
-## Table 1. Booking Types State-wide
+## Figure 1. Booking Types State-wide
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
 df_sentence_statuses <- bookings_entrances %>% select(sentence_status_standard, booking_id) %>% distinct() %>% 
@@ -81,7 +81,9 @@ ggplot(df1, aes(x = sentence_status_standard, y = total, fill = yesno)) +
         axis.title.x = element_blank()) +
   coord_flip() 
 ```
+<br>
 
+## Table 1. Booking Types State-wide
 
 ```{r}
 df_sentence_statuses <- data.frame(summarytools::freq(df_sentence_statuses$sentence_status_standard, order = "freq", cum.percent = FALSE))
@@ -100,8 +102,11 @@ kable(df_sentence_statuses,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
+  column_spec(1, bold = T) %>% 
   row_spec(7, bold = TRUE)
 ```
+
+<br>
 
 ## Table 2. Booking Types by County (N)
 
@@ -170,6 +175,8 @@ kable(df_sentence_statuses_county,
    column_spec(8, width = "8em")
 ```
 
+<br>
+
 ## Table 3. Booking Types by County (%)
 
 ```{r}
@@ -190,25 +197,22 @@ kable(df_sentence_statuses_county_pct,
    column_spec(7, width = "8em") 
 ```
 
-# Booking Types and Associated Charges
+<br>
+
+## Carroll County 
+
+This is how we standardized booking types in Carroll County. It's possible that some of the booking types should be in "Pretrial" instead of "Other."
 
 ```{r}
-df1 <- adm_all %>% group_by(crime_type_lookup, sentence_status_standard) %>% summarise(total = n()) %>% 
-  mutate(sentence_status_standard = case_when(
-           sentence_status_standard == "PRETRIAL" ~ "Pretrial",
-           sentence_status_standard == "PROTECTIVE CUSTODY" ~ "Protective Custody",
-           sentence_status_standard == "SENTENCED" ~ "Sentenced",
-           sentence_status_standard == "OTHER" ~ "Other",
-           sentence_status_standard == "NH STATE PRISONER" ~ "NH State Prisoner")) 
-df1$sentence_status_standard <- factor(df1$sentence_status_standard,levels = c("Pretrial",
-                                                                               "Protective Custody",
-                                                                               "Sentenced",
-                                                                               "Other",
-                                                                               "NH State Prisoner",
-                                                                               "<NA>"))
+df1 <- adm_all %>% 
+  filter(county == "Carroll") %>% 
+  group_by(sentence_status, sentence_status_standard) %>% 
+  summarise(total = n()) %>% 
+  arrange(sentence_status_standard) %>% 
+  select(`Booking Type (Raw)` = sentence_status,
+         `Booking Type (Standardized)` = sentence_status_standard,
+         `Total Bookings (N)` = total)
 
-df1 <- spread(df1, key = sentence_status_standard, value = total)
-df1 <- df1 %>% rename(`Crime Type` = crime_type_lookup)
 kable(df1, 
       format.args = list(big.mark = ","), 
       align=rep('l')) %>%
@@ -217,12 +221,95 @@ kable(df1,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-   column_spec(1, bold = T, width = "20em") %>% 
-   column_spec(2, width = "8em") %>% 
-   column_spec(3, width = "8em") %>% 
-   column_spec(4, width = "8em") %>% 
-   column_spec(5, width = "8em") %>% 
-   column_spec(6, width = "8em") %>% 
-   column_spec(7, width = "8em") 
+   column_spec(1, bold = T, width = "15em") %>% 
+   column_spec(2, width = "15em") %>% 
+   column_spec(3, width = "15em") 
 ```
 
+<br>
+
+## Table 4. Charge Type by Booking Type (Row Sums)
+
+```{r}
+df1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
+table1 <- prop.table(df1, 1)
+table1 <- as.data.frame(cbind(df1, table1))
+table1 <- table1 %>% rownames_to_column("Charge Type")
+
+table1 <- table1 %>% 
+       rename("Charge Type"            = 1,
+              "NH State Prisoner (N)"  = 2, 
+              "Other (N)"              = 3,
+              "Pretrial (N)"           = 4,
+              "Protective Custody (N)" = 5,
+              "Sentenced (N)"          = 6,
+              "Unknown (N)"            = 7,
+              "NH State Prisoner (%)"  = 8, 
+              "Other (%)"              = 9,
+              "Pretrial (%)"           = 10,
+              "Protective Custody (%)" = 11,
+              "Sentenced (%)"          = 12,
+              "Unknown (%)"            = 13) 
+table_n   <- table1 %>% select(1:7)
+table_pct <- table1 %>% select(1, 8:13)
+
+reactable(table_n,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          pagination = FALSE,
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left", minWidth = 100,
+            footer = function(values, name) {
+              if (name %in% c("NH State Prisoner (N)", "Other (N)", "Pretrial (N)", "Protective Custody (N)", "Sentenced (N)", "Unknown (N)")) {
+                htmltools::div(paste0("", formatC(
+                  x = sum(values),
+                  digits = 0,
+                  big.mark = ",",
+                  format = "f"
+                )))
+              }
+            },
+            footerStyle = list(fontWeight = "bold")
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            `Charge Type` = colDef(minWidth = 200, style = list(fontWeight = "bold"))
+            )
+          ) %>%
+add_source(paste(""), font_style = "italic", font_size = 14)
+
+reactable(table_pct,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          pagination = FALSE,
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left", minWidth = 100,
+            footer = function(values, name) {
+              if (name %in% c("NH State Prisoner (N)", "Other (N)", "Pretrial (N)", "Protective Custody (N)", "Sentenced (N)", "Unknown (N)")) {
+                htmltools::div(paste0("", formatC(
+                  x = sum(values),
+                  digits = 0,
+                  big.mark = ",",
+                  format = "f"
+                )))
+              }
+            },
+            footerStyle = list(fontWeight = "bold")
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            `Charge Type` = colDef(minWidth = 200, style = list(fontWeight = "bold")),
+            `NH State Prisoner (%)` = colDef(minWidth = 100, format = colFormat(percent = TRUE, digits = 1)),
+            `Other (%)` = colDef(minWidth = 100, format = colFormat(percent = TRUE, digits = 1)),
+            `Pretrial (%)` = colDef(minWidth = 100, format = colFormat(percent = TRUE, digits = 1)),
+            `Protective Custody (%)` = colDef(minWidth = 100, format = colFormat(percent = TRUE, digits = 1)),
+            `Sentenced (%)` = colDef(minWidth = 100, format = colFormat(percent = TRUE, digits = 1)),
+            `Unknown (%)` = colDef(minWidth = 100, format = colFormat(percent = TRUE, digits = 1))
+            )
+          ) %>%
+add_source(paste(""), font_style = "italic", font_size = 14)
+```

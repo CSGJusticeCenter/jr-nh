@@ -2369,6 +2369,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
   <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
   <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+  <script src="site_libs/react-17.0.0/react.min.js"></script>
+  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
+  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+  <script src="site_libs/reactable-binding-0.2.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2472,6 +2478,9 @@ Research
 <ul>
 <li><a href="#booking-types" id="toc-booking-types">Booking Types</a>
 <ul>
+<li><a href="#figure-1.-booking-types-state-wide"
+id="toc-figure-1.-booking-types-state-wide">Figure 1. Booking Types
+State-wide</a></li>
 <li><a href="#table-1.-booking-types-state-wide"
 id="toc-table-1.-booking-types-state-wide">Table 1. Booking Types
 State-wide</a></li>
@@ -2481,21 +2490,27 @@ County (N)</a></li>
 <li><a href="#table-3.-booking-types-by-county"
 id="toc-table-3.-booking-types-by-county">Table 3. Booking Types by
 County (%)</a></li>
+<li><a href="#carroll-county" id="toc-carroll-county">Carroll
+County</a></li>
+<li><a href="#table-4.-charge-type-by-booking-type-row-sums"
+id="toc-table-4.-charge-type-by-booking-type-row-sums">Table 4. Charge
+Type by Booking Type (Row Sums)</a></li>
 </ul></li>
-<li><a href="#booking-types-and-associated-charges"
-id="toc-booking-types-and-associated-charges">Booking Types and
-Associated Charges</a></li>
 </ul>
 </nav>
 </div>
 <h1 id="booking-types">Booking Types</h1>
 <p>The following booking patterns were found using jail administrative
-data submitted directly to CSG.</p>
-<h2 id="table-1.-booking-types-state-wide">Table 1. Booking Types
+data submitted directly to CSG.DHHS matched data does not have
+information on booking types.</p>
+<h2 id="figure-1.-booking-types-state-wide">Figure 1. Booking Types
 State-wide</h2>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="nh_booking_types_analysis_files/figure-html5/unnamed-chunk-1-1.png" width="75%" /></p>
 </div>
+<p><br></p>
+<h2 id="table-1.-booking-types-state-wide">Table 1. Booking Types
+State-wide</h2>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -2513,7 +2528,7 @@ Proportion of Bookings (%)
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;font-weight: bold;">
 PRETRIAL
 </td>
 <td style="text-align:left;">
@@ -2524,7 +2539,7 @@ PRETRIAL
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;font-weight: bold;">
 PROTECTIVE CUSTODY
 </td>
 <td style="text-align:left;">
@@ -2535,7 +2550,7 @@ PROTECTIVE CUSTODY
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;font-weight: bold;">
 SENTENCED
 </td>
 <td style="text-align:left;">
@@ -2546,7 +2561,7 @@ SENTENCED
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;font-weight: bold;">
 OTHER
 </td>
 <td style="text-align:left;">
@@ -2557,7 +2572,7 @@ OTHER
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;font-weight: bold;">
 NH STATE PRISONER
 </td>
 <td style="text-align:left;">
@@ -2568,7 +2583,7 @@ NH STATE PRISONER
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;font-weight: bold;">
 &lt;NA&gt;
 </td>
 <td style="text-align:left;">
@@ -2579,7 +2594,7 @@ NA
 </td>
 </tr>
 <tr>
-<td style="text-align:left;font-weight: bold;">
+<td style="text-align:left;font-weight: bold;font-weight: bold;">
 Total
 </td>
 <td style="text-align:left;font-weight: bold;">
@@ -2592,6 +2607,7 @@ Total
 </tbody>
 </table>
 </div>
+<p><br></p>
 <h2 id="table-2.-booking-types-by-county-n">Table 2. Booking Types by
 County (N)</h2>
 <div class="layout-chunk" data-layout="l-body">
@@ -2862,6 +2878,7 @@ NA
 </tbody>
 </table>
 </div>
+<p><br></p>
 <h2 id="table-3.-booking-types-by-county">Table 3. Booking Types by
 County (%)</h2>
 <div class="layout-chunk" data-layout="l-body">
@@ -3102,222 +3119,216 @@ NA
 </tbody>
 </table>
 </div>
-<h1 id="booking-types-and-associated-charges">Booking Types and
-Associated Charges</h1>
+<p><br></p>
+<h2 id="carroll-county">Carroll County</h2>
+<p>This is how we standardized booking types in Carroll County. It’s
+possible that some of the booking types should be in “Pretrial” instead
+of “Other.”</p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
-Crime Type
+Booking Type (Raw)
 </th>
 <th style="text-align:left;">
-NH STATE PRISONER
+Booking Type (Standardized)
 </th>
 <th style="text-align:left;">
-OTHER
-</th>
-<th style="text-align:left;">
-PRETRIAL
-</th>
-<th style="text-align:left;">
-PROTECTIVE CUSTODY
-</th>
-<th style="text-align:left;">
-SENTENCED
-</th>
-<th style="text-align:left;">
-UNKNOWN
+Total Bookings (N)
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;width: 20em; font-weight: bold;">
-Drug/Alcohol
+<td style="text-align:left;width: 15em; font-weight: bold;">
+STATE PRISONER
 </td>
-<td style="text-align:left;width: 8em; ">
-10
+<td style="text-align:left;width: 15em; ">
+NH STATE PRISONER
 </td>
-<td style="text-align:left;width: 8em; ">
-791
-</td>
-<td style="text-align:left;width: 8em; ">
-3,525
-</td>
-<td style="text-align:left;width: 8em; ">
-6
-</td>
-<td style="text-align:left;width: 8em; ">
-1,223
-</td>
-<td style="text-align:left;width: 8em; ">
-56
+<td style="text-align:left;width: 15em; ">
+45
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 20em; font-weight: bold;">
-FTA/Bail
+<td style="text-align:left;width: 15em; font-weight: bold;">
+BAIL SET
 </td>
-<td style="text-align:left;width: 8em; ">
-2
+<td style="text-align:left;width: 15em; ">
+OTHER
 </td>
-<td style="text-align:left;width: 8em; ">
-183
-</td>
-<td style="text-align:left;width: 8em; ">
-2,465
-</td>
-<td style="text-align:left;width: 8em; ">
-2
-</td>
-<td style="text-align:left;width: 8em; ">
-464
-</td>
-<td style="text-align:left;width: 8em; ">
-36
+<td style="text-align:left;width: 15em; ">
+1,895
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 20em; font-weight: bold;">
-Probation/Parole Violation
+<td style="text-align:left;width: 15em; font-weight: bold;">
+BOND DENIED
 </td>
-<td style="text-align:left;width: 8em; ">
-34
+<td style="text-align:left;width: 15em; ">
+OTHER
 </td>
-<td style="text-align:left;width: 8em; ">
-205
-</td>
-<td style="text-align:left;width: 8em; ">
-2,147
-</td>
-<td style="text-align:left;width: 8em; ">
-NA
-</td>
-<td style="text-align:left;width: 8em; ">
-1,509
-</td>
-<td style="text-align:left;width: 8em; ">
-34
+<td style="text-align:left;width: 15em; ">
+173
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 20em; font-weight: bold;">
-Property
+<td style="text-align:left;width: 15em; font-weight: bold;">
+DETAINER
 </td>
-<td style="text-align:left;width: 8em; ">
-10
+<td style="text-align:left;width: 15em; ">
+OTHER
 </td>
-<td style="text-align:left;width: 8em; ">
-416
+<td style="text-align:left;width: 15em; ">
+4
 </td>
-<td style="text-align:left;width: 8em; ">
-2,247
+</tr>
+<tr>
+<td style="text-align:left;width: 15em; font-weight: bold;">
+DISMISSED
 </td>
-<td style="text-align:left;width: 8em; ">
-NA
+<td style="text-align:left;width: 15em; ">
+OTHER
 </td>
-<td style="text-align:left;width: 8em; ">
-594
+<td style="text-align:left;width: 15em; ">
+23
 </td>
-<td style="text-align:left;width: 8em; ">
+</tr>
+<tr>
+<td style="text-align:left;width: 15em; font-weight: bold;">
+HELD
+</td>
+<td style="text-align:left;width: 15em; ">
+OTHER
+</td>
+<td style="text-align:left;width: 15em; ">
+521
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 15em; font-weight: bold;">
+SENTENCE SUSPENDED
+</td>
+<td style="text-align:left;width: 15em; ">
+OTHER
+</td>
+<td style="text-align:left;width: 15em; ">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 15em; font-weight: bold;">
+AWAITING TRIAL
+</td>
+<td style="text-align:left;width: 15em; ">
+PRETRIAL
+</td>
+<td style="text-align:left;width: 15em; ">
+162
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 15em; font-weight: bold;">
+PRE-TRIAL
+</td>
+<td style="text-align:left;width: 15em; ">
+PRETRIAL
+</td>
+<td style="text-align:left;width: 15em; ">
+75
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 15em; font-weight: bold;">
+AWAITING TRIAL
+</td>
+<td style="text-align:left;width: 15em; ">
+PROTECTIVE CUSTODY
+</td>
+<td style="text-align:left;width: 15em; ">
 29
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 20em; font-weight: bold;">
-Public Order
+<td style="text-align:left;width: 15em; font-weight: bold;">
+BAIL SET
 </td>
-<td style="text-align:left;width: 8em; ">
-2
+<td style="text-align:left;width: 15em; ">
+PROTECTIVE CUSTODY
 </td>
-<td style="text-align:left;width: 8em; ">
-515
-</td>
-<td style="text-align:left;width: 8em; ">
-1,909
-</td>
-<td style="text-align:left;width: 8em; ">
-1
-</td>
-<td style="text-align:left;width: 8em; ">
-370
-</td>
-<td style="text-align:left;width: 8em; ">
-40
+<td style="text-align:left;width: 15em; ">
+60
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 20em; font-weight: bold;">
-Temporary Hold
+<td style="text-align:left;width: 15em; font-weight: bold;">
+HELD
 </td>
-<td style="text-align:left;width: 8em; ">
-358
+<td style="text-align:left;width: 15em; ">
+PROTECTIVE CUSTODY
 </td>
-<td style="text-align:left;width: 8em; ">
-535
-</td>
-<td style="text-align:left;width: 8em; ">
-761
-</td>
-<td style="text-align:left;width: 8em; ">
-3,206
-</td>
-<td style="text-align:left;width: 8em; ">
-11
-</td>
-<td style="text-align:left;width: 8em; ">
-55
+<td style="text-align:left;width: 15em; ">
+13
 </td>
 </tr>
 <tr>
-<td style="text-align:left;width: 20em; font-weight: bold;">
-Violent
+<td style="text-align:left;width: 15em; font-weight: bold;">
+PRE-TRIAL
 </td>
-<td style="text-align:left;width: 8em; ">
-23
+<td style="text-align:left;width: 15em; ">
+PROTECTIVE CUSTODY
 </td>
-<td style="text-align:left;width: 8em; ">
-1,286
+<td style="text-align:left;width: 15em; ">
+8
 </td>
-<td style="text-align:left;width: 8em; ">
-5,625
+</tr>
+<tr>
+<td style="text-align:left;width: 15em; font-weight: bold;">
+PROTECTIVE CUSTODY
 </td>
-<td style="text-align:left;width: 8em; ">
+<td style="text-align:left;width: 15em; ">
+PROTECTIVE CUSTODY
+</td>
+<td style="text-align:left;width: 15em; ">
+293
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 15em; font-weight: bold;">
+SENTENCED
+</td>
+<td style="text-align:left;width: 15em; ">
+SENTENCED
+</td>
+<td style="text-align:left;width: 15em; ">
+441
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 15em; font-weight: bold;">
+SENTENCED FINES
+</td>
+<td style="text-align:left;width: 15em; ">
+SENTENCED
+</td>
+<td style="text-align:left;width: 15em; ">
 3
-</td>
-<td style="text-align:left;width: 8em; ">
-1,390
-</td>
-<td style="text-align:left;width: 8em; ">
-68
-</td>
-</tr>
-<tr>
-<td style="text-align:left;width: 20em; font-weight: bold;">
-NA
-</td>
-<td style="text-align:left;width: 8em; ">
-39
-</td>
-<td style="text-align:left;width: 8em; ">
-528
-</td>
-<td style="text-align:left;width: 8em; ">
-1,550
-</td>
-<td style="text-align:left;width: 8em; ">
-4,141
-</td>
-<td style="text-align:left;width: 8em; ">
-853
-</td>
-<td style="text-align:left;width: 8em; ">
-12,298
 </td>
 </tr>
 </tbody>
 </table>
+</div>
+<p><br></p>
+<h2 id="table-4.-charge-type-by-booking-type-row-sums">Table 4. Charge
+Type by Booking Type (Row Sums)</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-1867c737fded9ba674e2" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-1867c737fded9ba674e2">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"NH State Prisoner (N)":[10,2,34,10,2,358,23],"Other (N)":[791,183,205,416,515,535,1286],"Pretrial (N)":[3525,2465,2147,2247,1909,761,5625],"Protective Custody (N)":[6,2,0,0,1,3206,3],"Sentenced (N)":[1223,464,1509,594,370,11,1390],"Unknown (N)":[56,36,34,29,40,55,68]},"columns":[{"accessor":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"NH State Prisoner (N)","name":"NH State Prisoner (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["439"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Other (N)","name":"Other (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["3,931"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Pretrial (N)","name":"Pretrial (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,679"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Protective Custody (N)","name":"Protective Custody (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["3,218"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Sentenced (N)","name":"Sentenced (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["5,561"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Unknown (N)","name":"Unknown (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["318"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"defaultPageSize":7,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"7872617ad696fe0bb0836063c9568e0e","key":"7872617ad696fe0bb0836063c9568e0e"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-e0af945b511460e265ab" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-e0af945b511460e265ab">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"NH State Prisoner (%)":[0.0017822135091784,0.000634517766497462,0.00865360142529906,0.00303398058252427,0.000704970038773352,0.072675598863175,0.00273972602739726],"Other (%)":[0.140973088576011,0.0580583756345178,0.0521761262407737,0.12621359223301,0.181529784984138,0.108607389362566,0.153186420488386],"Pretrial (%)":[0.628230261985386,0.782043147208122,0.546449478238738,0.681735436893204,0.672893902009165,0.154486398700771,0.670041691483026],"Protective Custody (%)":[0.00106932810550704,0.000634517766497462,0,0,0.000352485019386676,0.650832318311003,0.000357355568790947],"Sentenced (%)":[0.217964712172518,0.147208121827411,0.384067192669891,0.180218446601942,0.13041945717307,0.0022330491270808,0.165574746873139],"Unknown (%)":[0.00998039565139904,0.0114213197969543,0.00865360142529906,0.00879854368932039,0.014099400775467,0.011165245635404,0.00810005955926146]},"columns":[{"accessor":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"NH State Prisoner (%)","name":"NH State Prisoner (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Other (%)","name":"Other (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Pretrial (%)","name":"Pretrial (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Protective Custody (%)","name":"Protective Custody (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Sentenced (%)","name":"Sentenced (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Unknown (%)","name":"Unknown (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"defaultPageSize":7,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"0344978f550d3a31bb01e425104d58e2","key":"0344978f550d3a31bb01e425104d58e2"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
