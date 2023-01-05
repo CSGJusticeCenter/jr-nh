@@ -146,7 +146,7 @@ fnc_create_high_utilizer_variables <- function(df){
 
   # Count number of entrances by id
   df_hus_3yrs <- df %>%
-    dplyr::select(id, booking_id, booking_date, fy) %>%
+    dplyr::select(id, booking_id, booking_date) %>%
     dplyr::distinct() %>%
     dplyr::group_by(id) %>%
     dplyr::summarise(num_entrances = n())
@@ -173,34 +173,7 @@ fnc_create_high_utilizer_variables <- function(df){
            high_utilizer_10_pct = case_when(high_utilizer_10_pct == TRUE    ~ "Yes",
                                             high_utilizer_10_pct == FALSE   ~ "No"))
 
-  #########
-  # per FY HUs - not using anymore but keep for now
-  #########
-
-  df_hus_fy <- df %>%
-    dplyr::select(id, booking_id, booking_date, fy) %>%
-    dplyr::distinct() %>%
-    dplyr::group_by(id, fy) %>%
-    dplyr::summarise(num_entrances_fy = n())
-
-  df_hus_fy <- df_hus_fy %>%
-    select(id, fy, num_entrances_fy) %>% distinct() %>%
-    mutate(high_utilizer_4_times_fy = num_entrances_fy >= 4) %>%
-    mutate(high_utilizer_1_pct_fy   = quantile(df_hus_fy$num_entrances_fy, probs = 0.99) < num_entrances_fy) %>%
-    mutate(high_utilizer_5_pct_fy   = quantile(df_hus_fy$num_entrances_fy, probs = 0.95) < num_entrances_fy) %>%
-    mutate(high_utilizer_10_pct_fy  = quantile(df_hus_fy$num_entrances_fy, probs = 0.90) < num_entrances_fy) %>%
-
-    mutate(high_utilizer_4_times_fy = case_when(high_utilizer_4_times_fy == TRUE  ~ "Yes",
-                                                high_utilizer_4_times_fy == FALSE ~ "No"),
-           high_utilizer_1_pct_fy   = case_when(high_utilizer_1_pct_fy   == TRUE  ~ "Yes",
-                                                high_utilizer_1_pct_fy   == FALSE ~ "No"),
-           high_utilizer_5_pct_fy   = case_when(high_utilizer_5_pct_fy   == TRUE  ~ "Yes",
-                                                high_utilizer_5_pct_fy   == FALSE ~ "No"),
-           high_utilizer_10_pct_fy  = case_when(high_utilizer_10_pct_fy  == TRUE  ~ "Yes",
-                                                high_utilizer_10_pct_fy  == FALSE ~ "No"))
-
-  df_hus_all <- merge(df_hus_fy, df_hus_3yrs, by = c("id"))
-  return(df_hus_all)
+  return(df_hus_3yrs)
 }
 
 ###########
@@ -259,15 +232,10 @@ fnc_add_data_labels <- function(df){
            county,
            fy,
            num_entrances,
-           num_entrances_fy,
            high_utilizer_4_times,
            high_utilizer_1_pct,
            high_utilizer_5_pct,
            high_utilizer_10_pct,
-           high_utilizer_4_times_fy,
-           high_utilizer_1_pct_fy,
-           high_utilizer_5_pct_fy,
-           high_utilizer_10_pct_fy,
            # pc_hold_booking,
            # pc_hold_charge,
            # pc_hold_sentence,
@@ -277,74 +245,57 @@ fnc_add_data_labels <- function(df){
   # Change data types
   df1$id                       <- as.character(df1$id)
   df1$inmate_id                <- as.character(df1$inmate_id)
+  df1$booking_id               <- as.character(df1$booking_id)
   df1$yob                      <- as.numeric(df1$yob)
   df1$race_code                <- as.factor(df1$race_code)
   df1$race                     <- as.character(df1$race)
   df1$gender                   <- as.factor(df1$gender)
+  df1$age                      <- as.numeric(df1$age)
+  df1$gender                   <- as.factor(df1$gender)
+  df1$age_category             <- as.character(df1$age_category)
   df1$charge_code              <- as.character(df1$charge_code)
   df1$charge_desc              <- as.character(df1$charge_desc)
   df1$booking_type             <- as.character(df1$booking_type)
   df1$release_type             <- as.character(df1$release_type)
   df1$sentence_status          <- as.character(df1$sentence_status)
   df1$sentence_status_standard <- as.character(df1$sentence_status_standard)
+  df1$los_max                  <- as.numeric(df1$los_max)
+  df1$county                   <- as.character(df1$county)
+  df1$fy                       <- as.numeric(df1$fy)
+  df1$num_entrances            <- as.numeric(df1$num_entrances)
 
-  df1$fy                  <- as.numeric(df1$fy)
   df1$high_utilizer_4_times    <- as.character(df1$high_utilizer_4_times)
   df1$high_utilizer_1_pct      <- as.character(df1$high_utilizer_1_pct)
   df1$high_utilizer_5_pct      <- as.character(df1$high_utilizer_5_pct)
   df1$high_utilizer_10_pct     <- as.character(df1$high_utilizer_10_pct)
-  df1$high_utilizer_4_times_fy <- as.character(df1$high_utilizer_4_times_fy)
-  df1$high_utilizer_1_pct_fy   <- as.character(df1$high_utilizer_1_pct_fy)
-  df1$high_utilizer_5_pct_fy   <- as.character(df1$high_utilizer_5_pct_fy)
-  df1$high_utilizer_10_pct_fy  <- as.character(df1$high_utilizer_10_pct_fy)
-  # df1$pc_hold_booking     <- as.factor(df1$pc_hold_booking)
-  # df1$pc_hold_charge      <- as.factor(df1$pc_hold_charge)
-  # df1$pc_hold_sentence    <- as.factor(df1$pc_hold_sentence)
-  # df1$pc_hold_release     <- as.factor(df1$pc_hold_release)
+
   df1$pc_hold             <- as.factor(df1$pc_hold)
-  df1$county              <- as.character(df1$county)
-  df1$age                 <- as.numeric(df1$age)
-  df1$age_category        <- as.factor(df1$age_category)
-  #df1$los                 <- as.numeric(df1$los)
-  df1$los_max             <- as.numeric(df1$los_max)
 
   # Data labels
-  var.labels <- c(id                  = "Unique ID",
-                  inmate_id           = "Inmate ID",
-                  booking_id          = "Booking id created by id and booking date",
-                  yob                 = "Year of birth",
-                  race_code           = "Original race code",
-                  race                = "Race",
-                  gender              = "Gender",
-                  age                 = "Age (years)",
-                  age_category        = "Age category",
-                  charge_code         = "Charge code",
-                  charge_desc         = "Charge description",
-                  booking_date        = "Booking date",
-                  booking_type        = "Booking type",
-                  #release_date        = "Release date",
-                  release_type        = "Release type",
-                  sentence_status     = "Sentence status",
-                  sentence_status     = "Sentence status standardized",
-                  #los                 = "Length of stay (days)",
-                  los_max             = "Maximum length of stay (days) to account for release date errors",
-                  county              = "County",
-                  fy                  = "Fiscal year",
-                  num_entrances       = "Number of booking events for all years",
-                  num_entrances_fy    = "Number of booking events in the fiscal year",
-
+  var.labels <- c(id                       = "Unique ID",
+                  inmate_id                = "Inmate ID",
+                  booking_id               = "Booking id created by id and booking date",
+                  yob                      = "Year of birth",
+                  race_code                = "Original race code",
+                  race                     = "Race",
+                  gender                   = "Gender",
+                  age                      = "Age (years)",
+                  age_category             = "Age category",
+                  charge_code              = "Charge code",
+                  charge_desc              = "Charge description",
+                  booking_date             = "Booking date",
+                  booking_type             = "Booking type",
+                  release_type             = "Release type",
+                  sentence_status          = "Sentence status",
+                  sentence_status_standard = "Sentence status standardized",
+                  los_max                  = "Maximum length of stay (days) to account for release date errors",
+                  county                   = "County",
+                  fy                       = "Fiscal year",
+                  num_entrances            = "Number of booking events for all years",
                   high_utilizer_4_times    = "Is a high utilizer (entered jail 4 or more times for all 3 yrs)",
                   high_utilizer_1_pct      = "Is a high utilizer (in top 1% percentile of jail entrances for all 3 yrs)",
                   high_utilizer_5_pct      = "Is a high utilizer (in top 5% percentile of jail entrances for all 3 yrs)",
                   high_utilizer_10_pct     = "Is a high utilizer (in top 10% percentile of jail entrances for all 3 yrs)",
-                  high_utilizer_4_times_fy = "Is a high utilizer (entered jail 4 or more times by FY)",
-                  high_utilizer_1_pct_fy   = "Is a high utilizer (in top 1% percentile of jail entrances by FY)",
-                  high_utilizer_5_pct_fy   = "Is a high utilizer (in top 5% percentile of jail entrances by FY)",
-                  high_utilizer_10_pc_fy   = "Is a high utilizer (in top 10% percentile of jail entrances by FY)",
-                  # pc_hold_booking          = "Protective custody hold (booking type)",
-                  # pc_hold_charge           = "Protective custody hold (charge type)",
-                  # pc_hold_sentence         = "Protective custody hold (sentence status)",
-                  # pc_hold_release          = "Protective custody hold (release type)",
                   pc_hold                  = "Protective custody hold (in booking type, charge type, sentence status, or release type)")
   # Add labels to data
   df1 <- labelled::set_variable_labels(df1, .labels = var.labels)

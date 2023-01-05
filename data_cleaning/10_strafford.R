@@ -73,7 +73,7 @@ strafford_adm <- fnc_los(strafford_adm)
 
 # Create high utilizer variables
 df_hu <- fnc_create_high_utilizer_variables(strafford_adm)
-strafford_adm <- left_join(strafford_adm, df_hu, by = c("id", "fy"))
+strafford_adm <- left_join(strafford_adm, df_hu, by = c("id"))
 
 ###################################
 

@@ -64,7 +64,7 @@ coos_adm <- fnc_los(coos_adm)
 
 # Create high utilizer variables
 df_hu <- fnc_create_high_utilizer_variables(coos_adm)
-coos_adm <- left_join(coos_adm, df_hu, by = c("id", "fy"))
+coos_adm <- left_join(coos_adm, df_hu, by = c("id"))
 
 ###################################
 

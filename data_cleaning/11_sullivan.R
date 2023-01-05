@@ -78,7 +78,7 @@ sullivan_adm <- fnc_los(sullivan_adm)
 
 # Create high utilizer variables
 df_hu <- fnc_create_high_utilizer_variables(sullivan_adm)
-sullivan_adm <- left_join(sullivan_adm, df_hu, by = c("id", "fy"))
+sullivan_adm <- left_join(sullivan_adm, df_hu, by = c("id"))
 
 ###################################
 

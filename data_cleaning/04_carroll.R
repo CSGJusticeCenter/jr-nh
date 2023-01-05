@@ -81,7 +81,7 @@ carroll_adm <- fnc_los(carroll_adm)
 
 # Create high utilizer variables
 df_hu <- fnc_create_high_utilizer_variables(carroll_adm)
-carroll_adm <- left_join(carroll_adm, df_hu, by = c("id", "fy"))
+carroll_adm <- left_join(carroll_adm, df_hu, by = c("id"))
 
 ###################################
 

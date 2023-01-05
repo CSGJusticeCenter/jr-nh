@@ -296,6 +296,13 @@ medicaid_jail_all <- rbind(belknap_medicaid,
                            strafford_medicaid,
                            sullivan_medicaid)
 
+# create high utilizer variables using custom function
+# create temporary id to use function then remove
+medicaid_jail_all$id  <- medicaid_jail_all$unique_person_id
+medicaid_jail_all_hus <- fnc_create_high_utilizer_variables(medicaid_jail_all)
+medicaid_jail_all     <- medicaid_jail_all %>%
+  left_join(medicaid_jail_all_hus, by = "id") %>%
+  select(-id)
 
 # save out to external hard drive
 write_rds(medicaid_jail_all,

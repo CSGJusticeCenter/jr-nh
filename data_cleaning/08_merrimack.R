@@ -68,7 +68,7 @@ merrimack_adm <- fnc_los(merrimack_adm)
 
 # Create high utilizer variables
 df_hu <- fnc_create_high_utilizer_variables(merrimack_adm)
-merrimack_adm <- left_join(merrimack_adm, df_hu, by = c("id", "fy"))
+merrimack_adm <- left_join(merrimack_adm, df_hu, by = c("id"))
 
 ###################################
 

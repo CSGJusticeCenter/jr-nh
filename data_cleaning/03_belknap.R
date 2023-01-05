@@ -70,7 +70,7 @@ belknap_adm <- fnc_los(belknap_adm)
 
 # Create high utilizer variables
 df_hu <- fnc_create_high_utilizer_variables(belknap_adm)
-belknap_adm <- left_join(belknap_adm, df_hu, by = c("id", "fy"))
+belknap_adm <- left_join(belknap_adm, df_hu, by = c("id"))
 
 ###################################
 
@@ -306,7 +306,7 @@ belknap_medicaid <- belknap_medicaid %>%
 belknap_medicaid <- belknap_medicaid %>%
   filter(booking_date > "2018-06-30" & booking_date < "2021-07-01")
 
-# # Does the medicaid file have the same number of unique individuals as the adm? Off by 1
+# # Does the medicaid file have the same number of unique individuals as the adm?
 # length(unique(belknap_adm$id)); length(unique(belknap_medicaid$unique_person_id))
 
 ################################################################################
