@@ -49,11 +49,11 @@ adm_all_dedup <- adm_all %>%
 ### is one of our carroll files the wrong county? dhhs?
 
 ### create df specific to carroll and cheshire for additional exploration 
-carroll_adm <- adm_all %>% 
-  filter(county=="Carroll")
-
-cheshire_adm <- adm_all %>% 
-  filter(county=="Cheshire")
+# carroll_adm <- adm_all %>% 
+#   filter(county=="Carroll")
+# 
+# cheshire_adm <- adm_all %>% 
+#   filter(county=="Cheshire")
 
 ### import medicaid_jail_all -- medicaid jail data that we'll compare to the numbers from the jail administrative files
 ### this file lives on the external hard drive (created and exported in `13_medicaid.R`)
