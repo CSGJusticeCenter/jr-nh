@@ -15,8 +15,18 @@
 merrimack_adm_all <- merrimack_adm.xlsx %>%
   clean_names() %>%
   mutate(charge_code = NA,
-         race_label = NA,
-         release_type = NA) %>%
+         release_type = NA,
+         race_label = case_when(
+           race == "A" ~ "Asian/Pacific Islander",
+           race == "B" ~ "Black",
+           race == "H" ~ "Hispanic",
+           race == "I" ~ "American Indian/Alaskan Native",
+           race == "O" ~ "Unknown",
+           race == "P" ~ "Asian/Pacific Islander",
+           race == "U" ~ "Unknown",
+           race == "W" ~ "White",
+           race == "X" ~ "Unknown"
+         )) %>%
   dplyr::select(id = uniq_id,
                 inmate_id = im_id,
                 yob,
@@ -258,6 +268,7 @@ merrimack_adm1 <- merrimack_adm %>% anti_join(all_nas) %>% distinct()
 ################################################################################
 
 # clean names
+# create race labels
 merrimack_medicaid <- merrimack_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
@@ -265,7 +276,18 @@ merrimack_medicaid <- merrimack_medicaid.xlsx %>%
          release_date = rel_date,
          county = source_id) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
-         release_date = as.Date(release_date, format = "%m/%d/%Y"))
+         release_date = as.Date(release_date, format = "%m/%d/%Y"),
+         jail_race = case_when(
+           race == "A" ~ "Asian/Pacific Islander",
+           race == "B" ~ "Black",
+           race == "H" ~ "Hispanic",
+           race == "I" ~ "American Indian/Alaskan Native",
+           race == "O" ~ "Unknown",
+           race == "P" ~ "Asian/Pacific Islander",
+           race == "U" ~ "Unknown",
+           race == "W" ~ "White",
+           race == "X" ~ "Unknown"
+         ))
 
 # create a unique booking id per person per booking date
 merrimack_medicaid$booking_id <- merrimack_medicaid %>% group_indices(unique_person_id, booking_date)

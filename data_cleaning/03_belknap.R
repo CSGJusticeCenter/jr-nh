@@ -17,7 +17,19 @@
 belknap_adm_all <- belknap_adm.xlsx %>%
   clean_names() %>%
   mutate(charge_code = NA,
-         race_label = NA) %>%
+         # comments show what the jail indicated the letter stands for
+         race_label = case_when(race == "A"  ~ "Asian/Pacific Islander",
+                                race == "B"  ~ "Black",
+                                race == "C"  ~ "Asian/Pacific Islander",       # Chinese
+                                race == "H"  ~ "Hispanic",
+                                race == "I"  ~ "American Indian/Alaskan Native",
+                                race == "NH" ~ "Unknown",                      # Delete
+                                race == "O"  ~ "Unknown",                      # Other
+                                race == "P"  ~ "Unknown",                      # Portuguese
+                                race == "U"  ~ "Unknown",
+                                race == "W"  ~ "White",
+                                race == "X"  ~ "Unknown"                       # Delete
+                                )) %>%
   dplyr::select(id = unique_person_id,
                 inmate_id,
                 yob = year_of_birth,
@@ -261,10 +273,23 @@ belknap_adm1 <- belknap_adm %>% anti_join(all_nas) %>% distinct()
 ################################################################################
 
 # clean names
+# create race labels
 belknap_medicaid <- belknap_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
-  rename(county = source_id)
+  rename(county = source_id) %>%
+  mutate(jail_race = case_when(race == "A"  ~ "Asian/Pacific Islander",
+                               race == "B"  ~ "Black",
+                               race == "C"  ~ "Asian/Pacific Islander",       # Chinese
+                               race == "H"  ~ "Hispanic",
+                               race == "I"  ~ "American Indian/Alaskan Native",
+                               race == "NH" ~ "Unknown",                      # Delete
+                               race == "O"  ~ "Unknown",                      # Other
+                               race == "P"  ~ "Unknown",                      # Portuguese
+                               race == "U"  ~ "Unknown",
+                               race == "W"  ~ "White",
+                               race == "X"  ~ "Unknown"                       # Delete
+  ))
 
 # create a unique booking id per person per booking date
 belknap_medicaid$booking_id <- belknap_medicaid %>% group_indices(unique_person_id, booking_date)

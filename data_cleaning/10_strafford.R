@@ -15,13 +15,21 @@
 strafford_adm_all <- strafford_adm.xlsx %>%
   clean_names() %>%
   mutate(inmate_id = NA,
-         race_label = NA,
          charge_code = NA,
          charge_desc = NA,
          booking_type = NA,
          release_type = NA,
          housing = NA,
-         sentence_status = NA) %>%
+         sentence_status = NA,
+         race_label = case_when(
+           race == "A" ~ "Asian/Pacific Islander",
+           race == "B" ~ "Black",
+           race == "H" ~ "Hispanic",
+           race == "I" ~ "American Indian/Alaskan Native",
+           race == "O" ~ "Unknown",
+           race == "U" ~ "Unknown",
+           race == "W" ~ "White"
+         )) %>%
   dplyr::select(id = id_2,
                 inmate_id = id_2,
                 yob = year,
@@ -192,10 +200,21 @@ strafford_adm1 <- strafford_adm %>%
 ################################################################################
 
 # clean names
+# create race labels
 strafford_medicaid <- strafford_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
-  rename(county = source_id)
+  rename(county = source_id) %>%
+  mutate(
+    jail_race = case_when(
+      race == "A" ~ "Asian/Pacific Islander",
+      race == "B" ~ "Black",
+      race == "H" ~ "Hispanic",
+      race == "I" ~ "American Indian/Alaskan Native",
+      race == "O" ~ "Unknown",
+      race == "U" ~ "Unknown",
+      race == "W" ~ "White"
+    ))
 
 # create a unique booking id per person per booking date
 strafford_medicaid$booking_id <- strafford_medicaid %>% group_indices(unique_person_id, booking_date)

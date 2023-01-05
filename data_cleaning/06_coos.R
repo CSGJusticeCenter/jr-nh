@@ -16,7 +16,13 @@ coos_adm_all <- coos_adm.xlsx %>%
   clean_names() %>%
   mutate(booking_type = NA,
          release_type = NA,
-         race_label   = NA) %>%
+         race_label = case_when(race == "A"  ~ "Asian/Pacific Islander",
+                                race == "B"  ~ "Black",
+                                race == "H"  ~ "Hispanic",
+                                race == "I"  ~ "American Indian/Alaskan Native",
+                                race == "U"  ~ "Unknown",
+                                race == "W"  ~ "White"
+         )) %>%
   dplyr::select(id = unique_id,
                 inmate_id,
                 yob,
@@ -210,9 +216,17 @@ coos_adm1 <- coos_adm %>% anti_join(all_nas) %>% distinct()
 ################################################################################
 
 # clean names
+# create race labels
 coos_medicaid <- coos_medicaid.xlsx %>%
   clean_names() %>%
-  distinct()
+  distinct() %>%
+  mutate(jail_race = case_when(race == "A"  ~ "Asian/Pacific Islander",
+                               race == "B"  ~ "Black",
+                               race == "H"  ~ "Hispanic",
+                               race == "I"  ~ "American Indian/Alaskan Native",
+                               race == "U"  ~ "Unknown",
+                               race == "W"  ~ "White"
+  ))
 
 # Change date formats for booking and release dataes
 coos_medicaid$booking_dt_tm <- .POSIXct(coos_medicaid$booking_dt_tm, tz="UTC")

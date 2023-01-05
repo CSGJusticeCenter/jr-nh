@@ -31,8 +31,13 @@ carroll_adm_all$release_dt_tm <-  as.Date(carroll_adm_all$release_dt_tm, format 
 # Set up data to be consistent with other counties
 carroll_adm_all <- carroll_bookings.xlsx %>%
   clean_names() %>%
-  mutate(race_label = NA,
-         release_type = NA) %>%
+  mutate(release_type = NA,
+         race_label = case_when(race == "A"  ~ "Asian/Pacific Islander",
+                                race == "B"  ~ "Black",
+                                race == "I"  ~ "American Indian/Alaskan Native",
+                                race == "U"  ~ "Unknown",
+                                race == "W"  ~ "White"
+         )) %>%
   dplyr::select(id = unique_person_id,
                 inmate_id,
                 yob,
@@ -301,8 +306,14 @@ carroll_medicaid <- carroll_medicaid %>%
 
 # remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
+# create race labels
 carroll_medicaid <- carroll_medicaid %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
+  mutate(jail_race = case_when(race == "A"  ~ "Asian/Pacific Islander",
+                               race == "B"  ~ "Black",
+                               race == "I"  ~ "American Indian/Alaskan Native",
+                               race == "U"  ~ "Unknown",
+                               race == "W"  ~ "White"))
 
 # # Does the medicaid file have the same number of unique individuals as the adm?
 # length(unique(carroll_adm$id)); length(unique(carroll_medicaid$unique_person_id))

@@ -2,7 +2,7 @@
 # Data Availability
 load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/raw_adm_data_availability_table.Rda", sep = ""))
 
-# Data dictionaries
+# Data Dictionaries
 load(paste0(sp_data_path, "/Data/r_data/adm_all.Rda",               sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/bookings_entrances.Rda",    sep = ""))
 
@@ -15,6 +15,9 @@ load(paste0(sp_data_path, "/Data/r_data/merrimack_adm.Rda",    sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/rockingham_adm.Rda",   sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/strafford_adm.Rda",    sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/sullivan_adm.Rda",     sep = ""))
+
+# Demographics
+load(paste0(sp_data_path, "/Data/r_data/high_utilizers_page/PRES_hu_summary1.Rda",                   sep = ""))
 
 # County Pages
 load(paste0(sp_data_path, "/Data/r_data/county_pages/county_hu_1_pct_prop.Rda",  sep = ""))
