@@ -14,38 +14,22 @@ navbar:
           href: nh_incarceration_patterns.html
         - text: "Protective Custody Holds"
           href: nh_pc_holds.html
-        - text: "High Utilizers"
-          href: nh_high_utilizers_analysis.html
         - text: "Booking Types"
           href: nh_booking_types_analysis.html
         - text: "Charge Types"
           href: nh_charge_type_analysis.html
+        - text: "High Utilizers"
+          href: nh_dhhs_high_utilizers_analysis.html
         - text: "Demographics"
           href: nh_demographics_analysis.html
         - text: "Medicaid"
           href: nh_medicaid_analysis.html
         - text: "Racial Disparities"
           href: nh_racial_disparities.html
-    - text: "County Reports"
+    - text: "Archive"
       menu:
-        - text: "Belknap"
-          href: county_report_Belknap.html
-        - text: "Carroll"
-          href: county_report_Carroll.html
-        - text: "Cheshire"
-          href: county_report_Cheshire.html
-        - text: "Coos"
-          href: county_report_Coos.html
-        - text: "Hillsborough"
-          href: county_report_Hillsborough.html
-        - text: "Merrimack"
-          href: county_report_Merrimack.html
-        - text: "Rockingham"
-          href: county_report_Rockingham.html
-        - text: "Strafford"
-          href: county_report_Strafford.html
-        - text: "Sullivan"
-          href: county_report_Sullivan.html
+        - text: "High Utilizers (Archive)"
+          href: nh_high_utilizers_analysis.html
     - text: "Research"
       menu:
         - text: "Data Availability"

@@ -1,5 +1,5 @@
 ---
-title: "High Utilizers Trends (Archive/Jail Data Only)"
+title: "High Utilizers Trends (DHHS Data)"
 output: 
   distill::distill_article:
     toc: true
@@ -22,18 +22,16 @@ source("data_cleaning/01_functions_visuals.R")
 source("data_cleaning/rdas.R")
 ```
 
-These findings are from the jail administrative data submitted to CSG, not the data submitted to DHHS. This page is for comparing our previous findings on high utilizers with our new findings on high utilizers using the de-identified data from DHHS.  
-
 # How we define High Utilizers
 
- we defined high utilizers (HU) as the top 1%, 5%, or 10% of people booked into jails from FY2019-2021.
+We defined high utilizers (HU) as the top 1%, 5%, or 10% of people booked into jails from FY2019 to FY2021.
 
 ```{r}
-PRES_hu_summary
+
 ```
 
 ```{r}
-PRES_hu_summary1
+
 ```
 
 <br>
@@ -41,7 +39,7 @@ PRES_hu_summary1
 # Top 1%
 
 ```{r}
-table_hu_1_pct_summary
+
 ```
 
 <br>
@@ -49,7 +47,7 @@ table_hu_1_pct_summary
 # Top 5%
 
 ```{r}
-table_hu_5_pct_summary
+
 ```
 
 <br>
@@ -57,7 +55,7 @@ table_hu_5_pct_summary
 # Top 10%
 
 ```{r}
-table_hu_10_pct_summary
+
 ```
 
 <br>
