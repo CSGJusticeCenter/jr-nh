@@ -87,27 +87,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>JRI New Hampshire Project: Incarceration Trends</title>
+  <title>JRI New Hampshire Project: Incarceration Trends (Archive/Jail Data Only)</title>
 
 
   <link rel="icon" type="image/png" href="img/favicon.png"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="JRI New Hampshire Project: Incarceration Trends"/>
+  <meta property="og:title" content="JRI New Hampshire Project: Incarceration Trends (Archive/Jail Data Only)"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="JRI New Hampshire Project"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="JRI New Hampshire Project: Incarceration Trends"/>
+  <meta property="twitter:title" content="JRI New Hampshire Project: Incarceration Trends (Archive/Jail Data Only)"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Incarceration Trends"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","theme","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"character","attributes":{},"value":["theme.css"]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Incarceration Trends (Archive/Jail Data Only)"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","theme","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"character","attributes":{},"value":["theme.css"]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2367,6 +2367,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+  <script src="site_libs/react-17.0.0/react.min.js"></script>
+  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
+  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+  <script src="site_libs/reactable-binding-0.2.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2386,7 +2392,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Incarceration Trends","authors":[]}
+{"title":"Incarceration Trends (Archive/Jail Data Only)","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2405,11 +2411,11 @@ Overall Trends
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="nh_incarceration_patterns.html">Incarceration Patterns</a>
+<a href="nh_dhhs_incarceration_patterns.html">Incarceration Patterns</a>
 <a href="nh_pc_holds.html">Protective Custody Holds</a>
 <a href="nh_booking_types_analysis.html">Booking Types</a>
 <a href="nh_charge_type_analysis.html">Charge Types</a>
-<a href="nh_high_utilizers_analysis.html">High Utilizers</a>
+<a href="nh_dhhs_high_utilizers_analysis.html">High Utilizers</a>
 <a href="nh_demographics_analysis.html">Demographics</a>
 <a href="nh_medicaid_analysis.html">Medicaid</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
@@ -2422,8 +2428,8 @@ Archive
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="archive_incarceration_patterns.html">Incarceration Patterns (Archive)</a>
-<a href="archive_high_utilizers_analysis.html">High Utilizers (Archive)</a>
+<a href="nh_incarceration_patterns.html">Incarceration Patterns (Archive)</a>
+<a href="nh_high_utilizers_analysis.html">High Utilizers (Archive)</a>
 </div>
 </div>
 <div class="nav-dropdown">
@@ -2450,7 +2456,7 @@ Research
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Incarceration Trends</h1>
+<h1>Incarceration Trends (Archive/Jail Data Only)</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2462,6 +2468,13 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
+<li><a href="#bookings" id="toc-bookings">Bookings</a>
+<ul>
+<li><a href="#people-booked" id="toc-people-booked">People
+Booked</a></li>
+<li><a href="#number-of-bookings" id="toc-number-of-bookings">Number of
+Bookings</a></li>
+</ul></li>
 <li><a href="#entrances" id="toc-entrances">Entrances</a>
 <ul>
 <li><a href="#people-entered" id="toc-people-entered">People
@@ -2473,41 +2486,72 @@ of Entrances</a></li>
 </nav>
 </div>
 <p>The following incarceration patterns were found using jail
-administrative data submitted to DHHS, which was then de-identified and
-sent to CSG. This data gives a more accurate picture of the number of
-people entering NH jails from FY2019 to FY2021.</p>
+administrative data submitted directly to CSG.</p>
+<h1 id="bookings">Bookings</h1>
+<p><strong>Includes</strong>: People booked into jail for a criminal
+charge.<br />
+<strong>Does Not Include</strong>: PC holds.</p>
+<p><strong>Counties</strong>: All New Hampshire counties except Grafton
+and Strafford. Strafford is excluded because their data does not
+differentiate between bookings and PC holds.</p>
+<h3 id="people-booked">People Booked</h3>
+<div class="layout-chunk" data-layout="l-body">
+<p><strong>There were 19,043 people booked into NH jails between FY2019
+to FY2021.</strong></p>
+</div>
+<p><br></p>
+<h3 id="number-of-bookings">Number of Bookings</h3>
+<p>Please Note: This section reflects the number of bookings per fiscal
+year, not the number of people.</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><strong>There were 31,959 bookings across New Hampshire from FY2019
+to FY2021.</strong></p>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="img/PRES_gg_bookings.png" width="50%" /></p>
+</div>
+<p>Counties saw variations in the number of bookings but they all saw a
+decrease in the past three years.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-6755911ad5417bf32dea" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-6755911ad5417bf32dea">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos","Hillsborough","Merrimack","Rockingham","Sullivan","Total"],"2019":[1097,1118,1231,226,4426,1750,2529,611,12988],"2020":[872,1131,1000,240,3124,1473,1974,454,10268],"2021":[712,1094,753,205,2688,1286,1577,388,8703],"total":[2681,3343,2984,671,10238,4509,6080,1453,31959],"change_19_21":[-0.350957155879672,-0.0214669051878354,-0.388302193338749,-0.0929203539823009,-0.392679620424763,-0.265142857142857,-0.376433372874654,-0.364975450081833,-0.329919926085617]},"columns":[{"accessor":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":180,"style":{"fontWeight":"bold"}},{"accessor":"2019","name":"2019","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80},{"accessor":"2020","name":"2020","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80},{"accessor":"2021","name":"2021","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total","name":"Total","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80,"style":{"fontWeight":"bold"}},{"accessor":"change_19_21","name":"Change from 2019-2021","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":120,"style":{"fontWeight":"bold"}}],"defaultPageSize":9,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"6e87d2dacbb3e0f098d48d9e37506862","key":"6e87d2dacbb3e0f098d48d9e37506862"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p><br></p>
 <h1 id="entrances">Entrances</h1>
 <p><strong>Includes</strong>: People booked into jail for a criminal
-charge (“bookings”) and protective custody (PC) holds.
-<strong>Counties</strong>: All New Hampshire counties except Grafton.
-Includes Coos bookings, but not their PC holds because Coos removed PC
-hold data from their system.</p>
+charge (“bookings”) and protective custody (PC) holds.</p>
+<p><strong>Counties</strong>: All New Hampshire counties except Grafton.
+Includes Coos bookings, but not PC holds.</p>
 <h3 id="people-entered">People Entered</h3>
 <div class="layout-chunk" data-layout="l-body">
-<p>[1] FALSE</p>
+<p><strong>There were 32,177 people who entered into NH jails between
+FY2019 to FY2021.</strong></p>
 </div>
 <p><br></p>
 <h3 id="number-of-entrances">Number of Entrances</h3>
 <p>Please Note: This section reflects the number of entrances per fiscal
 year, not the number of people.</p>
 <div class="layout-chunk" data-layout="l-body">
-
+<p><strong>There were 51,545 entrances across New Hampshire from FY2019
+to FY2021 and an overall decrease of 38.1% since FY2019.</strong></p>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<pre><code>[1] FALSE</code></pre>
+<p><img src="img/PRES_gg_entrances.png" width="50%" /></p>
 </div>
-<p>Counties saw variations in the number of entrances but they all saw a
+<p>Counties saw variations in the number of Entrances but they all saw a
 decrease in the past three years.</p>
 <div class="layout-chunk" data-layout="l-body">
-
+<div id="htmlwidget-0b4b02bc14e8bf0154ad" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-0b4b02bc14e8bf0154ad">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos (bookings only)","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan","State"],"2019":[1720,1263,1670,226,4588,2347,3239,5404,749,21206],"2020":[1372,1276,1361,240,3256,1941,2733,4456,576,17211],"2021":[1052,1207,1038,205,2783,1698,2280,2373,492,13128],"total":[4144,3746,4069,671,10627,5986,8252,12233,1817,51545],"change_19_21":[-0.388372093023256,-0.0443388756927949,-0.378443113772455,-0.0929203539823009,-0.393417611159547,-0.276523221133362,-0.296079036739735,-0.560880829015544,-0.343124165554072,-0.380929925492785]},"columns":[{"accessor":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":180,"style":{"fontWeight":"bold"}},{"accessor":"2019","name":"2019","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80},{"accessor":"2020","name":"2020","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80},{"accessor":"2021","name":"2021","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total","name":"Total","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":80,"style":{"fontWeight":"bold"}},{"accessor":"change_19_21","name":"Change from 2019-2021","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":120,"style":{"fontWeight":"bold"}}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"51fb46b4ca01b3f9bc8ed631e2be9d54","key":"51fb46b4ca01b3f9bc8ed631e2be9d54"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
-<p><strong>On average, people entered jails X times from 2019 to
+<p><strong>On average, people entered jails 1.6 times from 2019 to
 2021.</strong></p>
 <div class="layout-chunk" data-layout="l-body">
-
+<div id="htmlwidget-c1c2745a7a2bd088a7e6" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-c1c2745a7a2bd088a7e6">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos (bookings only)","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan","State"],"people_entered_total":[2396,1868,2809,471,6019,3449,5608,8449,1108,32177],"people_entered_change_19_21":[-0.383415435139573,0.0588942307692308,-0.385524372230428,-0.138121546961326,-0.327709279688514,-0.231965174129353,-0.201255230125523,-0.611175785797439,-0.269811320754717,-0.361329890251775],"entrances_total":[4144,3746,4069,671,10627,5986,8252,12233,1817,51545],"entrances_change_19_21":[-0.388372093023256,-0.0443388756927949,-0.378443113772455,-0.0929203539823009,-0.393417611159547,-0.276523221133362,-0.296079036739735,-0.560880829015544,-0.343124165554072,-0.380929925492785],"avg_entrances":[1.7,2,1.4,1.4,1.8,1.7,1.5,1.4,1.7,1.6]},"columns":[{"accessor":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":180,"style":{"fontWeight":"bold"}},{"accessor":"people_entered_total","name":"Total People","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":90},{"accessor":"people_entered_change_19_21","name":"Change Entrances\n2019-2021","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","show":false,"minWidth":90,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"entrances_total","name":" Total Entrances","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":90},{"accessor":"entrances_change_19_21","name":"Entrances Change from 19-21","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","show":false,"minWidth":100},{"accessor":"avg_entrances","name":"Average Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":120}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"5a8eb6e26fc24734308c22880c99115e","key":"5a8eb6e26fc24734308c22880c99115e"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <p><br> <br></p>
-<div class="sourceCode" id="cb2"><pre
+<div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

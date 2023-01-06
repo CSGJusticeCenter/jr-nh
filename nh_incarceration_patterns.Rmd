@@ -8,7 +8,7 @@ output:
     self_contained: false
 ---
 
-The following incarceration patterns were found using jail administrative data submitted directly to CSG.   
+The following incarceration patterns were found using jail administrative data submitted to DHHS, which was then de-identified and sent to CSG. This data gives a more accurate picture of the number of people entering NH jails from FY2019 to FY2021.  
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
@@ -22,68 +22,17 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/01_functions_visuals.R")
-# source("data_cleaning/00_library_ab_path.R")
-source("data_cleaning/rdas.R")
+medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
 ```
-
-# Bookings
-
-**Includes**: People booked into jail for a criminal charge.    
-**Does Not Include**: PC holds.    
-
-**Counties**: All New Hampshire counties except Grafton and Strafford. Strafford is excluded because their data does not differentiate between bookings and PC holds.   
-
-### People Booked  
-
-```{r, results='asis'}
-# print header for pc hold section
-cat("**There were ", amt_people_booked, " people booked into NH jails between FY2019 to FY2021.**\n\n", sep = "")
-```
-
-<br>
-
-### Number of Bookings  
-
-Please Note: This section reflects the number of bookings per fiscal year, not the number of people.    
-
-```{r, results='asis'}
-# print header for pc hold section
-cat("**There were ", amt_bookings, " bookings across New Hampshire from FY2019 to FY2021.**\n\n", sep = "")
-```
-
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-knitr::include_graphics("img/PRES_gg_bookings.png")
-```
-
-Counties saw variations in the number of bookings but they all saw a decrease in the past three years.
-
-```{r}
-table_bookings_fy_county
-```
-
-<br>
-
-# Booking Types
-
-```{r}
-#nh_booking_types
-```
-
-Coming soon. 
-
-<br>
 
 # Entrances
 
-**Includes**: People booked into jail for a criminal charge ("bookings") and protective custody (PC) holds.  
-
-**Counties**: All New Hampshire counties except Grafton. Includes Coos bookings, but not PC holds.   
+**Includes**: People booked into jail for a criminal charge ("bookings") and protective custody (PC) holds. 
+**Counties**: All New Hampshire counties except Grafton. Includes Coos bookings, but not their PC holds because Coos removed PC hold data from their system.   
 
 ### People Entered  
 
 ```{r, results='asis'}
-# print header for pc hold section
-cat("**There were ", amt_people_entered, " people who entered into NH jails between FY2019 to FY2021.**\n\n", sep = "")
 ```
 
 <br>
@@ -93,24 +42,22 @@ cat("**There were ", amt_people_entered, " people who entered into NH jails betw
 Please Note: This section reflects the number of entrances per fiscal year, not the number of people.    
 
 ```{r, results='asis'}
-# print header for pc hold section
-cat("**There were ", amt_entrances, " entrances across New Hampshire from FY2019 to FY2021 and an overall decrease of 38.1% since FY2019.**\n\n", sep = "")
+
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-knitr::include_graphics("img/PRES_gg_entrances.png")
 ```
 
-Counties saw variations in the number of Entrances but they all saw a decrease in the past three years.
+Counties saw variations in the number of entrances but they all saw a decrease in the past three years.
 
 ```{r}
-PRES_table_entrances_fy_county
+
 ```
 
-**On average, people entered jails 1.6 times from 2019 to 2021.**
+**On average, people entered jails X times from 2019 to 2021.**
 
 ```{r}
-PRES_table_entrances_people_county
+
 ```
 
 <br>

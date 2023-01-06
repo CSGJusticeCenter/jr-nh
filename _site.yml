@@ -19,7 +19,7 @@ navbar:
         - text: "Charge Types"
           href: nh_charge_type_analysis.html
         - text: "High Utilizers"
-          href: nh_dhhs_high_utilizers_analysis.html
+          href: nh_high_utilizers_analysis.html
         - text: "Demographics"
           href: nh_demographics_analysis.html
         - text: "Medicaid"
@@ -28,8 +28,10 @@ navbar:
           href: nh_racial_disparities.html
     - text: "Archive"
       menu:
+        - text: "Incarceration Patterns (Archive)"
+          href: archive_incarceration_patterns.html
         - text: "High Utilizers (Archive)"
-          href: nh_high_utilizers_analysis.html
+          href: archive_high_utilizers_analysis.html
     - text: "Research"
       menu:
         - text: "Data Availability"

@@ -308,7 +308,7 @@ carroll_medicaid <- carroll_medicaid %>%
 # July 1, 2018, to June 30, 2021
 # create race labels
 carroll_medicaid <- carroll_medicaid %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
+  filter(booking_date > "2018-06-30" & booking_date < "2021-07-01") %>%
   mutate(jail_race = case_when(jail_race == "A"  ~ "Asian/Pacific Islander",
                                jail_race == "B"  ~ "Black",
                                jail_race == "I"  ~ "American Indian/Alaskan Native",

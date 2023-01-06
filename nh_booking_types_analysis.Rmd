@@ -25,7 +25,7 @@ source("data_cleaning/rdas.R")
 
 # Booking Types
 
-The following booking patterns were found using jail administrative data submitted directly to CSG.DHHS matched data does not have information on booking types.
+The following booking patterns were found using jail administrative data submitted directly to CSG. DHHS matched data does not have information on booking types.
 
 ## Figure 1. Booking Types State-wide
 

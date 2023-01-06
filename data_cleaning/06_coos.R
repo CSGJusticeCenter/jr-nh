@@ -251,7 +251,7 @@ coos_medicaid <- coos_medicaid %>%
 # remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 coos_medicaid <- coos_medicaid %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
+  filter(booking_date > "2018-06-30" & booking_date < "2021-07-01")
 
 # # Does the medicaid file have the same number of unique individuals as the adm? Off by 9
 # length(unique(coos_adm$id)); length(unique(coos_medicaid$unique_person_id))
