@@ -23,6 +23,7 @@ source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/01_functions_visuals.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
+daily_pop_costs   <- read_rds("D:/Analytic/daily_pop_costs.rds") 
 ```
 
 # Entrances
@@ -249,4 +250,54 @@ PRES_table_entrances_people_county
 ```
 
 <br>
+
+# Average Daily Population
+
+# Costs
+
+The average cost per person per year was calculated by dividing each county department of correction's 2021 budget by the average daily jail population in that county.  
+
+```{r}
+df1 <- daily_pop_costs %>% mutate(avg_pop_fy21 = round(avg_pop_fy21, digits = 0))
+reactable(df1,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center"
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            `county`           = colDef(align = "left", minWidth = 120, name = "County", style = list(fontWeight = "bold")),
+            avg_pop_fy21       = colDef(minWidth = 120,  name = "Average Daily Population (FY21)"),
+            doc_budget         = colDef(minWidth = 150,  name = "DOC Budget (FY21)",
+                                        format = colFormat(currency = "USD", separators = TRUE, locales = "en-US")),
+            cost_pp_per_year   = colDef(minWidth = 120,  name = "Cost Per Person Per Year (FY21)",
+                                        format = colFormat(currency = "USD", separators = TRUE, locales = "en-US")),
+            cost_pp_per_day    = colDef(minWidth = 120,  name = "Cost Per Person Per Day (FY21)",
+                                        format = colFormat(currency = "USD", separators = TRUE, locales = "en-US"))
+          ))     
+```
+
+
+County Budget Websites:  
+
+- [Belknap](https://www.belknapcounty.gov/financial-reports/pages/budget-reports)  
+- [Carroll](https://www.carrollcountynh.net/commissioners-office/pages/approved-budgets)  
+- [Cheshire](https://co.cheshire.nh.us/departments/finance/budget-financial-statements/)  
+- [Coos](https://www.cooscountynh.us/commissioners/pages/budgets-financials)  
+- [Hillsborough](http://hcnh.org/Departments/Administration-Finance/County-Budget)  
+- [Merrimack](https://merrimackcounty.net/departments/finance)  
+- [Rockingham](https://rockinghamcountynh.org/download/financials/budgets/FY-2021-Delegation-Approved-Budget.pdf)  
+- [Stafford](https://www.co.strafford.nh.us/department/finance)  
+- [Sullivan](https://sullivancountynh-my.sharepoint.com/personal/scso_sullivancountynh_gov/_layouts/15/onedrive.aspx?ga=1&id=%2Fpersonal%2Fscso%5Fsullivancountynh%5Fgov%2FDocuments%2FBudget%20Taxes%20%26%20Audit%2FFY%202021)  
+
 <br>
