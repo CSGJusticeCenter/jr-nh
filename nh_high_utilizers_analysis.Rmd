@@ -1,5 +1,5 @@
 ---
-title: "High Utilizers Trends (DHHS Data)"
+title: "High Utilizers"
 output: 
   distill::distill_article:
     toc: true
@@ -22,9 +22,9 @@ source("data_cleaning/01_functions_visuals.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
 ```
 
-# How we define High Utilizers
+## How we define people who are high utilizers of the jail system
 
-We defined high utilizers (HU) as the top 1%, 5%, or 10% of people booked into jails from FY2019 to FY2021.
+We defined people who are high utilizers of the jail system as the top 1%, 5%, or 10% of people entering jails from FY2019 to FY2021. De-identified jail administrative data was provided by DHHS, which includes a unique id for each person to account for entrances at more than one jail.   
 
 ```{r}
 # DHHS data
@@ -152,6 +152,8 @@ df_1_5_10 <- df_entrances1 %>%
   arrange(county %in% "State")
 ```
 
+## Table 1. Median, average, minimum, and maximum number of entrances per person by high utilizer type and county.
+
 ```{r}
 # Reactable table for presentation showing the number of HU's, min, med, mean, max, etc.
 reactable(df_1_5_10,
@@ -232,6 +234,8 @@ reactable(df_1_5_10,
 
 ))
 ```
+
+## Table 2. Number of entrances, people, and proportion of high utilizer entrances by high utilizer type and county.
 
 ```{r}
 reactable(df_1_5_10,
@@ -316,7 +320,7 @@ reactable(df_1_5_10,
 
 <br>
 
-# Top 1%
+## Table 3. Top 1% High Utilizers: Number of HU entrances, number of HU people, minimum, median, average, and maximum number of entrances per person by county.
 
 ```{r}
 table_hu_1_pct_summary
@@ -324,7 +328,7 @@ table_hu_1_pct_summary
 
 <br>
 
-# Top 5%
+## Table 4. Top 5% High Utilizers: Number of HU entrances, number of HU people, minimum, median, average, and maximum number of entrances per person by county.
 
 ```{r}
 table_hu_5_pct_summary
@@ -332,7 +336,7 @@ table_hu_5_pct_summary
 
 <br>
 
-# Top 10%
+## Table 5. Top 10% High Utilizers: Number of HU entrances, number of HU people, minimum, median, average, and maximum number of entrances per person by county.
 
 ```{r}
 table_hu_10_pct_summary
