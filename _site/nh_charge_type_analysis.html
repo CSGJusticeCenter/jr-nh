@@ -2409,30 +2409,22 @@ Overall Trends
 <div class="nav-dropdown-content">
 <a href="nh_incarceration_patterns.html">Incarceration Patterns</a>
 <a href="nh_pc_holds.html">Protective Custody Holds</a>
-<a href="nh_high_utilizers_analysis.html">High Utilizers</a>
 <a href="nh_booking_types_analysis.html">Booking Types</a>
 <a href="nh_charge_type_analysis.html">Charge Types</a>
-<a href="nh_demographics_analysis.html">Demographics</a>
+<a href="nh_high_utilizers_analysis.html">High Utilizers</a>
 <a href="nh_medicaid_analysis.html">Medicaid</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
 </div>
 </div>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
-County Reports
+Archive
  
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="county_report_Belknap.html">Belknap</a>
-<a href="county_report_Carroll.html">Carroll</a>
-<a href="county_report_Cheshire.html">Cheshire</a>
-<a href="county_report_Coos.html">Coos</a>
-<a href="county_report_Hillsborough.html">Hillsborough</a>
-<a href="county_report_Merrimack.html">Merrimack</a>
-<a href="county_report_Rockingham.html">Rockingham</a>
-<a href="county_report_Strafford.html">Strafford</a>
-<a href="county_report_Sullivan.html">Sullivan</a>
+<a href="archive_incarceration_patterns.html">Incarceration Patterns (Archive)</a>
+<a href="archive_high_utilizers_analysis.html">High Utilizers (Archive)</a>
 </div>
 </div>
 <div class="nav-dropdown">
@@ -2444,6 +2436,7 @@ Research
 <div class="nav-dropdown-content">
 <a href="nh_data_availability.html">Data Availability</a>
 <a href="nh_data_dictionary.html">Data Dictionaries</a>
+<a href="nh_medicaid_diagram_codebook.html">Medicaid Data Diagram and Codebook</a>
 </div>
 </div>
 <a href="https://github.com/CSGJusticeCenter/jr-nh">
@@ -2470,98 +2463,119 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#raw-charges-and-coded-charge-type">Raw Charges and Coded
-Charge Type</a></li>
-<li><a
-href="#bookings-by-charge-type-most-serious-across-new-hampshire">Bookings
+<li><a href="#raw-charges-and-coded-charge-type"
+id="toc-raw-charges-and-coded-charge-type">Raw Charges and Coded Charge
+Type</a></li>
+<li><a href="#bookings-by-charge-type-most-serious-across-new-hampshire"
+id="toc-bookings-by-charge-type-most-serious-across-new-hampshire">Bookings
 by Charge Type (most serious) across New Hampshire</a>
 <ul>
-<li><a
-href="#most-common-charges-across-charge-type-statewide-top-20">Most
+<li><a href="#most-common-charges-across-charge-type-statewide-top-20"
+id="toc-most-common-charges-across-charge-type-statewide-top-20">Most
 Common Charges across Charge Type, Statewide (top 20)</a></li>
-<li><a href="#violent-offenses-statewide">Violent Offenses,
+<li><a href="#violent-offenses-statewide"
+id="toc-violent-offenses-statewide">Violent Offenses, Statewide</a></li>
+<li><a href="#property-offenses-statewide"
+id="toc-property-offenses-statewide">Property Offenses,
 Statewide</a></li>
-<li><a href="#property-offenses-statewide">Property Offenses,
+<li><a href="#drugalcohol-offenses-statewide"
+id="toc-drugalcohol-offenses-statewide">Drug/Alcohol Offenses,
 Statewide</a></li>
-<li><a href="#drugalcohol-offenses-statewide">Drug/Alcohol Offenses,
+<li><a href="#drugalcohol-offenses-statewide-1"
+id="toc-drugalcohol-offenses-statewide-1">Drug/Alcohol Offenses,
 Statewide</a></li>
-<li><a href="#drugalcohol-offenses-statewide-1">Drug/Alcohol Offenses,
+<li><a href="#public-order-offenses-statewide"
+id="toc-public-order-offenses-statewide">Public Order Offenses,
 Statewide</a></li>
-<li><a href="#public-order-offenses-statewide">Public Order Offenses,
-Statewide</a></li>
-<li><a href="#probationparole-violations-statewide">Probation/Parole
+<li><a href="#probationparole-violations-statewide"
+id="toc-probationparole-violations-statewide">Probation/Parole
 Violations, Statewide</a></li>
-<li><a href="#failure-to-appearbail-statewide">Failure to Appear/Bail,
+<li><a href="#failure-to-appearbail-statewide"
+id="toc-failure-to-appearbail-statewide">Failure to Appear/Bail,
 Statewide</a></li>
-<li><a href="#temporary-hold-statewide">Temporary Hold,
-Statewide</a></li>
-<li><a
-href="#otheruncoded-charges-statewide-20-most-common-charges">Other/Uncoded
+<li><a href="#temporary-hold-statewide"
+id="toc-temporary-hold-statewide">Temporary Hold, Statewide</a></li>
+<li><a href="#otheruncoded-charges-statewide-20-most-common-charges"
+id="toc-otheruncoded-charges-statewide-20-most-common-charges">Other/Uncoded
 Charges, Statewide (20 most common charges)</a></li>
 </ul></li>
-<li><a href="#analysis">Analysis</a>
+<li><a href="#analysis" id="toc-analysis">Analysis</a>
 <ul>
-<li><a href="#charge-data-tables-most-serious-charge">Charge Data Tables
-(most serious charge)</a>
+<li><a href="#charge-data-tables-most-serious-charge"
+id="toc-charge-data-tables-most-serious-charge">Charge Data Tables (most
+serious charge)</a>
 <ul>
-<li><a href="#table-1.-charge-type-by-jail-non-pc-holds-only">Table 1.
-Charge Type by Jail (Non-PC Holds Only)</a></li>
-<li><a href="#table-2.-charge-type-over-time-non-pc-holds-only">Table 2.
+<li><a href="#table-1.-charge-type-by-jail-non-pc-holds-only"
+id="toc-table-1.-charge-type-by-jail-non-pc-holds-only">Table 1. Charge
+Type by Jail (Non-PC Holds Only)</a></li>
+<li><a href="#table-2.-charge-type-over-time-non-pc-holds-only"
+id="toc-table-2.-charge-type-over-time-non-pc-holds-only">Table 2.
 Charge Type over Time (Non-PC Holds Only)</a></li>
 <li><a
-href="#table-3.-charge-type-for-individuals-who-are-high-utilizers-based-on-all-three-years-of-data">Table
+href="#table-3.-charge-type-for-individuals-who-are-high-utilizers-based-on-all-three-years-of-data"
+id="toc-table-3.-charge-type-for-individuals-who-are-high-utilizers-based-on-all-three-years-of-data">Table
 3. Charge Type for Individuals who are High Utilizers (based on all
 three years of data)</a></li>
-<li><a
-href="#table-4.-charge-type-for-individuals-who-are-high-utilizers-based-on-single-fiscal-year-calculations">Table
-4. Charge Type for Individuals who are High Utilizers (based on single
-fiscal year calculations)</a></li>
 </ul></li>
-<li><a
-href="#charge-data-tables-of-bookings-with-a-drugalcohol-charge">Charge
+<li><a href="#charge-data-tables-of-bookings-with-a-drugalcohol-charge"
+id="toc-charge-data-tables-of-bookings-with-a-drugalcohol-charge">Charge
 Data Tables (% of bookings with a drug/alcohol charge)</a>
 <ul>
 <li><a
-href="#table-5.-percent-of-booking-with-any-drugalcohol-charge-by-jail-non-pc-holds-only">Table
+href="#table-5.-percent-of-booking-with-any-drugalcohol-charge-by-jail-non-pc-holds-only"
+id="toc-table-5.-percent-of-booking-with-any-drugalcohol-charge-by-jail-non-pc-holds-only">Table
 5. Percent of Booking with any Drug/Alcohol Charge by Jail (Non-PC Holds
 Only)</a></li>
 <li><a
-href="#table-6.-percent-of-bookings-with-any-drugalcohol-charge-over-time-non-pc-holds-only">Table
+href="#table-6.-percent-of-bookings-with-any-drugalcohol-charge-over-time-non-pc-holds-only"
+id="toc-table-6.-percent-of-bookings-with-any-drugalcohol-charge-over-time-non-pc-holds-only">Table
 6. Percent of Bookings with any Drug/Alcohol Charge over Time (Non-PC
 Holds Only)</a></li>
 <li><a
-href="#table-7.-percent-of-bookings-with-any-drugalcohol-charge-for-individuals-who-are-high-utilizers-based-on-all-three-years-of-data">Table
+href="#table-7.-percent-of-bookings-with-any-drugalcohol-charge-for-individuals-who-are-high-utilizers-based-on-all-three-years-of-data"
+id="toc-table-7.-percent-of-bookings-with-any-drugalcohol-charge-for-individuals-who-are-high-utilizers-based-on-all-three-years-of-data">Table
 7. Percent of Bookings with any Drug/Alcohol Charge for Individuals who
 are High Utilizers (based on all three years of data)</a></li>
+<li><a
+href="#table-8.-average-length-of-stay-by-charge-type-non-pc-holds-only"
+id="toc-table-8.-average-length-of-stay-by-charge-type-non-pc-holds-only">Table
+8. Average Length of Stay by Charge Type (Non-PC Holds Only)</a></li>
 </ul></li>
-<li><a href="#charge-data-visuals">Charge Data Visuals</a>
+<li><a href="#charge-data-visuals" id="toc-charge-data-visuals">Charge
+Data Visuals</a>
 <ul>
-<li><a
-href="#figure-1.-charge-type-across-state-non-pc-holds-only">Figure 1.
+<li><a href="#figure-1.-charge-type-across-state-non-pc-holds-only"
+id="toc-figure-1.-charge-type-across-state-non-pc-holds-only">Figure 1.
 Charge Type across State (Non-PC Holds Only)</a></li>
-<li><a
-href="#figure-2.-charge-type-by-jail-non-pc-holds-only-bar-plot">Figure
+<li><a href="#figure-2.-charge-type-by-jail-non-pc-holds-only-bar-plot"
+id="toc-figure-2.-charge-type-by-jail-non-pc-holds-only-bar-plot">Figure
 2. Charge Type by Jail (Non-PC Holds Only), Bar Plot</a></li>
-<li><a href="#figure-3.-charge-type-over-time-non-pc-holds-only">Figure
-3. Charge Type over Time (Non-PC Holds Only)</a></li>
+<li><a href="#figure-3.-charge-type-over-time-non-pc-holds-only"
+id="toc-figure-3.-charge-type-over-time-non-pc-holds-only">Figure 3.
+Charge Type over Time (Non-PC Holds Only)</a></li>
 <li><a
-href="#figure-4.-percent-of-bookings-with-any-drugalcohol-charge-by-jail-non-pc-holds-only-bar-plot">Figure
+href="#figure-4.-percent-of-bookings-with-any-drugalcohol-charge-by-jail-non-pc-holds-only-bar-plot"
+id="toc-figure-4.-percent-of-bookings-with-any-drugalcohol-charge-by-jail-non-pc-holds-only-bar-plot">Figure
 4. Percent of Bookings with any Drug/Alcohol Charge by Jail (Non-PC
 Holds Only), Bar Plot</a></li>
 <li><a
-href="#figure-5.-percent-of-bookings-with-drugalcohol-charges-by-jail-non-pc-holds-only-map">Figure
+href="#figure-5.-percent-of-bookings-with-drugalcohol-charges-by-jail-non-pc-holds-only-map"
+id="toc-figure-5.-percent-of-bookings-with-drugalcohol-charges-by-jail-non-pc-holds-only-map">Figure
 5. Percent of Bookings with Drug/Alcohol Charges by Jail (Non-PC Holds
 Only), Map</a></li>
 <li><a
-href="#figure-6.-percent-of-public-order-charges-by-jail-non-pc-holds-only-map">Figure
+href="#figure-6.-percent-of-public-order-charges-by-jail-non-pc-holds-only-map"
+id="toc-figure-6.-percent-of-public-order-charges-by-jail-non-pc-holds-only-map">Figure
 6. Percent of Public Order Charges by Jail (Non-PC Holds Only),
 Map</a></li>
 <li><a
-href="#figure-7.-charge-type-by-high-utilizer-grouping-non-pc-holds-only-bar-plot-based-on-all-three-years-of-data">Figure
+href="#figure-7.-charge-type-by-high-utilizer-grouping-non-pc-holds-only-bar-plot-based-on-all-three-years-of-data"
+id="toc-figure-7.-charge-type-by-high-utilizer-grouping-non-pc-holds-only-bar-plot-based-on-all-three-years-of-data">Figure
 7. Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot
 (based on all three years of data)</a></li>
 <li><a
-href="#figure-8.-percent-of-charges-that-are-probationparole-violation-ftabail-and-public-order-by-jail-for-high-utlizers-based-on-all-three-years-of-data-map">Figure
+href="#figure-8.-percent-of-charges-that-are-probationparole-violation-ftabail-and-public-order-by-jail-for-high-utlizers-based-on-all-three-years-of-data-map"
+id="toc-figure-8.-percent-of-charges-that-are-probationparole-violation-ftabail-and-public-order-by-jail-for-high-utlizers-based-on-all-three-years-of-data-map">Figure
 8. Percent of Charges that are Probation/Parole Violation, FTA/Bail, and
 Public Order by Jail for High Utlizers (based on all three years of
 data), Map</a></li>
@@ -3619,7 +3633,7 @@ Violation Of Probation Or Parole
 Simple Assault
 </td>
 <td style="text-align:center;">
-2,479
+2,478
 </td>
 <td style="text-align:center;">
 10.3%
@@ -3696,7 +3710,7 @@ Criminal Mischief
 Driving Under Influence Of Drugs Or Liquor
 </td>
 <td style="text-align:center;">
-611
+612
 </td>
 <td style="text-align:center;">
 2.5%
@@ -3718,7 +3732,7 @@ Driving After Revocation Or Suspension
 Criminal Threatening
 </td>
 <td style="text-align:center;">
-596
+598
 </td>
 <td style="text-align:center;">
 2.5%
@@ -4081,7 +4095,7 @@ Sexual Assault
 Simple Assault
 </td>
 <td style="text-align:center;">
-2,481
+2,480
 </td>
 <td style="text-align:center;">
 29.5%
@@ -4136,7 +4150,7 @@ Violation Of Protective Order; Child Protection Act
 Overall
 </td>
 <td style="text-align:center;font-weight: bold;">
-8,396
+8,395
 </td>
 <td style="text-align:center;font-weight: bold;">
 100.0%
@@ -6027,7 +6041,7 @@ Drive After Rev/Sus
 543
 </td>
 <td style="text-align:center;">
-18.0%
+17.9%
 </td>
 </tr>
 <tr>
@@ -6035,10 +6049,10 @@ Drive After Rev/Sus
 NA
 </td>
 <td style="text-align:center;">
-517
+543
 </td>
 <td style="text-align:center;">
-17.2%
+17.9%
 </td>
 </tr>
 <tr>
@@ -6049,7 +6063,7 @@ Habitual Offender
 159
 </td>
 <td style="text-align:center;">
-5.3%
+5.2%
 </td>
 </tr>
 <tr>
@@ -6060,7 +6074,7 @@ Contempt
 113
 </td>
 <td style="text-align:center;">
-3.8%
+3.7%
 </td>
 </tr>
 <tr>
@@ -6082,7 +6096,7 @@ Non-Support
 89
 </td>
 <td style="text-align:center;">
-3.0%
+2.9%
 </td>
 </tr>
 <tr>
@@ -6093,7 +6107,7 @@ Habitual Offenders Penalty
 83
 </td>
 <td style="text-align:center;">
-2.8%
+2.7%
 </td>
 </tr>
 <tr>
@@ -6104,7 +6118,7 @@ Drive After Rev/Suspension
 59
 </td>
 <td style="text-align:center;">
-2.0%
+1.9%
 </td>
 </tr>
 <tr>
@@ -6115,7 +6129,7 @@ Endanger Welfare Of Child/Incompetent
 50
 </td>
 <td style="text-align:center;">
-1.7%
+1.6%
 </td>
 </tr>
 <tr>
@@ -6323,10 +6337,10 @@ Belknap
 Carroll
 </td>
 <td style="text-align:center;">
-3,346
+3,349
 </td>
 <td style="text-align:center;">
-26.9%
+26.8%
 </td>
 <td style="text-align:center;">
 9.2%
@@ -6347,7 +6361,7 @@ Carroll
 2.8%
 </td>
 <td style="text-align:center;">
-14.8%
+14.9%
 </td>
 </tr>
 <tr>
@@ -6355,19 +6369,19 @@ Carroll
 Cheshire
 </td>
 <td style="text-align:center;">
-2,981
+2,984
 </td>
 <td style="text-align:center;">
 16.6%
 </td>
 <td style="text-align:center;">
-9.4%
+9.3%
 </td>
 <td style="text-align:center;">
-10.3%
+10.4%
 </td>
 <td style="text-align:center;">
-4.9%
+5.0%
 </td>
 <td style="text-align:center;">
 17.4%
@@ -6419,7 +6433,7 @@ Coos
 Hillsborough
 </td>
 <td style="text-align:center;">
-10,239
+10,238
 </td>
 <td style="text-align:center;">
 29.9%
@@ -6451,7 +6465,7 @@ Hillsborough
 Merrimack
 </td>
 <td style="text-align:center;">
-4,504
+4,509
 </td>
 <td style="text-align:center;">
 30.0%
@@ -6466,7 +6480,7 @@ Merrimack
 6.3%
 </td>
 <td style="text-align:center;">
-16.7%
+16.6%
 </td>
 <td style="text-align:center;">
 1.9%
@@ -6483,7 +6497,7 @@ Merrimack
 Rockingham
 </td>
 <td style="text-align:center;">
-6,070
+6,074
 </td>
 <td style="text-align:center;">
 22.1%
@@ -6492,7 +6506,7 @@ Rockingham
 10.9%
 </td>
 <td style="text-align:center;">
-22.7%
+22.6%
 </td>
 <td style="text-align:center;">
 8.7%
@@ -6504,7 +6518,7 @@ Rockingham
 2.3%
 </td>
 <td style="text-align:center;">
-8.0%
+8.1%
 </td>
 <td style="text-align:center;">
 9.0%
@@ -6515,10 +6529,10 @@ Rockingham
 Sullivan
 </td>
 <td style="text-align:center;">
-1,441
+1,453
 </td>
 <td style="text-align:center;">
-25.7%
+25.5%
 </td>
 <td style="text-align:center;">
 8.7%
@@ -6530,16 +6544,16 @@ Sullivan
 7.2%
 </td>
 <td style="text-align:center;">
-13.6%
+13.5%
 </td>
 <td style="text-align:center;">
-15.7%
+15.6%
 </td>
 <td style="text-align:center;">
 0.0%
 </td>
 <td style="text-align:center;">
-18.7%
+19.3%
 </td>
 </tr>
 <tr>
@@ -6547,7 +6561,7 @@ Sullivan
 Statewide
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,933
+31,959
 </td>
 <td style="text-align:center;font-weight: bold;">
 26.3%
@@ -6571,7 +6585,7 @@ Statewide
 5.4%
 </td>
 <td style="text-align:center;font-weight: bold;">
-9.4%
+9.5%
 </td>
 </tr>
 </tbody>
@@ -6624,7 +6638,7 @@ Bookings for Other Charge (%)
 2019
 </td>
 <td style="text-align:center;">
-12,983
+12,989
 </td>
 <td style="text-align:center;">
 23.1%
@@ -6656,13 +6670,13 @@ Bookings for Other Charge (%)
 2020
 </td>
 <td style="text-align:center;">
-10,259
+10,267
 </td>
 <td style="text-align:center;">
 26.8%
 </td>
 <td style="text-align:center;">
-10.6%
+10.5%
 </td>
 <td style="text-align:center;">
 16.2%
@@ -6688,16 +6702,16 @@ Bookings for Other Charge (%)
 2021
 </td>
 <td style="text-align:center;">
-8,691
+8,703
 </td>
 <td style="text-align:center;">
-30.4%
+30.3%
 </td>
 <td style="text-align:center;">
 9.8%
 </td>
 <td style="text-align:center;">
-17.9%
+17.8%
 </td>
 <td style="text-align:center;">
 9.1%
@@ -6706,13 +6720,13 @@ Bookings for Other Charge (%)
 10.6%
 </td>
 <td style="text-align:center;">
-10.5%
+10.4%
 </td>
 <td style="text-align:center;">
 3.5%
 </td>
 <td style="text-align:center;">
-8.3%
+8.4%
 </td>
 </tr>
 <tr>
@@ -6720,7 +6734,7 @@ Bookings for Other Charge (%)
 Overall
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,933
+31,959
 </td>
 <td style="text-align:center;font-weight: bold;">
 26.3%
@@ -6744,7 +6758,7 @@ Overall
 5.4%
 </td>
 <td style="text-align:center;font-weight: bold;">
-9.4%
+9.5%
 </td>
 </tr>
 </tbody>
@@ -6817,7 +6831,7 @@ Bookings for Other Charge (%)
 Top 1%
 </td>
 <td style="text-align:center;">
-1,805
+1,806
 </td>
 <td style="text-align:center;">
 14.1%
@@ -6849,13 +6863,13 @@ Top 1%
 Top 5%
 </td>
 <td style="text-align:center;">
-4,321
+4,322
 </td>
 <td style="text-align:center;">
-20.9%
+20.8%
 </td>
 <td style="text-align:center;">
-12.8%
+12.7%
 </td>
 <td style="text-align:center;">
 14.0%
@@ -6881,10 +6895,10 @@ Top 5%
 Top 10%
 </td>
 <td style="text-align:center;">
-3,908
+3,909
 </td>
 <td style="text-align:center;">
-23.1%
+23.0%
 </td>
 <td style="text-align:center;">
 10.3%
@@ -6896,13 +6910,13 @@ Top 10%
 9.1%
 </td>
 <td style="text-align:center;">
-15.4%
+15.3%
 </td>
 <td style="text-align:center;">
 13.4%
 </td>
 <td style="text-align:center;">
-2.9%
+3.0%
 </td>
 <td style="text-align:center;">
 7.0%
@@ -6913,7 +6927,7 @@ Top 10%
 Non-HU
 </td>
 <td style="text-align:center;">
-21,899
+21,922
 </td>
 <td style="text-align:center;">
 28.9%
@@ -6922,7 +6936,7 @@ Non-HU
 9.7%
 </td>
 <td style="text-align:center;">
-18.7%
+18.6%
 </td>
 <td style="text-align:center;">
 8.5%
@@ -6937,7 +6951,7 @@ Non-HU
 6.7%
 </td>
 <td style="text-align:center;">
-10.5%
+10.6%
 </td>
 </tr>
 <tr>
@@ -6945,7 +6959,7 @@ Non-HU
 Overall
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,933
+31,959
 </td>
 <td style="text-align:center;font-weight: bold;">
 26.3%
@@ -6969,234 +6983,7 @@ Overall
 5.4%
 </td>
 <td style="text-align:center;font-weight: bold;">
-9.4%
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-<p><br><br></p>
-<h3
-id="table-4.-charge-type-for-individuals-who-are-high-utilizers-based-on-single-fiscal-year-calculations">Table
-4. Charge Type for Individuals who are High Utilizers (based on single
-fiscal year calculations)</h3>
-<p>Note: This output excludes charge type analysis for PC bookings, as
-no charge information exists, but the high utilizer percentile grouping
-(developed by Mari) does include PC bookings – does this make sense?</p>
-<p>Below is the preliminary grouping I am using to confirm with the
-team. With this approach, this is not overlap of groups – one individual
-is in one of the four groups (i.e., someone in the top 1% of jail
-entrances is only included in the 1% grouping, not the 5% and 10%
-grouping). I’m thinking that this may help us better see any differences
-between groupings of high utilizers, if they exist. Open to suggestions,
-though!</p>
-<ul>
-<li><p><strong>Top 1%:</strong> individual is in top 1% of jail
-entrances for the given fiscal year of booking</p></li>
-<li><p><strong>Top 5%:</strong> individual is in top 5% of jail
-entrances for the given fiscal year of booking(really this is 1% to
-5%)</p></li>
-<li><p><strong>Top 10%:</strong> individual is in top 10% of jail
-entrances for the given fiscal year of booking (really this is 5% to
-10%)</p></li>
-<li><p><strong>Non-HU:</strong> individual is not in top 10% of jail
-entrances for the given fiscal year of booking</p></li>
-</ul>
-<div class="layout-chunk" data-layout="l-body">
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:center;">
-High Utilizer Percentiles (FY)
-</th>
-<th style="text-align:center;">
-Unique Non-PC Bookings (N)
-</th>
-<th style="text-align:center;">
-Bookings for Violent Charge (%)
-</th>
-<th style="text-align:center;">
-Bookings for Property Charge (%)
-</th>
-<th style="text-align:center;">
-Bookings for Drug/Alcohol Charge (%)
-</th>
-<th style="text-align:center;">
-Bookings for Public Order Charge (%)
-</th>
-<th style="text-align:center;">
-Bookings for Probation/Parole Violation (%)
-</th>
-<th style="text-align:center;">
-Bookings for FTA/Bail (%)
-</th>
-<th style="text-align:center;">
-Bookings for Temporary Hold (%)
-</th>
-<th style="text-align:center;">
-Bookings for Other Charge (%)
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-Top 1%
-</td>
-<td style="text-align:center;">
-1,431
-</td>
-<td style="text-align:center;">
-15.5%
-</td>
-<td style="text-align:center;">
-9.9%
-</td>
-<td style="text-align:center;">
-6.9%
-</td>
-<td style="text-align:center;">
-14.5%
-</td>
-<td style="text-align:center;">
-22.6%
-</td>
-<td style="text-align:center;">
-21.1%
-</td>
-<td style="text-align:center;">
-1.1%
-</td>
-<td style="text-align:center;">
-8.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Top 5%
-</td>
-<td style="text-align:center;">
-3,092
-</td>
-<td style="text-align:center;">
-20.0%
-</td>
-<td style="text-align:center;">
-11.8%
-</td>
-<td style="text-align:center;">
-13.8%
-</td>
-<td style="text-align:center;">
-10.0%
-</td>
-<td style="text-align:center;">
-18.6%
-</td>
-<td style="text-align:center;">
-17.4%
-</td>
-<td style="text-align:center;">
-2.0%
-</td>
-<td style="text-align:center;">
-6.3%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Top 10%
-</td>
-<td style="text-align:center;">
-2,907
-</td>
-<td style="text-align:center;">
-23.6%
-</td>
-<td style="text-align:center;">
-13.2%
-</td>
-<td style="text-align:center;">
-18.6%
-</td>
-<td style="text-align:center;">
-8.6%
-</td>
-<td style="text-align:center;">
-14.0%
-</td>
-<td style="text-align:center;">
-12.4%
-</td>
-<td style="text-align:center;">
-2.8%
-</td>
-<td style="text-align:center;">
-6.8%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Non-HU
-</td>
-<td style="text-align:center;">
-24,503
-</td>
-<td style="text-align:center;">
-28.0%
-</td>
-<td style="text-align:center;">
-9.8%
-</td>
-<td style="text-align:center;">
-18.5%
-</td>
-<td style="text-align:center;">
-8.4%
-</td>
-<td style="text-align:center;">
-10.7%
-</td>
-<td style="text-align:center;">
-8.0%
-</td>
-<td style="text-align:center;">
-6.3%
-</td>
-<td style="text-align:center;">
-10.2%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;font-weight: bold;">
-Overall
-</td>
-<td style="text-align:center;font-weight: bold;">
-31,933
-</td>
-<td style="text-align:center;font-weight: bold;">
-26.3%
-</td>
-<td style="text-align:center;font-weight: bold;">
-10.3%
-</td>
-<td style="text-align:center;font-weight: bold;">
-17.5%
-</td>
-<td style="text-align:center;font-weight: bold;">
-8.9%
-</td>
-<td style="text-align:center;font-weight: bold;">
-12.3%
-</td>
-<td style="text-align:center;font-weight: bold;">
-9.9%
-</td>
-<td style="text-align:center;font-weight: bold;">
-5.4%
-</td>
-<td style="text-align:center;font-weight: bold;">
-9.4%
+9.5%
 </td>
 </tr>
 </tbody>
@@ -7245,7 +7032,7 @@ Belknap
 Carroll
 </td>
 <td style="text-align:center;">
-3,346
+3,349
 </td>
 <td style="text-align:center;">
 25.1%
@@ -7256,7 +7043,7 @@ Carroll
 Cheshire
 </td>
 <td style="text-align:center;">
-2,981
+2,984
 </td>
 <td style="text-align:center;">
 11.7%
@@ -7278,7 +7065,7 @@ Coos
 Hillsborough
 </td>
 <td style="text-align:center;">
-10,239
+10,238
 </td>
 <td style="text-align:center;">
 14.5%
@@ -7289,7 +7076,7 @@ Hillsborough
 Merrimack
 </td>
 <td style="text-align:center;">
-4,504
+4,509
 </td>
 <td style="text-align:center;">
 31.4%
@@ -7300,7 +7087,7 @@ Merrimack
 Rockingham
 </td>
 <td style="text-align:center;">
-6,070
+6,074
 </td>
 <td style="text-align:center;">
 26.9%
@@ -7311,10 +7098,10 @@ Rockingham
 Sullivan
 </td>
 <td style="text-align:center;">
-1,441
+1,453
 </td>
 <td style="text-align:center;">
-11.7%
+11.6%
 </td>
 </tr>
 <tr>
@@ -7322,10 +7109,10 @@ Sullivan
 Statewide
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,933
+31,959
 </td>
 <td style="text-align:center;font-weight: bold;">
-21.4%
+21.3%
 </td>
 </tr>
 </tbody>
@@ -7359,7 +7146,7 @@ Bookings with any Drug/Alcohol Charge (%)
 2019
 </td>
 <td style="text-align:center;">
-12,983
+12,989
 </td>
 <td style="text-align:center;">
 21.9%
@@ -7370,7 +7157,7 @@ Bookings with any Drug/Alcohol Charge (%)
 2020
 </td>
 <td style="text-align:center;">
-10,259
+10,267
 </td>
 <td style="text-align:center;">
 20.2%
@@ -7381,10 +7168,10 @@ Bookings with any Drug/Alcohol Charge (%)
 2021
 </td>
 <td style="text-align:center;">
-8,691
+8,703
 </td>
 <td style="text-align:center;">
-22.0%
+21.9%
 </td>
 </tr>
 <tr>
@@ -7392,10 +7179,10 @@ Bookings with any Drug/Alcohol Charge (%)
 Overall
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,933
+31,959
 </td>
 <td style="text-align:center;font-weight: bold;">
-21.4%
+21.3%
 </td>
 </tr>
 </tbody>
@@ -7447,7 +7234,7 @@ Bookings with any Drug/Alcohol Charge (%)
 Top 1%
 </td>
 <td style="text-align:center;">
-1,805
+1,806
 </td>
 <td style="text-align:center;">
 12.3%
@@ -7458,7 +7245,7 @@ Top 1%
 Top 5%
 </td>
 <td style="text-align:center;">
-4,321
+4,322
 </td>
 <td style="text-align:center;">
 18.7%
@@ -7469,7 +7256,7 @@ Top 5%
 Top 10%
 </td>
 <td style="text-align:center;">
-3,908
+3,909
 </td>
 <td style="text-align:center;">
 24.3%
@@ -7480,7 +7267,7 @@ Top 10%
 Non-HU
 </td>
 <td style="text-align:center;">
-21,899
+21,922
 </td>
 <td style="text-align:center;">
 22.1%
@@ -7491,10 +7278,151 @@ Non-HU
 Overall
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,933
+31,959
 </td>
 <td style="text-align:center;font-weight: bold;">
-21.4%
+21.3%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h3
+id="table-8.-average-length-of-stay-by-charge-type-non-pc-holds-only">Table
+8. Average Length of Stay by Charge Type (Non-PC Holds Only)</h3>
+<p>Note: Table is ordered from largest to smallest median length of
+stay. <strong>Should we only use median? A small number of very large
+length of stays (e.g. 2+ years) are pulling up the mean</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Charge Type
+</th>
+<th style="text-align:center;">
+Overall Jail Bookings (N)
+</th>
+<th style="text-align:center;">
+Mean Length of Stay (Days)
+</th>
+<th style="text-align:center;">
+Median Length of Stay (Days)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Probation/Parole Violation
+</td>
+<td style="text-align:center;">
+3,929
+</td>
+<td style="text-align:center;">
+25.7
+</td>
+<td style="text-align:center;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Violent
+</td>
+<td style="text-align:center;">
+8,392
+</td>
+<td style="text-align:center;">
+53.5
+</td>
+<td style="text-align:center;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Property
+</td>
+<td style="text-align:center;">
+3,296
+</td>
+<td style="text-align:center;">
+40.4
+</td>
+<td style="text-align:center;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Drug/Alcohol
+</td>
+<td style="text-align:center;">
+5,605
+</td>
+<td style="text-align:center;">
+29.5
+</td>
+<td style="text-align:center;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Other
+</td>
+<td style="text-align:center;">
+3,031
+</td>
+<td style="text-align:center;">
+26.6
+</td>
+<td style="text-align:center;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Public Order
+</td>
+<td style="text-align:center;">
+2,836
+</td>
+<td style="text-align:center;">
+20.7
+</td>
+<td style="text-align:center;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+FTA/Bail
+</td>
+<td style="text-align:center;">
+3,150
+</td>
+<td style="text-align:center;">
+10.2
+</td>
+<td style="text-align:center;">
+2
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Temporary Hold
+</td>
+<td style="text-align:center;">
+1,720
+</td>
+<td style="text-align:center;">
+26.3
+</td>
+<td style="text-align:center;">
+1
 </td>
 </tr>
 </tbody>
@@ -7510,7 +7438,7 @@ individuals and bookings).</p>
 <h3 id="figure-1.-charge-type-across-state-non-pc-holds-only">Figure 1.
 Charge Type across State (Non-PC Holds Only)</h3>
 <div class="layout-chunk" data-layout="l-body-outset">
-<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-21-1.png" width="624" /></p>
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-22-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <h3 id="figure-2.-charge-type-by-jail-non-pc-holds-only-bar-plot">Figure
@@ -7519,7 +7447,7 @@ Charge Type across State (Non-PC Holds Only)</h3>
 of booking and exclude FTA/Bail, temporary hold, and unclassified
 charges (i.e., “other”)</p>
 <div class="layout-chunk" data-layout="l-body-outset">
-<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-22-1.png" width="624" /></p>
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-23-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <h3 id="figure-3.-charge-type-over-time-non-pc-holds-only">Figure 3.
@@ -7528,7 +7456,7 @@ Charge Type over Time (Non-PC Holds Only)</h3>
 year of booking and exclude FTA/Bail, temporary hold, and unclassified
 charges (i.e., “other”)</p>
 <div class="layout-chunk" data-layout="l-body-outset">
-<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-23-1.png" width="624" /></p>
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-24-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <h3
@@ -7536,7 +7464,7 @@ id="figure-4.-percent-of-bookings-with-any-drugalcohol-charge-by-jail-non-pc-hol
 4. Percent of Bookings with any Drug/Alcohol Charge by Jail (Non-PC
 Holds Only), Bar Plot</h3>
 <div class="layout-chunk" data-layout="l-body-outset">
-<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-24-1.png" width="624" /></p>
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-25-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <h3
@@ -7548,7 +7476,7 @@ Only), Map</h3>
 This map highlights county-level variation by grouping counties into
 four equally sized groups or quartiles.</p>
 <div class="layout-chunk" data-layout="l-page">
-<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-28-1.png" width="624" /></p>
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-29-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <h3
@@ -7559,7 +7487,7 @@ charge is a public order charge. This map highlights county-level
 variation by grouping counties into four equally sized groups or
 quartiles.</p>
 <div class="layout-chunk" data-layout="l-page">
-<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-29-1.png" width="624" /></p>
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-30-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <h3
@@ -7589,7 +7517,7 @@ entrances for all 3 years of sample (really this is 5% to 10%)</p></li>
 entrances for all 3 years of sample</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body-outset">
-<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-30-1.png" width="624" /></p>
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-31-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <h3
@@ -7604,7 +7532,7 @@ three types of charges appear to disproportionality occur with bookings
 for high/frequent utilizers. This map explores county-level variation by
 grouping counties into four equally sized groups or quartiles.</p>
 <div class="layout-chunk" data-layout="l-page">
-<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-31-1.png" width="624" /></p>
+<p><img src="nh_charge_type_analysis_files/figure-html5/unnamed-chunk-32-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <div class="sourceCode" id="cb1"><pre

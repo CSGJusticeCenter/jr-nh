@@ -542,6 +542,8 @@ ggsave(
 
 ### Mean and Median Lengths of Stay, Statewide
 
+**Question: Should we only use median? A small number of very large length of stays (e.g. 2+ years) are pulling up the mean**
+
 ```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
 ### group by race and calculate both mean and median length of stays using los_max
 nh_eight_county_charge_clean_final_race_los <- nh_eight_county_charge_clean_final_race %>% 

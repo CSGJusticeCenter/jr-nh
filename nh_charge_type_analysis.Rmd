@@ -41,6 +41,9 @@ knitr::opts_chunk$set(
   cache = FALSE
   )
 
+### set sp_data_path for data viz output
+sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
+
 
 ### call libraries and functions
 # source("data_cleaning/00_library.R")
@@ -799,24 +802,22 @@ kable(table_hu_charge_type_summary_final,
   row_spec(5, bold = TRUE)
 ```
 
-<br><br>
 
+```{r eval=FALSE,include=FALSE,message=FALSE,warning=FALSE}
 ### Table 4. Charge Type for Individuals who are High Utilizers (based on single fiscal year calculations) 
 
-Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense?
+# Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense?
+# 
+# Below is the preliminary grouping I am using to confirm with the team. With this approach, this is not overlap of groups -- one individual is in one of the four groups (i.e., someone in the top 1% of jail entrances is only included in the 1% grouping, not the 5% and 10% grouping). I'm thinking that this may help us better see any differences between groupings of high utilizers, if they exist. Open to suggestions, though!
+# 
+# * **Top 1%:** individual is in top 1% of jail entrances for the given fiscal year of booking
+# 
+# * **Top 5%:** individual is in top 5% of jail entrances for the given fiscal year of booking(really this is 1% to 5%)
+# 
+# * **Top 10%:** individual is in top 10% of jail entrances for the given fiscal year of booking (really this is 5% to 10%)
+# 
+# * **Non-HU:** individual is not in top 10% of jail entrances for the given fiscal year of booking
 
-Below is the preliminary grouping I am using to confirm with the team. With this approach, this is not overlap of groups -- one individual is in one of the four groups (i.e., someone in the top 1% of jail entrances is only included in the 1% grouping, not the 5% and 10% grouping). I'm thinking that this may help us better see any differences between groupings of high utilizers, if they exist. Open to suggestions, though!
-
-* **Top 1%:** individual is in top 1% of jail entrances for the given fiscal year of booking
-
-* **Top 5%:** individual is in top 5% of jail entrances for the given fiscal year of booking(really this is 1% to 5%)
-
-* **Top 10%:** individual is in top 10% of jail entrances for the given fiscal year of booking (really this is 5% to 10%)
-
-* **Non-HU:** individual is not in top 10% of jail entrances for the given fiscal year of booking
-
-
-```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
 nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_fy <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
   ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
@@ -1043,6 +1044,37 @@ kable(table_hu_drug_alcohol_summary_final,
 
 <br><br>
 
+### Table 8. Average Length of Stay by Charge Type (Non-PC Holds Only)
+
+Note: Table is ordered from largest to smallest median length of stay. **Should we only use median? A small number of very large length of stays (e.g. 2+ years) are pulling up the mean**
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### group by race and calculate both mean and median length of stays using los_max
+nh_eight_county_charge_clean_final_crime_type_recode_non_pc_los <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  group_by(crime_type_clean) %>% 
+  summarise(`Overall Jail Bookings (N)` = n_distinct(unique_booking_id_nh),
+            `Mean Length of Stay (Days)` = round(mean(los_max,
+                                                na.rm = TRUE),
+                                                digits = 1),
+            `Median Length of Stay (Days)` = median(los_max,
+                                                na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Charge Type` = crime_type_clean) %>% 
+  arrange(desc(`Median Length of Stay (Days)`), desc(`Mean Length of Stay (Days)`))
+  
+### print table via kableextra
+kable(nh_eight_county_charge_clean_final_crime_type_recode_non_pc_los, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
+
 ## Charge Data Visuals
 
 Note: I am considering a booking to be 'unique' if the following values are together unique: id, inmate_id, booking_id, county (including county as we can't verify that each county is using different IDs for individuals and bookings).
@@ -1101,7 +1133,17 @@ ggplot(data = df_nh_charge_type_overall, aes(y = `Bookings, Percent of Sample (%
     strip.text.y = element_markdown()) + 
     coord_flip() 
 
-
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_statewide_non_pc.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -1178,6 +1220,17 @@ ggplot(data = df_county_level_charge_type_summary_long,
         panel.grid.minor = element_blank()) +
   coord_flip()
 
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_by_jail_non_pc.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -1257,6 +1310,17 @@ ggplot(data = df_fy_charge_type_summary_long,
         panel.grid.minor = element_blank()) +
   coord_flip()
 
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_over_time_non_pc.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -1310,6 +1374,17 @@ ggplot(data = df_county_level_drug_alcohol_plot, aes(y = `Bookings with any Drug
     strip.text.y = element_markdown()) + 
     coord_flip() 
 
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_percent_drug_alcohol_statewide_non_pc.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -1475,6 +1550,17 @@ ggplot(
        caption = NULL) +
   theme_map()
 
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_percent_drug_alcohol_by_jail_non_pc.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -1573,6 +1659,18 @@ ggplot(
        subtitle = NULL,
        caption = NULL) +
   theme_map()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_percent_public_order_by_jail_non_pc.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -1676,6 +1774,17 @@ ggplot(data = df_hu_charge_type_summary_long,
         panel.grid.minor = element_blank()) +
   coord_flip()
 
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_by_hu_percentiles_statewide_non_pc.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -1789,6 +1898,18 @@ ggplot(
        subtitle = NULL,
        caption = NULL) +
   theme_map()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_percent_fta_public_vop_by_jail_non_pc.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
