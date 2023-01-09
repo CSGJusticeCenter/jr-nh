@@ -152,7 +152,7 @@ merrimack_adm <- merrimack_adm %>%
 merrimack_adm <- merrimack_adm %>%
   mutate(pc_hold = ifelse(
     sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold"
-  )) %>% select(-c(los, release_date)) %>% distinct()
+  )) %>% select(-c(los)) %>% distinct()
 
 # Add sex code labels
 merrimack_adm <- fnc_sex_labels(merrimack_adm)

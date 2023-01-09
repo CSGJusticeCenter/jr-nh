@@ -158,7 +158,7 @@ belknap_adm <- belknap_adm %>%
   mutate(pc_hold = ifelse(
     sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold"
   )) %>%
-  select(-c(los, release_date))
+  select(-c(los))
 
 # Add sex code labels
 belknap_adm <- fnc_sex_labels(belknap_adm)

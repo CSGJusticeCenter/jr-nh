@@ -160,7 +160,7 @@ hillsborough_adm <- hillsborough_adm %>%
   mutate(pc_hold = ifelse(
     sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold"
   )) %>%
-  select(-c(los, release_date)) %>% distinct()
+  select(-c(los)) %>% distinct()
 
 # Add sex code labels
 hillsborough_adm <- fnc_sex_labels(hillsborough_adm)
