@@ -25,7 +25,7 @@ source("data_cleaning/rdas.R")
 
 ## Booking Types
 
-The following booking patterns were found using jail administrative data submitted directly to CSG. DHHS matched data does not have information on booking types.
+The following booking patterns were found using jail administrative data submitted directly to CSG. DHHS matched data does not have information on booking types. The "other" category includes federal holds, holds for other agencies, 24 hour and 72 hour holds, other holds, dual satus, bail set, bond denied, dismissed, and sentence suspended.  
 
 ### Booking Types State-wide
 
