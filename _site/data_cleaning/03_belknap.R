@@ -120,7 +120,7 @@ belknap_adm <- belknap_adm %>%
     str_detect("SENTENCED", booking_type)                                               ~ "SENTENCED",
 
     # NH STATE PRISONER
-    str_detect("NH STATE PRISONER", booking_type)                                       ~ "NH STATE PRISONER",
+    str_detect("NH STATE PRISONER", booking_type)                                       ~ "OTHER",
 
     # OTHER
     str_detect("DUAL", booking_type)                                                    ~ "OTHER",

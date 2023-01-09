@@ -143,7 +143,7 @@ hillsborough_adm <- hillsborough_adm %>%
     sentence_status == "CONVICTED ROCK"                                                         ~ "SENTENCED",
 
     # NH STATE PRISONER
-    sentence_status == "STATE INMATE"                                                           ~ "NH STATE PRISONER",
+    sentence_status == "STATE INMATE"                                                           ~ "OTHER",
 
     # OTHER
     (sentence_status == "TREATMENT AND SERVICES" & is.na(charge_desc) & release_type != "PC RELEASE") ~ "OTHER",

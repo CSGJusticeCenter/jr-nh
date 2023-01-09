@@ -153,9 +153,9 @@ cheshire_adm <- cheshire_adm %>%
     str_detect("SENTENCED / WORK RELEASE", sentence_status)                          ~ "SENTENCED",
 
     # NH STATE PRISONER
-    str_detect("FEDERAL INMATE", sentence_status)                                    ~ "NH STATE PRISONER",
-    str_detect("HOLD FOR STATE PRISON", sentence_status)                             ~ "NH STATE PRISONER",
-    (is.na(sentence_status) & str_detect("FEDERAL HOLD", booking_type))              ~ "NH STATE PRISONER",
+    str_detect("FEDERAL INMATE", sentence_status)                                    ~ "OTHER",
+    str_detect("HOLD FOR STATE PRISON", sentence_status)                             ~ "OTHER",
+    (is.na(sentence_status) & str_detect("FEDERAL HOLD", booking_type))              ~ "OTHER",
 
     # OTHER
     str_detect("DUAL STATUS", sentence_status)                                       ~ "OTHER",
