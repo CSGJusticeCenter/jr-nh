@@ -41,6 +41,14 @@ A RRI of 1 indicates no disparity. RRIs greater than 1 indicate the outcome occu
 
 - TBD: Relative rate index, rate of Medicaid Behavioral Health needs (*this analysis will be separately using the matched medicaid data from DHHS, using matched jail population as denominator*)
 
+<br>
+
+*Length of Stay Analysis*
+
+What are the mean and median length of stays in jail by race/ethnicity? Do we see any substantial differences?
+
+<br>
+
 ```{r include=FALSE,message=FALSE,warning=FALSE}
 ### set theme
 theme_set(theme_minimal())
@@ -54,6 +62,8 @@ knitr::opts_chunk$set(
 
 ### set sp_data_path
 sp_data_path <- csg_sp_path(file.path("JR_NH"))
+
+sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
 
 ### import cleaned charge analytic file (for all eight counties with charge data)
 load(paste0(sp_data_path, 
@@ -100,8 +110,8 @@ nh_race_2020 <- tidycensus::get_decennial(geography = "state",
   clean_names() %>% 
   dplyr::select(-geoid) %>% 
   mutate(race_csg_4 = case_when(
-    variable == "estimate_american_indian" ~ "American Indian or Alaska Native",
-    variable %in% c("estimate_asian","estimate_native_hawaiian_pi") ~ "AAPI",
+    variable == "estimate_american_indian" ~ "American Indian/Alaska Native",
+    variable %in% c("estimate_asian","estimate_native_hawaiian_pi") ~ "Asian/Pacific Islander",
     variable == "estimate_black" ~ "Black",
     variable == "estimate_hispanic" ~ "Hispanic",
     variable == "estimate_white" ~ "White",
@@ -146,9 +156,9 @@ nh_eight_county_charge_clean_final_race <- nh_eight_county_charge_clean_final %>
   mutate(race = ifelse(race=="Black Hispanic",
                        "Black",
                        race),
-         race = ifelse(race=="American Indian Alaska Native",
-                       "American Indian or Alaska Native",
-                       race),
+         race= ifelse(race=="American Indian/Alaskan Native",
+                                 "American Indian/Alaska Native",
+                                 race),
          race = ifelse(is.na(race)==TRUE,
                        "Missing",
                        race))
@@ -203,7 +213,7 @@ kable(nh_eight_county_charge_clean_final_race_table_final,
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") %>% 
-  row_spec(8, bold = TRUE)
+  row_spec(7, bold = TRUE)
 ```
 
 <br><br>
@@ -259,7 +269,7 @@ kable(nh_eight_county_pc_non_pc_clean_final_race_table_final,
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") %>% 
-  row_spec(8, bold = TRUE)
+  row_spec(7, bold = TRUE)
 ```
 
 <br><br>
@@ -282,8 +292,11 @@ df_nh_sample_state_race_eth_compare <- inner_join(nh_race_2020_table_viz,
                                                     nh_eight_county_charge_clean_final_race_table_final_to_join,
                                                     by="Race/Ethnicity") %>% 
   ### abbreviate 'american indian or alaska native' to fit on plot below
-  mutate(`Race/Ethnicity`=ifelse(`Race/Ethnicity`=="American Indian or Alaska Native",
+  mutate(`Race/Ethnicity`= ifelse(`Race/Ethnicity`=="American Indian/Alaska Native",
                                  "Am. Indian",
+                                 `Race/Ethnicity`),
+         `Race/Ethnicity`= ifelse(`Race/Ethnicity`=="Asian/Pacific Islander",
+                                 "APPI",
                                  `Race/Ethnicity`))
 
 ### pivot wide to long for geom_bar
@@ -334,17 +347,17 @@ ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x =sa
                    na.rm = TRUE,
                    show.legend = FALSE)
 
-# ### write out
-# ggsave(
-#     filename = file.path(sharepoint_viz_path, "race_eth_overall_supervision_rri.png"),
-#     plot = last_plot(),
-#     device = ragg::agg_png,
-#     dpi = 300,
-#     height = 5.25,
-#     width = 10,
-#     units = "in",
-#     bg = "transparent"
-#   )
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "race_eth_overall_comparison_descriptive.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -387,10 +400,10 @@ df_nh_race_eth_rri_analytic_white <- nh_eight_county_charge_clean_final_race_pre
 ### now calculate rates and RRIs using above dataframe (for White individuals) as reference
 df_nh_race_eth_rri_analytic <- nh_eight_county_charge_clean_final_race_prelim_rri %>% 
   dplyr::filter(!is.na(race_csg_4)==TRUE,
-         race_csg_4 %in% c("AAPI",
+         race_csg_4 %in% c("Asian/Pacific Islander",
                            "Black",
                            "Hispanic",
-                           "American Indian or Alaska Native")) %>% 
+                           "American Indian/Alaska Native")) %>% 
   group_by(race_csg_4) %>% 
   summarize(`Individuals Booked into Jail (per 10k NH adults)` = round(n_distinct(id)/mean(race_eth_pop)*10000, digits = 1),
             `Individuals Booked into Jail RRI (to White individuals)` = round(`Individuals Booked into Jail (per 10k NH adults)`/df_nh_race_eth_rri_analytic_white$`Individuals Booked into Jail (per 10k NH adults)`, digits = 2),
@@ -425,9 +438,13 @@ kable(df_nh_race_eth_rri_analytic_table,
 - For any discussion with stakeholders, we probably want to note that in exploring proportionality of the jail population via the relative rate index, we are also capturing any disproportionality that happens upstream of being booked into jail. And since it may come up in discussion, we also aren’t controlling for other factors here – like offense or criminal history. We could expand this analysis to account for offense type. 
 
 ```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### remove american indian/alaska native individuals from analysis due to small sample size
+df_nh_race_eth_rri_analytic_table_without_am_indian <- df_nh_race_eth_rri_analytic_table %>% 
+  filter(`Race/Ethnicity`!="American Indian/Alaska Native")
+
 ### pull out RRIs for plot
 ### use gather to shift data from wide to long
-df_nh_race_eth_rri_overall_to_plot <- df_nh_race_eth_rri_analytic_table  %>% 
+df_nh_race_eth_rri_overall_to_plot <- df_nh_race_eth_rri_analytic_table_without_am_indian  %>% 
   dplyr::select(`Race/Ethnicity`,`Individuals Booked into Jail RRI (to White individuals)`,`High Jail Utilizer, top 10% RRI (to White individuals)`) %>% 
   gather(rri_measure, rri, `Individuals Booked into Jail RRI (to White individuals)`:`High Jail Utilizer, top 10% RRI (to White individuals)`) %>% 
   mutate(rri_measure = case_when(
@@ -454,7 +471,7 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
   scale_x_discrete(limits = rev) +
   scale_y_continuous(limits=c(min(0), 
                                            max(5))) +
-  scale_fill_manual(values = rev(c("#2F7084","#1F4A58","#87C2D4","#61C280"))) +
+  scale_fill_manual(values = rev(c("#273C4C","#4095B1","#61C280"))) +
   guides(fill = guide_legend(reverse = TRUE,
                              title.position = "top",
                              label.position = "bottom",
@@ -469,7 +486,7 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
         plot.caption = element_text(hjust = 0.5)) +
     labs(y = "Relative Rate Index (RRI)", 
          x = NULL,
-      caption = "Note: New Hampshire jail administrative data reflects unique individuals\nbooked into jail in 2019-2021",
+      caption = "Note: New Hampshire jail administrative data reflects unique individuals\nbooked into jail in 2019-2021\nDue to a small sample size, individuals who are American Indian/Alaska Native are excluded from this analysis",
       title = NULL,
       subtitle = NULL,
       fill = NULL) +
@@ -505,17 +522,53 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
            fontface = 2)
 
 
-# ### write out
-# ggsave(
-#     filename = file.path(sharepoint_viz_path, "race_eth_overall_supervision_rri.png"),
-#     plot = last_plot(),
-#     device = ragg::agg_png,
-#     dpi = 300,
-#     height = 5.25,
-#     width = 10,
-#     units = "in",
-#     bg = "transparent"
-#   )
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "race_eth_overall_supervision_rri.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
+
+## Length of Stay 
+
+
+### Mean and Median Lengths of Stay, Statewide
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### group by race and calculate both mean and median length of stays using los_max
+nh_eight_county_charge_clean_final_race_los <- nh_eight_county_charge_clean_final_race %>% 
+  distinct(booking_id,
+           .keep_all = TRUE) %>% 
+  filter(!is.na(race)==TRUE) %>% 
+  group_by(race) %>% 
+  summarise(`Overall Jail Bookings (N)` = n_distinct(booking_id),
+            `Mean Length of Stay (Days)` = round(mean(los_max,
+                                                na.rm = TRUE),
+                                                digits = 1),
+            `Median Length of Stay (Days)` = median(los_max,
+                                                na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race)  
+  
+### print table via kableextra
+kable(nh_eight_county_charge_clean_final_race_los, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
+
+
