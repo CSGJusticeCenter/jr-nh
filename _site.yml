@@ -20,8 +20,6 @@ navbar:
           href: nh_charge_type_analysis.html
         - text: "High Utilizers"
           href: nh_high_utilizers_analysis.html
-        - text: "Demographics"
-          href: nh_demographics_analysis.html
         - text: "Medicaid"
           href: nh_medicaid_analysis.html
         - text: "Racial Disparities"
