@@ -4,7 +4,6 @@ output:
   distill::distill_article:
     toc: true
     toc_depth: 3
-    theme: theme.css
     self_contained: false
 ---
 
@@ -32,16 +31,19 @@ libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer"
 ```
 
 ```{r setup, include=FALSE}
-### set chunk output 
+### set theme
+theme_set(theme_minimal())
+
+### set chunk output
 knitr::opts_chunk$set(
-  echo=FALSE, 
-  message=FALSE, 
-  warning=FALSE,
+  echo = TRUE,
   dev = "ragg_png",
   cache = FALSE
   )
 
-### set sp_data_path for data viz output
+### set sp_data_path for data viz output and data imports
+sp_data_path <- csg_sp_path(file.path("JR_NH"))
+
 sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
 
 
@@ -49,14 +51,11 @@ sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"
 # source("data_cleaning/00_library.R")
 # source("data_cleaning/01_functions.R")
 # source("data_cleaning/01_functions_visuals.R")
-source("data_cleaning/00_library_ab_path.R")
+# source("data_cleaning/00_library_ab_path.R")
 
 # ### call additional geo-specific libraries needed for mapping
 # library(easypackages)
 # libraries("sf","acs","tigris","mapview","rgeos","raster")
-
-### set theme
-theme_set(theme_minimal())
 
 ### import cleaned charge analytic file (for all eight counties with charge data)
 load(paste0(sp_data_path, "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda", sep = ""))
@@ -1101,7 +1100,7 @@ ggplot(data = df_nh_charge_type_overall, aes(y = `Bookings, Percent of Sample (%
   geom_bar(stat = "identity",  color = "gray80") +
   scale_x_discrete(limits = rev) +
   scale_y_continuous(labels = scales::percent_format(accuracy = 1),
-                     limits = c(min(0), max(.45))) +
+                     limits = c(min(0), max(.3))) +
   geom_label(
     aes(
       y = `Bookings, Percent of Sample (%)`,
@@ -1121,16 +1120,17 @@ ggplot(data = df_nh_charge_type_overall, aes(y = `Bookings, Percent of Sample (%
        caption = NULL,
        title = NULL,
        subtitle = NULL) +
-  theme_minimal() +
   theme(legend.position = "top",
         legend.title.align=0.5,
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         plot.caption = element_text(hjust = 0.5),
+        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
         axis.ticks.length = unit(0, "cm"),
-        strip.text = element_markdown(),
-    strip.text.x = element_markdown(),
-    strip.text.y = element_markdown()) + 
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
     coord_flip() 
 
 ### write out
@@ -1506,20 +1506,27 @@ ggplot(
   # use thin white stroke for municipality borders
   geom_sf(
     mapping = aes(
-      fill = percent_drug_alcohol_quartile
+      fill = `Bookings with any Drug/Alcohol Charge (%)`
       ),
     color = "white",
     size = 0.1
   ) +
- scale_fill_manual(
-    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
-    name = "% Bookings with Drug/Alcohol\n Charges",
-    na.value = "grey50",
-    guide = guide_legend(
-     keyheight = unit(5, units = "mm"),
-     title.position = "top",
-     reverse = F # display highest on top
-  )) +
+    scale_fill_distiller(
+    labels = scales::percent_format(accuracy=1),
+    direction = 1,
+    name = "% Bookings with Drug/Alcohol\n Charges"
+  ) +
+  ### use jr palette here
+    scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
+ # scale_fill_manual(
+ #    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+ #    name = "% Bookings with Drug/Alcohol\n Charges",
+ #    na.value = "grey50",
+ #    guide = guide_legend(
+ #     keyheight = unit(5, units = "mm"),
+ #     title.position = "top",
+ #     reverse = F # display highest on top
+ #  )) +
   # use white stroke borders for county boundaries
   geom_sf(
     data = df_county_level_charge_type_summary_geo_to_map,
@@ -1540,19 +1547,42 @@ ggplot(
          label = county),
     family = "Franklin Gothic Demi",
     color = "gray25",
-    size = 4,
+    size = 2.75,
     fontface = "bold",
     stat = "sf_coordinates") +
-  labs(x = NULL,
-       y = NULL,
-       title = NULL,
-       subtitle = NULL,
-       caption = NULL) +
-  theme_map()
+  guides(fill = guide_colorbar(barwidth = 8),
+           direction = "horizontal",
+      barheight = unit(2, units = "mm"),
+      barwidth = unit(50, units = "mm"),
+      draw.ulim = F,
+      title.position = 'top',
+      # some shifting around
+      title.hjust = 0.5,
+      label.hjust = 0.5) +
+  labs(
+    title = NULL,
+    subtitle = NULL,
+    x = NULL,
+    y = NULL,
+    fill = NULL,
+    caption = NULL
+  ) +
+  # add theme
+  theme_map() +
+  theme(
+    plot.margin = margin(),
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    legend.position = "bottom",
+    legend.justification = c(0.5, 0.5),
+    legend.text = element_text(size = 11),
+  ) 
+
 
 ### write out
 ggsave(
-    filename = file.path(sp_viz_output_path, "charge_type_percent_drug_alcohol_by_jail_non_pc.png"),
+    filename = file.path(sp_viz_output_path, "charge_type_percent_drug_alcohol_by_jail_non_pc_continuous.png"),
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 300,

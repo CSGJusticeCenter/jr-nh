@@ -311,8 +311,8 @@ df_nh_sample_state_race_eth_compare_bar <- df_nh_sample_state_race_eth_compare %
                                 levels = c("NH Adult Population","Overall Jail Population","High Jail Utilizer Population"))) %>% 
   mutate(percentage=percentage/100) ### convert percentage to decimal for ggplot
 
-###plot
-ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x =sample_state, fill = forcats::fct_rev(sample_state))) + 
+### plot
+ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x = sample_state, fill = forcats::fct_rev(sample_state))) + 
   geom_bar(stat = "identity", position = "dodge", color = "gray80") +
   scale_x_discrete(limits = rev) +
   scale_y_continuous(labels = scales::percent_format(accuracy=1),
@@ -321,7 +321,7 @@ ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x =sa
   scale_fill_manual(values = c("#4095B1","#273C4C","#61C280")) +
   labs(x = NULL, y = NULL,
        fill = NULL,
-       caption = "New Hampshire adult population data comes from the 2020 Census.\nNew Hampshire jail population reflects unique individuals\nbooked into jail from 2019 through 2021",
+       caption = "New Hampshire adult population data comes from the 2020 Census\nNew Hampshire jail population reflects unique individuals booked into jail from 2019 through 2021",
        title = NULL,
        subtitle = NULL) +
   theme_minimal() +
@@ -486,7 +486,7 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
         plot.caption = element_text(hjust = 0.5)) +
     labs(y = "Relative Rate Index (RRI)", 
          x = NULL,
-      caption = "Note: New Hampshire jail administrative data reflects unique individuals\nbooked into jail in 2019-2021\nDue to a small sample size, individuals who are American Indian/Alaska Native are excluded from this analysis",
+      caption = "Note: New Hampshire jail administrative data reflects unique individuals booked into jail in 2019-2021\nDue to a small sample size, individuals who are American Indian/Alaska Native are excluded from this analysis",
       title = NULL,
       subtitle = NULL,
       fill = NULL) +
@@ -496,8 +496,6 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
                              label.position = "bottom",
                              keywidth = 3,
                              nrow = 1)) +
-  # facet_grid(`Race/Ethnicity` ~ ., scales="free_y", space="free_y", switch="y") +
-  # guides(fill = FALSE) + 
   geom_label_repel(aes(label = format(round(as.numeric(rri), 
                                             digits = 1), 
                                       nsmall=1), 
@@ -515,7 +513,7 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
                   show.legend = FALSE) +
   annotate("text", 
            x = 2.55, 
-           y = 2.65, 
+           y = 2, 
            label = "This line represents White individuals (reference group)", 
            colour = "#000000", 
            size = 3, 
