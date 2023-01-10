@@ -81,7 +81,7 @@ coos_adm <- left_join(coos_adm, df_hu, by = c("id"))
 booking_recordings_coos <- fnc_investigate_booking_recordings(coos_adm)
 
 # Standardize booking info so it's consistent across counties
-coos_adm <- coos_adm %>% select(-c(los, release_date)) %>% distinct() %>%
+coos_adm <- coos_adm %>% select(-c(los)) %>% distinct() %>%
 
   mutate(charge_desc     = as.character(charge_desc),
          booking_type    = as.character(booking_type),

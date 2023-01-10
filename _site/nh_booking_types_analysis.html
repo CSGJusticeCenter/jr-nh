@@ -2487,6 +2487,17 @@ Types</a>
 <li><a href="#charge-type-by-booking-type-row-sums"
 id="toc-charge-type-by-booking-type-row-sums">Charge Type by Booking
 Type (Row Sums)</a></li>
+<li><a href="#charge-type-by-booking-type-column-sums"
+id="toc-charge-type-by-booking-type-column-sums">Charge Type by Booking
+Type (Column Sums)</a></li>
+</ul></li>
+<li><a href="#high-utilizers-and-booking-types"
+id="toc-high-utilizers-and-booking-types">High Utilizers and Booking
+Types</a>
+<ul>
+<li><a href="#top-1" id="toc-top-1">Top 1%</a></li>
+<li><a href="#top-5" id="toc-top-5">Top 5%</a></li>
+<li><a href="#top-10" id="toc-top-10">Top 10%</a></li>
 </ul></li>
 <li><a href="#drug-courts" id="toc-drug-courts">Drug Courts</a>
 <ul>
@@ -2500,10 +2511,13 @@ Utilizers</a></li>
 <h2 id="booking-types">Booking Types</h2>
 <p>The following booking patterns were found using jail administrative
 data submitted directly to CSG. DHHS matched data does not have
-information on booking types.</p>
+information on booking types. The “other” category includes federal
+holds, holds for other agencies, 24 hour and 72 hour holds, other holds,
+dual satus, bail set, bond denied, dismissed, and sentence
+suspended.</p>
 <h3 id="booking-types-state-wide">Booking Types State-wide</h3>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="nh_booking_types_analysis_files/figure-html5/unnamed-chunk-1-1.png" width="75%" /></p>
+<p><img src="nh_booking_types_analysis_files/figure-html5/unnamed-chunk-1-1.png" width="624" /></p>
 </div>
 <p><br></p>
 <div class="layout-chunk" data-layout="l-body">
@@ -2560,21 +2574,10 @@ SENTENCED
 OTHER
 </td>
 <td style="text-align:left;">
-4,453
+4,931
 </td>
 <td style="text-align:left;">
-11.4%
-</td>
-</tr>
-<tr>
-<td style="text-align:left;font-weight: bold;">
-NH STATE PRISONER
-</td>
-<td style="text-align:left;">
-478
-</td>
-<td style="text-align:left;">
-1.2%
+12.7%
 </td>
 </tr>
 <tr>
@@ -2624,9 +2627,6 @@ Sentenced (N)
 Other (N)
 </th>
 <th style="text-align:left;">
-NH State Prisoner (N)
-</th>
-<th style="text-align:left;">
 Unknown (N)
 </th>
 <th style="text-align:left;">
@@ -2649,10 +2649,7 @@ Belknap
 472
 </td>
 <td style="text-align:left;width: 8em; ">
-51
-</td>
-<td style="text-align:left;width: 8em; ">
-46
+97
 </td>
 <td style="text-align:left;width: 8em; ">
 10
@@ -2675,10 +2672,7 @@ Carroll
 444
 </td>
 <td style="text-align:left;width: 8em; ">
-2,617
-</td>
-<td style="text-align:left;width: 8em; ">
-45
+2,662
 </td>
 <td style="text-align:left;width: 8em; ">
 NA
@@ -2701,10 +2695,7 @@ Cheshire
 787
 </td>
 <td style="text-align:left;width: 8em; ">
-471
-</td>
-<td style="text-align:left;width: 8em; ">
-372
+843
 </td>
 <td style="text-align:left;width: 8em; ">
 41
@@ -2730,9 +2721,6 @@ NA
 7
 </td>
 <td style="text-align:left;width: 8em; ">
-NA
-</td>
-<td style="text-align:left;width: 8em; ">
 32
 </td>
 <td style="text-align:left;width: 8em; ">
@@ -2753,10 +2741,7 @@ Hillsborough
 1,511
 </td>
 <td style="text-align:left;width: 8em; ">
-4
-</td>
-<td style="text-align:left;width: 8em; ">
-15
+19
 </td>
 <td style="text-align:left;width: 8em; ">
 23
@@ -2782,9 +2767,6 @@ Merrimack
 1,192
 </td>
 <td style="text-align:left;width: 8em; ">
-NA
-</td>
-<td style="text-align:left;width: 8em; ">
 6
 </td>
 <td style="text-align:left;width: 8em; ">
@@ -2808,9 +2790,6 @@ Rockingham
 101
 </td>
 <td style="text-align:left;width: 8em; ">
-NA
-</td>
-<td style="text-align:left;width: 8em; ">
 90
 </td>
 <td style="text-align:left;width: 8em; ">
@@ -2820,9 +2799,6 @@ NA
 <tr>
 <td style="text-align:left;width: 12em; font-weight: bold;">
 Strafford
-</td>
-<td style="text-align:left;width: 8em; ">
-NA
 </td>
 <td style="text-align:left;width: 8em; ">
 NA
@@ -2860,9 +2836,6 @@ Sullivan
 10
 </td>
 <td style="text-align:left;width: 8em; ">
-NA
-</td>
-<td style="text-align:left;width: 8em; ">
 177
 </td>
 <td style="text-align:left;width: 8em; ">
@@ -2894,9 +2867,6 @@ Sentenced (%)
 Other (%)
 </th>
 <th style="text-align:left;">
-NH State Prisoner (%)
-</th>
-<th style="text-align:left;">
 Unknown (%)
 </th>
 </tr>
@@ -2916,10 +2886,7 @@ Belknap
 11%
 </td>
 <td style="text-align:left;width: 8em; ">
-1%
-</td>
-<td style="text-align:left;width: 8em; ">
-1%
+2%
 </td>
 <td style="text-align:left;width: 8em; ">
 0%
@@ -2939,10 +2906,7 @@ Carroll
 12%
 </td>
 <td style="text-align:left;width: 8em; ">
-70%
-</td>
-<td style="text-align:left;width: 8em; ">
-1%
+71%
 </td>
 <td style="text-align:left;width: 8em; ">
 NA
@@ -2962,10 +2926,7 @@ Cheshire
 19%
 </td>
 <td style="text-align:left;width: 8em; ">
-12%
-</td>
-<td style="text-align:left;width: 8em; ">
-9%
+21%
 </td>
 <td style="text-align:left;width: 8em; ">
 1%
@@ -2988,9 +2949,6 @@ NA
 1%
 </td>
 <td style="text-align:left;width: 8em; ">
-NA
-</td>
-<td style="text-align:left;width: 8em; ">
 5%
 </td>
 </tr>
@@ -3006,9 +2964,6 @@ Hillsborough
 </td>
 <td style="text-align:left;width: 8em; ">
 14%
-</td>
-<td style="text-align:left;width: 8em; ">
-0%
 </td>
 <td style="text-align:left;width: 8em; ">
 0%
@@ -3034,9 +2989,6 @@ Merrimack
 20%
 </td>
 <td style="text-align:left;width: 8em; ">
-NA
-</td>
-<td style="text-align:left;width: 8em; ">
 0%
 </td>
 </tr>
@@ -3057,18 +3009,12 @@ Rockingham
 1%
 </td>
 <td style="text-align:left;width: 8em; ">
-NA
-</td>
-<td style="text-align:left;width: 8em; ">
 1%
 </td>
 </tr>
 <tr>
 <td style="text-align:left;width: 12em; font-weight: bold;">
 Strafford
-</td>
-<td style="text-align:left;width: 8em; ">
-NA
 </td>
 <td style="text-align:left;width: 8em; ">
 NA
@@ -3103,9 +3049,6 @@ Sullivan
 1%
 </td>
 <td style="text-align:left;width: 8em; ">
-NA
-</td>
-<td style="text-align:left;width: 8em; ">
 10%
 </td>
 </tr>
@@ -3133,17 +3076,6 @@ Total Bookings (N)
 </tr>
 </thead>
 <tbody>
-<tr>
-<td style="text-align:left;width: 15em; font-weight: bold;">
-STATE PRISONER
-</td>
-<td style="text-align:left;width: 15em; ">
-NH STATE PRISONER
-</td>
-<td style="text-align:left;width: 15em; ">
-45
-</td>
-</tr>
 <tr>
 <td style="text-align:left;width: 15em; font-weight: bold;">
 BAIL SET
@@ -3208,6 +3140,17 @@ OTHER
 </td>
 <td style="text-align:left;width: 15em; ">
 7
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 15em; font-weight: bold;">
+STATE PRISONER
+</td>
+<td style="text-align:left;width: 15em; ">
+OTHER
+</td>
+<td style="text-align:left;width: 15em; ">
+45
 </td>
 </tr>
 <tr>
@@ -3318,13 +3261,48 @@ Types</h2>
 <h3 id="charge-type-by-booking-type-row-sums">Charge Type by Booking
 Type (Row Sums)</h3>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-ff13a7928fa651600eac" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<div id="htmlwidget-696895c628b3454b164b" class="reactable html-widget" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
-<script type="application/json" data-for="htmlwidget-ff13a7928fa651600eac">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"NH State Prisoner (N)":[10,2,34,10,2,358,23],"Other (N)":[791,183,205,416,515,535,1286],"Pretrial (N)":[3525,2465,2147,2247,1909,761,5625],"Protective Custody (N)":[6,2,0,0,1,3206,3],"Sentenced (N)":[1223,464,1509,594,370,11,1390],"Unknown (N)":[56,36,34,29,40,55,68]},"columns":[{"accessor":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"NH State Prisoner (N)","name":"NH State Prisoner (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["439"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Other (N)","name":"Other (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["3,931"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Pretrial (N)","name":"Pretrial (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,679"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Protective Custody (N)","name":"Protective Custody (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["3,218"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Sentenced (N)","name":"Sentenced (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["5,561"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Unknown (N)","name":"Unknown (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["318"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"defaultPageSize":7,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"7872617ad696fe0bb0836063c9568e0e","key":"7872617ad696fe0bb0836063c9568e0e"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
-<div id="htmlwidget-17fced9e02c531219c9a" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-696895c628b3454b164b">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"Other (N)":[801,185,239,426,517,893,1309],"Pretrial (N)":[3525,2465,2147,2247,1909,761,5625],"Protective Custody (N)":[6,2,0,0,1,3206,3],"Sentenced (N)":[1223,464,1509,594,370,11,1390],"Unknown (N)":[56,36,34,29,40,55,68]},"columns":[{"accessor":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Other (N)","name":"Other (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["4,370"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Pretrial (N)","name":"Pretrial (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,679"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Protective Custody (N)","name":"Protective Custody (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["3,218"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Sentenced (N)","name":"Sentenced (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["5,561"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Unknown (N)","name":"Unknown (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["318"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"defaultPageSize":7,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"631e2ab1d9e37040f171969042bb1f4d","key":"631e2ab1d9e37040f171969042bb1f4d"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-a927b45dfd5736129372" class="reactable html-widget" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
-<script type="application/json" data-for="htmlwidget-17fced9e02c531219c9a">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"NH State Prisoner (%)":[0.0017822135091784,0.000634517766497462,0.00865360142529906,0.00303398058252427,0.000704970038773352,0.072675598863175,0.00273972602739726],"Other (%)":[0.140973088576011,0.0580583756345178,0.0521761262407737,0.12621359223301,0.181529784984138,0.108607389362566,0.153186420488386],"Pretrial (%)":[0.628230261985386,0.782043147208122,0.546449478238738,0.681735436893204,0.672893902009165,0.154486398700771,0.670041691483026],"Protective Custody (%)":[0.00106932810550704,0.000634517766497462,0,0,0.000352485019386676,0.650832318311003,0.000357355568790947],"Sentenced (%)":[0.217964712172518,0.147208121827411,0.384067192669891,0.180218446601942,0.13041945717307,0.0022330491270808,0.165574746873139],"Unknown (%)":[0.00998039565139904,0.0114213197969543,0.00865360142529906,0.00879854368932039,0.014099400775467,0.011165245635404,0.00810005955926146]},"columns":[{"accessor":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"NH State Prisoner (%)","name":"NH State Prisoner (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Other (%)","name":"Other (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Pretrial (%)","name":"Pretrial (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Protective Custody (%)","name":"Protective Custody (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Sentenced (%)","name":"Sentenced (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Unknown (%)","name":"Unknown (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"defaultPageSize":7,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"0344978f550d3a31bb01e425104d58e2","key":"0344978f550d3a31bb01e425104d58e2"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-a927b45dfd5736129372">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"Other (%)":[0.14275530208519,0.0586928934010152,0.0608297276660728,0.129247572815534,0.182234755022912,0.181282988225741,0.155926146515783],"Pretrial (%)":[0.628230261985386,0.782043147208122,0.546449478238738,0.681735436893204,0.672893902009165,0.154486398700771,0.670041691483026],"Protective Custody (%)":[0.00106932810550704,0.000634517766497462,0,0,0.000352485019386676,0.650832318311003,0.000357355568790947],"Sentenced (%)":[0.217964712172518,0.147208121827411,0.384067192669891,0.180218446601942,0.13041945717307,0.0022330491270808,0.165574746873139],"Unknown (%)":[0.00998039565139904,0.0114213197969543,0.00865360142529906,0.00879854368932039,0.014099400775467,0.011165245635404,0.00810005955926146]},"columns":[{"accessor":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Other (%)","name":"Other (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Pretrial (%)","name":"Pretrial (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Protective Custody (%)","name":"Protective Custody (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Sentenced (%)","name":"Sentenced (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Unknown (%)","name":"Unknown (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"defaultPageSize":7,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"2680c11d1b82eb35900c4a9b64b583e3","key":"2680c11d1b82eb35900c4a9b64b583e3"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
+<h3 id="charge-type-by-booking-type-column-sums">Charge Type by Booking
+Type (Column Sums)</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-ce6c05df3fae56c5fafe" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-ce6c05df3fae56c5fafe">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"Other (N)":[801,185,239,426,517,893,1309],"Pretrial (N)":[3525,2465,2147,2247,1909,761,5625],"Protective Custody (N)":[6,2,0,0,1,3206,3],"Sentenced (N)":[1223,464,1509,594,370,11,1390],"Unknown (N)":[56,36,34,29,40,55,68]},"columns":[{"accessor":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Other (N)","name":"Other (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["4,370"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Pretrial (N)","name":"Pretrial (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,679"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Protective Custody (N)","name":"Protective Custody (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["3,218"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Sentenced (N)","name":"Sentenced (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["5,561"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Unknown (N)","name":"Unknown (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["318"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"defaultPageSize":7,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"631e2ab1d9e37040f171969042bb1f4d","key":"631e2ab1d9e37040f171969042bb1f4d"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-afa563c1bbbd5d257f3d" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-afa563c1bbbd5d257f3d">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"Other (%)":[0.183295194508009,0.0423340961098398,0.0546910755148741,0.0974828375286041,0.118306636155606,0.204347826086957,0.29954233409611],"Pretrial (%)":[0.188714599282617,0.131966379356497,0.114941913378661,0.120295519032068,0.102200331923551,0.0407409390224316,0.301140318004176],"Protective Custody (%)":[0.00186451211932878,0.000621504039776259,0,0,0.000310752019888129,0.996270975761342,0.000932256059664388],"Sentenced (%)":[0.219924474015465,0.0834382305340766,0.271354073008452,0.106815320985434,0.066534795900018,0.00197806149973026,0.249955044056824],"Unknown (%)":[0.176100628930818,0.113207547169811,0.106918238993711,0.0911949685534591,0.125786163522013,0.172955974842767,0.213836477987421]},"columns":[{"accessor":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Other (%)","name":"Other (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Pretrial (%)","name":"Pretrial (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Protective Custody (%)","name":"Protective Custody (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Sentenced (%)","name":"Sentenced (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Unknown (%)","name":"Unknown (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"defaultPageSize":7,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"212bbb0a94153f0b297f2aa2f2331772","key":"212bbb0a94153f0b297f2aa2f2331772"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_booking_types_analysis_files/figure-html5/unnamed-chunk-8-1.png" width="624" /></p>
+</div>
+<p><br></p>
+<h2 id="high-utilizers-and-booking-types">High Utilizers and Booking
+Types</h2>
+<h3 id="top-1">Top 1%</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-374e7aecdf338d3f7799" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-374e7aecdf338d3f7799">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Entrance Type":["OTHER","PRETRIAL","PROTECTIVE CUSTODY","SENTENCED"],"No":[4782,19333,6689,5668],"Yes":[149,896,670,746],"No.1":[0.131114279447247,0.530077867953499,0.183400965123931,0.155406887475324],"Yes.1":[0.0605444941080861,0.36407964242178,0.272247054043072,0.303128809427062]},"columns":[{"accessor":"Entrance Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"No","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Yes","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"No.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Yes.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Top 1% HU","columns":["Yes","Yes.1"]},{"name":"Not Top 1% HU","columns":["No","No.1"]}],"defaultPageSize":4,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"a9afd5732e3be6a4778b5c00ac5956a6","key":"a9afd5732e3be6a4778b5c00ac5956a6"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<h3 id="top-5">Top 5%</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-a79863abe3c3540bd431" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-a79863abe3c3540bd431">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Entrance Type":["OTHER","PRETRIAL","PROTECTIVE CUSTODY","SENTENCED"],"No":[4334,16551,6039,4629],"Yes":[597,3678,1320,1785],"No.1":[0.137356194339682,0.524546001964948,0.191392260640827,0.146705543054543],"Yes.1":[0.0808943089430894,0.498373983739837,0.178861788617886,0.241869918699187]},"columns":[{"accessor":"Entrance Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"No","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Yes","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"No.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Yes.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Top 5% HU","columns":["Yes","Yes.1"]},{"name":"Not Top 5% HU","columns":["No","No.1"]}],"defaultPageSize":4,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"a60c2c71923e36428f3097d9ea53e417","key":"a60c2c71923e36428f3097d9ea53e417"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<h3 id="top-10">Top 10%</h3>
+<div class="layout-chunk" data-layout="l-body">
+<div id="htmlwidget-b1728941edd7d5c22b95" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-b1728941edd7d5c22b95">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Entrance Type":["OTHER","PRETRIAL","PROTECTIVE CUSTODY","SENTENCED"],"No":[3880,13815,5584,3946],"Yes":[1051,6414,1775,2468],"No.1":[0.142516069788797,0.507438016528926,0.205105601469238,0.144940312213039],"Yes.1":[0.0897676802186539,0.547830543218312,0.151605739665186,0.210796036897848]},"columns":[{"accessor":"Entrance Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"No","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Yes","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"No.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Yes.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Top 10% HU","columns":["Yes","Yes.1"]},{"name":"Not Top 10% HU","columns":["No","No.1"]}],"defaultPageSize":4,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"3851d0353b79395d2de4d685ec5d95b2","key":"3851d0353b79395d2de4d685ec5d95b2"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p><br></p>
 <h2 id="drug-courts">Drug Courts</h2>
 <p>Only Cheshire, Hillsborough, and Rockingham County collect booking
 information related to <a
@@ -3353,31 +3331,31 @@ county.</p>
 <h4 id="drug-court-related-bookings-by-county">Drug court-related
 bookings by county</h4>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-5572c5fa7e5aa8006591" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<div id="htmlwidget-b5c7c110f341b1e43150" class="reactable html-widget" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
-<script type="application/json" data-for="htmlwidget-5572c5fa7e5aa8006591">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"County":["Cheshire","Hillsborough","Rockingham"],"Drug court-related booking":[127,632,273],"Not a drug court-related booking":[2815,9580,5750],"Drug court-related booking.1":[0.123062015503876,0.612403100775194,0.26453488372093],"Not a drug court-related booking.1":[0.155139156792505,0.527969137503444,0.316891705704051]},"columns":[{"accessor":"County","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["1,032"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,145"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"defaultPageSize":3,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"f0df0e2bb24e215e104545b14e8bb05d","key":"f0df0e2bb24e215e104545b14e8bb05d"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-b5c7c110f341b1e43150">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"County":["Cheshire","Hillsborough","Rockingham"],"Drug court-related booking":[127,632,273],"Not a drug court-related booking":[2815,9580,5750],"Drug court-related booking.1":[0.0431679129843644,0.0618879749314532,0.0453262493773867],"Not a drug court-related booking.1":[0.956832087015636,0.938112025068547,0.954673750622613]},"columns":[{"accessor":"County","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["1,032"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,145"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"defaultPageSize":3,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"e96a8895a8c59bf4f5398b0b340a6de1","key":"e96a8895a8c59bf4f5398b0b340a6de1"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <h3 id="high-utilizers">High Utilizers</h3>
 <h4 id="drug-court-related-bookings-for-top-1-high-utilizers">Drug
 court-related bookings for top 1% high utilizers</h4>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-882b5145ab271ae9e9af" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<div id="htmlwidget-ed54bfbf1072a0f0735c" class="reactable html-widget" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
-<script type="application/json" data-for="htmlwidget-882b5145ab271ae9e9af">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"HU Type":["High Utilizer (Top 1%)","Not High Utilizer (Top 1%)"],"Drug court-related booking":[429,603],"Not a drug court-related booking":[818,17327],"Drug court-related booking.1":[0.415697674418605,0.584302325581395],"Not a drug court-related booking.1":[0.0450812896114632,0.954918710388537]},"columns":[{"accessor":"HU Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["1,032"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,145"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"defaultPageSize":2,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"bebf8db69c0cd96fa4980ae479d4265a","key":"bebf8db69c0cd96fa4980ae479d4265a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-ed54bfbf1072a0f0735c">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"HU Type":["High Utilizer (Top 1%)","Not High Utilizer (Top 1%)"],"Drug court-related booking":[429,603],"Not a drug court-related booking":[818,17327],"Drug court-related booking.1":[0.415697674418605,0.584302325581395],"Not a drug court-related booking.1":[0.0450812896114632,0.954918710388537]},"columns":[{"accessor":"HU Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["1,032"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,145"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"defaultPageSize":2,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"bebf8db69c0cd96fa4980ae479d4265a","key":"bebf8db69c0cd96fa4980ae479d4265a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <h4 id="drug-court-related-bookings-for-top-5-high-utilizers">Drug
 court-related bookings for top 5% high utilizers</h4>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-5ef2e6844c08e446a2d3" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<div id="htmlwidget-87d85345573a067289ea" class="reactable html-widget" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
-<script type="application/json" data-for="htmlwidget-5ef2e6844c08e446a2d3">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"HU Type":["High Utilizer (Top 5%)","Not High Utilizer (Top 5%)"],"Drug court-related booking":[756,276],"Not a drug court-related booking":[3016,15129],"Drug court-related booking.1":[0.732558139534884,0.267441860465116],"Not a drug court-related booking.1":[0.166216588591899,0.833783411408101]},"columns":[{"accessor":"HU Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["1,032"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,145"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"defaultPageSize":2,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"7cde1e9635359ce3c336fae15ecda031","key":"7cde1e9635359ce3c336fae15ecda031"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-87d85345573a067289ea">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"HU Type":["High Utilizer (Top 5%)","Not High Utilizer (Top 5%)"],"Drug court-related booking":[756,276],"Not a drug court-related booking":[3016,15129],"Drug court-related booking.1":[0.732558139534884,0.267441860465116],"Not a drug court-related booking.1":[0.166216588591899,0.833783411408101]},"columns":[{"accessor":"HU Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["1,032"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,145"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"defaultPageSize":2,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"7cde1e9635359ce3c336fae15ecda031","key":"7cde1e9635359ce3c336fae15ecda031"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <h4 id="drug-court-related-bookings-for-top-10-high-utilizers">Drug
 court-related bookings for top 10% high utilizers</h4>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-12713d994eb5ac3cd545" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<div id="htmlwidget-7af68f9885f2f2f08e50" class="reactable html-widget" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
-<script type="application/json" data-for="htmlwidget-12713d994eb5ac3cd545">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"HU Type":["High Utilizer (Top 10%)","Not High Utilizer (Top 10%)"],"Drug court-related booking":[876,156],"Not a drug court-related booking":[5327,12818],"Drug court-related booking.1":[0.848837209302326,0.151162790697674],"Not a drug court-related booking.1":[0.293579498484431,0.706420501515569]},"columns":[{"accessor":"HU Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["1,032"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,145"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"defaultPageSize":2,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"c114f1513b1856a8f83c52dbea126211","key":"c114f1513b1856a8f83c52dbea126211"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-7af68f9885f2f2f08e50">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"HU Type":["High Utilizer (Top 10%)","Not High Utilizer (Top 10%)"],"Drug court-related booking":[876,156],"Not a drug court-related booking":[5327,12818],"Drug court-related booking.1":[0.848837209302326,0.151162790697674],"Not a drug court-related booking.1":[0.293579498484431,0.706420501515569]},"columns":[{"accessor":"HU Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["1,032"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,145"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"accessor":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"defaultPageSize":2,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"c114f1513b1856a8f83c52dbea126211","key":"c114f1513b1856a8f83c52dbea126211"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>

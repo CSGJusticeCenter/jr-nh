@@ -15,17 +15,17 @@ county_budgets <- county_budgets.xlsx %>%
   clean_names() %>%
   select(county, doc_budget)
 
-# DHHS data
-# create temporary id for function and create fy variable
-entrances_dhhs <- medicaid_jail_all %>%
-  mutate(id = unique_person_id,
-         fy = case_when(booking_date > "2018-06-30" & booking_date < "2019-07-01" ~ 2019,
-                        booking_date > "2019-06-30" & booking_date < "2020-07-01" ~ 2020,
-                        booking_date > "2020-06-30" & booking_date < "2021-07-01" ~ 2021))
+# # DHHS data
+# # create temporary id for function and create fy variable
+# entrances_dhhs <- medicaid_jail_all %>%
+#   mutate(id = unique_person_id,
+#          fy = case_when(booking_date > "2018-06-30" & booking_date < "2019-07-01" ~ 2019,
+#                         booking_date > "2019-06-30" & booking_date < "2020-07-01" ~ 2020,
+#                         booking_date > "2020-06-30" & booking_date < "2021-07-01" ~ 2021))
 
 # remove entrances without release dates
 # remove entrances where release date is earlier than start date (one instance)
-df1 <- entrances_dhhs %>% select(id, county, booking_id, booking_date, release_date) %>%
+df1 <- adm_all %>% select(id, county, booking_id, booking_date, release_date) %>%
   distinct() %>%
   mutate(booking_date = as.Date(booking_date, format="%Y-%m-%d"),
          release_date = as.Date(release_date, format="%Y-%m-%d")) %>%

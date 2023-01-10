@@ -88,7 +88,7 @@ strafford_adm <- left_join(strafford_adm, df_hu, by = c("id"))
 ###################################
 
 # Standardize booking info so it's consistent across counties
-strafford_adm <- strafford_adm %>% select(-c(los, release_date)) %>% distinct() %>%
+strafford_adm <- strafford_adm %>% select(-c(los)) %>% distinct() %>%
 
   mutate(sentence_status_standard = "UNKNOWN") %>%
   select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())

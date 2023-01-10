@@ -148,7 +148,7 @@ carroll_adm <- carroll_adm %>%
     str_detect("SENTENCED FINES", sentence_status)                                   ~ "SENTENCED",
 
     # NH STATE PRISONER
-    str_detect("STATE PRISONER", sentence_status)                                    ~ "NH STATE PRISONER",
+    str_detect("STATE PRISONER", sentence_status)                                    ~ "OTHER",
 
     # OTHER
     str_detect("BAIL SET", sentence_status)                                          ~ "OTHER",
@@ -166,7 +166,7 @@ carroll_adm <- carroll_adm %>%
 carroll_adm <- carroll_adm %>%
   mutate(pc_hold = ifelse(
     sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold"
-)) %>% select(-c(los, release_date)) %>% distinct()
+)) %>% select(-c(los)) %>% distinct()
 
 # Add sex code labels
 carroll_adm <- fnc_sex_labels(carroll_adm)

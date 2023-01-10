@@ -120,7 +120,7 @@ belknap_adm <- belknap_adm %>%
     str_detect("SENTENCED", booking_type)                                               ~ "SENTENCED",
 
     # NH STATE PRISONER
-    str_detect("NH STATE PRISONER", booking_type)                                       ~ "NH STATE PRISONER",
+    str_detect("NH STATE PRISONER", booking_type)                                       ~ "OTHER",
 
     # OTHER
     str_detect("DUAL", booking_type)                                                    ~ "OTHER",
@@ -158,7 +158,7 @@ belknap_adm <- belknap_adm %>%
   mutate(pc_hold = ifelse(
     sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold"
   )) %>%
-  select(-c(los, release_date))
+  select(-c(los))
 
 # Add sex code labels
 belknap_adm <- fnc_sex_labels(belknap_adm)
