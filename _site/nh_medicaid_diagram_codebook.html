@@ -2409,30 +2409,22 @@ Overall Trends
 <div class="nav-dropdown-content">
 <a href="nh_incarceration_patterns.html">Incarceration Patterns</a>
 <a href="nh_pc_holds.html">Protective Custody Holds</a>
-<a href="nh_high_utilizers_analysis.html">High Utilizers</a>
 <a href="nh_booking_types_analysis.html">Booking Types</a>
 <a href="nh_charge_type_analysis.html">Charge Types</a>
-<a href="nh_demographics_analysis.html">Demographics</a>
+<a href="nh_high_utilizers_analysis.html">High Utilizers</a>
 <a href="nh_medicaid_analysis.html">Medicaid</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
 </div>
 </div>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
-County Reports
+Archive
  
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="county_report_Belknap.html">Belknap</a>
-<a href="county_report_Carroll.html">Carroll</a>
-<a href="county_report_Cheshire.html">Cheshire</a>
-<a href="county_report_Coos.html">Coos</a>
-<a href="county_report_Hillsborough.html">Hillsborough</a>
-<a href="county_report_Merrimack.html">Merrimack</a>
-<a href="county_report_Rockingham.html">Rockingham</a>
-<a href="county_report_Strafford.html">Strafford</a>
-<a href="county_report_Sullivan.html">Sullivan</a>
+<a href="archive_incarceration_patterns.html">Incarceration Patterns (Archive)</a>
+<a href="archive_high_utilizers_analysis.html">High Utilizers (Archive)</a>
 </div>
 </div>
 <div class="nav-dropdown">
@@ -2593,8 +2585,8 @@ we combine <code>unique_person_id</code> and
 <li><p>Similarly, to join <code>medicaid_jail_all_counties</code> to
 <code>medicaid_enrollment</code>,
 <code>medicaid_jail_all_counties$booking_date</code> must be &gt;=
-<code>medicaid_enrollment$eligiblity_begin_date</code> and &lt;=
-<code>medicaid_enrollment$eligiblity_end_date</code></p></li>
+<code>medicaid_enrollment$eligibility_begin_date</code> and &lt;=
+<code>medicaid_enrollment$eligibility_end_date</code></p></li>
 </ul>
 <p><strong>To confirm:</strong></p>
 <ul>
@@ -3444,7 +3436,7 @@ rows
 columns
 </td>
 <td style="text-align:center;">
-19
+20
 </td>
 </tr>
 <tr>
@@ -3452,7 +3444,7 @@ columns
 discrete_columns
 </td>
 <td style="text-align:center;">
-16
+17
 </td>
 </tr>
 <tr>
@@ -3492,7 +3484,7 @@ complete_rows
 total_observations
 </td>
 <td style="text-align:center;">
-953,553
+1,003,740
 </td>
 </tr>
 <tr>
@@ -3500,7 +3492,7 @@ total_observations
 memory_usage
 </td>
 <td style="text-align:center;">
-17,838,568
+20,026,104
 </td>
 </tr>
 </tbody>
@@ -3607,6 +3599,11 @@ hawaii_pacific_is_ind
 <tr>
 <td style="text-align:center;">
 other_race_ind
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+id
 </td>
 </tr>
 <tr>

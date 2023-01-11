@@ -307,3 +307,131 @@ medicaid_jail_all     <- medicaid_jail_all %>%
 # save out to external hard drive
 write_rds(medicaid_jail_all,
           "D:/Analytic/medicaid_jail_all.rds")
+
+################################################################################
+# join medicaid_enrollment, medicaid_categories, medicaid_encounters, and medicaid_jail_all
+################################################################################
+
+library(tidylog)
+
+### we previously joined these two files to add short_desc and long_desc of eligibility codes to 
+### medicaid_enrollment
+
+# ### join medicaid_enrollment and medicaid_categories
+# medicaid_enrollment_categories <- left_join(medicaid_enrollment,
+#                                             medicaid_categories,
+#                                             by = "eligibility_code")
+
+### join medicaid_enrollment_categories and medicaid_categories
+### to join medicaid_encounters to medicaid_enrollment, 
+### the medicaid_encounters$first_dos_dt must be >= medicaid_enrollment$eligibility_begin_date 
+### and <= medicaid_enrollment$eligibility_end_date
+medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
+                                                       medicaid_encounters,
+                                                       by = "unique_person_id") %>% 
+  ### we have joined all encounters/diagnoses to all medicaid enrollment records by the individual
+  ### however, we only want to link encounters/diagnoses to the specific medicaid enrollment period during
+  ### which the encounter/diagnosis took place
+  mutate(first_dos_dt = ymd(as_date(first_dos_dt)),
+         eligibility_begin_date = ymd(as_date(eligibility_begin_date)),
+         eligibility_end_date = ymd(as_date(eligibility_end_date))) %>% 
+  dplyr::filter(first_dos_dt >= eligibility_begin_date,
+                first_dos_dt <= eligibility_end_date)
+
+############################################################################################
+### now we will create several analytic files from medicaid_enrollment_categories_encounters
+############################################################################################
+
+### first, we will create an analytic file unique by individual (as opposed to unique by eligibility period or diagnosis)
+### with summary flags for the 2018-2021 period; these flags will tell us if the individual received, for example
+### any mental health or substance use disorder services for a primary diagnosis during the study window
+
+medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid_enrollment_categories_encounters %>% 
+  ### first, we will group by the individual and create flags for services/diagnoses/statuses prior to 7/1/2018 as
+  ### historic flags just in case we want them for analysis
+  ### flags to create include: 
+  ### mh_service_categorized_using_primary_dx_code, 
+  ### sud_service_categorized_using_primary_dx_code
+  ### homeless_on_eligbility_begin_date
+  ### service_provided_by_cmhc_provider
+  ### ed_visit_or_service
+  ### raw count of ed_visit_or_service encounters
+  ### mental_health_pharmacy_service
+  ### sud_pharmacy_service
+  ### other_service
+
+  ### Also -- we are using Medicaid eligibility start and end dates for inclusion in study window 
+  ### (i.e. Medicaid eligibility end date >= 7/1/2018 & Medicaid eligibility start date <= 6/30/2021)
+  mutate(pre_study_window_medicaid_match_flag = ifelse(eligibility_end_date < as_date("2018-07-01"),
+                                        1,0),
+         post_study_window_medicaid_match_flag = ifelse(eligibility_begin_date > as_date("2021-06-30"),
+                                        1,0)) %>% 
+  group_by(unique_person_id) %>% 
+  ### first create pre-study window flags
+  mutate(pre_mh_service_primary_flag = max(mh_service_categorized_using_primary_dx_code[pre_study_window_medicaid_match_flag==1],
+                                           na.rm=TRUE),
+         pre_sud_service_primary_flag = max(sud_service_categorized_using_primary_dx_code[pre_study_window_medicaid_match_flag==1],
+                                            na.rm=TRUE),
+         pre_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[pre_study_window_medicaid_match_flag==1],
+                                                      na.rm=TRUE),
+         pre_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[pre_study_window_medicaid_match_flag==1],
+                                                          na.rm=TRUE),
+         pre_ed_visit_or_service_flag = max(ed_visit_or_service[pre_study_window_medicaid_match_flag==1],
+                                            na.rm=TRUE),
+         pre_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[pre_study_window_medicaid_match_flag==1],
+                                                       na.rm=TRUE),
+         pre_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[pre_study_window_medicaid_match_flag==1],
+                                                       na.rm=TRUE),
+         pre_sud_pharmacy_service_flag = max(sud_pharmacy_service[pre_study_window_medicaid_match_flag==1],
+                                             na.rm=TRUE),
+         pre_other_service_flag = max(other_service[pre_study_window_medicaid_match_flag==1],
+                                      na.rm=TRUE)) %>% 
+  ### then post-study window flags
+  # mutate(post_mh_service_primary_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
+  #                                           na.rm=TRUE),
+  #        post_sud_service_primary_flag = max(sud_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
+  #                                            na.rm=TRUE),
+  #        post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
+  #                                                      na.rm=TRUE),
+  #        post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
+  #                                                          na.rm=TRUE),
+  #        post_ed_visit_or_service_flag = max(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
+  #                                            na.rm=TRUE),
+  #        post_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[post_study_window_medicaid_match_flag==1],
+  #                                                       na.rm=TRUE),
+  #        post_sud_pharmacy_service_flag = max(sud_pharmacy_service[post_study_window_medicaid_match_flag==1],
+  #                                             na.rm=TRUE),
+  #        post_other_service_flag = max(other_service[post_study_window_medicaid_match_flag==1],
+  #                                      na.rm=TRUE)) %>%
+  ungroup()
+  
+
+### then create primary_dx_mh_sud flag from these two
+### then create secondary_dx_mh_sud using...
+
+
+
+  ### then we drop all records outside the study window (7/1/2018 - 6/30/2021)
+  ### and group by individual and create flags for services/diagnoses/statuses that occurred during study window
+  
+  
+
+
+### join medicaid_enrollment_categories_encounters to medicaid_jail_all_counties
+### we want to keep all medicaid_jail_all_counties records and only those medicaid records which join
+### to join medicaid_jail_all_counties to medicaid_enrollment, 
+### medicaid_jail_all_counties$booking_date must be >= medicaid_enrollment$eligibility_begin_date 
+### and <= medicaid_enrollment$eligibility_end_date
+
+### HEREHEREHERE
+medicaid_enrollment_categories_encounters_jail_all <- left_join(medicaid_jail_all,
+                                                                medicaid_enrollment_categories_encounters,
+                                                                by = "unique_person_id") %>% 
+  ### we have joined all jail bookings to all medicaid enrollment records by the individual
+  ### however, we only want to link bookings to the specific medicaid enrollment period during
+  ### which the booking took place  
+  ### if an individual has a booking during a time period where they are not enrolled in medicaid, 
+  ### the medicaid data will not be linked to the jail data for that given booking
+  ### ***confirm this logic with team***
+  # dplyr::filter(booking_date >= eligibility_begin_date,
+  #               booking_date <= eligibility_end_date)

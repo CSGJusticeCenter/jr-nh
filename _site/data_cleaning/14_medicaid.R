@@ -307,3 +307,9 @@ medicaid_jail_all     <- medicaid_jail_all %>%
 # save out to external hard drive
 write_rds(medicaid_jail_all,
           "D:/Analytic/medicaid_jail_all.rds")
+
+################################################################################
+# join medicaid_enrollment, medicaid_encounters, medicaid_categories, and medicaid_jail_all
+################################################################################
+
+

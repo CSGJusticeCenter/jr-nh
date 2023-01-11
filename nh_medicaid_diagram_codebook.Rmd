@@ -41,7 +41,7 @@ theme_set(theme_minimal())
 
 * To join `medicaid_encounters` to `medicaid_enrollment`, the `medicaid_encounters$first_dos_dt` must be >= `medicaid_enrollment$eligiblity_begin_date` and <= `medicaid_enrollment$eligiblity_end_date`
 
-* Similarly, to join `medicaid_jail_all_counties` to `medicaid_enrollment`, `medicaid_jail_all_counties$booking_date` must be >= `medicaid_enrollment$eligiblity_begin_date` and <= `medicaid_enrollment$eligiblity_end_date`
+* Similarly, to join `medicaid_jail_all_counties` to `medicaid_enrollment`, `medicaid_jail_all_counties$booking_date` must be >= `medicaid_enrollment$eligibility_begin_date` and <= `medicaid_enrollment$eligibility_end_date`
 
 
 **To confirm:**
