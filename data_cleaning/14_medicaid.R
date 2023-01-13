@@ -20,7 +20,21 @@ medicaid_enrollment <- medicaid_enrollment.xlsx %>%
   clean_names() %>%
   distinct() %>%
   rename(eligibility_code = eligibility_category) %>%
-  left_join(medicaid_categories, by = "eligibility_code")
+  left_join(medicaid_categories, by = "eligibility_code") %>% 
+  ### filter out eligibility dates with years of "0001" here
+  ### correspondence with Uma -- my question: We are seeing some Medicaid eligibility begin dates with years of “0001” 
+  ### and Medicaid eligibility end dates with years of “9999” in the Medicaid Enrollment file. 
+  ### Are these most likely data entry errors? Or is there a consistent reason for these numbers? 
+  ### (e.g., “0001-01-01” as an eligibility start date or “9999-12-31” as an eligibility end date). 
+  ### Uma's responses: "For the 0001-01-01 – You should filter those out. I should have done that for you but must have missed that step. 
+  ### I used that data to identify records to exclude. An eligibility end date of 12/31/999 means an open ended eligibility." 
+  filter(year(ymd(as_date(eligibility_begin_date)))!=0001) %>% 
+  ### now recode eligibility end dates with years of "9999" as "2030" as these indicate open end dates
+  ### or enrollments that were open at the time of the data pull; by recoding to 2030, we'll be sure
+  ### to include them in our inclusion/exclusion business rules
+  mutate(eligibility_end_date = ifelse(year(ymd(as_date(eligibility_end_date)))==9999,
+                                       2030,
+                                       eligibility_end_date))
 
 # clean data dictionary to be able to match secondary diagnoses codes to descriptions
 # this is the icd-10 iteration to be used with diagnoses after 2015
@@ -58,16 +72,26 @@ medicaid_dictionary_icd_9_ccs <- left_join(medicaid_dictionary_icd_9,
                                            by = "icd_code")
 
 ###############################################################################################
+# de-duplicate pure duplicates in medicaid_encounters.xlsx first
+### correspondence with Uma on why there are pure duplicates in encounters file:
+### "No I did not dedup. Remember I had given an example of an ED visit. 
+### An outpatient claim is billed for the hospital visit and also a professional 
+### claim is billed for the doctor who attended to the patient."
+
+### note: for analysis of reimbursement, we will want the duplicated version of the 
+### medicaid encounters file 
+medicaid_encounters_xlsx_de_dup <- medicaid_encounters.xlsx %>% 
+  distinct()
+
 # clean encounters file for post-2015 records using the medicaid_dictionary_icd_10 lookup table
-medicaid_encounters_post_2015 <- medicaid_encounters.xlsx %>%
+medicaid_encounters_post_2015 <- medicaid_encounters_xlsx_de_dup %>%
   clean_names() %>%
   mutate(year = year(first_dos_dt)) %>%
   ### uma renamed some columns in the second upload; i am renaming them here as they appeared in the original pull
   rename_with(~str_remove(., '_fnl')) %>%
-
-  ####################### TO DO: confirm that ICD-10 was used during 2015 so that logic should be >=2015
-  #subset to data after 2015 which is when they started using the ICD-10 code system
-  filter(year >= 2015) %>%
+  # subset to data on or after 2015-10-01 which is when they started using the ICD-10 code system
+  # see: https://www.cdc.gov/nchs/icd/icd10cm_pcs_background.htm
+  filter(ymd(as_date(first_dos_dt)) >= as_date("2015-10-01")) %>%
 
   # remove periods
   mutate_at(vars(dx_prmry_cd, dx_admtng_cd:dx_scndry_cd10), ~ str_replace(., "\\.", "")) %>%
@@ -168,22 +192,21 @@ medicaid_encounters_post_2015 <- medicaid_encounters.xlsx %>%
 
 ###############################################################################################
 # clean encounters file for post-2015 records using the medicaid_dictionary_icd_10 lookup table
-medicaid_encounters_pre_2015 <- medicaid_encounters.xlsx %>%
+medicaid_encounters_pre_2015 <- medicaid_encounters_xlsx_de_dup %>%
   clean_names() %>%
   mutate(year = year(first_dos_dt)) %>%
   ### uma renamed some columns in the second upload; i am renaming them here as they appeared in the original pull
   rename_with(~str_remove(., '_fnl')) %>%
-
-  ####################### TO DO: confirm that ICD-10 was used during 2015 so that logic should be >=2015
-  #subset to data after 2015 which is when they started using the ICD-10 code system
-  filter(year < 2015) %>%
-
+  # subset to data before 2015-10-01 which is when they started using the ICD-10 code system
+  # see: https://www.cdc.gov/nchs/icd/icd10cm_pcs_background.htm
+  filter(ymd(as_date(first_dos_dt)) < as_date("2015-10-01")) %>%
+  
   # remove periods
   mutate_at(vars(dx_prmry_cd, dx_admtng_cd:dx_scndry_cd10), ~ str_replace(., "\\.", "")) %>%
 
   # currently, we only have codes for secondary diagnoses
   # merge with descriptions from data dictionary provided
-  # rename icd description as "dx_prmry_desc" which is the detailesd description for the dx_prmry_cd
+  # rename icd description as "dx_prmry_desc" which is the detailed description for the dx_prmry_cd
   # repeat this for admission reason diagnosis (dx_admtng_cd) and secondary diagnoses (dx_scndry_cd1 to dx_scndry_cd10)
 
   left_join(medicaid_dictionary_icd_9_ccs, by = c('dx_prmry_cd'='icd_code')) %>%
@@ -336,7 +359,9 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
          eligibility_begin_date = ymd(as_date(eligibility_begin_date)),
          eligibility_end_date = ymd(as_date(eligibility_end_date))) %>% 
   dplyr::filter(first_dos_dt >= eligibility_begin_date,
-                first_dos_dt <= eligibility_end_date)
+                first_dos_dt <= eligibility_end_date) %>% 
+  mutate(overall_bh_flag = 1) ### create overall BH flag (indicating that individual has had at least one behavioral health "medicaid encounter",
+### whether it was a primary or secondary diagnosis); not everyone from medicaid enrollment will have a BH medicaid encounter
 
 ############################################################################################
 ### now we will create several analytic files from medicaid_enrollment_categories_encounters
@@ -360,6 +385,11 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   ### sud_pharmacy_service
   ### other_service
 
+  ### create pre_bh_mh_or_sud_service_primary_flag from these two using pmax to take max across columns: 
+  ### ..._mh_service_primary_flag and ..._sud_service_primary_flag
+  ### and create secondary_dx_mh_sud using...if pre_bh_mh_or_sud_service_primary_flag==0 & other data from encounters file is present, 
+  ### BH must be based on secondary analysis
+
   ### Also -- we are using Medicaid eligibility start and end dates for inclusion in study window 
   ### (i.e. Medicaid eligibility end date >= 7/1/2018 & Medicaid eligibility start date <= 6/30/2021)
   mutate(pre_study_window_medicaid_match_flag = ifelse(eligibility_end_date < as_date("2018-07-01"),
@@ -372,6 +402,10 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                            na.rm=TRUE),
          pre_sud_service_primary_flag = max(sud_service_categorized_using_primary_dx_code[pre_study_window_medicaid_match_flag==1],
                                             na.rm=TRUE),
+         pre_bh_mh_or_sud_service_primary_flag = pmax(pre_mh_service_primary_flag,pre_sud_service_primary_flag,
+                                            na.rm=TRUE),
+         pre_bh_mh_or_sud_service_secondary_flag = ifelse(pre_bh_mh_or_sud_service_primary_flag==0 & overall_bh_flag==1 & pre_study_window_medicaid_match_flag==1,
+                                                          1,0),
          pre_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[pre_study_window_medicaid_match_flag==1],
                                                       na.rm=TRUE),
          pre_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[pre_study_window_medicaid_match_flag==1],
@@ -385,12 +419,17 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          pre_sud_pharmacy_service_flag = max(sud_pharmacy_service[pre_study_window_medicaid_match_flag==1],
                                              na.rm=TRUE),
          pre_other_service_flag = max(other_service[pre_study_window_medicaid_match_flag==1],
-                                      na.rm=TRUE)) %>% 
+                                      na.rm=TRUE)) %>% ### HEREHEREHERE -- need to spot check all particularly pre_bh_mh_or_sud_service_secondary_flag
+
   ### then post-study window flags
   # mutate(post_mh_service_primary_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
   #                                           na.rm=TRUE),
   #        post_sud_service_primary_flag = max(sud_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
   #                                            na.rm=TRUE),
+  #        post_bh_mh_or_sud_service_primary_flag = pmax(post_mh_service_primary_flag,post_sud_service_primary_flag,
+  #                                              na.rm=TRUE),
+  #        post_bh_mh_or_sud_service_secondary_flag = ifelse(post_bh_mh_or_sud_service_primary_flag==0 & overall_bh_flag==1 & post_study_window_medicaid_match_flag==1,
+  #                                                  1,0),
   #        post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
   #                                                      na.rm=TRUE),
   #        post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
@@ -403,16 +442,40 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   #                                             na.rm=TRUE),
   #        post_other_service_flag = max(other_service[post_study_window_medicaid_match_flag==1],
   #                                      na.rm=TRUE)) %>%
-  ungroup()
+  ungroup() 
+# %>% 
+### then we drop all records outside the study window (7/1/2018 - 6/30/2021)
+
+#   filter(eligibility_end_date >= as_date("2018-07-01"),
+#          eligibility_begin_date <= as_date("2021-06-30")) %>% 
+#   group_by(unique_individual_id) %>% 
+# ## now finally create flags for study window -- all prefixed with 'study_'
+#   mutate(study_mh_service_primary_flag = max(mh_service_categorized_using_primary_dx_code,
+#                                           na.rm=TRUE),
+#        study_sud_service_primary_flag = max(sud_service_categorized_using_primary_dx_code,
+#                                            na.rm=TRUE),
+#        study_bh_mh_or_sud_service_primary_flag = pmax(study_mh_service_primary_flag,study_sud_service_primary_flag,
+#                                              na.rm=TRUE),
+#        study_bh_mh_or_sud_service_secondary_flag = ifelse(study_bh_mh_or_sud_service_primary_flag==0 & overall_bh_flag==1,
+#                                                  1,0),
+#        study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date,
+#                                                      na.rm=TRUE),
+#        study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider,
+#                                                          na.rm=TRUE),
+#        study_ed_visit_or_service_flag = max(ed_visit_or_service,
+#                                            na.rm=TRUE),
+#        study_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service,
+#                                                       na.rm=TRUE),
+#        study_sud_pharmacy_service_flag = max(sud_pharmacy_service,
+#                                             na.rm=TRUE),
+       # study_other_service_flag = max(other_service,
+       #                               na.rm=TRUE)) %>% 
+       # ungroup()
+  
   
 
-### then create primary_dx_mh_sud flag from these two
-### then create secondary_dx_mh_sud using...
 
 
-
-  ### then we drop all records outside the study window (7/1/2018 - 6/30/2021)
-  ### and group by individual and create flags for services/diagnoses/statuses that occurred during study window
   
   
 
@@ -423,7 +486,6 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
 ### medicaid_jail_all_counties$booking_date must be >= medicaid_enrollment$eligibility_begin_date 
 ### and <= medicaid_enrollment$eligibility_end_date
 
-### HEREHEREHERE
 medicaid_enrollment_categories_encounters_jail_all <- left_join(medicaid_jail_all,
                                                                 medicaid_enrollment_categories_encounters,
                                                                 by = "unique_person_id") %>% 
