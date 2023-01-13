@@ -419,7 +419,12 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          pre_sud_pharmacy_service_flag = max(sud_pharmacy_service[pre_study_window_medicaid_match_flag==1],
                                              na.rm=TRUE),
          pre_other_service_flag = max(other_service[pre_study_window_medicaid_match_flag==1],
-                                      na.rm=TRUE)) %>% ### HEREHEREHERE -- need to spot check all particularly pre_bh_mh_or_sud_service_secondary_flag
+                                      na.rm=TRUE)) %>% 
+  
+  ####################################################################################################################
+  ### HEREHEREHERE -- need to spot check all particularly pre_bh_mh_or_sud_service_secondary_flag (need to add pharmacy consideration here)
+  ### need to create pre_bh_mh_or_sud_service_secondary_flag without grouping first and then take max with grouping
+  ####################################################################################################################
 
   ### then post-study window flags
   # mutate(post_mh_service_primary_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
@@ -470,7 +475,14 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
 #                                             na.rm=TRUE),
        # study_other_service_flag = max(other_service,
        #                               na.rm=TRUE)) %>% 
-       # ungroup()
+       # ungroup() %>%
+### now de-dup by individual 
+      # distinct(unique_person_id, .keep_all=TRUE) %>% 
+### removing all columns that were specific to encounter- or enrollment-level data
+### since we have created an individual-level file with flags from the encounter and enrollment data,
+### i am removing the now irrelevant columns to avoid any confusion
+      # dplyr::select(-c(...))
+
   
   
 
