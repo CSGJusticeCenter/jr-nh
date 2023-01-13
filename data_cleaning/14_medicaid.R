@@ -413,7 +413,11 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   mutate(pre_study_window_medicaid_match_flag = ifelse(eligibility_end_date < as_date("2018-07-01"),
                                         1,0),
          post_study_window_medicaid_match_flag = ifelse(eligibility_begin_date > as_date("2021-06-30"),
-                                        1,0)) %>% 
+                                        1,0),
+         ### here i'm creating an encounter-level flag for whether a record is flagged as BH-related due to 
+         ### a secondary diagnosis; if there is text in the first secondary diagnosis column, flagging as '1'
+         bh_mh_or_sud_service_secondary_dx_encounter_flag = ifelse(!is.na(dx_scndry_desc1)==TRUE,
+                                                                   1,0)) %>% 
   group_by(unique_person_id) %>% 
   ### first create pre-study window flags
   mutate(pre_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[pre_study_window_medicaid_match_flag==1],
@@ -422,8 +426,8 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                             na.rm=TRUE),
          pre_bh_mh_or_sud_service_primary_dx_flag = pmax(pre_mh_service_primary_flag,pre_sud_service_primary_flag,
                                             na.rm=TRUE),
-         pre_bh_mh_or_sud_service_secondary_dx_flag = ifelse(pre_bh_mh_or_sud_service_primary_flag==0 & overall_bh_flag==1 & pre_study_window_medicaid_match_flag==1,
-                                                          1,0),
+         pre_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_only_dx_encounter_flag[pre_study_window_medicaid_match_flag==1],
+                                                          na.rm=TRUE),
          pre_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[pre_study_window_medicaid_match_flag==1],
                                                       na.rm=TRUE),
          pre_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[pre_study_window_medicaid_match_flag==1],
@@ -444,6 +448,8 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   ### need to create pre_bh_mh_or_sud_service_secondary_flag without grouping first and then take max with grouping
   ### for secondary diagnosis flag, do we also include pre_other_service_flag? does have BH encounter record have 
   ### a 1 for primary, secondary, mh pharmacy, sud pharmacy, or other service flag? what is other service?
+  ####### final decision: i don't think we need a flag for secondary_dx only -- we can create that after the fact if there is 
+  ### a 0 zero for primary dx and a 1 for secondary dx 
   ####################################################################################################################
 
   ### then post-study window flags
@@ -453,8 +459,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   #                                            na.rm=TRUE),
   #        post_bh_mh_or_sud_service_primary_dx_flag = pmax(post_mh_service_primary_flag,post_sud_service_primary_flag,
   #                                              na.rm=TRUE),
-  #        post_bh_mh_or_sud_service_secondary_dx_flag = ifelse(post_bh_mh_or_sud_service_primary_flag==0 & overall_bh_flag==1 & post_study_window_medicaid_match_flag==1,
-  #                                                  1,0),
+  #        post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_only_dx_encounter_flag[pre_study_window_medicaid_match_flag==1],na.rm=TRUE),
   #        post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
   #                                                      na.rm=TRUE),
   #        post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
@@ -481,8 +486,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
 #                                            na.rm=TRUE),
 #        study_bh_mh_or_sud_service_primary_dx_flag = pmax(study_mh_service_primary_flag,study_sud_service_primary_flag,
 #                                              na.rm=TRUE),
-#        study_bh_mh_or_sud_service_secondary_dx_flag = ifelse(study_bh_mh_or_sud_service_primary_flag==0 & overall_bh_flag==1,
-#                                                  1,0),
+#        study_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_only_dx_encounter_flag[pre_study_window_medicaid_match_flag==1],na.rm=TRUE),
 #        study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date,
 #                                                      na.rm=TRUE),
 #        study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider,
