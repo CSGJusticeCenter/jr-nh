@@ -405,12 +405,17 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
 
   ### create pre_bh_mh_or_sud_service_primary_flag from these two using pmax to take max across columns: 
   ### ..._mh_service_primary_flag and ..._sud_service_primary_flag
-  ### and create secondary_dx_mh_sud using...if pre_bh_mh_or_sud_service_primary_flag==0 & other data from encounters file is present, 
-  ### BH must be based on secondary analysis
+  ### and create secondary_dx_mh_sud using bh_mh_or_sud_service_secondary_dx_encounter_flag created below
+  ### which is based on whether dx_scndry_desc1 is NA or not
+  ### to determine if a given individual has primary/secondary/both primary and secondary diagnoses, 
+  ### we will use these two flags in conjunction 
 
   ### Also -- we are using Medicaid eligibility start and end dates for inclusion in study window 
   ### (i.e. Medicaid eligibility end date >= 7/1/2018 & Medicaid eligibility start date <= 6/30/2021)
-  mutate(pre_study_window_medicaid_match_flag = ifelse(eligibility_end_date < as_date("2018-07-01"),
+
+  mutate(study_window_medicaid_match_flag = ifelse(eligibility_end_date >= as_date("2018-07-01") & eligibility_begin_date <= as_date("2021-06-30"),
+                                                       1,0),
+         pre_study_window_medicaid_match_flag = ifelse(eligibility_end_date < as_date("2018-07-01"),
                                         1,0),
          post_study_window_medicaid_match_flag = ifelse(eligibility_begin_date > as_date("2021-06-30"),
                                         1,0),
@@ -419,14 +424,15 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          bh_mh_or_sud_service_secondary_dx_encounter_flag = ifelse(!is.na(dx_scndry_desc1)==TRUE,
                                                                    1,0)) %>% 
   group_by(unique_person_id) %>% 
+  
   ### first create pre-study window flags
   mutate(pre_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[pre_study_window_medicaid_match_flag==1],
                                            na.rm=TRUE),
          pre_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[pre_study_window_medicaid_match_flag==1],
                                             na.rm=TRUE),
-         pre_bh_mh_or_sud_service_primary_dx_flag = pmax(pre_mh_service_primary_flag,pre_sud_service_primary_flag,
+         pre_bh_mh_or_sud_service_primary_dx_flag = pmax(pre_mh_service_primary_dx_flag,pre_sud_service_primary_dx_flag,
                                             na.rm=TRUE),
-         pre_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_only_dx_encounter_flag[pre_study_window_medicaid_match_flag==1],
+         pre_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[pre_study_window_medicaid_match_flag==1],
                                                           na.rm=TRUE),
          pre_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[pre_study_window_medicaid_match_flag==1],
                                                       na.rm=TRUE),
@@ -443,72 +449,83 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          pre_other_service_flag = max(other_service[pre_study_window_medicaid_match_flag==1],
                                       na.rm=TRUE)) %>% 
   
-  ####################################################################################################################
-  ### HEREHEREHERE -- need to spot check all particularly pre_bh_mh_or_sud_service_secondary_flag (need to add pharmacy consideration here)
-  ### need to create pre_bh_mh_or_sud_service_secondary_flag without grouping first and then take max with grouping
-  ### for secondary diagnosis flag, do we also include pre_other_service_flag? does have BH encounter record have 
-  ### a 1 for primary, secondary, mh pharmacy, sud pharmacy, or other service flag? what is other service?
-  ####### final decision: i don't think we need a flag for secondary_dx only -- we can create that after the fact if there is 
-  ### a 0 zero for primary dx and a 1 for secondary dx 
-  ####################################################################################################################
-
   ### then post-study window flags
-  # mutate(post_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
-  #                                           na.rm=TRUE),
-  #        post_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
-  #                                            na.rm=TRUE),
-  #        post_bh_mh_or_sud_service_primary_dx_flag = pmax(post_mh_service_primary_flag,post_sud_service_primary_flag,
-  #                                              na.rm=TRUE),
-  #        post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_only_dx_encounter_flag[pre_study_window_medicaid_match_flag==1],na.rm=TRUE),
-  #        post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
-  #                                                      na.rm=TRUE),
-  #        post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
-  #                                                          na.rm=TRUE),
-  #        post_ed_visit_or_service_flag = max(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
-  #                                            na.rm=TRUE),
-  #        post_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[post_study_window_medicaid_match_flag==1],
-  #                                                       na.rm=TRUE),
-  #        post_sud_pharmacy_service_flag = max(sud_pharmacy_service[post_study_window_medicaid_match_flag==1],
-  #                                             na.rm=TRUE),
-  #        post_other_service_flag = max(other_service[post_study_window_medicaid_match_flag==1],
-  #                                      na.rm=TRUE)) %>%
-  ungroup() 
-# %>% 
-### then we drop all records outside the study window (7/1/2018 - 6/30/2021)
+  mutate(post_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
+                                            na.rm=TRUE),
+         post_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
+                                             na.rm=TRUE),
+         post_bh_mh_or_sud_service_primary_dx_flag = pmax(post_mh_service_primary_dx_flag,post_sud_service_primary_dx_flag,
+                                               na.rm=TRUE),
+         post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[post_study_window_medicaid_match_flag==1],na.rm=TRUE),
+         post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
+                                                       na.rm=TRUE),
+         post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
+                                                           na.rm=TRUE),
+         post_ed_visit_or_service_flag = max(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
+                                             na.rm=TRUE),
+         post_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[post_study_window_medicaid_match_flag==1],
+                                                        na.rm=TRUE),
+         post_sud_pharmacy_service_flag = max(sud_pharmacy_service[post_study_window_medicaid_match_flag==1],
+                                              na.rm=TRUE),
+         post_other_service_flag = max(other_service[post_study_window_medicaid_match_flag==1],
+                                       na.rm=TRUE)) %>% 
 
-#   filter(eligibility_end_date >= as_date("2018-07-01"),
-#          eligibility_begin_date <= as_date("2021-06-30")) %>% 
-#   group_by(unique_individual_id) %>% 
-# ## now finally create flags for study window -- all prefixed with 'study_'
-#   mutate(study_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code,
-#                                           na.rm=TRUE),
-#        study_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code,
-#                                            na.rm=TRUE),
-#        study_bh_mh_or_sud_service_primary_dx_flag = pmax(study_mh_service_primary_flag,study_sud_service_primary_flag,
-#                                              na.rm=TRUE),
-#        study_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_only_dx_encounter_flag[pre_study_window_medicaid_match_flag==1],na.rm=TRUE),
-#        study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date,
-#                                                      na.rm=TRUE),
-#        study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider,
-#                                                          na.rm=TRUE),
-#        study_ed_visit_or_service_flag = max(ed_visit_or_service,
-#                                            na.rm=TRUE),
-#        study_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service,
-#                                                       na.rm=TRUE),
-#        study_sud_pharmacy_service_flag = max(sud_pharmacy_service,
-#                                             na.rm=TRUE),
-       # study_other_service_flag = max(other_service,
-       #                               na.rm=TRUE)) %>% 
-       # ungroup() %>%
+## now create flags for study window -- all prefixed with 'study_'
+  mutate(study_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[study_window_medicaid_match_flag==1],
+                                          na.rm=TRUE),
+       study_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[study_window_medicaid_match_flag==1],
+                                           na.rm=TRUE),
+       study_bh_mh_or_sud_service_primary_dx_flag = pmax(study_mh_service_primary_dx_flag,study_sud_service_primary_dx_flag,
+                                             na.rm=TRUE),
+       study_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[study_window_medicaid_match_flag==1],na.rm=TRUE),
+       study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[study_window_medicaid_match_flag==1],
+                                                     na.rm=TRUE),
+       study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[study_window_medicaid_match_flag==1],
+                                                         na.rm=TRUE),
+       study_ed_visit_or_service_flag = max(ed_visit_or_service[study_window_medicaid_match_flag==1],
+                                           na.rm=TRUE),
+       study_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[study_window_medicaid_match_flag==1],
+                                                      na.rm=TRUE),
+       study_sud_pharmacy_service_flag = max(sud_pharmacy_service[study_window_medicaid_match_flag==1],
+                                            na.rm=TRUE),
+       study_other_service_flag = max(other_service[study_window_medicaid_match_flag==1],
+                              na.rm=TRUE)) %>%
+  ungroup() %>% 
+  ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
+  mutate(across(.cols = pre_mh_service_primary_dx_flag:study_other_service_flag, 
+                ~ ifelse(is.infinite(.x),
+                         0, .x))) 
 ### now de-dup by individual 
       # distinct(unique_person_id, .keep_all=TRUE) %>% 
 ### removing all columns that were specific to encounter- or enrollment-level data
 ### since we have created an individual-level file with flags from the encounter and enrollment data,
 ### i am removing the now irrelevant columns to avoid any confusion
-      # dplyr::select(-c(...))
+      dplyr::select(unique_person_id,
+                    overall_bh_flag:post_study_window_medicaid_match_flag,
+                    bh_mh_or_sud_service_secondary_dx_encounter_flag:study_other_service_flag)
 
-  
-  
+####################################################################################################################
+### HEREHEREHERE -- need to spot check all particularly pre_bh_mh_or_sud_service_secondary_flag (need to add pharmacy consideration here)
+### need to create pre_bh_mh_or_sud_service_secondary_flag without grouping first and then take max with grouping
+### for secondary diagnosis flag, do we also include pre_other_service_flag? does have BH encounter record have 
+### a 1 for primary, secondary, mh pharmacy, sud pharmacy, or other service flag? what is other service?
+####### final decision: i don't think we need a flag for secondary_dx only -- we can create that after the fact if there is 
+### a 0 zero for primary dx and a 1 for secondary dx 
+####################################################################################################################
+### now spot check the df
+medicaid_enrollment_categories_encounters_2018_2021_individual_level_spot_check <- 
+  medicaid_enrollment_categories_encounters_2018_2021_individual_level %>% 
+  dplyr::select(unique_person_id,
+                eligibility_begin_date:eligibility_end_date,
+                overall_bh_flag:post_study_window_medicaid_match_flag,
+                homeless_on_eligbility_begin_date,
+                service_provided_by_cmhc_provider:other_service,
+                dx_prmry_category:dx_scndry_category1,
+                bh_mh_or_sud_service_secondary_dx_encounter_flag:pre_other_service_flag) %>% 
+  ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
+  mutate(across(.cols = pre_mh_service_primary_dx_flag:pre_other_service_flag, 
+                ~ ifelse(is.infinite(.x),
+                         0, .x)))
 
 
 
