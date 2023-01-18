@@ -300,10 +300,7 @@ medicaid_encounters_pre_2015 <- medicaid_encounters_xlsx_de_dup %>%
 
 ### combine medicaid_encounters_post_2015 and medicaid_encounters_pre_2015
 medicaid_encounters <- rbind(medicaid_encounters_pre_2015,
-                             medicaid_encounters_post_2015) %>% 
-  mutate(overall_bh_flag = 1) ### create overall BH flag (indicating that individual has had at least one behavioral health "medicaid encounter",
-### whether it was a primary or secondary diagnosis); this is in case not everyone from medicaid enrollment file joins to encounter
-
+                             medicaid_encounters_post_2015) 
 
 # save out to external hard drive
 write_rds(medicaid_encounters,
@@ -355,17 +352,51 @@ library(tidylog)
 medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
                                                        medicaid_encounters,
                                                        by = "unique_person_id") %>% 
+
   ### we have joined all encounters/diagnoses to all medicaid enrollment records by the individual
   ### however, we only want to link encounters/diagnoses to the specific medicaid enrollment period during
   ### which the encounter/diagnosis took place
-  ### in doing this, we also drop the ~6,000 enrollment records with no encounter records; need to double check
-  ### that this makes sense (i.e., that the population of individuals who appear in the enrollment file, but
-  ### not the encounter isn't a special population of interest)
+  ### in order to keep the ~6,000 enrollment records with no encounter records,
+  ### require that either (1) enrollment records have no joined encounter data (using overall_bh_flag)
+  ### OR (2) that encounter dates fall within given enrollment dates -- using keep_record_flag 
+  ### OR (3) for enrollment records that join to encounter records (i.e., have overall_bh_flag==1), but
+  ### do not have encounters that fall within the provided enrollment periods (for these records, we 
+  ### want to remove their data from the encounter file)
   mutate(first_dos_dt = ymd(as_date(first_dos_dt)),
          eligibility_begin_date = ymd(as_date(eligibility_begin_date)),
-         eligibility_end_date = ymd(as_date(eligibility_end_date))) %>% 
-  dplyr::filter(first_dos_dt >= eligibility_begin_date,
-                first_dos_dt <= eligibility_end_date) 
+         eligibility_end_date = ymd(as_date(eligibility_end_date)),
+  ### create overall BH flag (indicating that individual has had at least one behavioral health "medicaid encounter",
+  ### whether it was a primary or secondary diagnosis) that occurred during an enrollment period from enrollment file
+  ### this is because not everyone from medicaid enrollment file joins to encounter file
+         overall_bh_correct_dates_flag = ifelse(first_dos_dt >= eligibility_begin_date & 
+                                       first_dos_dt <= eligibility_end_date,
+                                  1,0),
+  ### recode overall_bh_flag to include 0's instead of NA's -- these are the records which appear
+  ### in medicaid enrollment, but not in medicaid encounters
+  ### ?: is it accurate to label these individuals as having enrolled in medicaid but not having any record of a
+  ### BH-related Medicaid encounter
+         overall_bh_no_merge_flag = ifelse(is.na(overall_bh_flag)==TRUE,
+                                  1,0),
+         overall_bh_flag = ifelse(overall_bh_correct_dates_flag==1,
+                                                1,0)) %>% 
+  group_by(unique_person_id) %>% 
+  mutate(overall_bh_flag_max = max(overall_bh_flag,
+                                   .keep_all=TRUE)) %>% 
+  ungroup() %>% 
+  ### hereherehere -- double check overall_bh_flag_max
+  mutate(keep_record_flag = ifelse((overall_bh_flag_max==0) | 
+                                     (first_dos_dt >= eligibility_begin_date & 
+                                        first_dos_dt <= eligibility_end_date),
+                                   1,0)) %>% 
+  mutate(across(first_dos_dt:dx_scndry_desc10, as.character)) %>% 
+  ### recode all medicaid encounter values to NA if overall_bh_flag==0
+  ### this ensures that we do not accidentally use encounter data for individuals
+  ### who only had encounters that did not occur during the enrollment periods that we received from DHHS
+  mutate(across(first_dos_dt:dx_scndry_desc10, 
+                ~ if_else(overall_bh_flag==0, 
+                          "NA", .))) %>% 
+  dplyr::filter(keep_record_flag==1) 
+  ### unique count of individuals: 13276 (this is the same as the number of unique individuals in the enrollment file)
 
 ### looking at the tidylog and this flag, looks like all but about 0.06% of 
 ### all individuals in medicaid enrollment file have at least one record in medicaid encounters file
@@ -410,7 +441,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   ### to determine if a given individual has primary/secondary/both primary and secondary diagnoses, 
   ### we will use these two flags in conjunction 
 
-  ### Also -- we are using Medicaid eligibility start and end dates for inclusion in study window 
+  ### also -- we are using Medicaid eligibility start and end dates for inclusion in study window 
   ### (i.e. Medicaid eligibility end date >= 7/1/2018 & Medicaid eligibility start date <= 6/30/2021)
 
   mutate(study_window_medicaid_match_flag = ifelse(eligibility_end_date >= as_date("2018-07-01") & eligibility_begin_date <= as_date("2021-06-30"),
@@ -470,7 +501,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          post_other_service_flag = max(other_service[post_study_window_medicaid_match_flag==1],
                                        na.rm=TRUE)) %>% 
 
-## now create flags for study window -- all prefixed with 'study_'
+  ### now create flags for study window -- all prefixed with 'study_'
   mutate(study_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[study_window_medicaid_match_flag==1],
                                           na.rm=TRUE),
        study_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[study_window_medicaid_match_flag==1],
@@ -494,56 +525,52 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
   mutate(across(.cols = pre_mh_service_primary_dx_flag:study_other_service_flag, 
                 ~ ifelse(is.infinite(.x),
-                         0, .x))) 
+                         0, .x))) %>% 
 ### now de-dup by individual 
-      # distinct(unique_person_id, .keep_all=TRUE) %>% 
+      distinct(unique_person_id, .keep_all=TRUE) %>%
 ### removing all columns that were specific to encounter- or enrollment-level data
 ### since we have created an individual-level file with flags from the encounter and enrollment data,
 ### i am removing the now irrelevant columns to avoid any confusion
       dplyr::select(unique_person_id,
                     overall_bh_flag:post_study_window_medicaid_match_flag,
-                    bh_mh_or_sud_service_secondary_dx_encounter_flag:study_other_service_flag)
+                    study_mh_service_primary_dx_flag:study_other_service_flag,
+                    pre_mh_service_primary_dx_flag:post_other_service_flag) %>% 
+        ### change unique_person_id to character for join with medicaid jail data
+        mutate(unique_person_id = as.character(unique_person_id))
 
-####################################################################################################################
-### HEREHEREHERE -- need to spot check all particularly pre_bh_mh_or_sud_service_secondary_flag (need to add pharmacy consideration here)
-### need to create pre_bh_mh_or_sud_service_secondary_flag without grouping first and then take max with grouping
-### for secondary diagnosis flag, do we also include pre_other_service_flag? does have BH encounter record have 
-### a 1 for primary, secondary, mh pharmacy, sud pharmacy, or other service flag? what is other service?
-####### final decision: i don't think we need a flag for secondary_dx only -- we can create that after the fact if there is 
-### a 0 zero for primary dx and a 1 for secondary dx 
-####################################################################################################################
-### now spot check the df
-medicaid_enrollment_categories_encounters_2018_2021_individual_level_spot_check <- 
-  medicaid_enrollment_categories_encounters_2018_2021_individual_level %>% 
-  dplyr::select(unique_person_id,
-                eligibility_begin_date:eligibility_end_date,
-                overall_bh_flag:post_study_window_medicaid_match_flag,
-                homeless_on_eligbility_begin_date,
-                service_provided_by_cmhc_provider:other_service,
-                dx_prmry_category:dx_scndry_category1,
-                bh_mh_or_sud_service_secondary_dx_encounter_flag:pre_other_service_flag) %>% 
-  ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
-  mutate(across(.cols = pre_mh_service_primary_dx_flag:pre_other_service_flag, 
-                ~ ifelse(is.infinite(.x),
-                         0, .x)))
+### need to spot check all particularly pre_bh_mh_or_sud_service_secondary_flag (need to add pharmacy consideration here)
+### created this file before de-duping analytic file to double check/compare dates and flags
+# medicaid_enrollment_categories_encounters_2018_2021_individual_level_spot_check <-
+#   medicaid_enrollment_categories_encounters_2018_2021_individual_level %>%
+#   dplyr::select(unique_person_id,
+#                 eligibility_begin_date:eligibility_end_date,
+#                 overall_bh_flag:post_study_window_medicaid_match_flag,
+#                 homeless_on_eligbility_begin_date,
+#                 service_provided_by_cmhc_provider:other_service,
+#                 dx_prmry_category:dx_scndry_category1,
+#                 bh_mh_or_sud_service_secondary_dx_encounter_flag:study_other_service_flag) %>%
+#   ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
+#   mutate(across(.cols = pre_mh_service_primary_dx_flag:pre_other_service_flag,
+#                 ~ ifelse(is.infinite(.x),
+#                          0, .x))) 
 
+###############################################################################
+### save medicaid_enrollment_categories_encounters_2018_2021_individual_level to external hard drive
+###############################################################################
+write_rds(medicaid_enrollment_categories_encounters_2018_2021_individual_level,
+          "D:/Analytic/medicaid_analytic_individual_level.rds")
 
-
-
-### join medicaid_enrollment_categories_encounters to medicaid_jail_all_counties
+################################################################################
+### join medicaid_enrollment_categories_encounters_2018_2021_individual_level to medicaid_jail_all_counties
 ### we want to keep all medicaid_jail_all_counties records and only those medicaid records which join
-### to join medicaid_jail_all_counties to medicaid_enrollment, 
-### medicaid_jail_all_counties$booking_date must be >= medicaid_enrollment$eligibility_begin_date 
-### and <= medicaid_enrollment$eligibility_end_date
+################################################################################
 medicaid_enrollment_categories_encounters_individual_jail_all <- left_join(medicaid_jail_all,
                                                                 medicaid_enrollment_categories_encounters_2018_2021_individual_level,
                                                                 by = "unique_person_id") 
-# %>% 
-  ### we have joined all jail bookings to all medicaid enrollment records by the individual
-  ### however, we only want to link bookings to the specific medicaid enrollment period during
-  ### which the booking took place  
-  ### if an individual has a booking during a time period where they are not enrolled in medicaid, 
-  ### the medicaid data will not be linked to the jail data for that given booking
-  ### ***confirm this logic with team***
-  # dplyr::filter(booking_date >= eligibility_begin_date,
-  #               booking_date <= eligibility_end_date)
+
+###############################################################################
+### save medicaid_enrollment_categories_encounters_individual_jail_all to external hard drive
+###############################################################################
+write_rds(medicaid_enrollment_categories_encounters_individual_jail_all,
+          "D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds")
+
