@@ -432,7 +432,7 @@ medicaid_enrollment_categories_encounters_dedup <- medicaid_enrollment_categorie
            .keep_all=TRUE)
 
 ### how many individuals don't have any BH encounter records?
-### of the 13,276 unique individuals in the file, 2,500 had no BH encounter records (~19%)
+### of the 13,276 unique individuals in the file, ~2,500 had no BH encounter records (~19%)
 ### how does this finding, that 81% of the Medicaid sample had at least one BH Medicaid encounter 
 ### compare to the general NH Medicaid population?
 table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
@@ -567,27 +567,12 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
 ### since we have created an individual-level file with flags from the encounter and enrollment data,
 ### i am removing the now irrelevant columns to avoid any confusion
       dplyr::select(unique_person_id,
-                    overall_bh_flag:post_study_window_medicaid_match_flag,
+                    overall_bh_flag = overall_bh_flag_max,
+                    study_window_medicaid_match_flag:post_study_window_medicaid_match_flag,
                     study_mh_service_primary_dx_flag:study_other_service_flag,
                     pre_mh_service_primary_dx_flag:post_other_service_flag) %>% 
         ### change unique_person_id to character for join with medicaid jail data
         mutate(unique_person_id = as.character(unique_person_id))
-
-### need to spot check all particularly pre_bh_mh_or_sud_service_secondary_flag (need to add pharmacy consideration here)
-### created this file before de-duping analytic file to double check/compare dates and flags
-# medicaid_enrollment_categories_encounters_2018_2021_individual_level_spot_check <-
-#   medicaid_enrollment_categories_encounters_2018_2021_individual_level %>%
-#   dplyr::select(unique_person_id,
-#                 eligibility_begin_date:eligibility_end_date,
-#                 overall_bh_flag:post_study_window_medicaid_match_flag,
-#                 homeless_on_eligbility_begin_date,
-#                 service_provided_by_cmhc_provider:other_service,
-#                 dx_prmry_category:dx_scndry_category1,
-#                 bh_mh_or_sud_service_secondary_dx_encounter_flag:study_other_service_flag) %>%
-#   ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
-#   mutate(across(.cols = pre_mh_service_primary_dx_flag:pre_other_service_flag,
-#                 ~ ifelse(is.infinite(.x),
-#                          0, .x))) 
 
 ###############################################################################
 ### save medicaid_enrollment_categories_encounters_2018_2021_individual_level to external hard drive
@@ -601,7 +586,7 @@ write_rds(medicaid_enrollment_categories_encounters_2018_2021_individual_level,
 ################################################################################
 medicaid_enrollment_categories_encounters_individual_jail_all <- left_join(medicaid_jail_all,
                                                                 medicaid_enrollment_categories_encounters_2018_2021_individual_level,
-                                                                by = "unique_person_id") 
+                                                                by = "unique_person_id")
 
 ###############################################################################
 ### save medicaid_enrollment_categories_encounters_individual_jail_all to external hard drive
