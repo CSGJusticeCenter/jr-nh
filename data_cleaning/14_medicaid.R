@@ -33,8 +33,9 @@ medicaid_enrollment <- medicaid_enrollment.xlsx %>%
   ### or enrollments that were open at the time of the data pull; by recoding to 2030, we'll be sure
   ### to include them in our inclusion/exclusion business rules
   mutate(eligibility_end_date = ifelse(year(ymd(as_date(eligibility_end_date)))==9999,
-                                       2030,
-                                       eligibility_end_date))
+                                       ymd(as_date("2030-01-01")),
+                                       ymd(as_date(eligibility_end_date))),
+         eligibility_end_date = ymd(as_date(eligibility_end_date)))
 
 # clean data dictionary to be able to match secondary diagnoses codes to descriptions
 # this is the icd-10 iteration to be used with diagnoses after 2015
@@ -338,12 +339,13 @@ write_rds(medicaid_jail_all,
 library(tidylog)
 
 ### we previously joined these two files to add short_desc and long_desc of eligibility codes to 
-### medicaid_enrollment
+### medicaid_enrollment so commenting out now
 
 # ### join medicaid_enrollment and medicaid_categories
 # medicaid_enrollment_categories <- left_join(medicaid_enrollment,
 #                                             medicaid_categories,
 #                                             by = "eligibility_code")
+
 
 ### join medicaid_enrollment_categories and medicaid_categories
 ### to join medicaid_encounters to medicaid_enrollment, 
@@ -362,6 +364,11 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
   ### OR (3) for enrollment records that join to encounter records (i.e., have overall_bh_flag==1), but
   ### do not have encounters that fall within the provided enrollment periods (for these records, we 
   ### want to remove their data from the encounter file)
+  ### UPDATE ON GROUP 3: 
+  ### there are four individuals and six encounters where no encounters fell between 
+  ### the individual's eligibility start and end dates
+  ### because it's such a small number, we'll treat these cases like we do the individuals
+  ### who appear in the enrollment file but not the encounter file
   mutate(first_dos_dt = ymd(as_date(first_dos_dt)),
          eligibility_begin_date = ymd(as_date(eligibility_begin_date)),
          eligibility_end_date = ymd(as_date(eligibility_end_date)),
@@ -373,34 +380,62 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
                                   1,0),
   ### recode overall_bh_flag to include 0's instead of NA's -- these are the records which appear
   ### in medicaid enrollment, but not in medicaid encounters
-  ### ?: is it accurate to label these individuals as having enrolled in medicaid but not having any record of a
+  ### also flag enrollment records that did not join to any BH encounter records 
+  ### ? for Uma: is it accurate to label these individuals as having enrolled in medicaid but not having any record of a
   ### BH-related Medicaid encounter
-         overall_bh_no_merge_flag = ifelse(is.na(overall_bh_flag)==TRUE,
+         overall_bh_no_merge_flag = ifelse(is.na(overall_bh_correct_dates_flag)==TRUE,
                                   1,0),
          overall_bh_flag = ifelse(overall_bh_correct_dates_flag==1,
-                                                1,0)) %>% 
+                                                1,0),
+         overall_bh_flag = ifelse(is.na(overall_bh_flag)==TRUE,
+                           0,overall_bh_flag)) %>% 
+  ### now create individual-level flag to indicate if individual had any encounter records
+  ### join to enrollment records (and with encounters that occurred between eligibility start and end dates)
   group_by(unique_person_id) %>% 
   mutate(overall_bh_flag_max = max(overall_bh_flag,
-                                   .keep_all=TRUE)) %>% 
+                                   na.rm = TRUE)) %>% 
   ungroup() %>% 
-  ### hereherehere -- double check overall_bh_flag_max
-  mutate(keep_record_flag = ifelse((overall_bh_flag_max==0) | 
-                                     (first_dos_dt >= eligibility_begin_date & 
-                                        first_dos_dt <= eligibility_end_date),
+  ### we want to keep records where either (1) encounters join to enrollment records
+  ### and occur between eligibility start and end dates (using overall_bh_flag==1) OR
+  ### (2) individuals from the enrollment file have no BH encounter records in the encounter 
+  ### file (using overall_bh_flag_max==0)
+  mutate(keep_record_flag = ifelse(overall_bh_flag==1 | overall_bh_flag_max==0,
                                    1,0)) %>% 
-  mutate(across(first_dos_dt:dx_scndry_desc10, as.character)) %>% 
+  ### need to convert columns from encounter file to character for next step
+  mutate(across(first_dos_dt:dx_scndry_desc10, 
+                as.character)) %>% 
   ### recode all medicaid encounter values to NA if overall_bh_flag==0
   ### this ensures that we do not accidentally use encounter data for individuals
   ### who only had encounters that did not occur during the enrollment periods that we received from DHHS
   mutate(across(first_dos_dt:dx_scndry_desc10, 
                 ~ if_else(overall_bh_flag==0, 
                           "NA", .))) %>% 
+  ### reconvert flags to numeric in case we take sums/counts later
+  mutate(across(c(homeless_on_eligbility_begin_date,
+                  service_provided_by_cmhc_provider,
+                  ed_visit_or_service,
+                  mh_service_categorized_using_primary_dx_code,
+                  sud_service_categorized_using_primary_dx_code,
+                  mental_health_pharmacy_service,
+                  sud_pharmacy_service,
+                  other_service), 
+                as.numeric)) %>% 
   dplyr::filter(keep_record_flag==1) 
-  ### unique count of individuals: 13276 (this is the same as the number of unique individuals in the enrollment file)
 
-### looking at the tidylog and this flag, looks like all but about 0.06% of 
-### all individuals in medicaid enrollment file have at least one record in medicaid encounters file
-table(medicaid_enrollment_categories_encounters$overall_bh_flag,
+### de-dup dataframe by individual to see how many individuals are in which group (1,2,3)
+### looks like all but about ... of all individuals in medicaid enrollment file have 
+### at least one record in medicaid encounters file
+### first create temp df that is unique by individual
+### unique count of individuals: 13,276 (this is the same as the number of unique individuals in the enrollment file)
+medicaid_enrollment_categories_encounters_dedup <- medicaid_enrollment_categories_encounters %>% 
+  distinct(unique_person_id,
+           .keep_all=TRUE)
+
+### how many individuals don't have any BH encounter records?
+### of the 13,276 unique individuals in the file, 2,500 had no BH encounter records (~19%)
+### how does this finding, that 81% of the Medicaid sample had at least one BH Medicaid encounter 
+### compare to the general NH Medicaid population?
+table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
       useNA = 'always') 
 
 ############################################################################################
@@ -452,7 +487,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                         1,0),
          ### here i'm creating an encounter-level flag for whether a record is flagged as BH-related due to 
          ### a secondary diagnosis; if there is text in the first secondary diagnosis column, flagging as '1'
-         bh_mh_or_sud_service_secondary_dx_encounter_flag = ifelse(!is.na(dx_scndry_desc1)==TRUE,
+         bh_mh_or_sud_service_secondary_dx_encounter_flag = ifelse(!is.na(dx_scndry_desc1)==TRUE | dx_scndry_desc1 !="NA",
                                                                    1,0)) %>% 
   group_by(unique_person_id) %>% 
   
