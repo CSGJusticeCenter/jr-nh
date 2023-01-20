@@ -219,6 +219,21 @@ Note: "Encounters" include any behavioral health-related medical/clinical or pha
 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
+###HEREHEREHERE
+
+# ### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+# nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+#   ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+#   mutate(hu_group_exclusive = case_when( 
+#     high_utilizer_10_pct=="No" ~ 4,
+#     high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+#     high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+#     high_utilizer_1_pct=="Yes" ~ 1,
+#     TRUE ~ as.numeric(NA)),
+#     hu_group_exclusive = factor(hu_group_exclusive,
+#          levels = c(1,2,3,4),
+#          labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
+
 ### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file
 
 # by county
@@ -228,13 +243,7 @@ medicaid_jail_percent_match_county_table <- jail_medicaid_analytic_individual_bo
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
                    `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[overall_bh_flag==1]),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
-                   `Overall Bookings (N)` = n_distinct(unique_person_id,
-                                                      booking_id),
-                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
-                   `Bookings w/ Medicaid Match (%)` = scales::percent(`Bookings w/ Medicaid Match (N)`/`Overall Bookings (N)`),
-                   `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[overall_bh_flag==1]),
-                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`))  %>% 
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`))  %>% 
   ungroup() %>% 
   dplyr::rename(`Jail` = county) 
 
@@ -244,13 +253,7 @@ medicaid_jail_percent_match_overall_table <- jail_medicaid_analytic_individual_b
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
                    `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[overall_bh_flag==1]),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
-                   `Overall Bookings (N)` = n_distinct(unique_person_id,
-                                                      booking_id),
-                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
-                   `Bookings w/ Medicaid Match (%)` = scales::percent(`Bookings w/ Medicaid Match (N)`/`Overall Bookings (N)`),
-                   `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[overall_bh_flag==1]),
-                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`))  %>% 
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`))  %>% 
   dplyr::mutate(`Jail` = "Statewide") 
 
 # rbind county and statewide files 
