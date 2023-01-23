@@ -212,9 +212,79 @@ kable(medicaid_jail_percent_match_county_statewide_table,
 
 <br><br>
 
-**TBD**
 
-## Table 3. Percentage of high-utilizer individuals/bookings with Medicaid Match and Behavior Health "Encounters"
+HEREHEREHERE
+
+## Table 3. Percentage of individuals/bookings with Medicaid Match and Behavior Health "Encounters" by timing of BH Encounter
+
+Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. 
+
+**The following table is split out by timing of behavioral health Medicaid encounter: before, during, or after the study period. See logic below**
+
+Pre-study period: Medicaid eligibility end date < 7/1/2018
+
+Study period: Medicaid eligibility end date >= 7/1/2018 & Medicaid eligibility start date <= 6/30/2021
+
+Post-study period: Medicaid eligibility start date > 6/30/2021
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file
+
+# by county
+medicaid_jail_percent_match_county_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[overall_bh_flag==1]),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Overall Bookings (N)` = n_distinct(unique_person_id,
+                                                      booking_id),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ Medicaid Match (%)` = scales::percent(`Bookings w/ Medicaid Match (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[overall_bh_flag==1]),
+                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+medicaid_jail_percent_match_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[overall_bh_flag==1]),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Overall Bookings (N)` = n_distinct(unique_person_id,
+                                                      booking_id),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ Medicaid Match (%)` = scales::percent(`Bookings w/ Medicaid Match (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[overall_bh_flag==1]),
+                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`))  %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_percent_match_county_statewide_table <- rbind(medicaid_jail_percent_match_county_table,
+                                                    medicaid_jail_percent_match_overall_table)
+
+### print table via kableextra
+kable(medicaid_jail_percent_match_county_statewide_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(10, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(6, bold = TRUE) %>% 
+  column_spec(9, bold = TRUE) %>% 
+  column_spec(11, bold = TRUE)
+```
+
+<br><br>
+
+## Table 4. Percentage of high-utilizer individuals/bookings with Medicaid Match and Behavior Health "Encounters"
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. I am currently using all behavioral health data from the Medicaid Encounter file, regardless of timing (before, during, or after the study period)
 
@@ -278,7 +348,7 @@ kable(medicaid_jail_percent_match_high_util_statewide_table,
 
 <br><br>
 
-## Table 4. Percentage of individuals/bookings who were experiencing homelessness at time of Medicaid eligibility
+## Table 5. Percentage of individuals/bookings who were experiencing homelessness at time of Medicaid eligibility
 
 Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period). 
 
@@ -331,7 +401,7 @@ kable(medicaid_jail_homelessness_county_statewide_table,
 
 <br><br>
 
-## Table 5. Percentage of high utilizer individuals/bookings who were experiencing homelessness at time of Medicaid eligibility
+## Table 6. Percentage of high utilizer individuals/bookings who were experiencing homelessness at time of Medicaid eligibility
 
 Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period). **Because of these factors, we should all discuss how we understand and explain this measure.** Statistics for individuals who are high utilizers of jail are based on the top 10% percentile of statewide bookings. 
 
@@ -379,6 +449,16 @@ kable(medicaid_jail_homelessness_hu_county_statewide_table,
   column_spec(7, bold = TRUE)
 
 ```
+
+<br><br>
+
+**Next steps:**
+
+What treatment, programming, or services did high utilizers receive in the community (via Medicaid) from 2019 to 2021?
+- Parse out all study flags here -- for entire medicaid match population and then by HU grouping (do we have a NH-general population estimate for comparison?) + ED counts
+
+
+A closer look at serious SPMI's (bipolar disorder, schizophrenia, etc.)
 
 <br><br>
 
