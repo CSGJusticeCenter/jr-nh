@@ -491,8 +491,19 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                                                    1,0)) %>% 
   group_by(unique_person_id) %>% 
   
+  ### create individual-level timing flags that take max of encounter-level data: 
+  ### whether they had any pre-study, study, or post-study window medicaid enrollment records
+  mutate(study_window_medicaid_match_flag_overall = max(study_window_medicaid_match_flag,
+                                                            na.rm=TRUE),
+         pre_study_window_medicaid_match_flag_overall = max(pre_study_window_medicaid_match_flag,
+                                                            na.rm=TRUE),
+         post_study_window_medicaid_match_flag_overall = max(post_study_window_medicaid_match_flag,
+                                                            na.rm=TRUE)) %>% 
+  
   ### first create pre-study window flags
-  mutate(pre_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[pre_study_window_medicaid_match_flag==1],
+  mutate(pre_bh_flag = max(overall_bh_flag[pre_study_window_medicaid_match_flag==1],
+                           na.rm=TRUE),
+         pre_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[pre_study_window_medicaid_match_flag==1],
                                            na.rm=TRUE),
          pre_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[pre_study_window_medicaid_match_flag==1],
                                             na.rm=TRUE),
@@ -516,7 +527,9 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                       na.rm=TRUE)) %>% 
   
   ### then post-study window flags
-  mutate(post_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
+  mutate(post_bh_flag = max(overall_bh_flag[post_study_window_medicaid_match_flag==1],
+                           na.rm=TRUE),
+         post_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
                                             na.rm=TRUE),
          post_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
                                              na.rm=TRUE),
@@ -537,9 +550,11 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                        na.rm=TRUE)) %>% 
 
   ### now create flags for study window -- all prefixed with 'study_'
-  mutate(study_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[study_window_medicaid_match_flag==1],
+  mutate(study_bh_flag = max(overall_bh_flag[study_window_medicaid_match_flag==1],
+                           na.rm=TRUE),
+         study_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[study_window_medicaid_match_flag==1],
                                           na.rm=TRUE),
-       study_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[study_window_medicaid_match_flag==1],
+         study_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[study_window_medicaid_match_flag==1],
                                            na.rm=TRUE),
        study_bh_mh_or_sud_service_primary_dx_flag = pmax(study_mh_service_primary_dx_flag,study_sud_service_primary_dx_flag,
                                              na.rm=TRUE),
@@ -568,9 +583,9 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
 ### i am removing the now irrelevant columns to avoid any confusion
       dplyr::select(unique_person_id,
                     overall_bh_flag = overall_bh_flag_max,
-                    study_window_medicaid_match_flag:post_study_window_medicaid_match_flag,
-                    study_mh_service_primary_dx_flag:study_other_service_flag,
-                    pre_mh_service_primary_dx_flag:post_other_service_flag) %>% 
+                    study_window_medicaid_match_flag_overall:post_study_window_medicaid_match_flag_overall,
+                    study_bh_flag:study_other_service_flag,
+                    pre_bh_flag:post_other_service_flag) %>% 
         ### change unique_person_id to character for join with medicaid jail data
         mutate(unique_person_id = as.character(unique_person_id))
 
