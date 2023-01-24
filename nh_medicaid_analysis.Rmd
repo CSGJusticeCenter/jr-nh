@@ -416,23 +416,23 @@ Note: Since we only have homelessness data for individuals who matched to Medica
 # by county
 medicaid_jail_homelessness_hu_county_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(`Individuals who are High Utilizers w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
-                   `Individuals who are High Utilizers w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
-                   `Individuals who are High Utilizers w/ any experience of homelessness (%)` = scales::percent(`Individuals who are High Utilizers w/ any experience of homelessness (N)`/`Individuals who are High Utilizers w/ Medicaid Match (N)`),
-                   `Bookings for High Utilizers w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
-                   `Bookings for High Utilizers w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
-                   `Bookings for High Utilizers w/ any experience of homelessness (%)` = scales::percent(`Bookings for High Utilizers w/ any experience of homelessness (N)`/`Bookings for High Utilizers w/ Medicaid Match (N)`))  %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+                   `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+                   `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
   ungroup() %>% 
   dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
 
 # statewide
 medicaid_jail_homelessness_hu_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  dplyr::summarise(`Individuals who are High Utilizers w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
-                   `Individuals who are High Utilizers w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
-                   `Individuals who are High Utilizers w/ any experience of homelessness (%)` = scales::percent(`Individuals who are High Utilizers w/ any experience of homelessness (N)`/`Individuals who are High Utilizers w/ Medicaid Match (N)`),
-                   `Bookings for High Utilizers w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
-                   `Bookings for High Utilizers w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
-                   `Bookings for High Utilizers w/ any experience of homelessness (%)` = scales::percent(`Bookings for High Utilizers w/ any experience of homelessness (N)`/`Bookings for High Utilizers w/ Medicaid Match (N)`))  %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+                   `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+                   `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>%  
   dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
 
 # rbind county and statewide files 
