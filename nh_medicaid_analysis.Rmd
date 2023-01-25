@@ -71,10 +71,14 @@ jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_
                                     booking_id)) ### creating unique booking id with both individual and booking IDs
 ```         
 
-# Medicaid Match Descriptive Statistics 
+# DHHS Medicaid Match and Jail Booking Descriptive Analysis 
+
+<br>
+
+## Tables
 
 
-## Table 1. Data Check: Unique Individuals and Bookings in Administrative Jail Data versus Medicaid Jail Data
+### Table 1. Data Check: Unique Individuals and Bookings in Administrative Jail Data versus Medicaid Jail Data
 
 Note: With Medicaid data, the count of unique individuals in each jail will not add up to the statewide total as some individuals were booked at multiple jails. Thus, they appear in multiple individual jail counts, but only once in the statewide count. For this reason, it is probably best to only compare differences in unique individuals at the jail-level. 
 
@@ -149,7 +153,7 @@ kable(jail_adm_medicaid_count_table,
 
 <br><br>
 
-## Table 2. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters"
+### Table 2. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters"
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. I am currently using all behavioral health data from the Medicaid Encounter file, regardless of timing (before, during, or after the study period)
 
@@ -210,7 +214,7 @@ kable(medicaid_jail_percent_match_county_statewide_table,
 
 <br><br>
 
-## Table 3. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters": by timing of BH Encounter
+### Table 3. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters": by timing of BH Encounter
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. 
 
@@ -285,7 +289,7 @@ kable(medicaid_jail_percent_match_county_statewide_timing_table,
 
 <br><br>
 
-## Table 4. Percentage of High Utilizer Individuals with Medicaid Match and Behavioral Health "Encounters"
+### Table 4. Percentage of High Utilizer Individuals with Medicaid Match and Behavioral Health "Encounters"
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. I am currently using all behavioral health data from the Medicaid Encounter file, regardless of timing (before, during, or after the study period)
 
@@ -348,7 +352,7 @@ kable(medicaid_jail_percent_match_high_util_statewide_table,
 
 <br><br>
 
-## Table 5. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility
+### Table 5. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility
 
 Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period). 
 
@@ -401,7 +405,7 @@ kable(medicaid_jail_homelessness_county_statewide_table,
 
 <br><br>
 
-## Table 6. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility
+### Table 6. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility
 
 Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period). 
 
@@ -456,7 +460,7 @@ kable(medicaid_jail_homelessness_hu_county_statewide_table,
 
 <br><br>
 
-## Table 7. Percentage of Individuals with Behavioral Health "Encounters" by Treatment, Service, and Programming Type
+### Table 7. Percentage of Individuals with Behavioral Health "Encounters" by Treatment, Service, and Programming Type
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. 
 
@@ -547,7 +551,7 @@ kable(medicaid_jail_county_statewide_bh_service_type_table,
 
 <br><br>
 
-## Table 8. Percentage of Bookings with Behavioral Health "Encounters" by Treatment, Service, and Programming Type
+### Table 8. Percentage of Bookings with Behavioral Health "Encounters" by Treatment, Service, and Programming Type
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. I am currently using all behavioral health data from the Medicaid Encounter file, regardless of timing (before, during, or after the study period). For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. 
 
@@ -635,7 +639,7 @@ kable(medicaid_jail_county_statewide_bh_service_type_booking_table,
 <br><br>
 
 
-Table 9: Mental Health and Substance Use Disorder Service Medicaid Encounters by High Utilizer Grouping
+### Table 9: Mental Health and Substance Use Disorder Service Medicaid Encounters by High Utilizer Grouping
 
 Note: Include note on different timing (study period only versus all periods in earlier tables) -- this explains slight difference in numbers with BH encounter %, for instance)
 
@@ -691,7 +695,7 @@ kable(medicaid_jail_county_statewide_bh_service_type_hu_table,
 
 <br><br>
 
-Table 10: CMHC and ED Visits by High Utilizer Grouping
+### Table 10: CMHC and ED Visits by High Utilizer Grouping
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE} 
 ### need to recode count of ED services from NA to 0 when medicaid_match_flag==1 before we calculate the mean
@@ -752,7 +756,7 @@ kable(medicaid_jail_ed_visits_hu_overall_table,
   column_spec(9, bold = TRUE)
 ```
 
-Table 11: Pharmacy Visits and Other Behavioral Health Services by High Utilizer Grouping
+### Table 11: Pharmacy Visits and Other Behavioral Health Services by High Utilizer Grouping
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE} 
 # by hu_group_exclusive
@@ -818,6 +822,12 @@ kable(medicaid_jail_county_statewide_pharmacy_type_hu_table,
 * Slide 43: From 2019 to 2021, service providers were reimbursed X% less than the national average.From 2019 to 2021, service providers were reimbursed an average of $X per claim.
 
 * Is Medicaid enrollment starting again when people are released from jail? 
+
+<br><br>
+
+## Visuals
+
+TBD
 
 
 <br><br>
