@@ -643,15 +643,37 @@ write_rds(medicaid_enrollment_categories_encounters_individual_jail_all,
 ### clean medicaid_enrollment
 medicaid_enrollment_to_join <- medicaid_enrollment %>% 
   ### change unique_person_id to character for join with medicaid jail data
-  mutate(unique_person_id = as.character(unique_person_id))
+  ### create unique medicaid enrollment id for grouping and de-duping in next step
+  mutate(unique_person_id = as.character(unique_person_id),
+         unique_medicaid_enrollment_id = paste0(unique_person_id,
+                                                eligibility_begin_date)) %>% 
+  ### now de-dup by enrollment ID; there were a handful of cases where one individual/eligibility begin date
+  ### were linked to different eligibility codes (<50/~60k); these cases are still de-duped by individual and begin date
+  ### since the number is so small
+  distinct(unique_medicaid_enrollment_id,
+           .keep_all = TRUE) 
 
+### clean medicaid_jail_all
+### business rule: for booking records with missing release dates, populate with booking date
+### this only affects 170/~50k records
+medicaid_jail_all_to_join <- medicaid_jail_all %>% 
+  mutate(release_date = ifelse(is.na(release_date)==TRUE,
+                               booking_date,
+                               release_date))
+  
 ################################################################################
-### join medicaid_enrollment to medicaid_jail_all_counties
-### we want to keep all medicaid_jail_all_counties records and only those medicaid records which join
+### join medicaid_jail_all_counties to medicaid_enrollment
+### we want to keep all medicaid_enrollment records and only those jail records which join via unique_person_id
 ################################################################################
-medicaid_enrollment_jail_timing_all <- left_join(medicaid_jail_all,
-                                          medicaid_enrollment_to_join,
+medicaid_enrollment_jail_timing_all <- left_join(medicaid_enrollment_to_join,
+                                                 medicaid_jail_all_to_join,
                                           by = "unique_person_id") %>% 
+  ### we ultimately want a file that is unique by medicaid enrollment
+  ### since our denominator in analysis will be those who were booked in jail AND were enrolled in medicaid during the 
+  ### study window (i.e., those eligible to have their medicaid coverage ended due to incarceration),
+  ### we will drop individuals who did not match to medicaid by left joining the jail data to the medicaid enrollment file
+  ### now drop records which appear in medicaid enrollment but not jail file 
+  filter(!is.na(booking_id)) %>% 
   ### clean dates for analysis using dates from the enrollment and jail file
   mutate(eligibility_begin_date = ymd(as_date(eligibility_begin_date)),
          eligibility_end_date = ymd(as_date(eligibility_end_date)),
@@ -667,31 +689,70 @@ medicaid_enrollment_jail_timing_all <- left_join(medicaid_jail_all,
   ### did individual's medicaid enrollment end within 10 to 15 days of release from jail
   ### did individual's medicaid enrollment end within 15 to 20 days of release from jail
   
-  ### QUESTION: is there any way we can account for subsequent incarceration (whether in jail or prison)
-  ### when exploring whether an individual lost coverage within x days of release from jail?
-  ### to account for subsequent jail incarceration, if medicaid_enroll_ends_during_jail==1, then....
-  
-  ### QUESTION: how should we de-dup since every medicaid enrollment record is joining to every jail booking record
-  ### SHOULD WE DE-DUP BY JAIL BOOKING INSTEAD OF ENROLLMENT? THAT WOULD ALLOW US TO KEEP THE ENTIRE SAMPLE
-  ### AND/OR USE DATE LOGIC FOR THE JOIN FOR THOSE IN THE BOOKING FILE WHO HAVE MEDICAID ENROLLMENT DATA?
-  
-  mutate(medicaid_enroll_ends_during_jail = ifelse(eligibility_end_date>=booking_date & eligibility_end_date<=release_date,
+  mutate(medicaid_enroll_ends_during_jail_booking_level = ifelse(eligibility_end_date>=booking_date & eligibility_end_date<=release_date,
                                                    1,0),
-         medicaid_enroll_ends_after_jail_within_5_days = ifelse(medicaid_enroll_ends_release_date_diff_days>0 & medicaid_enroll_ends_release_date_diff_days<=5,
+         medicaid_enroll_ends_after_jail_within_5_days_booking_level = ifelse(medicaid_enroll_ends_release_date_diff_days>0 & medicaid_enroll_ends_release_date_diff_days<=5,
                                                    1,0),
-         medicaid_enroll_ends_after_jail_within_10_days = ifelse(medicaid_enroll_ends_release_date_diff_days>5 & medicaid_enroll_ends_release_date_diff_days<=10,
+         medicaid_enroll_ends_after_jail_within_10_days_booking_level = ifelse(medicaid_enroll_ends_release_date_diff_days>5 & medicaid_enroll_ends_release_date_diff_days<=10,
                                                                 1,0),
-         medicaid_enroll_ends_after_jail_within_15_days = ifelse(medicaid_enroll_ends_release_date_diff_days>10 & medicaid_enroll_ends_release_date_diff_days<=15,
+         medicaid_enroll_ends_after_jail_within_15_days_booking_level = ifelse(medicaid_enroll_ends_release_date_diff_days>10 & medicaid_enroll_ends_release_date_diff_days<=15,
                                                                 1,0),
-         medicaid_enroll_ends_after_jail_within_20_days = ifelse(medicaid_enroll_ends_release_date_diff_days>15 & medicaid_enroll_ends_release_date_diff_days<=20,
-                                                                1,0))
+         medicaid_enroll_ends_after_jail_within_20_days_booking_level = ifelse(medicaid_enroll_ends_release_date_diff_days>15 & medicaid_enroll_ends_release_date_diff_days<=20,
+                                                                1,0)) %>% 
+  
+  ### At this point, our file is messy -- there are joins between all bookings and all enrollments for individuals who
+  ### are in both files; for this to be a medicaid enrollment-level file, we now need to group by enrollment and take the max
+  ### of the flags we just create; in other words -- if at any point a booking/period of incarceration overlapped with medicaid enrollment ending, we will capture it
+  ### because multiple bookings may have occurred during a single period of medicaid enrollment, this allows us to capture any instance
+  ### of medicaid enrollment ending within 20 days after jail release
+
+  group_by(unique_medicaid_enrollment_id) %>% 
+  mutate(medicaid_enroll_ends_during_jail = max(medicaid_enroll_ends_during_jail_booking_level,
+                                                na.rm=TRUE),
+         medicaid_enroll_ends_after_jail_within_5_days = max(medicaid_enroll_ends_after_jail_within_5_days_booking_level,
+                                                na.rm=TRUE),
+         medicaid_enroll_ends_after_jail_within_10_days = max(medicaid_enroll_ends_after_jail_within_10_days_booking_level,
+                                                na.rm=TRUE),
+         medicaid_enroll_ends_after_jail_within_15_days = max(medicaid_enroll_ends_after_jail_within_15_days_booking_level,
+                                                na.rm=TRUE),
+         medicaid_enroll_ends_after_jail_within_20_days = max(medicaid_enroll_ends_after_jail_within_20_days_booking_level,
+                                                na.rm=TRUE)) %>% 
+  
+  ### note: it's possible that one medicaid enrollment record could have multiple flags 
+  ### if multiple bookings are linked to one enrollment record and both occur within 20 days of each other
+  ### for this reason, we will keep the earliest occurring flag 
+  ### (e.g., keep medicaid_enroll_ends_during_jail over medicaid_enroll_ends_after_jail_within_5_days, etc)
+  
+  mutate(medicaid_enroll_ends_after_jail_within_20_days = ifelse((medicaid_enroll_ends_after_jail_within_15_days==1 |
+                                                                   medicaid_enroll_ends_after_jail_within_10_days==1 |
+                                                                   medicaid_enroll_ends_after_jail_within_5_days==1 |
+                                                                   medicaid_enroll_ends_during_jail==1),
+                                                                 0,medicaid_enroll_ends_after_jail_within_20_days),
+         medicaid_enroll_ends_after_jail_within_15_days = ifelse((medicaid_enroll_ends_after_jail_within_10_days==1 |
+                                                                   medicaid_enroll_ends_after_jail_within_5_days==1 |
+                                                                   medicaid_enroll_ends_during_jail==1),
+                                                                 0,medicaid_enroll_ends_after_jail_within_15_days),
+         medicaid_enroll_ends_after_jail_within_10_days = ifelse((medicaid_enroll_ends_after_jail_within_5_days==1 |
+                                                                   medicaid_enroll_ends_during_jail==1),
+                                                                 0,medicaid_enroll_ends_after_jail_within_10_days),
+         medicaid_enroll_ends_after_jail_within_5_days = ifelse(medicaid_enroll_ends_during_jail==1,
+                                                                 0,medicaid_enroll_ends_after_jail_within_5_days)) %>% 
+  
+  ungroup() %>% 
+  ### now de-dup by enrollment 
+  distinct(unique_medicaid_enrollment_id,
+           .keep_all = TRUE) %>% 
+  ### because the file is de-duped by enrollment and not booking, we should only keep enrollment-level data
+  dplyr::select(unique_person_id,
+                unique_medicaid_enrollment_id,
+                eligibility_code:long_desc,
+                medicaid_enroll_ends_during_jail:medicaid_enroll_ends_after_jail_within_20_days)
   
 ###############################################################################
 ### save medicaid_enrollment_jail_timing_all to external hard drive
 ###############################################################################
 write_rds(medicaid_enrollment_jail_timing_all,
           "D:/Analytic/medicaid_enrollment_jail_timing_all.rds")
-
 
 ###########################################################################################################################
 ###########################################################################################################################
