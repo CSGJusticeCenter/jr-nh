@@ -697,11 +697,12 @@ kable(medicaid_jail_county_statewide_bh_service_type_hu_table,
 
 ### Table 10: CMHC and ED Visits by High Utilizer Grouping
 
+Note: Need to think through substantial difference between mean and median ED visits and how to talk through each metric if we end up presenting them. Related to this, there seem to be a handful of outliers (e.g., 100+ ED visits) that I need to further explore. 
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE} 
 ### need to recode count of ED services from NA to 0 when medicaid_match_flag==1 before we calculate the mean
 ### NA values now indicate that individual didn't match to medicaid data whereas 0 indicates that individual did
 ### match to medicaid data, but had no recorded BH-related ED visits
-
 ### also need to de-dup file by individual before taking mean -- so that we have one ED visit count per individual, not
 ### per booking
 jail_medicaid_analytic_individual_booking_level_dedup_ed_visit_count_recode <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
@@ -719,8 +720,12 @@ medicaid_jail_ed_visits_hu_table <- jail_medicaid_analytic_individual_booking_le
                    `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Service provided by ED (N)` = n_distinct(unique_person_id[study_ed_visit_or_service_flag==1]),
                    `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Overall Individuals (N)`),
-                   `Average ED visits for BH Service provided per Individual (BH encounter sample mean)` = round(mean(study_ed_visit_or_service_encounter_count[study_bh_flag==1], na.rm = TRUE), digits = 1),
-                   `Average ED visits for BH Service provided per Individual (mean for those with at least one ED visit)` = round(mean(study_ed_visit_or_service_encounter_count[study_ed_visit_or_service_flag==1], na.rm = TRUE), digits = 1)) %>% 
+                   `Mean ED visits for BH Service per Individual (Medicaid match sample)` = round(mean(study_ed_visit_or_service_encounter_count[medicaid_match_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (Medicaid match sample)` = round(median(study_ed_visit_or_service_encounter_count[medicaid_match_flag==1], na.rm = TRUE), digits = 1),
+                   `Mean ED visits for BH Service per Individual (BH encounter sample mean)` = round(mean(study_ed_visit_or_service_encounter_count[study_bh_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (BH encounter sample mean)` = round(median(study_ed_visit_or_service_encounter_count[study_bh_flag==1], na.rm = TRUE), digits = 1),
+                   `Mean ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)` = round(mean(study_ed_visit_or_service_encounter_count[study_ed_visit_or_service_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)` = round(median(study_ed_visit_or_service_encounter_count[study_ed_visit_or_service_flag==1], na.rm = TRUE), digits = 1)) %>%
   ungroup() %>% 
   dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
 
@@ -732,8 +737,12 @@ medicaid_jail_ed_visits_hu_overall_table <- jail_medicaid_analytic_individual_bo
                    `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Service provided by ED (N)` = n_distinct(unique_person_id[study_ed_visit_or_service_flag==1]),
                    `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Overall Individuals (N)`),
-                   `Average ED visits for BH Service provided per Individual (BH encounter sample mean)` = round(mean(study_ed_visit_or_service_encounter_count[study_bh_flag==1], na.rm = TRUE), digits = 1),
-                   `Average ED visits for BH Service provided per Individual (mean for those with at least one ED visit)` = round(mean(study_ed_visit_or_service_encounter_count[study_ed_visit_or_service_flag==1], na.rm = TRUE), digits = 1)) %>%
+                   `Mean ED visits for BH Service per Individual (Medicaid match sample)` = round(mean(study_ed_visit_or_service_encounter_count[medicaid_match_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (Medicaid match sample)` = round(median(study_ed_visit_or_service_encounter_count[medicaid_match_flag==1], na.rm = TRUE), digits = 1),
+                   `Mean ED visits for BH Service per Individual (BH encounter sample mean)` = round(mean(study_ed_visit_or_service_encounter_count[study_bh_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (BH encounter sample mean)` = round(median(study_ed_visit_or_service_encounter_count[study_bh_flag==1], na.rm = TRUE), digits = 1),
+                   `Mean ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)` = round(mean(study_ed_visit_or_service_encounter_count[study_ed_visit_or_service_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)` = round(median(study_ed_visit_or_service_encounter_count[study_ed_visit_or_service_flag==1], na.rm = TRUE), digits = 1)) %>%
   dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
 
 # rbind county and statewide files 
@@ -753,8 +762,14 @@ kable(medicaid_jail_ed_visits_hu_overall_table,
   column_spec(5, bold = TRUE) %>% 
   column_spec(7, bold = TRUE) %>% 
   column_spec(8, bold = TRUE) %>% 
-  column_spec(9, bold = TRUE)
+  column_spec(9, bold = TRUE) %>% 
+  column_spec(10, bold = TRUE) %>% 
+  column_spec(11, bold = TRUE) %>% 
+  column_spec(12, bold = TRUE) %>% 
+  column_spec(13, bold = TRUE)
 ```
+
+<br><br>
 
 ### Table 11: Pharmacy Visits and Other Behavioral Health Services by High Utilizer Grouping
 
@@ -817,9 +832,9 @@ kable(medicaid_jail_county_statewide_pharmacy_type_hu_table,
 
 * Slide 38: A closer look at serious SPMI's (bipolar disorder, schizophrenia, etc.) 
 
-* Slide 40: HU's ____% more likely to have an opioid use disorder
+* Slide 40: HU's ____% more likely to have an opiod use disorder
 
-* Slide 43: From 2019 to 2021, service providers were reimbursed X% less than the national average.From 2019 to 2021, service providers were reimbursed an average of $X per claim.
+* Slide 43: From 2019 to 2021, service providers were reimbursed X% less than the national average. From 2019 to 2021, service providers were reimbursed an average of $X per claim.
 
 * Is Medicaid enrollment starting again when people are released from jail? 
 
