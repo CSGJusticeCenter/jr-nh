@@ -439,18 +439,24 @@ table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
       useNA = 'always') 
 
 ############################################################################################
-### now we will create two analytic files from medicaid_enrollment_categories_encounters
+### now we will create two analytic files from medicaid_enrollment_categories_encounters 
+### and one analytic file from medicaid_enrollment
 
-### two medicaid analytic files to create: 
+### three medicaid analytic files to create: 
 
 ## 1. individual level file: this file will have flags based on the encounter-level 
 # raw file split into three time periods (encounters/enrollments prior to, during, and after the study window)
 
 ## 2. encounter/diagnosis level file: this file will allow us to explore the medicaid encounters/diagnosis-level data
 # with greater specificity (e.g., counts of SUD encounters as well as proximity of either encounters or medicaid enrollment to booking)
+
+## 3. medicaid enrollment level file: this file will allow us to explore the timing of medicaid enrollment/coverage loss and 
+# jail booking. did individuals lose their medicaid eligibility during their incarceration or shortly afterwards? if so, 
+# how long is the average jail LOS that results in medicaid coverage loss/un-enrollment? does this vary by county? by HU grouping?
 ############################################################################################
 
-
+###########################################################################################################################
+###########################################################################################################################
 ### 1. first, we will create an analytic file unique by individual (as opposed to unique by eligibility period or diagnosis)
 ### with summary flags for the 2018-2021 period; these flags will tell us if the individual received, for example
 ### any mental health or substance use disorder services for a primary diagnosis during the study window
@@ -612,4 +618,81 @@ medicaid_enrollment_categories_encounters_individual_jail_all <- left_join(medic
 ###############################################################################
 write_rds(medicaid_enrollment_categories_encounters_individual_jail_all,
           "D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds")
+
+###########################################################################################################################
+###########################################################################################################################
+
+
+###########################################################################################################################
+###########################################################################################################################
+## 2. next, we'll create the encounter/diagnosis level file: this file will allow us to explore the medicaid encounters/diagnosis-level data
+# with greater specificity (e.g., counts of SUD encounters as well as proximity of either encounters or medicaid enrollment to booking)
+
+
+
+###########################################################################################################################
+###########################################################################################################################
+
+
+###########################################################################################################################
+###########################################################################################################################
+## 3. finally, we will build the medicaid enrollment level file: this file will allow us to explore the timing of medicaid enrollment/coverage loss and 
+# jail booking. did individuals lose their medicaid eligibility during their incarceration or shortly afterwards? if so, 
+# how long is the average jail LOS that results in medicaid coverage loss/un-enrollment? does this vary by county? by HU grouping?
+
+### clean medicaid_enrollment
+medicaid_enrollment_to_join <- medicaid_enrollment %>% 
+  ### change unique_person_id to character for join with medicaid jail data
+  mutate(unique_person_id = as.character(unique_person_id))
+
+################################################################################
+### join medicaid_enrollment to medicaid_jail_all_counties
+### we want to keep all medicaid_jail_all_counties records and only those medicaid records which join
+################################################################################
+medicaid_enrollment_jail_timing_all <- left_join(medicaid_jail_all,
+                                          medicaid_enrollment_to_join,
+                                          by = "unique_person_id") %>% 
+  ### clean dates for analysis using dates from the enrollment and jail file
+  mutate(eligibility_begin_date = ymd(as_date(eligibility_begin_date)),
+         eligibility_end_date = ymd(as_date(eligibility_end_date)),
+         booking_date = ymd(as_date(booking_date)),
+         release_date = ymd(as_date(release_date)),
+         medicaid_enroll_ends_release_date_diff_days = as.numeric(difftime(eligibility_end_date,
+                                                                release_date,
+                                                                units="days"))) %>% 
+  ### now create several flags:
+  ### did individual's medicaid enrollment end during incarceration in jail
+  ### did individual's medicaid enrollment end within 0 to 5 days of release from jail
+  ### did individual's medicaid enrollment end within 5 to 10 days of release from jail
+  ### did individual's medicaid enrollment end within 10 to 15 days of release from jail
+  ### did individual's medicaid enrollment end within 15 to 20 days of release from jail
+  
+  ### QUESTION: is there any way we can account for subsequent incarceration (whether in jail or prison)
+  ### when exploring whether an individual lost coverage within x days of release from jail?
+  ### to account for subsequent jail incarceration, if medicaid_enroll_ends_during_jail==1, then....
+  
+  ### QUESTION: how should we de-dup since every medicaid enrollment record is joining to every jail booking record
+  ### SHOULD WE DE-DUP BY JAIL BOOKING INSTEAD OF ENROLLMENT? THAT WOULD ALLOW US TO KEEP THE ENTIRE SAMPLE
+  ### AND/OR USE DATE LOGIC FOR THE JOIN FOR THOSE IN THE BOOKING FILE WHO HAVE MEDICAID ENROLLMENT DATA?
+  
+  mutate(medicaid_enroll_ends_during_jail = ifelse(eligibility_end_date>=booking_date & eligibility_end_date<=release_date,
+                                                   1,0),
+         medicaid_enroll_ends_after_jail_within_5_days = ifelse(medicaid_enroll_ends_release_date_diff_days>0 & medicaid_enroll_ends_release_date_diff_days<=5,
+                                                   1,0),
+         medicaid_enroll_ends_after_jail_within_10_days = ifelse(medicaid_enroll_ends_release_date_diff_days>5 & medicaid_enroll_ends_release_date_diff_days<=10,
+                                                                1,0),
+         medicaid_enroll_ends_after_jail_within_15_days = ifelse(medicaid_enroll_ends_release_date_diff_days>10 & medicaid_enroll_ends_release_date_diff_days<=15,
+                                                                1,0),
+         medicaid_enroll_ends_after_jail_within_20_days = ifelse(medicaid_enroll_ends_release_date_diff_days>15 & medicaid_enroll_ends_release_date_diff_days<=20,
+                                                                1,0))
+  
+###############################################################################
+### save medicaid_enrollment_jail_timing_all to external hard drive
+###############################################################################
+write_rds(medicaid_enrollment_jail_timing_all,
+          "D:/Analytic/medicaid_enrollment_jail_timing_all.rds")
+
+
+###########################################################################################################################
+###########################################################################################################################
 
