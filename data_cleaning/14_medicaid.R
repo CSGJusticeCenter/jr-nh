@@ -640,7 +640,10 @@ write_rds(medicaid_enrollment_categories_encounters_individual_jail_all,
 # jail booking. did individuals lose their medicaid eligibility during their incarceration or shortly afterwards? if so, 
 # how long is the average jail LOS that results in medicaid coverage loss/un-enrollment? does this vary by county? by HU grouping?
 
+#############################
 ### clean medicaid_enrollment
+#############################
+
 medicaid_enrollment_to_join <- medicaid_enrollment %>% 
   ### change unique_person_id to character for join with medicaid jail data
   ### create unique medicaid enrollment id for grouping and de-duping in next step
@@ -654,15 +657,37 @@ medicaid_enrollment_to_join <- medicaid_enrollment %>%
   ### were linked to different eligibility codes (<50/~60k); these cases are still de-duped by individual and begin date
   ### since the number is so small
   distinct(unique_medicaid_enrollment_id,
-           .keep_all = TRUE) 
+           .keep_all = TRUE) %>% 
+  ### now arrange and group by individual to take the next eligibility begin date
+  ### following a record's eligibility end date using dplyr::lead to take the next start date
+  ### after a given end date (https://dplyr.tidyverse.org/reference/lead-lag.html)
+  ### this will allow us to calculate the average time from enrollment end to the next enrollment
+  ### for individuals who lose eligibility during or soon after incarceration
+  ### NA for next_eligibility_begin_date indicates no subsequent re-enrollment
+  arrange(unique_person_id, eligibility_begin_date) %>%
+  group_by(unique_person_id) %>%
+  mutate(next_eligibility_begin_date = dplyr::lead(eligibility_begin_date, 
+                                                   1, 
+                                                   default=NA)) %>% 
+  ungroup() %>% 
+  ### now calculate time between two dates in days and flag enrollment records with no subsequent re-enrollment
+  mutate(medicaid_eligibility_end_next_begin_diff_days = as.numeric(difftime(next_eligibility_begin_date,
+                                                                    eligibility_end_date,
+                                                                    units="days")),
+         medicaid_eligibility_end_no_new_begin_flag = ifelse(is.na(medicaid_eligibility_end_next_begin_diff_days)==TRUE,
+                                                             1,0))
 
 
+############################
 ### clean medicaid_jail_all
+###########################
+
 ### NOTE: if we want to look at county-level findings, we will need a business rule to create a county column that indicates the county that appears most frequently for each individual
 ### because we are ultimately de-duping by medicaid enrollment, not booking, there may be more than one
-### county associated with a given enrollment period; this isn't a perfect approach, but for now I 
-### am keeping the county that an individual is booked in most frequently; if an individual has been to
+### county associated with a given enrollment period; this isn't a perfect approach, but we could keep
+### the county that an individual is booked in most frequently; if an individual has been to
 ### two or more different jails the same number of times, we will choose one/de-dup randomly
+
 medicaid_jail_all_to_join <- medicaid_jail_all %>% 
   ### clean dates for analysis using dates from the enrollment and jail file
   mutate(booking_date = ymd(as_date(booking_date)),
@@ -771,6 +796,7 @@ medicaid_enrollment_jail_timing_all <- left_join(medicaid_enrollment_to_join,
   dplyr::select(unique_person_id,
                 unique_medicaid_enrollment_id,
                 eligibility_code:long_desc,
+                medicaid_eligibility_end_next_begin_diff_days:medicaid_eligibility_end_no_new_begin_flag,
                 medicaid_enroll_ends_during_jail:medicaid_enroll_ends_during_or_within_20_days_jail,
                 jail_sex,
                 jail_race,

@@ -827,7 +827,7 @@ kable(medicaid_jail_county_statewide_pharmacy_type_hu_table,
 
 ### Table 12: Timing of Medicaid Eligiblity End Dates and Jail Bookings (Enrollment-level)
 
-**The following tables begin to answer the question on slide 44 -- Is Medicaid enrollment starting again when people are released from jail?**
+**The following three tables explore the question on slide 44 -- Is Medicaid enrollment starting again when people are released from jail?**
 
 **NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don't have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data**
 
@@ -910,8 +910,40 @@ kable(medicaid_enrollment_jail_timing_all_individual_table,
 
 <br><br>
 
-**Next steps:**
+### Table 14: How long does Medicaid re-enrollment take? (Enrollment-level)
 
+**To do: how should we understand/treat overlapping enrollment periods? It is fairly rare, but does result in some weird calculations of time differences between the ending of one enrollment period and the beginning of the next. For now I'm filtering out differences of less than 0 days in calculations of mean and median**
+
+This table explores the average number of days from the end of Medicaid eligibility (when it occurs during or within 20 days after incarceration) to re-enrollment/the following Medicaid eligibility start date for an individual. Analysis is at the enrollment-level, however
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+### HEREHEREHERE
+### columns to use: medicaid_eligibility_end_next_begin_diff_days:medicaid_eligibility_end_no_new_begin_flag
+
+# statewide
+medicaid_enrollment_jail_timing_to_re_enroll_table <- medicaid_enrollment_jail_timing_all %>% 
+  dplyr::summarise(`Overall Medicaid Enrollments (N)` = n_distinct(unique_medicaid_enrollment_id),
+                   `Enrollments Ending in or within 20 days of Release from Jail (% of all enrollments)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Mean Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)` = round(mean(medicaid_eligibility_end_next_begin_diff_days[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_next_begin_diff_days>=0], na.rm = TRUE), digits = 1),
+                   `Median Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)` = round(median(medicaid_eligibility_end_next_begin_diff_days[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_next_begin_diff_days>=0], na.rm = TRUE), digits = 1),
+                   `Enrollments Ending in or within 20 days of Release from Jail, No Re-enrollment Records (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_no_new_begin_flag==1]),
+                   `Enrollments Ending in or within 20 days of Release from Jail, No Re-enrollment Records (% of enrollments that ended)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_no_new_begin_flag==1])/n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1]), accuracy=.1)) 
+
+### print table via kableextra
+kable(medicaid_enrollment_jail_timing_to_re_enroll_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
+
+**Next steps:**
 
 *Additional Analyses for second encounter-level analytic file:*
 
@@ -920,8 +952,6 @@ kable(medicaid_enrollment_jail_timing_all_individual_table,
 * Slide 40: HU's ____% more likely to have an opiod use disorder
 
 * Slide 43: From 2019 to 2021, service providers were reimbursed X% less than the national average. From 2019 to 2021, service providers were reimbursed an average of $X per claim.
-
-* Slide 44: Is Medicaid enrollment starting again when people are released from jail? **Do we want to explore re-enrollment for the enrollments and individuals that ended during or soon after incarceration? (building on tables 12 and 13)**
 
 
 <br><br>
