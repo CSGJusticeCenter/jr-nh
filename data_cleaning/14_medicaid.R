@@ -647,6 +647,9 @@ medicaid_enrollment_to_join <- medicaid_enrollment %>%
   mutate(unique_person_id = as.character(unique_person_id),
          unique_medicaid_enrollment_id = paste0(unique_person_id,
                                                 eligibility_begin_date)) %>% 
+  ### clean dates for analysis using dates from the enrollment and jail file
+  mutate(eligibility_begin_date = ymd(as_date(eligibility_begin_date)),
+         eligibility_end_date = ymd(as_date(eligibility_end_date))) %>% 
   ### now de-dup by enrollment ID; there were a handful of cases where one individual/eligibility begin date
   ### were linked to different eligibility codes (<50/~60k); these cases are still de-duped by individual and begin date
   ### since the number is so small
@@ -657,9 +660,17 @@ medicaid_enrollment_to_join <- medicaid_enrollment %>%
 ### business rule: for booking records with missing release dates, populate with booking date
 ### this only affects 170/~50k records
 medicaid_jail_all_to_join <- medicaid_jail_all %>% 
-  mutate(release_date = ifelse(is.na(release_date)==TRUE,
+  ### clean dates for analysis using dates from the enrollment and jail file
+  mutate(booking_date = ymd(as_date(booking_date)),
+         release_date = ymd(as_date(release_date))) %>% 
+  mutate(release_date = if_else(is.na(release_date)==TRUE,
                                booking_date,
-                               release_date))
+                               release_date)) %>% 
+  ### only keep relevant columns
+  dplyr::select(unique_person_id,
+                booking_id,
+                booking_date,
+                release_date)
   
 ################################################################################
 ### join medicaid_jail_all_counties to medicaid_enrollment
@@ -667,19 +678,15 @@ medicaid_jail_all_to_join <- medicaid_jail_all %>%
 ################################################################################
 medicaid_enrollment_jail_timing_all <- left_join(medicaid_enrollment_to_join,
                                                  medicaid_jail_all_to_join,
-                                          by = "unique_person_id") %>% 
+                                                 by = "unique_person_id") %>% 
   ### we ultimately want a file that is unique by medicaid enrollment
   ### since our denominator in analysis will be those who were booked in jail AND were enrolled in medicaid during the 
   ### study window (i.e., those eligible to have their medicaid coverage ended due to incarceration),
   ### we will drop individuals who did not match to medicaid by left joining the jail data to the medicaid enrollment file
   ### now drop records which appear in medicaid enrollment but not jail file 
   filter(!is.na(booking_id)) %>% 
-  ### clean dates for analysis using dates from the enrollment and jail file
-  mutate(eligibility_begin_date = ymd(as_date(eligibility_begin_date)),
-         eligibility_end_date = ymd(as_date(eligibility_end_date)),
-         booking_date = ymd(as_date(booking_date)),
-         release_date = ymd(as_date(release_date)),
-         medicaid_enroll_ends_release_date_diff_days = as.numeric(difftime(eligibility_end_date,
+  ### create date difference variable for analysis using dates from the enrollment and jail file
+  mutate(medicaid_enroll_ends_release_date_diff_days = as.numeric(difftime(eligibility_end_date,
                                                                 release_date,
                                                                 units="days"))) %>% 
   ### now create several flags:
