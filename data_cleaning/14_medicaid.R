@@ -656,21 +656,31 @@ medicaid_enrollment_to_join <- medicaid_enrollment %>%
   distinct(unique_medicaid_enrollment_id,
            .keep_all = TRUE) 
 
+
 ### clean medicaid_jail_all
-### business rule: for booking records with missing release dates, populate with booking date
-### this only affects 170/~50k records
+### NOTE: if we want to look at county-level findings, we will need a business rule to create a county column that indicates the county that appears most frequently for each individual
+### because we are ultimately de-duping by medicaid enrollment, not booking, there may be more than one
+### county associated with a given enrollment period; this isn't a perfect approach, but for now I 
+### am keeping the county that an individual is booked in most frequently; if an individual has been to
+### two or more different jails the same number of times, we will choose one/de-dup randomly
 medicaid_jail_all_to_join <- medicaid_jail_all %>% 
   ### clean dates for analysis using dates from the enrollment and jail file
   mutate(booking_date = ymd(as_date(booking_date)),
-         release_date = ymd(as_date(release_date))) %>% 
-  mutate(release_date = if_else(is.na(release_date)==TRUE,
+         release_date = ymd(as_date(release_date)),
+         ### business rule: for booking records with missing release dates, populate with booking date
+         ### this only affects 170/~50k records
+         release_date = if_else(is.na(release_date)==TRUE,
                                booking_date,
                                release_date)) %>% 
   ### only keep relevant columns
   dplyr::select(unique_person_id,
                 booking_id,
                 booking_date,
-                release_date)
+                release_date,
+                jail_sex,
+                jail_race,
+                jail_dob_year,
+                high_utilizer_4_times:high_utilizer_10_pct)
   
 ################################################################################
 ### join medicaid_jail_all_counties to medicaid_enrollment
@@ -749,11 +759,23 @@ medicaid_enrollment_jail_timing_all <- left_join(medicaid_enrollment_to_join,
   ### now de-dup by enrollment 
   distinct(unique_medicaid_enrollment_id,
            .keep_all = TRUE) %>% 
-  ### because the file is de-duped by enrollment and not booking, we should only keep enrollment-level data
+  ### create overall flag to indicate if enrollment ended either while individual was in jail OR within 20 days or release
+  mutate(medicaid_enroll_ends_during_or_within_20_days_jail = ifelse(medicaid_enroll_ends_during_jail==1 | 
+                                                                       medicaid_enroll_ends_after_jail_within_5_days==1 |
+                                                                       medicaid_enroll_ends_after_jail_within_10_days==1 |
+                                                                       medicaid_enroll_ends_after_jail_within_15_days==1 |
+                                                                       medicaid_enroll_ends_after_jail_within_20_days==1,
+                                                                     1,0)) %>% 
+  ### because the file is de-duped by enrollment and not booking, we should only keep enrollment and individual-level data
+  ### we can also keep HU grouping data because that is specific to the individual, not the booking
   dplyr::select(unique_person_id,
                 unique_medicaid_enrollment_id,
                 eligibility_code:long_desc,
-                medicaid_enroll_ends_during_jail:medicaid_enroll_ends_after_jail_within_20_days)
+                medicaid_enroll_ends_during_jail:medicaid_enroll_ends_during_or_within_20_days_jail,
+                jail_sex,
+                jail_race,
+                jail_dob_year,
+                high_utilizer_4_times:high_utilizer_10_pct)
   
 ###############################################################################
 ### save medicaid_enrollment_jail_timing_all to external hard drive
