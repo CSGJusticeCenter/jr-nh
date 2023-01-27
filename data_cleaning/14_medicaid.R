@@ -338,13 +338,21 @@ write_rds(medicaid_jail_all,
 
 library(tidylog)
 
-### we previously joined these two files to add short_desc and long_desc of eligibility codes to 
-### medicaid_enrollment so commenting out now
+### HEREHEREHERE
+### TO DO
+### for cleaning below:
 
-# ### join medicaid_enrollment and medicaid_categories
-# medicaid_enrollment_categories <- left_join(medicaid_enrollment,
-#                                             medicaid_categories,
-#                                             by = "eligibility_code")
+# Donald et al. (9)	2019	Empirical	“Severe persistent mental illnesses (SPMIs) are those that are prolonged and recurrent, 
+# impair activities of daily living, and require long-term treatment. 
+# Common diagnoses include schizophrenia, bipolar disorder, and major depression.
+
+### SPMI: dx_prmry_clinical_classification=="Schizophrenia and other psychotic disorders", "Schizophrenia spectrum and other psychotic disorders",
+### "Depressive disorders", "Bipolar and related disorders" (there's also "Suicidal ideation/attempt/intentional self-harm",
+### "Anxiety and fear-related disorders","Anxiety disorders")
+
+### Opioid-related: dx_prmry_clinical_classification=="Opioid-related disorders" (there's also "Substance-related disorders" w/ far fewer encounters) )
+### why do we have clinical classifications for primary dx that are not BH (e.g. gout or burns) -- do these have flags for primary diagnosis?
+### decide on which classification/text to use
 
 
 ### join medicaid_enrollment_categories and medicaid_categories
@@ -433,7 +441,7 @@ medicaid_enrollment_categories_encounters_dedup <- medicaid_enrollment_categorie
 
 ### how many individuals don't have any BH encounter records?
 ### of the 13,276 unique individuals in the file, ~2,500 had no BH encounter records (~19%)
-### how does this finding, that 81% of the Medicaid sample had at least one BH Medicaid encounter 
+### i wonder how does this finding, that 81% of the Medicaid sample had at least one BH Medicaid encounter 
 ### compare to the general NH Medicaid population?
 table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
       useNA = 'always') 
@@ -564,22 +572,21 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                           na.rm=TRUE),
          study_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[study_window_medicaid_match_flag==1],
                                            na.rm=TRUE),
-       study_bh_mh_or_sud_service_primary_dx_flag = pmax(study_mh_service_primary_dx_flag,study_sud_service_primary_dx_flag,
+         study_bh_mh_or_sud_service_primary_dx_flag = pmax(study_mh_service_primary_dx_flag,study_sud_service_primary_dx_flag,
                                              na.rm=TRUE),
-       study_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[study_window_medicaid_match_flag==1],na.rm=TRUE),
-       study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[study_window_medicaid_match_flag==1],
+         study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[study_window_medicaid_match_flag==1],
                                                      na.rm=TRUE),
-       study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[study_window_medicaid_match_flag==1],
+         study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[study_window_medicaid_match_flag==1],
                                                          na.rm=TRUE),
-       study_ed_visit_or_service_flag = max(ed_visit_or_service[study_window_medicaid_match_flag==1],
+         study_ed_visit_or_service_flag = max(ed_visit_or_service[study_window_medicaid_match_flag==1],
                                            na.rm=TRUE),
-       study_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[study_window_medicaid_match_flag==1],
+         study_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[study_window_medicaid_match_flag==1],
                                                      na.rm=TRUE),
-       study_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[study_window_medicaid_match_flag==1],
+         study_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[study_window_medicaid_match_flag==1],
                                                       na.rm=TRUE),
-       study_sud_pharmacy_service_flag = max(sud_pharmacy_service[study_window_medicaid_match_flag==1],
+         study_sud_pharmacy_service_flag = max(sud_pharmacy_service[study_window_medicaid_match_flag==1],
                                             na.rm=TRUE),
-       study_other_service_flag = max(other_service[study_window_medicaid_match_flag==1],
+         study_other_service_flag = max(other_service[study_window_medicaid_match_flag==1],
                               na.rm=TRUE)) %>%
   ungroup() %>% 
   ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
@@ -628,6 +635,8 @@ write_rds(medicaid_enrollment_categories_encounters_individual_jail_all,
 ## 2. next, we'll create the encounter/diagnosis level file: this file will allow us to explore the medicaid encounters/diagnosis-level data
 # with greater specificity (e.g., counts of SUD encounters as well as proximity of either encounters or medicaid enrollment to booking)
 
+### 1/27: We may only need this file for reimbursement analysis, if we are only interested in absence/presence of certain diagnoses
+### as opposed to the counts of them
 
 
 ###########################################################################################################################

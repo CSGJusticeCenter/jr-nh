@@ -972,11 +972,11 @@ kable(medicaid_enrollment_ends_average_jail_los_table,
 
 **Next steps:**
 
-*Additional Analyses for second encounter-level analytic file:*
+*Additional Analyses for encounter-level analytic file:*
 
 * Slide 38: A closer look at serious SPMI's (bipolar disorder, schizophrenia, etc.) 
 
-* Slide 40: HU's ____% more likely to have an opiod use disorder
+* Slide 40: HU's ____% more likely to have an opioid use disorder
 
 * Slide 43: From 2019 to 2021, service providers were reimbursed X% less than the national average. From 2019 to 2021, service providers were reimbursed an average of $X per claim.
 
