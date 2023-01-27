@@ -912,15 +912,14 @@ kable(medicaid_enrollment_jail_timing_all_individual_table,
 
 ### Table 14: How long does Medicaid re-enrollment take? (Enrollment-level)
 
+**NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don't have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data**
+
 **To do: how should we understand/treat overlapping enrollment periods? It is fairly rare, but does result in some weird calculations of time differences between the ending of one enrollment period and the beginning of the next. For now I'm filtering out differences of less than 0 days in calculations of mean and median**
 
-This table explores the average number of days from the end of Medicaid eligibility (when it occurs during or within 20 days after incarceration) to re-enrollment/the following Medicaid eligibility start date for an individual. Analysis is at the enrollment-level, however
+This table explores the average number of days from the end of Medicaid eligibility (when it occurs during or within 20 days after incarceration) to re-enrollment/the following Medicaid eligibility start date for an individual. Analysis is at the enrollment-level
 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE} 
-### HEREHEREHERE
-### columns to use: medicaid_eligibility_end_next_begin_diff_days:medicaid_eligibility_end_no_new_begin_flag
-
 # statewide
 medicaid_enrollment_jail_timing_to_re_enroll_table <- medicaid_enrollment_jail_timing_all %>% 
   dplyr::summarise(`Overall Medicaid Enrollments (N)` = n_distinct(unique_medicaid_enrollment_id),
@@ -932,6 +931,34 @@ medicaid_enrollment_jail_timing_to_re_enroll_table <- medicaid_enrollment_jail_t
 
 ### print table via kableextra
 kable(medicaid_enrollment_jail_timing_to_re_enroll_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
+
+### Table 15: Average Jail Length of Stay when Medicaid Enrollment/Eligibility Ends (Enrollment-level)
+
+**NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don't have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data**
+
+This table explores the average number of days spent in jail when Medicaid enrollment/eligibility ends either during incarceration or within 20 days of release from jail
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+# statewide
+medicaid_enrollment_ends_average_jail_los_table <- medicaid_enrollment_jail_timing_all %>% 
+  dplyr::summarise(`Overall Medicaid Enrollments (N)` = n_distinct(unique_medicaid_enrollment_id),
+                    `Enrollments Ending in or within 20 days of Release from Jail (N)` = n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1]),
+                   `Enrollments Ending in or within 20 days of Release from Jail (% of all enrollments)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Mean Jail Length of Stay (Days)` = round(mean(jail_los_medicaid_enroll_ends, na.rm = TRUE), digits = 1),
+                   `Median Jail Length of Stay (Days)` = round(median(jail_los_medicaid_enroll_ends, na.rm = TRUE), digits = 1)) 
+
+### print table via kableextra
+kable(medicaid_enrollment_ends_average_jail_los_table, 
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
   kable_styling(bootstrap_options = c("striped", 
