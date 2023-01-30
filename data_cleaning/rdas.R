@@ -12,6 +12,7 @@ load(paste0(sp_data_path, "/Data/r_data/data_dictionaries_page/raw_adm_data_avai
 
 # Jail administrative data
 load(paste0(sp_data_path, "/Data/r_data/adm_all.Rda",               sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/df_pch.Rda",                sep = ""))
 load(paste0(sp_data_path, "/Data/r_data/bookings_entrances.Rda",    sep = ""))
 
 # County specific administrative data

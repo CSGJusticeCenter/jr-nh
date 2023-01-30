@@ -260,3 +260,220 @@ fnc_investigate_booking_recordings <- function(df){
     group_by(booking_type, sentence_status) %>%
     summarise(total = n())
 }
+
+# Create exclusive HU variable
+fnc_hu_group_exclusive <- function(df){
+  df <- df %>%
+    mutate(hu_group_exclusive = case_when(
+      high_utilizer_10_pct=="No" ~ 4,
+      high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+      high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+      high_utilizer_1_pct=="Yes" ~ 1,
+      TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+                                levels = c(1,2,3,4),
+                                labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
+
+}
+
+# Get prop of variable
+fnc_variable_by_year <- function(df, variable_name){
+  df$variable_name <- get(variable_name, df)
+  df <- df %>% select(variable_name, booking_id) %>% distinct()
+  df1 <- data.frame(summarytools::freq(df$variable_name, order = "freq", cum.percent = FALSE))
+  df1 <- df1 %>% tibble::rownames_to_column("variable_name") %>%
+    dplyr::select(variable_name,
+                  count = Freq,
+                  pct   = X..Valid)
+}
+
+# Replace NAs with blanks or no data
+fnc_replace_nas <- function(df){
+  df <- df %>%
+    mutate_if(grepl('<NA>',.), ~replace(., grepl('<NA>', .), "NA")) %>%
+    mutate_if(grepl('NA%',.),  ~replace(., grepl('NA%', .), "-"))
+}
+
+# Get row and column totals for tables
+fnc_row_totals <- function(df){
+  withnas <- df %>%
+    adorn_totals("row") %>%
+    mutate(total = count_19 + count_20 + count_21)
+  nonas <- df %>%
+    filter(dplyr::across(everything(), ~ !grepl("NA", .))) %>%
+    filter(dplyr::across(everything(), ~ !grepl("Total", .))) %>%
+    mutate(total = count_19 + count_20 + count_21) %>%
+    mutate(freq = (total/sum(total, na.rm = TRUE))) %>%
+    adorn_totals("row") %>%
+    select(c(1, "freq"))
+  df_freq <- merge(withnas, nonas, by.x = 1, by.y = 1, all.x = TRUE)
+  return(df_freq)
+}
+
+###################################################################################################################
+
+# Visualization Functions
+
+###################################################################################################################
+
+# ggplot theme with axes
+theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    plot.title = element_text(
+      family = "Franklin Gothic Book",
+      face = "bold",
+      size = 24, # 18,
+      color = "black",
+      margin = margin(0, 0, 15, 0)
+    ),
+    plot.subtitle = element_text(
+      family = "Franklin Gothic Book",
+      size = 22, #15,
+      color = "black",
+      margin = margin(-10, 0, 15, 0)
+    ),
+    axis.text.x = element_text(size = 22, color = "black"),
+    axis.text.y = element_text(size = 22, color = "black"),
+    axis.title = element_text(color = "black"),
+    axis.title.y = element_text(size = 22, color = "black"),
+    axis.title.x = element_text(size = 22, color = "black"),
+
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.position = "top",
+    legend.justification = c(0, 0),
+    legend.title=element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
+  )
+
+# Set up highcharts download buttons
+hc_setup <- function(x) {
+  highcharter::hc_add_dependency(x, name = "plugins/series-label.js") %>%
+    highcharter::hc_add_dependency(name = "plugins/accessibility.js") %>%
+    highcharter::hc_add_dependency(name = "plugins/exporting.js") %>%
+    highcharter::hc_add_dependency(name = "plugins/export-data.js") %>%
+    highcharter::hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
+    highcharter::hc_exporting(enabled = TRUE)
+}
+
+# Show number of X by fiscal year
+fnc_reactable_fy <- function(df, metric_label, label_width, note){
+
+  df1 <- df %>%
+    dplyr::rename(new_variable_name = 1)
+
+  fy_table <- reactable(df1,
+                        style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+                        pagination = FALSE,
+                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                               headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+                        defaultColDef = reactable::colDef(
+                          format = colFormat(separators = TRUE), align = "center",
+                          footer = function(values, name) {
+                            if (name %in% c("count_19", "count_20", "count_21", "total")) {
+                              htmltools::div(paste0("", formatC(
+                                x = sum(values),
+                                digits = 0,
+                                big.mark = ",",
+                                format = "f"
+                              )))
+                            }
+                          },
+                          footerStyle = list(fontWeight = "bold")
+                        ),
+                        compact = TRUE,
+                        fullWidth = FALSE,
+                        columnGroups = list(
+                          colGroup(name = "2019", columns = c("count_19", "pct_19")),
+                          colGroup(name = "2020", columns = c("count_20", "pct_20")),
+                          colGroup(name = "2021", columns = c("count_21", "pct_21")),
+                          colGroup(name = "3 Years", columns = c("total", "freq"))
+                        ),
+                        columns = list(
+                          new_variable_name = colDef(footer = "Total",
+                                                     name = metric_label,
+                                                     align = "left",
+                                                     minWidth = label_width,
+                                                     style = list(fontWeight = "bold")),
+                          count_19     = colDef(minWidth = 80,
+                                                name = "Count"),
+                          pct_19       = colDef(minWidth = 80,
+                                                name = "%",
+                                                format = colFormat(percent = TRUE, digits = 1)),
+                          count_20     = colDef(minWidth = 80,
+                                                name = "Count"),
+                          pct_20       = colDef(minWidth = 80,
+                                                name = "%",
+                                                format = colFormat(percent = TRUE, digits = 1)),
+                          count_21     = colDef(minWidth = 80,
+                                                name = "Count"),
+                          pct_21       = colDef(minWidth = 80,
+                                                name = "%",
+                                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3"),
+                                                format = colFormat(percent = TRUE, digits = 1)),
+                          total        = colDef(minWidth = 100,
+                                                name = "Count"),
+                          freq         = colDef(minWidth = 90,
+                                                name = "%",
+                                                format = colFormat(percent = TRUE, digits = 1)))) %>%
+    add_source(paste(note), font_style = "italic", font_size = 14)
+
+  return(fy_table)
+}
+
+# Get count and prop of X by FY
+fnc_variable_table <- function(df_19, df_20, df_21, variable_name){
+
+  df_19_new <- fnc_variable_by_year(df_19, variable_name)
+  df_20_new <- fnc_variable_by_year(df_20, variable_name)
+  df_21_new <- fnc_variable_by_year(df_21, variable_name)
+
+  # Rename variables for merging, indicate which year
+  df_19_new <- df_19_new %>% dplyr::rename(count_19 = count,
+                                           pct_19   = pct)
+  df_20_new <- df_20_new %>% dplyr::rename(count_20 = count,
+                                           pct_20   = pct)
+  df_21_new <- df_21_new %>% dplyr::rename(count_21 = count,
+                                           pct_21   = pct)
+
+  # Join data
+  df <- merge(df_19_new, df_20_new, by = "variable_name", all.x = TRUE, all.y = TRUE)
+  df <- merge(df, df_21_new, by = "variable_name", all.x = TRUE, all.y = TRUE)
+
+  # Create row totals and frequencies
+  df[df == "NA%"] = NA
+  df[is.na(df)] = 0
+  df <- df %>%
+    filter(variable_name != "Total")
+  df <- fnc_replace_nas(df)
+
+  # Get totals and frequencies without including NAs
+  df <- fnc_row_totals(df)
+
+  # Divide pcts by 100
+  df <- df %>% mutate(pct_19 = pct_19/100,
+                      pct_20 = pct_20/100,
+                      pct_21 = pct_21/100)
+
+  # Arrange table data
+  df <- fnc_variable_table_desc(df)
+  df[is.na(df)] = 0
+
+  return(df)
+}
+
+# Arrange data in descending order
+fnc_variable_table_desc <- function(df){
+  df <- df %>% arrange(-count_19)
+  df <- df[1:length(df)]
+  df$row_num <- seq.int(nrow(df))
+  total_num <- as.character(as.numeric(max(df$row_num, na.rm = TRUE)) + 2)
+  na_num <- as.character(as.numeric(max(df$row_num, na.rm = TRUE)) + 1)
+  df$row_num <- as.character(df$row_num)
+  df <- df %>%
+    mutate(row_num = case_when(variable_name == "Total" ~ total_num,
+                               variable_name == "NA" ~ na_num,
+                               TRUE ~ row_num))
+  df$row_num <- as.numeric(df$row_num)
+  df <- df %>% arrange(row_num) %>% dplyr::select(-row_num)
+}
