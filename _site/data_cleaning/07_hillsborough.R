@@ -1,17 +1,25 @@
 ############################################
 # Project: JRI New Hampshire
 # File: hillsborough.R
-# Last updated: December 8, 2022
+# Last updated: January 30, 2023
 # Author: Mari Roberts
 
 # Standardize files across counties
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-###################
-# Hillsborough County
-###################
+################################################################################
 
+# Administrative data file
+
+################################################################################
+
+# Clean variable names
+# Make charge code NA since county does not have charge code
+# Assign race labels
+# Make data names consistent with other counties
+# Fix date formats
+# Add county label
 hillsborough_adm_all <- hillsborough_adm.xlsx %>%
   clean_names() %>%
   mutate(charge_code = NA,
@@ -20,8 +28,7 @@ hillsborough_adm_all <- hillsborough_adm.xlsx %>%
                                 race == "American Indian/Alaskan Native" ~ "American Indian/Alaskan Native",
                                 race == "Not Specified"                  ~ "Unknown",
                                 race == "Unknown"                        ~ "Unknown",
-                                race == "White"                          ~ "White"
-         )) %>%
+                                race == "White"                          ~ "White")) %>%
   dplyr::select(id = x1,
                 inmate_id = ccn,
                 yob,
@@ -40,17 +47,6 @@ hillsborough_adm_all <- hillsborough_adm.xlsx %>%
          release_date = as.Date(release_date, format = "%m/%d/%y"),
          county = "Hillsborough") %>%
   distinct()
-
-# Custom functions below creates the variables we need and relabels codes so they're consistent across counties.
-# Creates booking_id, los, fy, num_entrances, high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
-#    pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
-#    pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other pc variables).
-# Ignore warning messages.
-
-# Note about LOS: some people can be booked on the same day for multiple charges.
-# For example, someone could enter jail on a protective custody hold on 10/19 with a release
-#   date of 10/20 but also be booked for a criminal charge on 10/19 with a release date of 10/26
-#   For this reason, find the maximum release date for each booking id (created using id and booking_date).
 
 # Create fy, age, los, recode race, and order variables
 hillsborough_adm <- fnc_data_setup(hillsborough_adm_all)
@@ -155,7 +151,7 @@ hillsborough_adm <- hillsborough_adm %>%
 
   select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
-# create pc hold variable
+# Create pc hold variable
 hillsborough_adm <- hillsborough_adm %>%
   mutate(pc_hold = ifelse(
     sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold"
@@ -171,12 +167,12 @@ hillsborough_adm <- fnc_add_data_labels(hillsborough_adm)
 # Remove duplicates
 hillsborough_adm <- hillsborough_adm %>% distinct()
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 hillsborough_adm <- hillsborough_adm %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
-# create pretrial drug court and sentenced drug court variables
+# Create pretrial drug court and sentenced drug court variables
 hillsborough_adm <- hillsborough_adm %>%
   mutate(drug_court_pretrial  = ifelse(sentence_status == "PRE TRIAL DRUG COURT (MANCH)" |
                                        sentence_status == "PRE TRIAL DRUG COURT (NASHUA)" |
@@ -256,9 +252,8 @@ hillsborough_adm <- hillsborough_adm %>%
                                           "101-180",
                                           "Over 180")))
 
-# Remove rows with all missing data (37 entries).
-# Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
-# Don't remove Strafford since all of their info is blank except for dates.
+# Remove rows with all missing data
+# Find and remove bookings that have no information
 all_nas <- hillsborough_adm %>%
   filter(is.na(charge_desc) &
            is.na(booking_type) &
@@ -268,30 +263,12 @@ hillsborough_adm1 <- hillsborough_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
-# Charges
-
-################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-################################################################################
-
 # Medicaid data file
 
 ################################################################################
 
-# clean names
-# create race labels
+# Clean names
+# Create race and gender labels
 hillsborough_medicaid <- hillsborough_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
@@ -310,21 +287,16 @@ hillsborough_medicaid <- hillsborough_medicaid.xlsx %>%
   ) %>%
   mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
-# create a unique booking id per person per booking date
+# Create a unique booking id per person per booking date
 hillsborough_medicaid$booking_id <- hillsborough_medicaid %>% group_indices(unique_person_id, booking_date)
 hillsborough_medicaid <- hillsborough_medicaid %>%
   mutate(booking_id = paste("Hillsborough", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
-# %>%
-#   select(-encrypted_id)
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 hillsborough_medicaid <- hillsborough_medicaid %>%
   filter(booking_date > "2018-06-30" & booking_date < "2021-07-01")
-
-# # Does the medicaid file have the same number of unique individuals as the adm? Off by 20
-# length(unique(hillsborough_adm$id)); length(unique(hillsborough_medicaid$unique_person_id))
 
 ################################################################################
 

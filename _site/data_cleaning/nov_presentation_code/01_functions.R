@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: functions.R
-# Last updated: January 30, 2023
+# Last updated: October 19, 2022
 # Author: Mari Roberts
 
 # Custom data cleaning and structure functions
@@ -62,7 +62,7 @@ fnc_data_setup <- function(df){
 fnc_booking_id <- function(df, county){
   df1 <- df %>%
     mutate(id = ifelse(is.na(id), inmate_id, id))
-  df1$booking_id <- df1 %>% dplyr::group_indices(id, booking_date)
+  df1$booking_id <- df1 %>% group_indices(id, booking_date)
   df1 <- df1 %>%
     mutate(id = paste(county, id, sep = "_"),
            booking_id = paste(county, "booking", booking_id, sep = "_")) %>%
@@ -244,49 +244,6 @@ fnc_add_data_labels <- function(df){
 
 }
 
-# Extract levels of booking type, sentence status, and release type to understand booking information by county
-fnc_investigate_booking_recordings <- function(df){
-  df1 <- df %>%
-    mutate(charge_desc     = as.character(charge_desc),
-           booking_type    = as.character(booking_type),
-           release_type    = as.character(release_type),
-           sentence_status = as.character(sentence_status),
-           charge_desc     = toupper(charge_desc),
-           booking_type    = toupper(booking_type),
-           release_type    = toupper(release_type),
-           sentence_status = toupper(sentence_status)) %>%
-    select(id, booking_id, charge_desc, booking_type, sentence_status, release_type) %>%
-    distinct() %>%
-    group_by(booking_type, sentence_status) %>%
-    summarise(total = n())
-}
-
-# Create exclusive HU variable
-fnc_hu_group_exclusive <- function(df){
-  df <- df %>%
-    mutate(hu_group_exclusive = case_when(
-      high_utilizer_10_pct=="No" ~ 4,
-      high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
-      high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
-      high_utilizer_1_pct=="Yes" ~ 1,
-      TRUE ~ as.numeric(NA)),
-    hu_group_exclusive = factor(hu_group_exclusive,
-                                levels = c(1,2,3,4),
-                                labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
-
-}
-
-# Get prop of variable
-fnc_variable_by_year <- function(df, variable_name){
-  df$variable_name <- get(variable_name, df)
-  df <- df %>% select(variable_name, booking_id) %>% distinct()
-  df1 <- data.frame(summarytools::freq(df$variable_name, order = "freq", cum.percent = FALSE))
-  df1 <- df1 %>% tibble::rownames_to_column("variable_name") %>%
-    dplyr::select(variable_name,
-                  count = Freq,
-                  pct   = X..Valid)
-}
-
 # Replace NAs with blanks or no data
 fnc_replace_nas <- function(df){
   df <- df %>%
@@ -300,8 +257,8 @@ fnc_row_totals <- function(df){
     adorn_totals("row") %>%
     mutate(total = count_19 + count_20 + count_21)
   nonas <- df %>%
-    filter(dplyr::across(everything(), ~ !grepl("NA", .))) %>%
-    filter(dplyr::across(everything(), ~ !grepl("Total", .))) %>%
+    dplyr::filter(across(everything(), ~ !grepl("NA", .))) %>%
+    dplyr::filter(across(everything(), ~ !grepl("Total", .))) %>%
     mutate(total = count_19 + count_20 + count_21) %>%
     mutate(freq = (total/sum(total, na.rm = TRUE))) %>%
     adorn_totals("row") %>%
@@ -310,120 +267,48 @@ fnc_row_totals <- function(df){
   return(df_freq)
 }
 
-###################################################################################################################
+###########
+# Prop by fiscal year
+###########
 
-# Visualization Functions
-
-###################################################################################################################
-
-# ggplot theme with axes
-theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
-  theme(
-    plot.title = element_text(
-      family = "Franklin Gothic Book",
-      face = "bold",
-      size = 24, # 18,
-      color = "black",
-      margin = margin(0, 0, 15, 0)
-    ),
-    plot.subtitle = element_text(
-      family = "Franklin Gothic Book",
-      size = 22, #15,
-      color = "black",
-      margin = margin(-10, 0, 15, 0)
-    ),
-    axis.text.x = element_text(size = 22, color = "black"),
-    axis.text.y = element_text(size = 22, color = "black"),
-    axis.title = element_text(color = "black"),
-    axis.title.y = element_text(size = 22, color = "black"),
-    axis.title.x = element_text(size = 22, color = "black"),
-
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    legend.position = "top",
-    legend.justification = c(0, 0),
-    legend.title=element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
-  )
-
-# Set up highcharts download buttons
-hc_setup <- function(x) {
-  highcharter::hc_add_dependency(x, name = "plugins/series-label.js") %>%
-    highcharter::hc_add_dependency(name = "plugins/accessibility.js") %>%
-    highcharter::hc_add_dependency(name = "plugins/exporting.js") %>%
-    highcharter::hc_add_dependency(name = "plugins/export-data.js") %>%
-    highcharter::hc_tooltip(formatter = JS("function(){return(this.point.tooltip)}")) %>%
-    highcharter::hc_exporting(enabled = TRUE)
+# Get prop of variable
+fnc_variable_by_year <- function(df, variable_name){
+  df$variable_name <- get(variable_name, df)
+  df <- df %>% select(variable_name, booking_id) %>% distinct()
+  df1 <- data.frame(summarytools::freq(df$variable_name, order = "freq", cum.percent = FALSE))
+  df1 <- df1 %>% tibble::rownames_to_column("variable_name") %>%
+    dplyr::select(variable_name,
+                  count = Freq,
+                  pct   = X..Valid)
 }
 
-# Show number of X by fiscal year
-fnc_reactable_fy <- function(df, metric_label, label_width, note){
+###########
+# Data descending
+###########
 
-  df1 <- df %>%
-    dplyr::rename(new_variable_name = 1)
-
-  fy_table <- reactable(df1,
-                        style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
-                        pagination = FALSE,
-                        theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
-                                               headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-                        defaultColDef = reactable::colDef(
-                          format = colFormat(separators = TRUE), align = "center",
-                          footer = function(values, name) {
-                            if (name %in% c("count_19", "count_20", "count_21", "total")) {
-                              htmltools::div(paste0("", formatC(
-                                x = sum(values),
-                                digits = 0,
-                                big.mark = ",",
-                                format = "f"
-                              )))
-                            }
-                          },
-                          footerStyle = list(fontWeight = "bold")
-                        ),
-                        compact = TRUE,
-                        fullWidth = FALSE,
-                        columnGroups = list(
-                          colGroup(name = "2019", columns = c("count_19", "pct_19")),
-                          colGroup(name = "2020", columns = c("count_20", "pct_20")),
-                          colGroup(name = "2021", columns = c("count_21", "pct_21")),
-                          colGroup(name = "3 Years", columns = c("total", "freq"))
-                        ),
-                        columns = list(
-                          new_variable_name = colDef(footer = "Total",
-                                                     name = metric_label,
-                                                     align = "left",
-                                                     minWidth = label_width,
-                                                     style = list(fontWeight = "bold")),
-                          count_19     = colDef(minWidth = 80,
-                                                name = "Count"),
-                          pct_19       = colDef(minWidth = 80,
-                                                name = "%",
-                                                format = colFormat(percent = TRUE, digits = 1)),
-                          count_20     = colDef(minWidth = 80,
-                                                name = "Count"),
-                          pct_20       = colDef(minWidth = 80,
-                                                name = "%",
-                                                format = colFormat(percent = TRUE, digits = 1)),
-                          count_21     = colDef(minWidth = 80,
-                                                name = "Count"),
-                          pct_21       = colDef(minWidth = 80,
-                                                name = "%",
-                                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3"),
-                                                format = colFormat(percent = TRUE, digits = 1)),
-                          total        = colDef(minWidth = 100,
-                                                name = "Count"),
-                          freq         = colDef(minWidth = 90,
-                                                name = "%",
-                                                format = colFormat(percent = TRUE, digits = 1)))) %>%
-    add_source(paste(note), font_style = "italic", font_size = 14)
-
-  return(fy_table)
+# Arrange data in descending order
+fnc_variable_table_desc <- function(df){
+  df <- df %>% arrange(-count_19)
+  df <- df[1:length(df)]
+  df$row_num <- seq.int(nrow(df))
+  total_num <- as.character(as.numeric(max(df$row_num, na.rm = TRUE)) + 2)
+  na_num <- as.character(as.numeric(max(df$row_num, na.rm = TRUE)) + 1)
+  df$row_num <- as.character(df$row_num)
+  df <- df %>%
+    mutate(row_num = case_when(variable_name == "Total" ~ total_num,
+                               variable_name == "NA" ~ na_num,
+                               TRUE ~ row_num))
+  df$row_num <- as.numeric(df$row_num)
+  df <- df %>% arrange(row_num) %>% dplyr::select(-row_num)
 }
 
-# Get count and prop of X by FY
+
+###########
+# Combine fy data into one table and show descriptive statistics about a variable
+###########
+
 fnc_variable_table <- function(df_19, df_20, df_21, variable_name){
-
+  # Get count and prop of pc_hold by FY
   df_19_new <- fnc_variable_by_year(df_19, variable_name)
   df_20_new <- fnc_variable_by_year(df_20, variable_name)
   df_21_new <- fnc_variable_by_year(df_21, variable_name)
@@ -462,18 +347,266 @@ fnc_variable_table <- function(df_19, df_20, df_21, variable_name){
   return(df)
 }
 
-# Arrange data in descending order
-fnc_variable_table_desc <- function(df){
-  df <- df %>% arrange(-count_19)
-  df <- df[1:length(df)]
-  df$row_num <- seq.int(nrow(df))
-  total_num <- as.character(as.numeric(max(df$row_num, na.rm = TRUE)) + 2)
-  na_num <- as.character(as.numeric(max(df$row_num, na.rm = TRUE)) + 1)
-  df$row_num <- as.character(df$row_num)
-  df <- df %>%
-    mutate(row_num = case_when(variable_name == "Total" ~ total_num,
-                               variable_name == "NA" ~ na_num,
-                               TRUE ~ row_num))
-  df$row_num <- as.numeric(df$row_num)
-  df <- df %>% arrange(row_num) %>% dplyr::select(-row_num)
+###########
+# Get booking pattern info for certain flagged individuals, i.e. HU's
+###########
+
+# Calculate the average number of bookings per year (by HU for example)
+fnc_avg_bookings_fy <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    filter(variable_name == logical) %>%
+    select(county, booking_id, num_entrances, variable_name, fy) %>%
+    distinct() %>%
+    group_by(fy) %>%
+    dplyr::summarize(new_variable_name = mean(num_entrances, na.rm=TRUE))
+}
+
+# Calculate the total number of bookings per year (by HU for example)
+fnc_num_entrances_fy <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df <- df %>% select(variable_name, fy, booking_id) %>% distinct() # NEW, may cause issues
+  df1 <- table(df$variable_name, df$fy)
+  df1 <- as.data.frame(df1)
+  df1 <- df1 %>% select(variable_name = Var1,
+                        fy = Var2,
+                        new_variable_name = Freq) %>%
+    filter(variable_name == logical) %>%
+    select(-variable_name) %>%
+    mutate(fy = as.character(fy)) %>% mutate(fy = as.numeric(fy))
+}
+
+# Calculate the average number of bookings for all three years (by HU for example)
+fnc_avg_bookings_3yr <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    filter(variable_name == logical) %>%
+    select(county, booking_id, num_entrances, variable_name, fy) %>%
+    distinct() %>%
+    group_by() %>%
+    # dplyr::summarise_at(vars(num_entrances), list(new_variable_name = mean))
+    dplyr::summarize(new_variable_name = mean(num_entrances, na.rm=TRUE))
+}
+
+# Calculate the total number of bookings for all three years (by HU for example)
+fnc_num_entrances_3yr <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    select(county, booking_id, num_entrances, variable_name, fy) %>%
+    distinct() %>%
+    filter(variable_name == logical) %>%
+    group_by() %>%
+    dplyr::summarise(new_variable_name = n())
+}
+
+# Calculate the average number of bookings per year and by county (by HU for example)
+fnc_avg_bookings_fy_county <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    filter(variable_name == logical) %>%
+    droplevels() %>%
+    select(county, booking_id, num_entrances, variable_name, fy) %>%
+    distinct() %>%
+    group_by(fy, county) %>%
+    # dplyr::summarise_at(vars(num_entrances), list(new_variable_name = mean))
+    dplyr::summarize(new_variable_name = mean(num_entrances, na.rm=TRUE))
+}
+
+# Calculate the total number of bookings per year and by county (by HU for example)
+fnc_num_entrances_fy_county <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df <- df %>% select(variable_name, fy, county, booking_id) %>% distinct()
+  df1 <- table(df$variable_name, df$fy, df$county)
+  df1 <- as.data.frame(df1)
+  df1 <- df1 %>% select(variable_name = Var1,
+                        fy = Var2,
+                        county = Var3,
+                        new_variable_name = Freq) %>%
+    filter(variable_name == logical) %>%
+    select(-variable_name) %>%
+    mutate(fy = as.character(fy)) %>% mutate(fy = as.numeric(fy))
+}
+
+# Calculate the average number of bookings for all three years and by county (by HU for example)
+fnc_avg_bookings_3yr_county <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    filter(variable_name == logical) %>%
+    select(county, booking_id, num_entrances, variable_name, fy) %>%
+    distinct() %>%
+    group_by(county) %>%
+    # dplyr::summarise_at(vars(num_entrances), list(new_variable_name = mean))
+    dplyr::summarize(new_variable_name = mean(num_entrances, na.rm=TRUE))
+}
+
+# Calculate the total number of bookings for all three years and by county (by HU for example)
+fnc_num_entrances_3yr_county <- function(df, variable_name, logical){
+  df$variable_name <- get(variable_name, df)
+  df1 <- df %>% dplyr::select(variable_name, county, booking_id) %>% dplyr::distinct()
+  df1 <- table(df1$variable_name, df1$county)
+  df1 <- as.data.frame(df1)
+  df1 <- df1 %>% dplyr::select(variable_name = Var1,
+                        county = Var2,
+                        new_variable_name = Freq) %>%
+    filter(variable_name == logical) %>%
+    select(-variable_name)
+}
+
+# Basic summary info with total, min, median, mean, and max - by state
+fnc_summary <- function(df){
+  df1 <- df %>%
+    group_by() %>%
+    summarise(
+      total  = n(),
+      min    = min(num_entrances, na.rm = T),
+      median = median(num_entrances, na.rm = T),
+      mean   = mean(c(num_entrances, na.rm = T)),
+      max    = max(num_entrances, na.rm = T)
+    ) %>%
+    mutate(mean = round(mean, 1))
+}
+
+# Basic summary info with total, min, median, mean, and max - by county
+fnc_summary_county <- function(df){
+  #df$variable_name <- get(variable_name, df)
+  df1 <- df %>%
+    group_by(county) %>%
+    summarise(
+      total  = n(),
+      min    = min(num_entrances, na.rm = T),
+      median = median(num_entrances, na.rm = T),
+      mean   = mean(c(num_entrances, na.rm = T)),
+      max    = max(num_entrances, na.rm = T)
+    ) %>%
+    arrange(county) %>%
+    mutate(mean = round(mean, 1))
+}
+
+# Min, median, mean, and max of bookings/entrances for HU's
+fnc_hus_descriptive_summary <- function(df, hu_variable_name, yesno, county_exclusion_text){
+
+  df$hu_variable_name <- get(hu_variable_name, df)
+
+  ##########
+  # HU People
+  ##########
+
+  df_id <- df %>%
+    ungroup() %>%
+    filter(hu_variable_name == yesno) %>%
+    select(county,
+           id,
+           num_entrances,
+           hu_variable_name) %>%
+    distinct() %>%
+    group_by(county) %>%
+    summarise(total_hu_people  = n()) %>%
+    mutate(county = case_when(county == "Coos" ~ county_exclusion_text, TRUE ~ county))
+
+  df_id_total <- df %>%
+    ungroup() %>%
+    filter(hu_variable_name == yesno) %>%
+    select(county,
+           id,
+           num_entrances,
+           hu_variable_name) %>%
+    distinct() %>%
+    group_by() %>%
+    summarise(total_hu_people  = n()) %>%
+    mutate(county = "State")
+
+  df_id <- rbind(df_id, df_id_total)
+
+  ##########
+  # HU ENTRANCES
+  ##########
+
+  df_booking_id <- df %>%
+    ungroup() %>%
+    filter(hu_variable_name == yesno) %>%
+    select(county,
+           booking_id,
+           num_entrances,
+           hu_variable_name) %>%
+    distinct() %>%
+    group_by(county) %>%
+    summarise(total_hu_entrances = n()) %>%
+    mutate(county = case_when(county == "Coos" ~ county_exclusion_text, TRUE ~ county))
+
+  df_booking_id_total <- df %>%
+    ungroup() %>%
+    filter(hu_variable_name == yesno) %>%
+    select(county,
+           booking_id,
+           num_entrances,
+           hu_variable_name) %>%
+    distinct() %>%
+    group_by() %>%
+    summarise(total_hu_entrances = n()) %>%
+    mutate(county = "State")
+
+  df_booking_id <- rbind(df_booking_id, df_booking_id_total)
+
+  ##########
+  # HU min median mean max range
+  ##########
+
+  df_summary <- df %>%
+    ungroup() %>%
+    filter(hu_variable_name == yesno) %>%
+    select(county, id, num_entrances) %>%
+    distinct() %>%
+    group_by(county) %>%
+    summarise(min    = min(num_entrances, na.rm = T),
+              median = median(num_entrances, na.rm = T),
+              mean   = mean(num_entrances, na.rm = T),
+              max    = max(num_entrances, na.rm = T)) %>%
+    select(county, everything()) %>%
+  mutate(county = case_when(county == "Coos" ~ county_exclusion_text, TRUE ~ county))
+
+
+  df_summary_total <- df %>%
+    ungroup() %>%
+    filter(hu_variable_name == yesno) %>%
+    select(id, num_entrances) %>%
+    distinct() %>%
+    group_by() %>%
+    summarise(min    = min(num_entrances, na.rm = T),
+              median = median(num_entrances, na.rm = T),
+              mean   = mean(num_entrances, na.rm = T),
+              max    = max(num_entrances, na.rm = T)) %>%
+    mutate(county = "State") %>%
+    select(county, everything())
+
+  df_summary <- rbind(df_summary, df_summary_total)
+
+  table_final <- df_booking_id %>%
+    left_join(df_id, by = "county") %>%
+    left_join(df_summary, by = "county") %>%
+    arrange(county %in% "State")
+
+}
+
+# Extract levels of booking type, sentence status, and release type to understand booking information by county
+fnc_investigate_booking_recordings <- function(df){
+  df1 <- df %>%
+    mutate(charge_desc     = as.character(charge_desc),
+           booking_type    = as.character(booking_type),
+           release_type    = as.character(release_type),
+           sentence_status = as.character(sentence_status),
+           charge_desc     = toupper(charge_desc),
+           booking_type    = toupper(booking_type),
+           release_type    = toupper(release_type),
+           sentence_status = toupper(sentence_status)) %>%
+    select(id, booking_id, charge_desc, booking_type, sentence_status, release_type) %>%
+    distinct() %>%
+    group_by(booking_type, sentence_status) %>%
+    summarise(total = n())
+}
+
+# View frequencies of booking types and sentence statuses to understand booking information by county
+fnc_investigate_booking_recordings_standard <- function(df){
+  df1 <- df %>%
+    group_by(booking_type, sentence_status, sentence_status_standard) %>%
+    summarise(total = n())
 }

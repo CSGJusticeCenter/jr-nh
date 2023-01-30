@@ -1,43 +1,39 @@
 ############################################
 # Project: JRI New Hampshire
 # File: carroll.R
-# Last updated: December 8, 2022
+# Last updated: January 30, 2023
 # Author: Mari Roberts
 
 # Standardize files across counties
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-###################
-# Carroll County
-###################
+################################################################################
+
+# Administrative data file
+
+################################################################################
 
 # Clean variable names
-carroll_adm_all <- clean_names(carroll_bookings.xlsx)
-
-# carroll_releases <- clean_names(carroll_releases.xlsx)
-# carroll_bookings <- clean_names(carroll_bookings.xlsx)
-# # Merge two adm files together
-# carroll_adm_all <- merge(carroll_releases, carroll_bookings, by = c("inmate_id", "release_dt_tm"), all.y = TRUE)
-
-# Change date formats for booking and release dataes
-carroll_adm_all$booking_dt_tm <- .POSIXct(carroll_adm_all$booking_dt_tm, tz="UTC")
-carroll_adm_all$booking_dt_tm <-   format(carroll_adm_all$booking_dt_tm, "%m/%d/%Y")
-carroll_adm_all$booking_dt_tm <-  as.Date(carroll_adm_all$booking_dt_tm, format = "%m/%d/%Y")
-carroll_adm_all$release_dt_tm <- .POSIXct(carroll_adm_all$release_dt_tm, tz="UTC")
-carroll_adm_all$release_dt_tm <-   format(carroll_adm_all$release_dt_tm, "%m/%d/%Y")
-carroll_adm_all$release_dt_tm <-  as.Date(carroll_adm_all$release_dt_tm, format = "%m/%d/%Y")
-
-# Set up data to be consistent with other counties
+# Make release type NA since county does not have release type
+# Assign race labels
+# Make data names consistent with other counties
+# Fix date formats
+# Add county label
 carroll_adm_all <- carroll_bookings.xlsx %>%
   clean_names() %>%
+  mutate(booking_dt_tm = .POSIXct(booking_dt_tm, tz="UTC"),
+         release_dt_tm = .POSIXct(release_dt_tm, tz="UTC")) %>%
+  mutate(booking_dt_tm = format(booking_dt_tm, "%m/%d/%Y"),
+         release_dt_tm = format(release_dt_tm, "%m/%d/%Y")) %>%
+  mutate(booking_dt_tm = as.Date(booking_dt_tm, format = "%m/%d/%Y"),
+         release_dt_tm = as.Date(release_dt_tm, format = "%m/%d/%Y")) %>%
   mutate(release_type = NA,
          race_label = case_when(race == "A"  ~ "Asian/Pacific Islander",
                                 race == "B"  ~ "Black",
                                 race == "I"  ~ "American Indian/Alaskan Native",
                                 race == "U"  ~ "Unknown",
-                                race == "W"  ~ "White"
-         )) %>%
+                                race == "W"  ~ "White")) %>%
   dplyr::select(id = unique_person_id,
                 inmate_id,
                 yob,
@@ -56,19 +52,6 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
          county = "Carroll") %>%
   distinct()
-
-# dim(carroll_adm_all); length(unique(carroll_adm_all$inmate_id)) # 5402, 1849
-
-# Custom functions below creates the variables we need and relabels codes so they're consistent across counties.
-# Creates booking_id, los, fy, num_entrances, high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
-#    pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
-#    pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other pc variables).
-# Ignore warning messages.
-
-# Note about LOS: some people can be booked on the same day for multiple charges.
-# For example, someone could enter jail on a protective custody hold on 10/19 with a release
-#   date of 10/20 but also be booked for a criminal charge on 10/19 with a release date of 10/26
-#   For this reason, find the maximum release date for each booking id (created using id and booking_date).
 
 # Create fy, age, los, recode race, and order variables
 carroll_adm <- fnc_data_setup(carroll_adm_all)
@@ -177,12 +160,12 @@ carroll_adm <- fnc_add_data_labels(carroll_adm)
 # Remove duplicates
 carroll_adm <- carroll_adm %>% distinct()
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 carroll_adm <- carroll_adm %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
-# create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for carroll
+# Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for carroll
 carroll_adm <- carroll_adm %>%
   mutate(drug_court_pretrial  = NA,
          drug_court_sentenced = NA)
@@ -246,9 +229,8 @@ carroll_adm <- carroll_adm %>%
                                           "101-180",
                                           "Over 180")))
 
-# Remove rows with all missing data (37 entries).
-# Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
-# Don't remove Strafford since all of their info is blank except for dates.
+# Remove rows with all missing data
+# Find and remove bookings that have no information
 all_nas <- carroll_adm %>%
   filter(is.na(charge_desc) &
            is.na(booking_type) &
@@ -258,57 +240,36 @@ carroll_adm1 <- carroll_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
-# Charges
-
-################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-################################################################################
-
 # Medicaid data file
 
 ################################################################################
 
-# clean names
+# Clean names
+# Fix date formats
 carroll_medicaid <- carroll_medicaid.xlsx %>%
   clean_names() %>%
+  mutate(booking_dt_tm = .POSIXct(booking_dt_tm, tz="UTC"),
+         release_dt_tm = .POSIXct(release_dt_tm, tz="UTC")) %>%
+  mutate(booking_dt_tm = format(booking_dt_tm, "%m/%d/%Y"),
+         release_dt_tm = format(release_dt_tm, "%m/%d/%Y")) %>%
+  mutate(booking_dt_tm = as.Date(booking_dt_tm, format = "%m/%d/%Y"),
+         release_dt_tm = as.Date(release_dt_tm, format = "%m/%d/%Y")) %>%
   distinct()
 
-# Change date formats for booking and release dataes
-carroll_medicaid$booking_dt_tm <- .POSIXct(carroll_medicaid$booking_dt_tm, tz="UTC")
-carroll_medicaid$booking_dt_tm <-   format(carroll_medicaid$booking_dt_tm, "%m/%d/%Y")
-carroll_medicaid$booking_dt_tm <-  as.Date(carroll_medicaid$booking_dt_tm, format = "%m/%d/%Y")
-carroll_medicaid$release_dt_tm <- .POSIXct(carroll_medicaid$release_dt_tm, tz="UTC")
-carroll_medicaid$release_dt_tm <-   format(carroll_medicaid$release_dt_tm, "%m/%d/%Y")
-carroll_medicaid$release_dt_tm <-  as.Date(carroll_medicaid$release_dt_tm, format = "%m/%d/%Y")
-
-# create a unique booking id per person per booking date
-carroll_medicaid$booking_id <- carroll_medicaid %>% group_indices(unique_person_id, booking_dt_tm)
+# Create a unique booking id per person per booking date
+carroll_medicaid$booking_id <- carroll_medicaid %>%
+  dplyr::group_indices(unique_person_id, booking_dt_tm)
 carroll_medicaid <- carroll_medicaid %>%
   rename(booking_date = booking_dt_tm,
          release_date = release_dt_tm,
          county = source_id) %>%
   mutate(booking_id = paste("Carroll", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
-# %>%
-#   select(-encrypted_id)
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-# create race labels
+# Create race and gender labels
 carroll_medicaid <- carroll_medicaid %>%
-  filter(booking_date > "2018-06-30" & booking_date < "2021-07-01") %>%
   mutate(jail_race = case_when(jail_race == "A"  ~ "Asian/Pacific Islander",
                                jail_race == "B"  ~ "Black",
                                jail_race == "I"  ~ "American Indian/Alaskan Native",
@@ -317,10 +278,8 @@ carroll_medicaid <- carroll_medicaid %>%
          jail_sex = case_when(jail_sex == "F"  ~ "Female",
                               jail_sex == "M"  ~ "Male")
   ) %>%
-  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
-
-# # Does the medicaid file have the same number of unique individuals as the adm?
-# length(unique(carroll_adm$id)); length(unique(carroll_medicaid$unique_person_id))
+  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex)) %>%
+  filter(booking_date > "2018-06-30" & booking_date < "2021-07-01")
 
 ################################################################################
 
