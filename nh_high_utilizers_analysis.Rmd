@@ -215,6 +215,125 @@ hu_summary <- rbind(hu_summary_county, hu_summary_state)
 hu_table <- hu_summary %>%
   left_join(hu_people, by = c("county", "hu_group_exclusive")) %>%
   left_join(hu_entrances, by = c("county", "hu_group_exclusive")) %>%
-  arrange(county %in% "State")
+  left_join(df_entrances_county, by = "county") %>% 
+  mutate(freq = total_hu_entrances/entrances_total) %>% 
+  mutate(range = paste(min, max, sep = "-")) %>% 
+  arrange(county %in% "State") %>% 
+  select(hu_group_exclusive,
+         county,
+         total_hu_people,
+         total_hu_entrances,
+         total_entrances = entrances_total,
+         freq, 
+         range,
+         median,
+         mean)
 ```
 
+## Top 1%
+
+```{r}
+hu_1_pct <- hu_table %>% filter(hu_group_exclusive == "Top 1%") %>% select(-hu_group_exclusive)
+
+reactable(hu_1_pct,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            county = colDef(show = T, minWidth = 190, name = "County", align = "left",
+                            style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+            total_hu_entrances = colDef(show = T, minWidth = 100, name = "HU's (Entrances)"),
+            total_hu_people    = colDef(show = T, minWidth = 100, name = "HU's (People)"),
+            total_entrances    = colDef(show = T, minWidth = 100, name = "Total Jail Entrances"),
+            freq               = colDef(show = T, minWidth = 100, name = "Proportion of Entrances that were HU's",
+                                              style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"),
+                                              format = colFormat(percent = TRUE, digits = 1)),
+                        
+            median             = colDef(show = T, minWidth = 100, name = "Median Number of Entrances Per Person"),
+            mean               = colDef(show = T, minWidth = 130, name = "Avg Number of Entrances Per Person", format = colFormat(percent = FALSE, digits = 1)),
+            range              = colDef(show = T, minWidth = 100, name = "Min - Max Number of Entrances Per Person")
+
+          )
+)
+```
+
+## Top 5%
+
+```{r}
+hu_5_pct <- hu_table %>% filter(hu_group_exclusive == "Top 5%") %>% select(-hu_group_exclusive)
+
+reactable(hu_5_pct,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            county = colDef(show = T, minWidth = 190, name = "County", align = "left",
+                            style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+            total_hu_entrances = colDef(show = T, minWidth = 100, name = "HU's (Entrances)"),
+            total_hu_people    = colDef(show = T, minWidth = 100, name = "HU's (People)"),
+            total_entrances    = colDef(show = T, minWidth = 100, name = "Total Jail Entrances"),
+            freq               = colDef(show = T, minWidth = 100, name = "Proportion of Entrances that were HU's",
+                                              style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"),
+                                              format = colFormat(percent = TRUE, digits = 1)),
+                        
+            median             = colDef(show = T, minWidth = 100, name = "Median Number of Entrances Per Person"),
+            mean               = colDef(show = T, minWidth = 130, name = "Avg Number of Entrances Per Person", format = colFormat(percent = FALSE, digits = 1)),
+            range              = colDef(show = T, minWidth = 100, name = "Min - Max Number of Entrances Per Person")
+
+          )
+)
+```
+
+## Top 10%
+
+```{r}
+hu_10_pct <- hu_table %>% filter(hu_group_exclusive == "Top 10%") %>% select(-hu_group_exclusive)
+
+reactable(hu_10_pct,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            county = colDef(show = T, minWidth = 190, name = "County", align = "left",
+                            style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+            total_hu_entrances = colDef(show = T, minWidth = 100, name = "HU's (Entrances)"),
+            total_hu_people    = colDef(show = T, minWidth = 100, name = "HU's (People)"),
+            total_entrances    = colDef(show = T, minWidth = 100, name = "Total Jail Entrances"),
+            freq               = colDef(show = T, minWidth = 100, name = "Proportion of Entrances that were HU's",
+                                              style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"),
+                                              format = colFormat(percent = TRUE, digits = 1)),
+                        
+            median             = colDef(show = T, minWidth = 100, name = "Median Number of Entrances Per Person"),
+            mean               = colDef(show = T, minWidth = 130, name = "Avg Number of Entrances Per Person", format = colFormat(percent = FALSE, digits = 1)),
+            range              = colDef(show = T, minWidth = 100, name = "Min - Max Number of Entrances Per Person")
+
+          )
+)
+```

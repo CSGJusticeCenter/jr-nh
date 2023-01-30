@@ -406,6 +406,39 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
 
+# ggplot theme without axes or labels
+theme_no_axes_labels <- theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    plot.title = element_text(
+      family   = "Franklin Gothic Book",
+      face     = "bold",
+      size     = 24, # 18,
+      color    = "black",
+      margin   = margin(0, 0, 15, 0)),
+
+    plot.subtitle = element_text(
+      family      = "Arial",
+      size        = 22, #15,
+      color       = "black",
+      margin      = margin(-10, 0, 15, 0)),
+
+    #axis.text   = element_text(size = 22),
+    axis.title   = element_text(color = "black"),
+    axis.title.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.text.y  = element_blank(),
+    axis.text.x  = element_text(size = 22, color = "black"),
+
+    panel.grid.minor = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.border     = element_blank(),
+
+    legend.position  = "top",
+    legend.justification = c(0, 0),
+    legend.text      = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
+  )
+
+
 # Set up highcharts download buttons
 hc_setup <- function(x) {
   highcharter::hc_add_dependency(x, name = "plugins/series-label.js") %>%
@@ -536,4 +569,35 @@ fnc_variable_table_desc <- function(df){
                                TRUE ~ row_num))
   df$row_num <- as.numeric(df$row_num)
   df <- df %>% arrange(row_num) %>% dplyr::select(-row_num)
+}
+
+# Basic reactable table with fys as columns - by county
+fnc_reactable_county_fy <- function(df, row_num){
+
+  county_fy_table <-
+    reactable(df,
+              style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+              pagination = FALSE,
+              rowStyle = function(index) {
+                if (index %in% c(row_num)) {
+                  list(`border-top` = "thin solid",
+                       fontWeight = "bold")
+                }
+              },
+              theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                     headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+              defaultColDef = reactable::colDef(
+                format = colFormat(separators = TRUE), align = "center"
+              ),
+              compact = TRUE,
+              fullWidth = FALSE,
+              columns = list(
+                `county`     = colDef(align = "left", minWidth = 180, name = "County", style = list(fontWeight = "bold")),
+                `2019`       = colDef(minWidth = 80,  name = "2019"),
+                `2020`       = colDef(minWidth = 80,  name = "2020"),
+                `2021`       = colDef(minWidth = 80,  name = "2021", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+                total        = colDef(minWidth = 80,  name = "Total", style = list(fontWeight = "bold")),
+                change_19_21 = colDef(minWidth = 120,  name = "Change from 2019-2021", format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold"))
+              ))
+
 }

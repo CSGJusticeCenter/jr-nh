@@ -21,7 +21,6 @@ knitr::opts_chunk$set(
 
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
-source("data_cleaning/01_functions_visuals.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
 daily_pop_costs   <- read_rds("D:/Analytic/daily_pop_costs.rds") 
 ```
@@ -137,7 +136,6 @@ df_entrances_county <- entrances_dhhs %>%
   mutate(`2019` = as.numeric(`2019`),
          `2020` = as.numeric(`2020`),
          `2021` = as.numeric(`2021`)) %>%
-  # mutate(total = `2019` + `2020` + `2021`) %>% # this total isn't accurate because it's double counting people
   left_join(amt_entrances_county, by = "county")
 
 df_entrances_county <- df_entrances_county %>%
