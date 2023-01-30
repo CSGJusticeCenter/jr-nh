@@ -22,6 +22,9 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
+
+# Change HU variable to 1% = 1 percent, 5% = 2-5 percent, 10% = 6-10 percent
+bookings_entrances <- fnc_hu_group_exclusive(bookings_entrances)
 ```
 
 # Protective Custody Holds
@@ -75,10 +78,10 @@ PRES_gg_pch_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = pc_hold_
         legend.title=element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank())
-ggsave(PRES_gg_pch_pct_barchart, file="img/PRES_gg_pch_pct_barchart.png", width = 6,  height = 5, dpi = 100)
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_pch_pct_barchart, file="img/PRES_gg_pch_pct_barchart.png", width = 6,  height = 5, dpi = 100)
 knitr::include_graphics("img/PRES_gg_pch_pct_barchart.png")
 ```
 
@@ -255,6 +258,49 @@ df_entrances_with_pc_holds <- df_entrances_with_pc_holds %>%
   add_source("Coos bookings and Strafford entrances were not included when calculating the proportion of entrances that are PC holds.", font_style = "italic", font_size = 14)
 ```
 
+```{r}
+# Data for ggplots showing the number of entrances and proportion of PC holds by FY
+data1 <- df_pch %>%
+  group_by(county, pc_hold_in_booking) %>% summarise(total = n())
+data1 <- group_by(data1, county) %>% mutate(pct = round(total/sum(total)*100, 1))
+data1 <- as.data.frame(data1)
+data1 <- data1 %>% mutate(pct = round(pct, digits = 0)) %>%
+  mutate(pct = paste0(pct, "%"))
+
+PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_in_booking)) +
+  geom_col(colour = "white", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_red),
+                    na.value = "white",
+                    labels = c("Non-PC      ","PC", " ")
+                    ) +
+  geom_text(aes(label = pct, fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.8,
+            size = 10, family = "Franklin Gothic Book",
+            color = case_when(data1$pc_hold_in_booking == "Non-PC Hold" ~ "black",
+                              data1$county == "Hillsborough" ~ "white",
+                              TRUE ~ "white")) +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
+        axis.text.y = element_text(size = 28, color = "black"),
+        legend.position = "right",
+        legend.justification = c(1, 0.5),
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+```
+
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_pchold_prop, file="img/PRES_gg_pchold_prop.png", width = 12,  height = 7, dpi = 100)
+knitr::include_graphics("img/PRES_gg_pchold_prop.png")
+```
+
 <br>
 
 **Some counties saw decreases in PC holds while others saw increases.**  
@@ -271,3 +317,116 @@ table_pc_holds_fy_county
 ```
 
 <br>
+
+```{r}
+# Select variables
+data1 <- bookings_entrances %>%
+  filter(county != "Coos" & county != "Strafford") %>%
+  select(county,
+         fy,
+         id,
+         booking_id,
+         hu_group_exclusive,
+         pc_hold_in_booking) %>%
+  distinct() %>%
+  filter(!is.na(pc_hold_in_booking)) %>%
+  filter(pc_hold_in_booking == "PC Hold") %>%
+  group_by(pc_hold_in_booking, hu_group_exclusive) %>%
+  summarise(total = n())
+
+data1 <- group_by(data1) %>%
+  mutate(pct = total/sum(total)*100) %>%
+  mutate(pct = round(pct, 0))
+data1 <- as.data.frame(data1)
+data1 <- data1 %>% mutate(pct = paste0(pct, "%")) %>% 
+  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")))
+
+# One stacked barplot for all three years
+PRES_gg_hu_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, fill = hu_group_exclusive )) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")) +
+  geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
+            size = 7.5, family = "Franklin Gothic Book") +
+  theme_axes +
+  theme(legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank(),
+        axis.title.y = element_blank())
+
+# Pie chart for all three years
+PRES_gg_pie_hu_pc_holds <- PRES_gg_hu_pc_holds +
+  coord_polar("y", start=0) +
+  theme_no_axes +
+  theme_minimal()+
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.border = element_blank(),
+    panel.grid=element_blank(),
+    axis.ticks = element_blank(),
+    plot.title=element_text(size=14, face="bold"),
+    axis.text.x=element_blank(),
+    axis.text.y=element_blank(),
+    legend.title = element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+```
+
+**Between 2019 and 2021, people who were high jail utilizers also accounted for nearly a quarter of PC holds.**  
+
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_pie_hu_pc_holds, file="img/PRES_gg_pie_hu_pc_holds.png", width = 5,  height = 5, dpi = 100)
+knitr::include_graphics("img/PRES_gg_pie_hu_pc_holds.png")
+```
+
+```{r}
+# Select variables
+data1 <- bookings_entrances %>%
+  select(county,
+         fy,
+         id,
+         booking_id,
+         hu_group_exclusive,
+         pc_hold_in_booking) %>%
+  distinct() %>%
+  #filter(!is.na(pc_hold_in_booking)) %>%
+  group_by(county, pc_hold_in_booking, hu_group_exclusive) %>%
+  summarise(total = n()) %>%
+  filter(pc_hold_in_booking == "PC Hold")
+data1 <- group_by(data1, county) %>% mutate(pct = round(total/sum(total)*100, 0))
+data1 <- as.data.frame(data1)
+data1 <- data1 %>%
+  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")))
+
+PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = hu_group_exclusive )) +
+  geom_col(colour = "white", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")) +
+  geom_text(aes(label = ifelse(pct > 4, paste(pct, "%"), ""),
+                fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.7,
+            size = 10, family = "Franklin Gothic Book") +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
+        axis.text.y = element_text(size = 28, color = "black"),
+        legend.position = "right",
+        legend.justification = c(1, 0.5),
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+  # geom_hline(aes(yintercept=0.20), size = 1)
+```
+**Belknap and Merrimack County had the most top 1% high utilizers who entered jail on a PC hold.**
+
+```{r, out.width="75%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_pchold_hu_prop, file="img/PRES_gg_pchold_hu_prop.png", width = 12,  height = 9, dpi = 100)
+knitr::include_graphics("img/PRES_gg_pchold_hu_prop.png")
+```
+
+
