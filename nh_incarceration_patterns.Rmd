@@ -99,7 +99,7 @@ data1 <- gather(data1, fy, total, `2019`:`2021`, factor_key=TRUE) %>%
   mutate(fy = as.numeric(fy)) %>%
   mutate(fy = case_when(fy == 1 ~ "2019", fy == 2 ~ "2020", fy == 3 ~ "2021"))
 
-# ggplot showing the number of entrances by FY
+# ggplot bar showing the number of entrances by FY
 PRES_gg_dhhs_entrances <-
   ggplot(data=data1, aes(x=fy, y=total)) +
   geom_bar(stat="identity", width = 0.74, fill = jri_green) +
@@ -110,6 +110,7 @@ PRES_gg_dhhs_entrances <-
                      limits = c(0,24000)) +
   theme_no_axes_labels
 
+# Save and output graph
 ggsave(PRES_gg_dhhs_entrances, file= "img/PRES_gg_dhhs_entrances.png", width = 6, height = 5, dpi = 100)
 knitr::include_graphics("img/PRES_gg_dhhs_entrances.png")
 ```
@@ -146,9 +147,42 @@ df_entrances_county <- df_entrances_county %>%
                             TRUE ~ county))
 
 # Table showing the number of people entered by FY by county
-PRES_table_entrances_fy_county <- fnc_reactable_county_fy(df_entrances_county, row_num = 10)
-PRES_table_entrances_fy_county
+table_entrances_fy_county <- fnc_reactable_county_fy(df_entrances_county, row_num = 10)
+table_entrances_fy_county
 ```
+
+```{r, out.width="75%", echo=FALSE, layout = "l-body"}
+# Prep data for graphic
+data1 <- df_entrances_county %>%
+  mutate(county = ifelse(county == "Coos (bookings only)", "Coos", county),
+         change_19_21 = round(change_19_21, 3)) %>%
+  filter(county != "State")
+
+# ggplot bar showing decrease in jail entrances by county from 2019 to 2021
+PRES_gg_entrances_change_county <-
+  ggplot(data1, aes(reorder(county, change_19_21), change_19_21, fill = jri_green)) +
+  geom_bar(stat = "identity", fill=jri_green) +
+  coord_flip() +
+  geom_text(data = data1, aes(label = paste("-", (round(change_19_21*100, 0)), "%", sep = ""), fontface = 'bold'),
+            size = 7.5,
+            hjust = 1.2,
+            family = "Franklin Gothic Book",
+            color = "black") +
+  theme_no_axes +
+  theme(legend.position = "none",
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.minor.y = element_blank()) +
+  scale_y_continuous("\nDecrease in Jail Entrances Between 2019 and 2021",
+                     limits = c(-.65, 0),
+                     labels = percent_format())
+
+# Save and output graph
+ggsave(PRES_gg_entrances_change_county, file= "img/PRES_gg_entrances_change_county.png", width = 9, height = 5, dpi = 100)
+knitr::include_graphics("img/PRES_gg_entrances_change_county.png")
+```
+
 
 **On average, people entered jails 1.8 times from 2019 to 2021.**
 
@@ -245,6 +279,73 @@ PRES_table_entrances_people_county <-
               avg_entrances             = colDef(minWidth = 120,  name = "Average Number of Entrances Per Person")
               ))
 PRES_table_entrances_people_county
+```
+
+```{r}
+# Subset data and create categories for number of entrances
+data1 <- entrances_dhhs %>%
+  ungroup() %>%
+  select(id, num_entrances) %>%
+  distinct() %>%
+  mutate(num_entrances_category = case_when(num_entrances == 1 ~ "1",
+                                            num_entrances == 2 ~ "2",
+                                            num_entrances == 3 ~ "3",
+                                            num_entrances == 4 ~ "4",
+                                            num_entrances == 5 ~ "5",
+                                            num_entrances == 6 ~ "6",
+                                            num_entrances == 7 ~ "7",
+                                            num_entrances == 8 ~ "8",
+                                            num_entrances == 9 ~ "9",
+                                            num_entrances == 10 ~ "10",
+                                            num_entrances == 11 ~ "11",
+                                            num_entrances == 12 ~ "12",
+                                            num_entrances == 13 ~ "13",
+                                            num_entrances == 14 ~ "14",
+                                            num_entrances == 15 ~ "15",
+                                            num_entrances == 16 ~ "16",
+                                            num_entrances == 17 ~ "17",
+                                            num_entrances == 18 ~ "18",
+                                            num_entrances == 19 ~ "19",
+                                            num_entrances >= 20 ~ "20+")) %>%
+  mutate(num_entrances_category = factor(num_entrances_category,
+                                        levels = c("1",
+                                                   "2",
+                                                   "3",
+                                                   "4",
+                                                   "5",
+                                                   "6",
+                                                   "7",
+                                                   "8",
+                                                   "9",
+                                                   "10",
+                                                   "11",
+                                                   "12",
+                                                   "13",
+                                                   "14",
+                                                   "15",
+                                                   "16",
+                                                   "17",
+                                                   "18",
+                                                   "19",
+                                                   "20+"))) %>%
+  group_by(num_entrances_category) %>%
+  summarise(total = n())
+
+# ggplot bar showing the frequency of the number of entrances per person
+PRES_gg_num_entrances <-
+  ggplot(data1, aes(x = num_entrances_category, y = total)) +
+  geom_bar(stat = "identity", width = 0.74, fill = jri_green) +
+  scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
+                     expand = c(0.05,0),
+                     limits = c(0,20000)) +
+  geom_hline(yintercept=20) +
+  geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7, family = "Franklin Gothic Book") +
+  theme_no_axes +
+  xlab("\nNumber of Entrances") + ylab("Number of People\n")
+
+# Save and output graph
+ggsave(PRES_gg_num_entrances, file= "img/PRES_gg_num_entrances.png", width = 6, height = 5, dpi = 100)
+knitr::include_graphics("img/PRES_gg_num_entrances.png")
 ```
 
 <br>

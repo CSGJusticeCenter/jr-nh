@@ -246,12 +246,12 @@ sullivan_medicaid <- sullivan_medicaid.xlsx %>%
                          jail_sex == "M"  ~ "Male",
                          jail_sex == "U"  ~ "Unknown")) %>%
   mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex)) %>%
-  mutate(booking_date <- as.POSIXct(booking_date, format = '%m/%d/%Y %H:%M:%S'),
-         release_date <- as.POSIXct(release_date, format = '%m/%d/%Y %H:%M:%S')) %>%
-  mutate(booking_date <- format(booking_date, "%m/%d/%Y"),
-         release_date <- format(release_date, "%m/%d/%Y")) %>%
-  mutate(booking_date <- as.Date(booking_date, format = "%m/%d/%Y"),
-         release_date <- as.Date(release_date, format = "%m/%d/%Y"))
+  mutate(booking_date = as.POSIXct(booking_date, format = '%m/%d/%Y %H:%M:%S'),
+         release_date = as.POSIXct(release_date, format = '%m/%d/%Y %H:%M:%S')) %>%
+  mutate(booking_date = format(booking_date, "%m/%d/%Y"),
+         release_date = format(release_date, "%m/%d/%Y")) %>%
+  mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
+         release_date = as.Date(release_date, format = "%m/%d/%Y"))
 
 # Create a unique booking id per person per booking date
 sullivan_medicaid$booking_id <- sullivan_medicaid %>% group_indices(unique_person_id, booking_date)
