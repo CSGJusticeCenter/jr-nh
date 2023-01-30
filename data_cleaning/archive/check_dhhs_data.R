@@ -5,11 +5,49 @@
 
 ################################################################################
 
-length(unique(carroll_adm1$inmate_id))  # 1849
-length(unique(carroll_adm1$booking_id)) # 3746
+temp <- clean_names(carroll_bookings.xlsx)
+temp$booking_dt_tm <- .POSIXct(temp$booking_dt_tm, tz="UTC")
+temp$booking_dt_tm <-   format(temp$booking_dt_tm, "%m/%d/%Y")
+temp$booking_dt_tm <-  as.Date(temp$booking_dt_tm, format = "%m/%d/%Y")
+temp$release_dt_tm <- .POSIXct(temp$release_dt_tm, tz="UTC")
+temp$release_dt_tm <-   format(temp$release_dt_tm, "%m/%d/%Y")
+temp$release_dt_tm <-  as.Date(temp$release_dt_tm, format = "%m/%d/%Y")
 
-length(unique(carroll_medicaid $unique_person_id)) # 1825
-length(unique(carroll_medicaid $booking_id))       # 2646
+temp <- temp %>% dplyr::select(unique_person_id,
+              inmate_id,
+              yob,
+              race_code = race,
+              sex,
+              housing,
+              charge_code,
+              charge_desc = charge,
+              booking_date = booking_dt_tm,
+              booking_type,
+              release_date = release_dt_tm,
+              sentence_status = sentencing_status)
+
+length(unique(temp$unique_person_id)) #  1868
+temp <- temp %>%
+  mutate(unique_person_id = ifelse(is.na(unique_person_id), inmate_id, unique_person_id),
+         booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
+         release_date = as.Date(release_date, format = "%m/%d/%Y"),
+         county = "Carroll")
+temp$booking_id <- temp %>% group_indices(unique_person_id, booking_date)
+temp <- temp %>%
+  mutate(unique_person_id = paste(county, unique_person_id, sep = "_"),
+         booking_id = paste(county, "booking", booking_id, sep = "_")) %>%
+  select(unique_person_id, inmate_id, booking_id, everything())
+
+length(unique(temp$unique_person_id))
+length(unique(temp$booking_id))
+
+
+
+length(unique(carroll_adm1$id))
+length(unique(carroll_adm1$booking_id))
+
+length(unique(carroll_medicaid $unique_person_id))
+length(unique(carroll_medicaid $booking_id))
 
 3746 - 2646 #  1100
 

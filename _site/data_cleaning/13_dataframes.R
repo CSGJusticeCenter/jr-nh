@@ -1,12 +1,15 @@
 ############################################
 # Project: JRI New Hampshire
 # File: dataframes.R
-# Last updated: November 10, 2022
+# Last updated: January 30, 2023
 # Author: Mari Roberts
 
 # Combine county data and create dataframes used in analyses and visualizations
 ############################################
 
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/02_import.R")
 source("data_cleaning/03_belknap.R")
 source("data_cleaning/04_carroll.R")
 source("data_cleaning/05_cheshire.R")
@@ -66,9 +69,6 @@ bookings_entrances_all <- adm_all %>%
          month_year      = as.Date(as.yearmon(month_year_text))) %>%
   distinct()
 
-# People can have multiple booking types when entering jail (some are PC hold + criminal charge)
-# dups <- bookings_entrances_all[duplicated(bookings_entrances_all$booking_id)|duplicated(bookings_entrances_all$booking_id, fromLast=TRUE),] # 7932
-
 # Some people can be booked for a criminal charge but also be held for protective custody.
 # Determine if PC hold happened in booking event.
 bookings_entrances <- bookings_entrances_all %>%
@@ -85,11 +85,6 @@ bookings_entrances <- bookings_entrances %>%
   mutate(all_sentence_statuses=paste(sort(unique(sentence_status_standard)), collapse=" & ")) %>%
   select(county:sentence_status_standard, all_sentence_statuses, everything()) %>%
   distinct()
-
-# sep by fy year
-bookings_entrances_19 <- bookings_entrances %>% distinct() %>% filter(fy == 2019)
-bookings_entrances_20 <- bookings_entrances %>% distinct() %>% filter(fy == 2020)
-bookings_entrances_21 <- bookings_entrances %>% distinct() %>% filter(fy == 2021)
 
 ##########
 
@@ -122,7 +117,7 @@ entrances <- bookings_entrances_all %>%
 
 ##########
 
-# remove Strafford, all Coos are non-PC holds
+# Remove Strafford, all Coos are non-PC holds
 booking_no_pc_hold <- bookings_entrances_all %>%
   filter(pc_hold == "Non-PC Hold") %>%
   select(county,
@@ -148,9 +143,8 @@ booking_no_pc_hold <- bookings_entrances_all %>%
 
 ################################################################################
 
-# instead of removing coos and strafford, I label their pc_hold_in_booking as NA to include them in tables
+# Instead of removing coos and strafford, I label their pc_hold_in_booking as NA to include them in tables
 df_pch <- bookings_entrances %>%
-  #filter(county != "Coos" & county != "Strafford") %>%
   select(fy,
          county,
          id,
@@ -170,7 +164,7 @@ df_pch <- bookings_entrances %>%
 
 ################################################################################
 
-# get list of counties
+# Get list of counties
 counties <- adm_all$county %>%
   unique() %>%
   sort()

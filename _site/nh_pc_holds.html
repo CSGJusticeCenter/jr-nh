@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -785,6 +786,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1026,10 +1028,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1861,9 +1859,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1875,6 +1885,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1974,6 +2009,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1996,7 +2033,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2366,8 +2403,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
-  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+  <script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
   <script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
   <script src="site_libs/proj4js-2.3.15/proj4.js"></script>
   <link href="site_libs/highcharts-9.3.1/css/motion.css" rel="stylesheet" />
@@ -2418,7 +2455,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <script src="site_libs/react-17.0.0/react.min.js"></script>
   <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
   <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
-  <script src="site_libs/reactable-binding-0.2.3/reactable.js"></script>
+  <link href="site_libs/reactable-0.4.3/reactable.css" rel="stylesheet" />
+  <script src="site_libs/reactable-binding-0.4.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2459,30 +2497,22 @@ Overall Trends
 <div class="nav-dropdown-content">
 <a href="nh_incarceration_patterns.html">Incarceration Patterns</a>
 <a href="nh_pc_holds.html">Protective Custody Holds</a>
-<a href="nh_high_utilizers_analysis.html">High Utilizers</a>
 <a href="nh_booking_types_analysis.html">Booking Types</a>
 <a href="nh_charge_type_analysis.html">Charge Types</a>
-<a href="nh_demographics_analysis.html">Demographics</a>
+<a href="nh_high_utilizers_analysis.html">High Utilizers</a>
 <a href="nh_medicaid_analysis.html">Medicaid</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
 </div>
 </div>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
-County Reports
+Archive
  
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="county_report_Belknap.html">Belknap</a>
-<a href="county_report_Carroll.html">Carroll</a>
-<a href="county_report_Cheshire.html">Cheshire</a>
-<a href="county_report_Coos.html">Coos</a>
-<a href="county_report_Hillsborough.html">Hillsborough</a>
-<a href="county_report_Merrimack.html">Merrimack</a>
-<a href="county_report_Rockingham.html">Rockingham</a>
-<a href="county_report_Strafford.html">Strafford</a>
-<a href="county_report_Sullivan.html">Sullivan</a>
+<a href="archive_incarceration_patterns.html">Incarceration Patterns (Archive)</a>
+<a href="archive_high_utilizers_analysis.html">High Utilizers (Archive)</a>
 </div>
 </div>
 <div class="nav-dropdown">
@@ -2494,6 +2524,7 @@ Research
 <div class="nav-dropdown-content">
 <a href="nh_data_availability.html">Data Availability</a>
 <a href="nh_data_dictionary.html">Data Dictionaries</a>
+<a href="nh_medicaid_diagram_codebook.html">Medicaid Data Diagram and Codebook</a>
 </div>
 </div>
 <a href="https://github.com/CSGJusticeCenter/jr-nh">
@@ -2520,71 +2551,50 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#protective-custody-holds"
-id="toc-protective-custody-holds">Protective Custody Holds</a>
+<li><a href="#protective-custody-holds" id="toc-protective-custody-holds">Protective Custody Holds</a>
 <ul>
 <li><a href="#by-state" id="toc-by-state">By State</a></li>
 <li><a href="#by-county" id="toc-by-county">By County</a></li>
-<li><a href="#how-protective-custody-holds-are-recorded"
-id="toc-how-protective-custody-holds-are-recorded">How Protective
-Custody Holds Are Recorded</a></li>
 </ul></li>
 </ul>
 </nav>
 </div>
-<p>The following incarceration patterns were found using jail
-administrative data submitted directly to CSG.</p>
+<p>The following incarceration patterns were found using jail administrative data submitted directly to CSG.</p>
 <h1 id="protective-custody-holds">Protective Custody Holds</h1>
 <h3 id="by-state">By State</h3>
 <div class="layout-chunk" data-layout="l-body">
-<p><strong>Protective custody holds accounted for 20% of bookings from
-2019 to 2021.</strong> Coos and Strafford are not included in this
-calculation due to missing data.</p>
+<p><strong>Protective custody holds accounted for 19% of bookings from 2019 to 2021.</strong> Coos and Strafford are not included in this calculation due to missing data.</p>
 </div>
-<p><strong>Although the number of entrances has been decreasing, the
-proportion of PC holds has remained the same.</strong></p>
+<p><strong>Although the number of entrances has been decreasing, the proportion of PC holds has remained the same.</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="img/PRES_gg_pch_pct_barchart.png" width="50%" /></p>
 </div>
 <p><br></p>
-<p><strong>Protective custody holds tend to occur most frequently during
-summer months. There was a decline in protective custody holds at the
-start of the pandemic but they began climbing again shortly
-after.</strong></p>
+<p><strong>Protective custody holds tend to occur most frequently during summer months. There was a decline in protective custody holds at the start of the pandemic but they began climbing again shortly after.</strong></p>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-f33487e46126471ff480" style="width:624px;height:384px;" class="highchart html-widget"></div>
-<script type="application/json" data-for="htmlwidget-f33487e46126471ff480">{"x":{"hc_opts":{"chart":{"reflow":true},"title":[],"yAxis":{"title":{"text":"Number of PC Holds","style":{"color":"#000000","fontWeight":"bold","fontSize":"16px"}},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":true},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"month_year":"2018-07-01","month_year_text":"Jul 2018","total":365,"tooltip":"<b>Jul 2018<\/b><br>Total: 365<br>","y":365,"name":"Jul 2018"},{"month_year":"2018-08-01","month_year_text":"Aug 2018","total":427,"tooltip":"<b>Aug 2018<\/b><br>Total: 427<br>","y":427,"name":"Aug 2018"},{"month_year":"2018-09-01","month_year_text":"Sep 2018","total":259,"tooltip":"<b>Sep 2018<\/b><br>Total: 259<br>","y":259,"name":"Sep 2018"},{"month_year":"2018-10-01","month_year_text":"Oct 2018","total":190,"tooltip":"<b>Oct 2018<\/b><br>Total: 190<br>","y":190,"name":"Oct 2018"},{"month_year":"2018-11-01","month_year_text":"Nov 2018","total":188,"tooltip":"<b>Nov 2018<\/b><br>Total: 188<br>","y":188,"name":"Nov 2018"},{"month_year":"2018-12-01","month_year_text":"Dec 2018","total":202,"tooltip":"<b>Dec 2018<\/b><br>Total: 202<br>","y":202,"name":"Dec 2018"},{"month_year":"2019-01-01","month_year_text":"Jan 2019","total":182,"tooltip":"<b>Jan 2019<\/b><br>Total: 182<br>","y":182,"name":"Jan 2019"},{"month_year":"2019-02-01","month_year_text":"Feb 2019","total":207,"tooltip":"<b>Feb 2019<\/b><br>Total: 207<br>","y":207,"name":"Feb 2019"},{"month_year":"2019-03-01","month_year_text":"Mar 2019","total":217,"tooltip":"<b>Mar 2019<\/b><br>Total: 217<br>","y":217,"name":"Mar 2019"},{"month_year":"2019-04-01","month_year_text":"Apr 2019","total":180,"tooltip":"<b>Apr 2019<\/b><br>Total: 180<br>","y":180,"name":"Apr 2019"},{"month_year":"2019-05-01","month_year_text":"May 2019","total":260,"tooltip":"<b>May 2019<\/b><br>Total: 260<br>","y":260,"name":"May 2019"},{"month_year":"2019-06-01","month_year_text":"Jun 2019","total":318,"tooltip":"<b>Jun 2019<\/b><br>Total: 318<br>","y":318,"name":"Jun 2019"},{"month_year":"2019-07-01","month_year_text":"Jul 2019","total":373,"tooltip":"<b>Jul 2019<\/b><br>Total: 373<br>","y":373,"name":"Jul 2019"},{"month_year":"2019-08-01","month_year_text":"Aug 2019","total":355,"tooltip":"<b>Aug 2019<\/b><br>Total: 355<br>","y":355,"name":"Aug 2019"},{"month_year":"2019-09-01","month_year_text":"Sep 2019","total":261,"tooltip":"<b>Sep 2019<\/b><br>Total: 261<br>","y":261,"name":"Sep 2019"},{"month_year":"2019-10-01","month_year_text":"Oct 2019","total":197,"tooltip":"<b>Oct 2019<\/b><br>Total: 197<br>","y":197,"name":"Oct 2019"},{"month_year":"2019-11-01","month_year_text":"Nov 2019","total":182,"tooltip":"<b>Nov 2019<\/b><br>Total: 182<br>","y":182,"name":"Nov 2019"},{"month_year":"2019-12-01","month_year_text":"Dec 2019","total":208,"tooltip":"<b>Dec 2019<\/b><br>Total: 208<br>","y":208,"name":"Dec 2019"},{"month_year":"2020-01-01","month_year_text":"Jan 2020","total":172,"tooltip":"<b>Jan 2020<\/b><br>Total: 172<br>","y":172,"name":"Jan 2020"},{"month_year":"2020-02-01","month_year_text":"Feb 2020","total":185,"tooltip":"<b>Feb 2020<\/b><br>Total: 185<br>","y":185,"name":"Feb 2020"},{"month_year":"2020-03-01","month_year_text":"Mar 2020","total":182,"tooltip":"<b>Mar 2020<\/b><br>Total: 182<br>","y":182,"name":"Mar 2020"},{"month_year":"2020-04-01","month_year_text":"Apr 2020","total":120,"tooltip":"<b>Apr 2020<\/b><br>Total: 120<br>","y":120,"name":"Apr 2020"},{"month_year":"2020-05-01","month_year_text":"May 2020","total":171,"tooltip":"<b>May 2020<\/b><br>Total: 171<br>","y":171,"name":"May 2020"},{"month_year":"2020-06-01","month_year_text":"Jun 2020","total":199,"tooltip":"<b>Jun 2020<\/b><br>Total: 199<br>","y":199,"name":"Jun 2020"},{"month_year":"2020-07-01","month_year_text":"Jul 2020","total":244,"tooltip":"<b>Jul 2020<\/b><br>Total: 244<br>","y":244,"name":"Jul 2020"},{"month_year":"2020-08-01","month_year_text":"Aug 2020","total":249,"tooltip":"<b>Aug 2020<\/b><br>Total: 249<br>","y":249,"name":"Aug 2020"},{"month_year":"2020-09-01","month_year_text":"Sep 2020","total":201,"tooltip":"<b>Sep 2020<\/b><br>Total: 201<br>","y":201,"name":"Sep 2020"},{"month_year":"2020-10-01","month_year_text":"Oct 2020","total":166,"tooltip":"<b>Oct 2020<\/b><br>Total: 166<br>","y":166,"name":"Oct 2020"},{"month_year":"2020-11-01","month_year_text":"Nov 2020","total":152,"tooltip":"<b>Nov 2020<\/b><br>Total: 152<br>","y":152,"name":"Nov 2020"},{"month_year":"2020-12-01","month_year_text":"Dec 2020","total":136,"tooltip":"<b>Dec 2020<\/b><br>Total: 136<br>","y":136,"name":"Dec 2020"},{"month_year":"2021-01-01","month_year_text":"Jan 2021","total":154,"tooltip":"<b>Jan 2021<\/b><br>Total: 154<br>","y":154,"name":"Jan 2021"},{"month_year":"2021-02-01","month_year_text":"Feb 2021","total":135,"tooltip":"<b>Feb 2021<\/b><br>Total: 135<br>","y":135,"name":"Feb 2021"},{"month_year":"2021-03-01","month_year_text":"Mar 2021","total":142,"tooltip":"<b>Mar 2021<\/b><br>Total: 142<br>","y":142,"name":"Mar 2021"},{"month_year":"2021-04-01","month_year_text":"Apr 2021","total":158,"tooltip":"<b>Apr 2021<\/b><br>Total: 158<br>","y":158,"name":"Apr 2021"},{"month_year":"2021-05-01","month_year_text":"May 2021","total":170,"tooltip":"<b>May 2021<\/b><br>Total: 170<br>","y":170,"name":"May 2021"},{"month_year":"2021-06-01","month_year_text":"Jun 2021","total":227,"tooltip":"<b>Jun 2021<\/b><br>Total: 227<br>","y":227,"name":"Jun 2021"}],"type":"line","color":"#4095B1"}],"xAxis":{"type":"category","title":{"text":"Month and Year","style":{"color":"#000000","fontWeight":"bold","fontSize":"16px"}},"plotLines":[{"label":{"text":"COVID-19 Start"},"fontSize":"26px","color":"gray","width":2,"value":20,"zIndex":1}]},"tooltip":{"formatter":"function(){return(this.point.tooltip)}"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+<div class="highchart html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-3b84780bfa05da062a0f" style="width:624px;height:384px;"></div>
+<script type="application/json" data-for="htmlwidget-3b84780bfa05da062a0f">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Number of PC Holds","style":{"color":"#000000","fontWeight":"bold","fontSize":"16px"}},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":true},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"month_year":"2018-07-01","month_year_text":"Jul 2018","total":349,"tooltip":"<b>Jul 2018<\/b><br>Total: 349<br>","y":349,"name":"Jul 2018"},{"month_year":"2018-08-01","month_year_text":"Aug 2018","total":398,"tooltip":"<b>Aug 2018<\/b><br>Total: 398<br>","y":398,"name":"Aug 2018"},{"month_year":"2018-09-01","month_year_text":"Sep 2018","total":247,"tooltip":"<b>Sep 2018<\/b><br>Total: 247<br>","y":247,"name":"Sep 2018"},{"month_year":"2018-10-01","month_year_text":"Oct 2018","total":182,"tooltip":"<b>Oct 2018<\/b><br>Total: 182<br>","y":182,"name":"Oct 2018"},{"month_year":"2018-11-01","month_year_text":"Nov 2018","total":175,"tooltip":"<b>Nov 2018<\/b><br>Total: 175<br>","y":175,"name":"Nov 2018"},{"month_year":"2018-12-01","month_year_text":"Dec 2018","total":188,"tooltip":"<b>Dec 2018<\/b><br>Total: 188<br>","y":188,"name":"Dec 2018"},{"month_year":"2019-01-01","month_year_text":"Jan 2019","total":173,"tooltip":"<b>Jan 2019<\/b><br>Total: 173<br>","y":173,"name":"Jan 2019"},{"month_year":"2019-02-01","month_year_text":"Feb 2019","total":188,"tooltip":"<b>Feb 2019<\/b><br>Total: 188<br>","y":188,"name":"Feb 2019"},{"month_year":"2019-03-01","month_year_text":"Mar 2019","total":203,"tooltip":"<b>Mar 2019<\/b><br>Total: 203<br>","y":203,"name":"Mar 2019"},{"month_year":"2019-04-01","month_year_text":"Apr 2019","total":166,"tooltip":"<b>Apr 2019<\/b><br>Total: 166<br>","y":166,"name":"Apr 2019"},{"month_year":"2019-05-01","month_year_text":"May 2019","total":252,"tooltip":"<b>May 2019<\/b><br>Total: 252<br>","y":252,"name":"May 2019"},{"month_year":"2019-06-01","month_year_text":"Jun 2019","total":296,"tooltip":"<b>Jun 2019<\/b><br>Total: 296<br>","y":296,"name":"Jun 2019"},{"month_year":"2019-07-01","month_year_text":"Jul 2019","total":359,"tooltip":"<b>Jul 2019<\/b><br>Total: 359<br>","y":359,"name":"Jul 2019"},{"month_year":"2019-08-01","month_year_text":"Aug 2019","total":339,"tooltip":"<b>Aug 2019<\/b><br>Total: 339<br>","y":339,"name":"Aug 2019"},{"month_year":"2019-09-01","month_year_text":"Sep 2019","total":250,"tooltip":"<b>Sep 2019<\/b><br>Total: 250<br>","y":250,"name":"Sep 2019"},{"month_year":"2019-10-01","month_year_text":"Oct 2019","total":185,"tooltip":"<b>Oct 2019<\/b><br>Total: 185<br>","y":185,"name":"Oct 2019"},{"month_year":"2019-11-01","month_year_text":"Nov 2019","total":177,"tooltip":"<b>Nov 2019<\/b><br>Total: 177<br>","y":177,"name":"Nov 2019"},{"month_year":"2019-12-01","month_year_text":"Dec 2019","total":200,"tooltip":"<b>Dec 2019<\/b><br>Total: 200<br>","y":200,"name":"Dec 2019"},{"month_year":"2020-01-01","month_year_text":"Jan 2020","total":170,"tooltip":"<b>Jan 2020<\/b><br>Total: 170<br>","y":170,"name":"Jan 2020"},{"month_year":"2020-02-01","month_year_text":"Feb 2020","total":172,"tooltip":"<b>Feb 2020<\/b><br>Total: 172<br>","y":172,"name":"Feb 2020"},{"month_year":"2020-03-01","month_year_text":"Mar 2020","total":171,"tooltip":"<b>Mar 2020<\/b><br>Total: 171<br>","y":171,"name":"Mar 2020"},{"month_year":"2020-04-01","month_year_text":"Apr 2020","total":113,"tooltip":"<b>Apr 2020<\/b><br>Total: 113<br>","y":113,"name":"Apr 2020"},{"month_year":"2020-05-01","month_year_text":"May 2020","total":162,"tooltip":"<b>May 2020<\/b><br>Total: 162<br>","y":162,"name":"May 2020"},{"month_year":"2020-06-01","month_year_text":"Jun 2020","total":190,"tooltip":"<b>Jun 2020<\/b><br>Total: 190<br>","y":190,"name":"Jun 2020"},{"month_year":"2020-07-01","month_year_text":"Jul 2020","total":227,"tooltip":"<b>Jul 2020<\/b><br>Total: 227<br>","y":227,"name":"Jul 2020"},{"month_year":"2020-08-01","month_year_text":"Aug 2020","total":242,"tooltip":"<b>Aug 2020<\/b><br>Total: 242<br>","y":242,"name":"Aug 2020"},{"month_year":"2020-09-01","month_year_text":"Sep 2020","total":191,"tooltip":"<b>Sep 2020<\/b><br>Total: 191<br>","y":191,"name":"Sep 2020"},{"month_year":"2020-10-01","month_year_text":"Oct 2020","total":159,"tooltip":"<b>Oct 2020<\/b><br>Total: 159<br>","y":159,"name":"Oct 2020"},{"month_year":"2020-11-01","month_year_text":"Nov 2020","total":150,"tooltip":"<b>Nov 2020<\/b><br>Total: 150<br>","y":150,"name":"Nov 2020"},{"month_year":"2020-12-01","month_year_text":"Dec 2020","total":133,"tooltip":"<b>Dec 2020<\/b><br>Total: 133<br>","y":133,"name":"Dec 2020"},{"month_year":"2021-01-01","month_year_text":"Jan 2021","total":147,"tooltip":"<b>Jan 2021<\/b><br>Total: 147<br>","y":147,"name":"Jan 2021"},{"month_year":"2021-02-01","month_year_text":"Feb 2021","total":131,"tooltip":"<b>Feb 2021<\/b><br>Total: 131<br>","y":131,"name":"Feb 2021"},{"month_year":"2021-03-01","month_year_text":"Mar 2021","total":138,"tooltip":"<b>Mar 2021<\/b><br>Total: 138<br>","y":138,"name":"Mar 2021"},{"month_year":"2021-04-01","month_year_text":"Apr 2021","total":150,"tooltip":"<b>Apr 2021<\/b><br>Total: 150<br>","y":150,"name":"Apr 2021"},{"month_year":"2021-05-01","month_year_text":"May 2021","total":165,"tooltip":"<b>May 2021<\/b><br>Total: 165<br>","y":165,"name":"May 2021"},{"month_year":"2021-06-01","month_year_text":"Jun 2021","total":221,"tooltip":"<b>Jun 2021<\/b><br>Total: 221<br>","y":221,"name":"Jun 2021"}],"type":"line","color":"#4095B1"}],"xAxis":{"type":"category","title":{"text":"Month and Year","style":{"color":"#000000","fontWeight":"bold","fontSize":"16px"}},"plotLines":[{"label":{"text":"COVID-19 Start"},"fontSize":"26px","color":"gray","width":2,"value":20,"zIndex":1}]},"tooltip":{"formatter":"function(){return(this.point.tooltip)}"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
 </div>
 <p><br></p>
 <h3 id="by-county">By County</h3>
-<p>The proportion of entrances that were protective custody holds varied
-greatly by county. The table below shows the number of and proportion of
-entrances that included a protective custody hold charge. Belknap had
-the highest proportion of bookings that were protective custody
-holds.</p>
+<p>The proportion of entrances that were protective custody holds varied greatly by county. The table below shows the number of and proportion of entrances that included a protective custody hold charge. Belknap had the highest proportion of bookings that were protective custody holds.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-1293ca429e349bda83e4" class="reactable html-widget" style="width:auto;height:auto;"></div>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-98d0cda1ae9204f85d4d" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Coos bookings and Strafford entrances were not included when calculating the proportion of entrances that are PC holds.</p>
-<script type="application/json" data-for="htmlwidget-1293ca429e349bda83e4">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos (bookings only)","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan","State"],"total_entrances":[4144,3746,4069,671,10627,5986,8252,12233,1817,51545],"total_pc_holds":[1478,558,1092,"NA",390,1484,2364,"NA",368,7734],"total_people":[1086,405,863,"NA",358,1029,2000,"NA",281,6022],"freq":[0.356660231660232,0.148958889482114,0.268370607028754,"NA",0.036698974310718,0.247911794186435,0.286476005816772,"NA",0.20253164556962,0.200150099635103]},"columns":[{"accessor":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":180,"style":{"fontWeight":"bold"}},{"accessor":"total_entrances","name":"Total Entrances","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"total_pc_holds","name":"PC Holds (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"total_people","name":"PC Holds (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"freq","name":"% PC Hold Entrances","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":100,"style":{"fontWeight":"bold"}}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"58f3469f503d550bbaa5317de046d08c","key":"58f3469f503d550bbaa5317de046d08c"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-98d0cda1ae9204f85d4d">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos (bookings only)","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan","State"],"total_entrances":[4144,3746,4069,671,10627,5986,8252,12233,1817,51545],"total_pc_holds":[1463,403,1085,"NA",389,1477,2178,"NA",364,7359],"total_people":[1078,319,858,"NA",357,1026,1844,"NA",280,5762],"freq":[0.353040540540541,0.107581420181527,0.266650282624724,"NA",0.0366048743765879,0.246742398930839,0.263936015511391,"NA",0.200330214639516,0.190445381848296]},"columns":[{"id":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":180,"style":{"fontWeight":"bold"}},{"id":"total_entrances","name":"Total Entrances","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"id":"total_pc_holds","name":"PC Holds (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"id":"total_people","name":"PC Holds (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"id":"freq","name":"% PC Hold Entrances","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":100,"style":{"fontWeight":"bold"}}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"2823ddc01337e7ee14fe893a3e8e7b39"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <p><br></p>
-<p><strong>Some counties saw decreases in PC holds while others saw
-increases.</strong></p>
+<p><strong>Some counties saw decreases in PC holds while others saw increases.</strong></p>
 <div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-2d26834d242c00afd3cb" class="reactable html-widget" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-2d26834d242c00afd3cb">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"new_variable_name":["Belknap","Carroll","Cheshire","Hillsborough","Merrimack","Rockingham","Sullivan"],"count_19":[625,196,443,162,598,833,138],"pct_19":[0.363372093023256,0.155186064924782,0.265269461077844,0.0353095030514385,0.254793353216873,0.257178141401667,0.184245660881175],"count_20":[508,207,361,133,470,801,125],"pct_20":[0.370262390670554,0.162225705329154,0.265246142542248,0.0408476658476658,0.24214322514168,0.293084522502744,0.217013888888889],"count_21":[345,155,288,95,416,730,105],"pct_21":[0.327946768060837,0.128417564208782,0.277456647398844,0.0341358246496586,0.244994110718492,0.320175438596491,0.213414634146341],"total":[1478,558,1092,390,1484,2364,368],"freq":[0.356660231660232,0.148958889482114,0.268370607028754,0.036698974310718,0.247911794186435,0.286476005816772,0.20253164556962]},"columns":[{"accessor":"new_variable_name","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":"Total","align":"left","footerStyle":{"fontWeight":"bold"},"minWidth":150,"style":{"fontWeight":"bold"}},{"accessor":"count_19","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,995"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"pct_19","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"count_20","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,605"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"pct_20","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"count_21","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,134"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"accessor":"pct_21","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["7,734"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":100},{"accessor":"freq","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":90}],"columnGroups":[{"name":"2019","columns":["count_19","pct_19"]},{"name":"2020","columns":["count_20","pct_20"]},{"name":"2021","columns":["count_21","pct_21"]},{"name":"3 Years","columns":["total","freq"]}],"defaultPageSize":7,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"9be6cea5ed307ffd5e0e90c55d527905","key":"9be6cea5ed307ffd5e0e90c55d527905"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-87b9ed1561d8a284b6d4" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Coos removes entrances that are PC holds so Coos's administrative data is not included in this table. Strafford's data cannot differentiate between bookings and PC holds so their administrative data is also excluded.</p>
+<script type="application/json" data-for="htmlwidget-87b9ed1561d8a284b6d4">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"new_variable_name":["Belknap","Carroll","Cheshire","Hillsborough","Merrimack","Rockingham","Sullivan"],"count_19":[623,145,439,162,596,714,138],"pct_19":[0.362209302325581,0.114806017418844,0.262874251497006,0.0353095030514385,0.253941201533873,0.220438406915715,0.184245660881175],"count_20":[500,145,361,132,468,760,122],"pct_20":[0.364431486880466,0.113636363636364,0.265246142542248,0.0405405405405405,0.241112828438949,0.278082693011343,0.211805555555556],"count_21":[340,113,285,95,413,704,104],"pct_21":[0.32319391634981,0.0936205468102734,0.274566473988439,0.0341358246496586,0.243227326266196,0.308771929824561,0.211382113821138],"total":[1463,403,1085,389,1477,2178,364],"freq":[0.353040540540541,0.107581420181527,0.266650282624724,0.0366048743765879,0.246742398930839,0.263936015511391,0.200330214639516]},"columns":[{"id":"new_variable_name","name":" ","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":"Total","align":"left","footerStyle":{"fontWeight":"bold"},"minWidth":150,"style":{"fontWeight":"bold"}},{"id":"count_19","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,817"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"id":"pct_19","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"id":"count_20","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,488"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"id":"pct_20","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"id":"count_21","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,054"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"id":"pct_21","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"total","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["7,359"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":100},{"id":"freq","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":90}],"columnGroups":[{"name":"2019","columns":["count_19","pct_19"]},{"name":"2020","columns":["count_20","pct_20"]},{"name":"2021","columns":["count_21","pct_21"]},{"name":"3 Years","columns":["total","freq"]}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"b207ca8af9f8419140ff098ace6b9157"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <p><br></p>
-<h3 id="how-protective-custody-holds-are-recorded">How Protective
-Custody Holds Are Recorded</h3>
-<p>Each county records PC holds differently. PC holds are recorded in
-the charge description, booking type, sentence status, or release type,
-and sometimes across these metrics. See each <strong>County
-Report</strong> in the top menu to see how each county records PC holds
-and the “outcomes” of these holds.</p>
-<p><br> <br></p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

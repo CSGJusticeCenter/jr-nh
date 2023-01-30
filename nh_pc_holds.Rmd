@@ -18,9 +18,9 @@ knitr::opts_chunk$set(
   cache = FALSE
   )
 
+# Load packages, functions, and R data
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
-source("data_cleaning/01_functions_visuals.R")
 source("data_cleaning/rdas.R")
 ```
 
@@ -29,11 +29,54 @@ source("data_cleaning/rdas.R")
 ### By State
 
 ```{r, results='asis'}
+# Filter pc data by year
+data_19 <- df_pch %>% select(county, id, booking_id, fy, pc_hold_in_booking) %>% distinct() %>% filter(fy == 2019)
+data_20 <- df_pch %>% select(county, id, booking_id, fy, pc_hold_in_booking) %>% distinct() %>% filter(fy == 2020)
+data_21 <- df_pch %>% select(county, id, booking_id, fy, pc_hold_in_booking) %>% distinct() %>% filter(fy == 2021)
+
+# Df showing PC holds from 2019-2021
+data1 <- fnc_variable_table(data_19, data_20, data_21, "pc_hold_in_booking")
+data1 <- data1 %>% dplyr::rename(pc_hold_in_booking = variable_name)
+data1[is.na(data1)] = 0
+data1 <- data1 %>% filter(pc_hold_in_booking != "Total")
+
+# % of entrances (bookings) that are PC holds
+amt_pch_pct <- data1 %>% filter(pc_hold_in_booking == "PC Hold")
+amt_pch_pct <- amt_pch_pct$freq*100
+amt_pch_pct <- round(amt_pch_pct, 1)
+
 # print header for pc hold section
 cat("**Protective custody holds accounted for ", amt_pch_pct, "% of bookings from 2019 to 2021.** Coos and Strafford are not included in this calculation due to missing data.\n\n", sep = "")
 ```
 
 **Although the number of entrances has been decreasing, the proportion of PC holds has remained the same.**
+
+```{r}
+# Data for ggplots showing the number of entrances and proportion of PC holds by FY
+data1 <- df_pch %>%
+  filter(county != "Coos" | county != "Strafford") %>%
+  group_by(fy, pc_hold_in_booking) %>% summarise(total = n()) %>% filter(!is.na(pc_hold_in_booking))
+
+# Grouped bar chart showing the proportion of PC holds by FY
+data1 <- group_by(data1, fy) %>% mutate(pct = total/sum(total)*100) %>%
+  mutate(pct = round(pct, 1))
+data1 <- as.data.frame(data1)
+data1 <- data1 %>% mutate(pct = paste0(pct, "%"))
+PRES_gg_pch_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = pc_hold_in_booking)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_red), labels = c("Non-PC      ","PC")) +
+  geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
+            size = 7.5, family = "Franklin Gothic Book",
+            color = ifelse(data1$pc_hold_in_booking == "Non-PC Hold", "black", "white")) +
+  theme_axes +
+  theme(legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank())
+ggsave(PRES_gg_pch_pct_barchart, file="img/PRES_gg_pch_pct_barchart.png", width = 6,  height = 5, dpi = 100)
+```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
 knitr::include_graphics("img/PRES_gg_pch_pct_barchart.png")
@@ -44,7 +87,20 @@ knitr::include_graphics("img/PRES_gg_pch_pct_barchart.png")
 **Protective custody holds tend to occur most frequently during summer months. There was a decline in protective custody holds at the start of the pandemic but they began climbing again shortly after.**  
 
 ```{r}
-hc_pch_time
+# Filter to PC holds
+# Generate highchart showing PC holds over time
+df_pch %>% filter(pc_hold_in_booking == "PC Hold") %>%
+    dplyr::group_by(month_year, month_year_text) %>%
+    dplyr::summarise(total = n()) %>%
+    mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"),
+           month_year_text = as.factor(month_year_text)) %>%
+    hchart('line', hcaes(x = month_year_text, y = total), color = jri_light_blue) %>%
+    hc_setup() %>%
+    hc_xAxis(
+      title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px")),
+      plotLines = list(list(label = list(text = "COVID-19 Start"), fontSize = "26px", color = "gray", width = 2, value = 20, zIndex = 1))
+    ) %>%
+    hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px"))) 
 ```
 
 
@@ -55,7 +111,148 @@ hc_pch_time
 The proportion of entrances that were protective custody holds varied greatly by county. The table below shows the number of and proportion of entrances that included a protective custody hold charge. Belknap had the highest proportion of bookings that were protective custody holds.  
 
 ```{r}
-PRES_table_entrances_with_pc_holds
+##########
+# People with PC holds by county
+##########
+
+# Select variables and count number of pc holds people had by county by FY
+df_pc_people_fy_county <- df_pch %>%
+  ungroup() %>%
+  filter(pc_hold_in_booking == "PC Hold" & county != "Strafford" & county != "Coos") %>%
+  select(id, county) %>%
+  distinct() %>%
+  group_by(county) %>%
+  summarise(total_people = n()) %>%
+  adorn_totals("row") %>%
+  mutate(county = case_when(county == "Total" ~ "State", TRUE ~ county)) %>%
+  arrange(county %in% "State")
+
+##########
+# PC holds by county
+##########
+
+# Data for number of pc holds vs non-pc holds by county by FY
+df_pc_holds_fy_county <- df_pch %>%
+  select(id, booking_id, fy, county, pc_hold_in_booking) %>%
+  distinct() %>%
+  group_by(fy, county, pc_hold_in_booking) %>%
+  dplyr::summarise(total = n())
+
+# Reshape table for viewing
+df_pc_holds_fy_county <- df_pc_holds_fy_county %>% spread(pc_hold_in_booking, total) %>% clean_names()
+df_pc_holds_fy_county <- dcast(setDT(df_pc_holds_fy_county), county~fy, value.var=c('non_pc_hold', 'pc_hold'))
+
+# Calculate % of bookings that pc holds by county by FY
+df_pc_holds_fy_county <- df_pc_holds_fy_county %>%
+  mutate(pc_hold_pct_2019 = pc_hold_2019/(non_pc_hold_2019 + pc_hold_2019),
+         pc_hold_pct_2020 = pc_hold_2020/(non_pc_hold_2020 + pc_hold_2020),
+         pc_hold_pct_2021 = pc_hold_2021/(non_pc_hold_2021 + pc_hold_2021),
+         pc_hold_total = pc_hold_2019 + pc_hold_2020 + pc_hold_2021,
+         non_pc_hold_total = non_pc_hold_2019 + non_pc_hold_2020 + non_pc_hold_2021) %>%
+  mutate(freq = pc_hold_total/(non_pc_hold_total + pc_hold_total)) %>%
+  select(county,
+         count_19 = pc_hold_2019,
+         pct_19   = pc_hold_pct_2019,
+         count_20 = pc_hold_2020,
+         pct_20   = pc_hold_pct_2020,
+         count_21 = pc_hold_2021,
+         pct_21   = pc_hold_pct_2021,
+         total    = pc_hold_total,
+         freq)
+
+##########
+# Entrances by county
+##########
+
+# Data for total booking/entrances by FY and county
+df_entrances_county <- bookings_entrances %>%
+  select(id, booking_id, fy, county) %>%
+  distinct() %>%
+  group_by(fy, county) %>%
+  dplyr::summarise(total = n()) %>%
+  spread(fy, total) %>%
+  mutate(`2019` = as.numeric(`2019`),
+         `2020` = as.numeric(`2020`),
+         `2021` = as.numeric(`2021`)) %>%
+  mutate(total = `2019` + `2020` + `2021`) %>%
+  select(county, total_entrances = total)
+
+# Data for total booking/entrances for Coos and Strafford
+# Separate out so they aren't included in calculations
+df_entrances_Coos_Strafford <- df_entrances_county %>%
+  filter(county == "Coos" | county == "Strafford") %>%
+  mutate(total_pc_holds = NA,
+         freq = NA)
+
+# Remaining data with other counties
+df_entrances_county <- df_entrances_county %>%
+  ungroup() %>%
+  filter(county != "Coos" & county != "Strafford") %>%
+  droplevels()
+
+##########
+# Entrances with PC holds by county
+##########
+
+# Arrange data and get totals per row
+df_entrances_with_pc_holds <- df_pc_holds_fy_county %>%
+  select(county, total_pc_holds = total, freq) %>%
+  left_join(df_entrances_county, by = "county") %>%
+  select(county, total_entrances, everything()) %>%
+  arrange(county) %>%
+  adorn_totals("row")
+
+# Combine Coos and Strafford numbers
+df_entrances_with_pc_holds <- df_entrances_with_pc_holds %>%
+  mutate(freq = case_when(county == "Total" ~ (filter(df_entrances_with_pc_holds, county=='Total')$total_pc_holds)/(filter(df_entrances_with_pc_holds, county=='Total')$total_entrances),
+                          TRUE ~ freq)) %>%
+  full_join(df_entrances_county, by = c("county", "total_entrances")) %>%
+  arrange(county) %>%
+  mutate(total_entrances = case_when(county == "Total" ~ sum(total_entrances) - filter(df_entrances_with_pc_holds, county=='Total')$total_entrances,
+                                    TRUE ~ total_entrances))
+
+df_entrances_with_pc_holds <- rbind(df_entrances_with_pc_holds, df_entrances_Coos_Strafford)
+
+# Add totals and arrange table data
+# Add total number of people df
+df_entrances_with_pc_holds <- df_entrances_with_pc_holds %>%
+  mutate(total_entrances = case_when(county == "Total" ~ sum(total_entrances, na.rm = TRUE),
+                                     TRUE ~ total_entrances)) %>%
+  filter((county != "Coos" | county != "Strafford") & !is.na(total_entrances)) %>%
+  arrange(county) %>%
+  mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)",
+                            county == "Total" ~ "State", TRUE ~ county)) %>%
+  left_join(df_pc_people_fy_county, by = "county") %>%
+  arrange(county %in% "State") %>%
+  select(county, total_entrances, total_pc_holds, total_people, freq)
+
+
+##########
+# Reactable table
+##########
+
+ reactable(df_entrances_with_pc_holds,
+            pagination = FALSE,
+            style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+            theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                   headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+            compact = TRUE,
+            fullWidth = FALSE,
+            rowStyle = function(index) {
+              if (index %in% c(10)) {
+                list(`border-top` = "thin solid",
+                     fontWeight = "bold")
+              }
+            },
+            defaultColDef = reactable::colDef(
+              format = colFormat(separators = TRUE), align = "left"),
+            columns = list(
+              county          = colDef(minWidth = 180, name = "County", style = list(fontWeight = "bold")),
+              total_entrances = colDef(minWidth = 100, name = "Total Entrances", align = "center"),
+              total_pc_holds  = colDef(minWidth = 100, name = "PC Holds (Entrances)", align = "center"),
+              total_people    = colDef(minWidth = 100, name = "PC Holds (People)", align = "center"),
+              freq            = colDef(minWidth = 100, style = list(fontWeight = "bold"), name = "% PC Hold Entrances", format = colFormat(percent = TRUE, digits = 1), align = "center"))) %>%
+  add_source("Coos bookings and Strafford entrances were not included when calculating the proportion of entrances that are PC holds.", font_style = "italic", font_size = 14)
 ```
 
 <br>
@@ -63,14 +260,14 @@ PRES_table_entrances_with_pc_holds
 **Some counties saw decreases in PC holds while others saw increases.**  
 
 ```{r}
+# table_pc_holds_fy_county
+# Remove Coos and Strafford from table
+data1 <- df_pc_holds_fy_county %>% filter(county != "Coos" & county != "Strafford") %>% droplevels()
+
+# Table showing the number and proportion of PC holds each FY by county
+table_pc_holds_fy_county <- fnc_reactable_fy(data1, metric_label = " ", label_width = 150, note = "Coos removes entrances that are PC holds so Coos's administrative data is not included in this table. Strafford's data cannot differentiate between bookings and PC holds so their administrative data is also excluded.")
+
 table_pc_holds_fy_county
 ```
 
-<br>
-
-### How Protective Custody Holds Are Recorded
-
-Each county records PC holds differently. PC holds are recorded in the charge description, booking type, sentence status, or release type, and sometimes across these metrics. See each **County Report** in the top menu to see how each county records PC holds and the "outcomes" of these holds.  
-
-<br>
 <br>

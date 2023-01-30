@@ -1,17 +1,25 @@
 ############################################
 # Project: JRI New Hampshire
 # File: merrimack.R
-# Last updated: December 8, 2022
+# Last updated: January 30, 2023
 # Author: Mari Roberts
 
 # Standardize files across counties
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-###################
-# Merrimack County
-###################
+################################################################################
 
+# Administrative data file
+
+################################################################################
+
+# Clean variable names
+# Make charge code and release type NA since county does not have this data
+# Assign race labels
+# Make data names consistent with other counties
+# Fix date formats
+# Add county label
 merrimack_adm_all <- merrimack_adm.xlsx %>%
   clean_names() %>%
   mutate(charge_code = NA,
@@ -45,17 +53,6 @@ merrimack_adm_all <- merrimack_adm.xlsx %>%
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
          county = "Merrimack") %>%
   distinct()
-
-# Custom functions below creates the variables we need and relabels codes so they're consistent across counties.
-# Creates booking_id, los, fy, num_entrances, high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
-#    pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
-#    pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other pc variables).
-# Ignore warning messages.
-
-# Note about LOS: some people can be booked on the same day for multiple charges.
-# For example, someone could enter jail on a protective custody hold on 10/19 with a release
-#   date of 10/20 but also be booked for a criminal charge on 10/19 with a release date of 10/26
-#   For this reason, find the maximum release date for each booking id (created using id and booking_date).
 
 # Create fy, age, los, recode race, and order variables
 merrimack_adm <- fnc_data_setup(merrimack_adm_all)
@@ -148,7 +145,7 @@ merrimack_adm <- merrimack_adm %>%
 
   select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
-# create pc hold variable
+# Create pc hold variable
 merrimack_adm <- merrimack_adm %>%
   mutate(pc_hold = ifelse(
     sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold"
@@ -163,12 +160,12 @@ merrimack_adm <- fnc_add_data_labels(merrimack_adm)
 # Remove duplicates
 merrimack_adm <- merrimack_adm %>% distinct()
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 merrimack_adm <- merrimack_adm %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
-# create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for merrimack
+# Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for merrimack
 # there is info on drug court violations in the charge descriptions though
 merrimack_adm <- merrimack_adm %>%
   mutate(drug_court_pretrial  = NA,
@@ -233,9 +230,8 @@ merrimack_adm <- merrimack_adm %>%
                                           "101-180",
                                           "Over 180")))
 
-# Remove rows with all missing data (37 entries).
-# Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
-# Don't remove Strafford since all of their info is blank except for dates.
+# Remove rows with all missing data
+# Find and remove bookings that have no information
 all_nas <- merrimack_adm %>%
   filter(is.na(charge_desc) &
            is.na(booking_type) &
@@ -245,30 +241,12 @@ merrimack_adm1 <- merrimack_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
-# Charges
-
-################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-################################################################################
-
 # Medicaid data file
 
 ################################################################################
 
-# clean names
-# create race labels
+# Clean names
+# Create race and gender labels
 merrimack_medicaid <- merrimack_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
@@ -295,13 +273,13 @@ merrimack_medicaid <- merrimack_medicaid.xlsx %>%
   ) %>%
   mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
-# create a unique booking id per person per booking date
+# Create a unique booking id per person per booking date
 merrimack_medicaid$booking_id <- merrimack_medicaid %>% group_indices(unique_person_id, booking_date)
 merrimack_medicaid <- merrimack_medicaid %>%
   mutate(booking_id = paste("Merrimack", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 merrimack_medicaid <- merrimack_medicaid %>%
   filter(booking_date > "2018-06-30" & booking_date < "2021-07-01")

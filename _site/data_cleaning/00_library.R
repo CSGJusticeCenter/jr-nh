@@ -58,10 +58,10 @@ library(openxlsx)
 # To edit Renviron - usethis::edit_r_environ()
 # sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
 
-# Change path depending on SP name
-FULL_JC_FOLDER <- FALSE
+# Change path depending on SP name ########################################
+FULL_JC_FOLDER <- "MR"
 
-if (FULL_JC_FOLDER == TRUE){
+if (FULL_JC_FOLDER == "AB"){
   sp_data_path <- csgjcr::csg_sp_path(file.path("JR_NH"))
 } else {
   sp_data_path <- csgjcr::csg_sp_path(file.path("JC Research - JR_NH"))

@@ -1,17 +1,25 @@
 ############################################
 # Project: JRI New Hampshire
 # File: rockingham.R
-# Last updated: December 8, 2022
+# Last updated: January 30, 2023
 # Author: Mari Roberts
 
 # Standardize files across counties
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-###################
-# Rockingham County
-###################
+################################################################################
 
+# Administrative data file
+
+################################################################################
+
+# Clean variable names
+# Make id and release type NA since county does not have this data
+# Assign race labels
+# Make data names consistent with other counties
+# Fix date formats
+# Add county label
 rockingham_adm_all <- rockingham_adm.xlsx %>%
   clean_names() %>%
   mutate(id = NA,
@@ -23,8 +31,7 @@ rockingham_adm_all <- rockingham_adm.xlsx %>%
            race == "I" ~ "American Indian/Alaskan Native",
            race == "O" ~ "Unknown",
            race == "U" ~ "Unknown",
-           race == "W" ~ "White"
-         )) %>%
+           race == "W" ~ "White")) %>%
   dplyr::select(id,
                 inmate_id = inmate_id_number,
                 yob,
@@ -45,17 +52,6 @@ rockingham_adm_all <- rockingham_adm.xlsx %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y")) %>%
   distinct()
-
-# Custom functions below creates the variables we need and relabels codes so they're consistent across counties.
-# Creates booking_id, los, fy, num_entrances, high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
-#    pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
-#    pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other pc variables).
-# Ignore warning messages.
-
-# Note about LOS: some people can be booked on the same day for multiple charges.
-# For example, someone could enter jail on a protective custody hold on 10/19 with a release
-#   date of 10/20 but also be booked for a criminal charge on 10/19 with a release date of 10/26
-#   For this reason, find the maximum release date for each booking id (created using id and booking_date).
 
 # Create fy, age, los, recode race, and order variables
 rockingham_adm <- fnc_data_setup(rockingham_adm_all)
@@ -122,7 +118,7 @@ rockingham_adm <- rockingham_adm %>%
 
   select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
-# create pc hold variable
+# Create pc hold variable
 rockingham_adm <- rockingham_adm %>%
   mutate(pc_hold = ifelse(
     sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold"
@@ -137,12 +133,12 @@ rockingham_adm <- fnc_add_data_labels(rockingham_adm)
 # Remove duplicates
 rockingham_adm <- rockingham_adm %>% distinct()
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 rockingham_adm <- rockingham_adm %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
-# create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for rockingham
+# Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for rockingham
 rockingham_adm <- rockingham_adm %>%
   mutate(drug_court_pretrial  = ifelse(booking_type == "DRUG COURT SENTENCING ORDER" & sentence_status == "PRETRIAL", 1, 0),
          drug_court_sentenced = ifelse(booking_type == "DRUG COURT SENTENCING ORDER" & sentence_status == "SENTENCED", 1, 0))
@@ -206,32 +202,14 @@ rockingham_adm <- rockingham_adm %>%
                                           "101-180",
                                           "Over 180")))
 
-# Remove rows with all missing data (37 entries).
-# Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
-# Don't remove Strafford since all of their info is blank except for dates.
+# Remove rows with all missing data
+# Find and remove bookings that have no information
 all_nas <- rockingham_adm %>%
   filter(is.na(charge_desc) &
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
 rockingham_adm1 <- rockingham_adm %>% anti_join(all_nas) %>% distinct()
-
-################################################################################
-
-# Charges
-
-################################################################################
-
-
-
-
-
-
-
-
-
-
-
 
 
 ################################################################################
@@ -240,8 +218,8 @@ rockingham_adm1 <- rockingham_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
-# clean names
-# create race labels
+# Clean names
+# Create race and gender labels
 rockingham_medicaid <- rockingham_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
@@ -267,19 +245,16 @@ rockingham_medicaid <- rockingham_medicaid.xlsx %>%
   ) %>%
   mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
-# create a unique booking id per person per booking date
+# Create a unique booking id per person per booking date
 rockingham_medicaid$booking_id <- rockingham_medicaid %>% group_indices(unique_person_id, booking_date)
 rockingham_medicaid <- rockingham_medicaid %>%
   mutate(booking_id = paste("Rockingham", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 rockingham_medicaid <- rockingham_medicaid %>%
   filter(booking_date > "2018-06-30" & booking_date < "2021-07-01")
-
-# # Does the medicaid file have the same number of unique individuals as the adm? Off by 33
-# length(unique(rockingham_adm$id)); length(unique(rockingham_medicaid$unique_person_id))
 
 ################################################################################
 

@@ -594,8 +594,11 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                            na.rm=TRUE),
          study_bh_mh_or_sud_service_primary_dx_flag = pmax(study_mh_service_primary_dx_flag,study_sud_service_primary_dx_flag,
                                              na.rm=TRUE),
+<<<<<<< HEAD
          study_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[study_window_medicaid_match_flag==1],
                                                             na.rm=TRUE),
+=======
+>>>>>>> a822a54afea3c4b476fdefdde643f50737c7224b
          study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[study_window_medicaid_match_flag==1],
                                                      na.rm=TRUE),
          study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[study_window_medicaid_match_flag==1],
