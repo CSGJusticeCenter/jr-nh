@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -785,6 +786,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1026,10 +1028,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1861,9 +1859,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1875,6 +1885,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1974,6 +2009,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1996,7 +2033,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2366,13 +2403,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
-  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
-  <script src="site_libs/react-17.0.0/react.min.js"></script>
-  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
-  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
-  <script src="site_libs/htmlwidgets-1.5.4/htmlwidgets.js"></script>
-  <script src="site_libs/reactable-binding-0.2.3/reactable.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2416,7 +2447,6 @@ Overall Trends
 <a href="nh_booking_types_analysis.html">Booking Types</a>
 <a href="nh_charge_type_analysis.html">Charge Types</a>
 <a href="nh_high_utilizers_analysis.html">High Utilizers</a>
-<a href="nh_demographics_analysis.html">Demographics</a>
 <a href="nh_medicaid_analysis.html">Medicaid</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
 </div>
@@ -2468,101 +2498,16 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a
-href="#how-we-define-people-who-are-high-utilizers-of-the-jail-system"
-id="toc-how-we-define-people-who-are-high-utilizers-of-the-jail-system">How
-we define people who are high utilizers of the jail system</a></li>
-<li><a
-href="#table-1.-median-average-minimum-and-maximum-number-of-entrances-per-person-by-high-utilizer-type-and-county."
-id="toc-table-1.-median-average-minimum-and-maximum-number-of-entrances-per-person-by-high-utilizer-type-and-county.">Table
-1. Median, average, minimum, and maximum number of entrances per person
-by high utilizer type and county.</a></li>
-<li><a
-href="#table-2.-number-of-entrances-people-and-proportion-of-high-utilizer-entrances-by-high-utilizer-type-and-county."
-id="toc-table-2.-number-of-entrances-people-and-proportion-of-high-utilizer-entrances-by-high-utilizer-type-and-county.">Table
-2. Number of entrances, people, and proportion of high utilizer
-entrances by high utilizer type and county.</a></li>
-<li><a
-href="#table-3.-top-1-high-utilizers-number-of-hu-entrances-number-of-hu-people-minimum-median-average-and-maximum-number-of-entrances-per-person-by-county."
-id="toc-table-3.-top-1-high-utilizers-number-of-hu-entrances-number-of-hu-people-minimum-median-average-and-maximum-number-of-entrances-per-person-by-county.">Table
-3. Top 1% High Utilizers: Number of HU entrances, number of HU people,
-minimum, median, average, and maximum number of entrances per person by
-county.</a></li>
-<li><a
-href="#table-4.-top-5-high-utilizers-number-of-hu-entrances-number-of-hu-people-minimum-median-average-and-maximum-number-of-entrances-per-person-by-county."
-id="toc-table-4.-top-5-high-utilizers-number-of-hu-entrances-number-of-hu-people-minimum-median-average-and-maximum-number-of-entrances-per-person-by-county.">Table
-4. Top 5% High Utilizers: Number of HU entrances, number of HU people,
-minimum, median, average, and maximum number of entrances per person by
-county.</a></li>
-<li><a
-href="#table-5.-top-10-high-utilizers-number-of-hu-entrances-number-of-hu-people-minimum-median-average-and-maximum-number-of-entrances-per-person-by-county."
-id="toc-table-5.-top-10-high-utilizers-number-of-hu-entrances-number-of-hu-people-minimum-median-average-and-maximum-number-of-entrances-per-person-by-county.">Table
-5. Top 10% High Utilizers: Number of HU entrances, number of HU people,
-minimum, median, average, and maximum number of entrances per person by
-county.</a></li>
+<li><a href="#how-we-define-people-who-are-high-utilizers-of-the-jail-system" id="toc-how-we-define-people-who-are-high-utilizers-of-the-jail-system">How we define people who are high utilizers of the jail system</a></li>
 </ul>
 </nav>
 </div>
-<h2
-id="how-we-define-people-who-are-high-utilizers-of-the-jail-system">How
-we define people who are high utilizers of the jail system</h2>
-<p>We defined people who are high utilizers of the jail system as the
-top 1%, 5%, or 10% of people entering jails from FY2019 to FY2021.
-De-identified jail administrative data was provided by DHHS, which
-includes a unique id for each person to account for entrances at more
-than one jail.</p>
+<h2 id="how-we-define-people-who-are-high-utilizers-of-the-jail-system">How we define people who are high utilizers of the jail system</h2>
+<p>We defined people who are high utilizers of the jail system as the top 1%, 5%, or 10% of people entering jails from FY2019 to FY2021. De-identified jail administrative data was provided by DHHS, which includes a unique id for each person to account for entrances at more than one jail.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<h2
-id="table-1.-median-average-minimum-and-maximum-number-of-entrances-per-person-by-high-utilizer-type-and-county.">Table
-1. Median, average, minimum, and maximum number of entrances per person
-by high utilizer type and county.</h2>
-<div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-871a720ccfa177b47566" class="reactable html-widget" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-871a720ccfa177b47566">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos (bookings only)","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan","State"],"entrances_total":[4144,2646,3799,671,10628,5984,8246,12228,1832,50178],"people_entered_total":[2397,1825,2475,462,6051,3331,5599,8361,1045,31546],"avg_entrances":[2.43929912390488,2.42356164383562,1.86949494949495,1.96320346320346,2.30143777887952,2.70129090363254,2.16074298981961,1.73830881473508,2.18277511961722,1.79868803097107],"total_hu_entrances_1_pct":[476,99,226,17,651,504,581,987,63,3604],"total_hu_people_1_pct":[47,33,22,3,74,68,87,84,7,425],"min_1_pct":[12,12,12,12,12,12,12,12,13,12],"median_1_pct":[15,14,16,12,14,14,14,14,18,14],"mean_1_pct":[18,15.4848484848485,17.8181818181818,12.6666666666667,15.1486486486486,16.4117647058824,15.2413793103448,16.3095238095238,16.4285714285714,16.5321100917431],"max_1_pct":[43,43,41,14,43,43,29,72,20,72],"total_hu_entrances_5_pct":[1128,509,691,91,2563,1804,1600,2550,359,11295],"total_hu_people_5_pct":[217,179,105,23,481,380,398,381,68,2232],"min_5_pct":[6,6,6,6,6,6,6,6,6,6],"median_5_pct":[8,8,8,7,7,8,8,8,8,8],"mean_5_pct":[9.98617511520737,9.19553072625698,9.95238095238095,8.04347826086956,8.68399168399168,9.16578947368421,9.39195979899498,9.74015748031496,8.57352941176471,9.18292682926829],"max_5_pct":[43,43,41,14,43,43,29,72,20,72],"total_hu_entrances_10_pct":[1735,812,1103,146,4276,2757,2545,3369,641,17384],"total_hu_people_10_pct":[434,314,239,48,1048,758,793,664,159,4457],"min_10_pct":[4,4,4,4,4,4,4,4,4,4],"median_10_pct":[5.5,6,5,5,5,6,6,6,5,5],"mean_10_pct":[7.19354838709677,7.13057324840764,6.82008368200837,6.14583333333333,6.34637404580153,6.79551451187335,6.92433795712484,7.46234939759036,6.18867924528302,6.63005339435545],"max_10_pct":[43,43,41,14,43,43,29,72,20,72],"freq_1_pct":[0.114864864864865,0.0374149659863946,0.0594893392998157,0.0253353204172876,0.0612532931878058,0.0842245989304813,0.0704584040747029,0.0807163886162905,0.0343886462882096,0.0718243054725178],"freq_5_pct":[0.272200772200772,0.192365835222978,0.181889971045012,0.135618479880775,0.241155438464434,0.301470588235294,0.194033470773708,0.208537782139352,0.195960698689956,0.225098648810236],"freq_10_pct":[0.418677606177606,0.306878306878307,0.290339563042906,0.217585692995529,0.402333458788107,0.460728609625668,0.30863448944943,0.275515210991168,0.349890829694323,0.346446649926263],"range_1_pct":["12-43","12-43","12-41","12-14","12-43","12-43","12-29","12-72","13-20","12-72"],"range_5_pct":["6-43","6-43","6-41","6-14","6-43","6-43","6-29","6-72","6-20","6-72"],"range_10_pct":["4-43","4-43","4-41","4-14","4-43","4-43","4-29","4-72","4-20","4-72"]},"columns":[{"accessor":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":190,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"entrances_total","name":"Total Entrances","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"people_entered_total","name":"Total People","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"avg_entrances","name":"Avg Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","show":false,"minWidth":130,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total_hu_entrances_1_pct","name":"HU's (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"total_hu_people_1_pct","name":"HU's (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"min_1_pct","name":"Minimum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"median_1_pct","name":"Median Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"mean_1_pct","name":"Avg Number of Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","minWidth":130},{"accessor":"max_1_pct","name":"Maximum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":130,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total_hu_entrances_5_pct","name":"HU's (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"total_hu_people_5_pct","name":"HU's (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"min_5_pct","name":"Minimum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"median_5_pct","name":"Median Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"mean_5_pct","name":"Avg Number of Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","minWidth":130},{"accessor":"max_5_pct","name":"Maximum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":130,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total_hu_entrances_10_pct","name":"HU's (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"total_hu_people_10_pct","name":"HU's (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"min_10_pct","name":"Minimum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"median_10_pct","name":"Median Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"mean_10_pct","name":"Avg Number of Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","minWidth":130},{"accessor":"max_10_pct","name":"Maximum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":130,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"freq_1_pct","name":"Proportion of HU Entrances","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","show":false,"minWidth":100,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"freq_5_pct","name":"Proportion of HU Entrances","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","show":false,"minWidth":100,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"freq_10_pct","name":"Proportion of HU Entrances","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","show":false,"minWidth":100,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"range_1_pct","name":"Min - Max Number of Entrances Per Person","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"range_5_pct","name":"Min - Max Number of Entrances Per Person","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"range_10_pct","name":"Min - Max Number of Entrances Per Person","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100}],"columnGroups":[{"name":"Top 1% HU's","columns":["total_hu_entrances_1_pct","total_hu_people_1_pct","freq_1_pct","min_1_pct","median_1_pct","mean_1_pct","max_1_pct","range_1_pct"]},{"name":"Top 5% HU's","columns":["total_hu_entrances_5_pct","total_hu_people_5_pct","freq_5_pct","min_5_pct","median_5_pct","mean_5_pct","max_5_pct","range_5_pct"]},{"name":"Top 10% HU's","columns":["total_hu_entrances_10_pct","total_hu_people_10_pct","freq_10_pct","min_10_pct","median_10_pct","mean_10_pct","max_10_pct","range_10_pct"]}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"00b21a649740c44f9a85cf0afdcaf596","key":"00b21a649740c44f9a85cf0afdcaf596"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
-</div>
-<h2
-id="table-2.-number-of-entrances-people-and-proportion-of-high-utilizer-entrances-by-high-utilizer-type-and-county.">Table
-2. Number of entrances, people, and proportion of high utilizer
-entrances by high utilizer type and county.</h2>
-<div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-4694447eecdfd7f9f450" class="reactable html-widget" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-4694447eecdfd7f9f450">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos (bookings only)","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan","State"],"entrances_total":[4144,2646,3799,671,10628,5984,8246,12228,1832,50178],"people_entered_total":[2397,1825,2475,462,6051,3331,5599,8361,1045,31546],"avg_entrances":[2.43929912390488,2.42356164383562,1.86949494949495,1.96320346320346,2.30143777887952,2.70129090363254,2.16074298981961,1.73830881473508,2.18277511961722,1.79868803097107],"total_hu_entrances_1_pct":[476,99,226,17,651,504,581,987,63,3604],"total_hu_people_1_pct":[47,33,22,3,74,68,87,84,7,425],"min_1_pct":[12,12,12,12,12,12,12,12,13,12],"median_1_pct":[15,14,16,12,14,14,14,14,18,14],"mean_1_pct":[18,15.4848484848485,17.8181818181818,12.6666666666667,15.1486486486486,16.4117647058824,15.2413793103448,16.3095238095238,16.4285714285714,16.5321100917431],"max_1_pct":[43,43,41,14,43,43,29,72,20,72],"total_hu_entrances_5_pct":[1128,509,691,91,2563,1804,1600,2550,359,11295],"total_hu_people_5_pct":[217,179,105,23,481,380,398,381,68,2232],"min_5_pct":[6,6,6,6,6,6,6,6,6,6],"median_5_pct":[8,8,8,7,7,8,8,8,8,8],"mean_5_pct":[9.98617511520737,9.19553072625698,9.95238095238095,8.04347826086956,8.68399168399168,9.16578947368421,9.39195979899498,9.74015748031496,8.57352941176471,9.18292682926829],"max_5_pct":[43,43,41,14,43,43,29,72,20,72],"total_hu_entrances_10_pct":[1735,812,1103,146,4276,2757,2545,3369,641,17384],"total_hu_people_10_pct":[434,314,239,48,1048,758,793,664,159,4457],"min_10_pct":[4,4,4,4,4,4,4,4,4,4],"median_10_pct":[5.5,6,5,5,5,6,6,6,5,5],"mean_10_pct":[7.19354838709677,7.13057324840764,6.82008368200837,6.14583333333333,6.34637404580153,6.79551451187335,6.92433795712484,7.46234939759036,6.18867924528302,6.63005339435545],"max_10_pct":[43,43,41,14,43,43,29,72,20,72],"freq_1_pct":[0.114864864864865,0.0374149659863946,0.0594893392998157,0.0253353204172876,0.0612532931878058,0.0842245989304813,0.0704584040747029,0.0807163886162905,0.0343886462882096,0.0718243054725178],"freq_5_pct":[0.272200772200772,0.192365835222978,0.181889971045012,0.135618479880775,0.241155438464434,0.301470588235294,0.194033470773708,0.208537782139352,0.195960698689956,0.225098648810236],"freq_10_pct":[0.418677606177606,0.306878306878307,0.290339563042906,0.217585692995529,0.402333458788107,0.460728609625668,0.30863448944943,0.275515210991168,0.349890829694323,0.346446649926263],"range_1_pct":["12-43","12-43","12-41","12-14","12-43","12-43","12-29","12-72","13-20","12-72"],"range_5_pct":["6-43","6-43","6-41","6-14","6-43","6-43","6-29","6-72","6-20","6-72"],"range_10_pct":["4-43","4-43","4-41","4-14","4-43","4-43","4-29","4-72","4-20","4-72"]},"columns":[{"accessor":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":190,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"entrances_total","name":"Total Entrances","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"people_entered_total","name":"Total People","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"avg_entrances","name":"Avg Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","show":false,"minWidth":130,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total_hu_entrances_1_pct","name":"HU's (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"total_hu_people_1_pct","name":"HU's (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"min_1_pct","name":"Minimum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"median_1_pct","name":"Median Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"mean_1_pct","name":"Avg Number of Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","show":false,"minWidth":130},{"accessor":"max_1_pct","name":"Maximum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":130,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total_hu_entrances_5_pct","name":"HU's (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"total_hu_people_5_pct","name":"HU's (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"min_5_pct","name":"Minimum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"median_5_pct","name":"Median Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"mean_5_pct","name":"Avg Number of Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","show":false,"minWidth":130},{"accessor":"max_5_pct","name":"Maximum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":130,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total_hu_entrances_10_pct","name":"HU's (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"total_hu_people_10_pct","name":"HU's (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"min_10_pct","name":"Minimum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"median_10_pct","name":"Median Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100},{"accessor":"mean_10_pct","name":"Avg Number of Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","show":false,"minWidth":130},{"accessor":"max_10_pct","name":"Maximum Number of Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":130,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"freq_1_pct","name":"Proportion of HU Entrances","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":100,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"freq_5_pct","name":"Proportion of HU Entrances","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":100,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"freq_10_pct","name":"Proportion of HU Entrances","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":100,"style":{"fontWeight":"bold"}},{"accessor":"range_1_pct","name":"Min - Max Number of Entrances Per Person","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"range_5_pct","name":"Min - Max Number of Entrances Per Person","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"range_10_pct","name":"Min - Max Number of Entrances Per Person","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","show":false,"minWidth":100,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}}],"columnGroups":[{"name":"Top 1% HU's","columns":["total_hu_entrances_1_pct","total_hu_people_1_pct","freq_1_pct","min_1_pct","median_1_pct","mean_1_pct","max_1_pct","range_1_pct"]},{"name":"Top 5% HU's","columns":["total_hu_entrances_5_pct","total_hu_people_5_pct","freq_5_pct","min_5_pct","median_5_pct","mean_5_pct","max_5_pct","range_5_pct"]},{"name":"Top 10% HU's","columns":["total_hu_entrances_10_pct","total_hu_people_10_pct","freq_10_pct","min_10_pct","median_10_pct","mean_10_pct","max_10_pct","range_10_pct"]}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"2b0a6d8f4972dc9db818921259ae66ad","key":"2b0a6d8f4972dc9db818921259ae66ad"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
-</div>
-<p><br></p>
-<h2
-id="table-3.-top-1-high-utilizers-number-of-hu-entrances-number-of-hu-people-minimum-median-average-and-maximum-number-of-entrances-per-person-by-county.">Table
-3. Top 1% High Utilizers: Number of HU entrances, number of HU people,
-minimum, median, average, and maximum number of entrances per person by
-county.</h2>
-<div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-8dbd8056467c0abfe80b" class="reactable html-widget" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-8dbd8056467c0abfe80b">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos (bookings only)","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan","State"],"total_hu_entrances":[476,99,226,17,651,504,581,987,63,3604],"total_hu_people":[47,33,22,3,74,68,87,84,7,425],"min":[12,12,12,12,12,12,12,12,13,12],"median":[15,14,16,12,14,14,14,14,18,14],"mean":[18,15.4848484848485,17.8181818181818,12.6666666666667,15.1486486486486,16.4117647058824,15.2413793103448,16.3095238095238,16.4285714285714,16.5321100917431],"max":[43,43,41,14,43,43,29,72,20,72]},"columns":[{"accessor":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":190,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total_hu_entrances","name":"HU's (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"total_hu_people","name":"HU's (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"min","name":"Min Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":130},{"accessor":"median","name":"Med Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":130},{"accessor":"mean","name":"Avg Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","minWidth":130,"style":{"fontWeight":"bold"}},{"accessor":"max","name":"Max Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":130}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"27381849fe2f30b1d7018c3a56ecc42f","key":"27381849fe2f30b1d7018c3a56ecc42f"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
-</div>
-<p><br></p>
-<h2
-id="table-4.-top-5-high-utilizers-number-of-hu-entrances-number-of-hu-people-minimum-median-average-and-maximum-number-of-entrances-per-person-by-county.">Table
-4. Top 5% High Utilizers: Number of HU entrances, number of HU people,
-minimum, median, average, and maximum number of entrances per person by
-county.</h2>
-<div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-9ac32825284c90983762" class="reactable html-widget" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-9ac32825284c90983762">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos (bookings only)","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan","State"],"total_hu_entrances":[1128,509,691,91,2563,1804,1600,2550,359,11295],"total_hu_people":[217,179,105,23,481,380,398,381,68,2232],"min":[6,6,6,6,6,6,6,6,6,6],"median":[8,8,8,7,7,8,8,8,8,8],"mean":[9.98617511520737,9.19553072625698,9.95238095238095,8.04347826086956,8.68399168399168,9.16578947368421,9.39195979899498,9.74015748031496,8.57352941176471,9.18292682926829],"max":[43,43,41,14,43,43,29,72,20,72]},"columns":[{"accessor":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":190,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total_hu_entrances","name":"HU's (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"total_hu_people","name":"HU's (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"min","name":"Min Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":130},{"accessor":"median","name":"Med Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":130},{"accessor":"mean","name":"Avg Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","minWidth":130,"style":{"fontWeight":"bold"}},{"accessor":"max","name":"Max Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":130}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"201b4b2f596406bad879ed22ac911274","key":"201b4b2f596406bad879ed22ac911274"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
-</div>
-<p><br></p>
-<h2
-id="table-5.-top-10-high-utilizers-number-of-hu-entrances-number-of-hu-people-minimum-median-average-and-maximum-number-of-entrances-per-person-by-county.">Table
-5. Top 10% High Utilizers: Number of HU entrances, number of HU people,
-minimum, median, average, and maximum number of entrances per person by
-county.</h2>
-<div class="layout-chunk" data-layout="l-body">
-<div id="htmlwidget-5d1efa2015d57dc1fa34" class="reactable html-widget" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-5d1efa2015d57dc1fa34">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos (bookings only)","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan","State"],"total_hu_entrances":[1735,812,1103,146,4276,2757,2545,3369,641,17384],"total_hu_people":[434,314,239,48,1048,758,793,664,159,4457],"min":[4,4,4,4,4,4,4,4,4,4],"median":[5.5,6,5,5,5,6,6,6,5,5],"mean":[7.19354838709677,7.13057324840764,6.82008368200837,6.14583333333333,6.34637404580153,6.79551451187335,6.92433795712484,7.46234939759036,6.18867924528302,6.63005339435545],"max":[43,43,41,14,43,43,29,72,20,72]},"columns":[{"accessor":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":190,"style":{"fontWeight":"bold","position":"sticky","borderRight":"1px solid #d3d3d3"}},{"accessor":"total_hu_entrances","name":"HU's (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"total_hu_people","name":"HU's (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"accessor":"min","name":"Min Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":130},{"accessor":"median","name":"Med Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":130},{"accessor":"mean","name":"Avg Entrances Per Person","type":"numeric","format":{"cell":{"digits":1},"aggregated":{"digits":1}},"align":"center","minWidth":130,"style":{"fontWeight":"bold"}},{"accessor":"max","name":"Max Entrances Per Person","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":130}],"defaultPageSize":10,"paginationType":"numbers","showPageInfo":true,"minRows":1,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"0f84881eec53705ee91d4ef9381af048","key":"0f84881eec53705ee91d4ef9381af048"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
-</div>
-<p><br></p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

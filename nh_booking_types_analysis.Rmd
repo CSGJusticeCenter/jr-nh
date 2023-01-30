@@ -20,6 +20,10 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
+
+# Change HU variable to 1% = 1 percent, 5% = 2-5 percent, 10% = 6-10 percent
+bookings_entrances <- fnc_hu_group_exclusive(bookings_entrances)
+adm_all <- fnc_hu_group_exclusive(adm_all)
 ```
 
 ## Booking Types
@@ -133,22 +137,6 @@ df_sentence_statuses_county <- df_sentence_statuses_county %>% spread(sentence_s
          `Unknown (N)`            = unknown) %>% 
   left_join(df_entrances_county, by = c("County" = "county")) %>% 
   rename(`Total Entrances (N)` = total)
-
-df_sentence_statuses_county_pct <- df_sentence_statuses_county %>% 
-  mutate(`Pretrial %`             = percent(`Pretrial (N)`/`Total Entrances (N)`),
-         `Protective Custody (%)` = percent(`Protective Custody (N)`/`Total Entrances (N)`),
-         `Sentenced (%)`          = percent(`Sentenced (N)`/`Total Entrances (N)`),
-         `Other (%)`              = percent(`Other (N)`/`Total Entrances (N)`),
-         `Unknown (%)`            = percent(`Unknown (N)`/`Total Entrances (N)`)
-         ) %>% 
-  select(-c(
-         `Pretrial (N)`,
-         `Protective Custody (N)`,
-         `Sentenced (N)`,
-         `Other (N)`,
-         `Unknown (N)`,
-         `Total Entrances (N)`
-  ))
   
 kable(df_sentence_statuses_county, 
       format.args = list(big.mark = ","), 
@@ -172,6 +160,21 @@ kable(df_sentence_statuses_county,
 ### Booking Types by County (%)
 
 ```{r}
+df_sentence_statuses_county_pct <- df_sentence_statuses_county %>% 
+  mutate(`Pretrial %`             = percent(`Pretrial (N)`/`Total Entrances (N)`),
+         `Protective Custody (%)` = percent(`Protective Custody (N)`/`Total Entrances (N)`),
+         `Sentenced (%)`          = percent(`Sentenced (N)`/`Total Entrances (N)`),
+         `Other (%)`              = percent(`Other (N)`/`Total Entrances (N)`),
+         `Unknown (%)`            = percent(`Unknown (N)`/`Total Entrances (N)`)
+         ) %>% 
+  select(-c(
+         `Pretrial (N)`,
+         `Protective Custody (N)`,
+         `Sentenced (N)`,
+         `Other (N)`,
+         `Unknown (N)`,
+         `Total Entrances (N)`))
+
 kable(df_sentence_statuses_county_pct, 
       format.args = list(big.mark = ","), 
       align=rep('l')) %>%
@@ -401,8 +404,7 @@ ggplot(data = df1,
   geom_bar(stat = "identity", 
            color = "gray80") +
   scale_x_discrete(limits = rev) +
-  scale_y_continuous(labels = scales::percent,
-                   expand = expansion(mult = c(0, .1))) +
+  scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values = c("#2F7084",
                                "#1F4A58",
                                "#E17619",
@@ -411,11 +413,6 @@ ggplot(data = df1,
                                "#61C280",
                                "#DA70D6"
                                )) +
-  guides(fill = guide_legend(reverse = TRUE,
-                             title.position = "top",
-                             label.position = "bottom",
-                             keywidth = 3,
-                             nrow = 1)) +
   geom_label(aes(y = percent, label = ifelse(percent > 0.05, percent_label, NA), fontface = "bold"), position = position_stack(vjust = .5), size = 5, colour = "white", show.legend = FALSE) +
   labs(x = NULL, y = NULL,
        fill = "Charge Type",
@@ -423,29 +420,24 @@ ggplot(data = df1,
        title = NULL,
        subtitle = NULL) +
   theme_minimal()+
-  theme(legend.position = "top",
-        legend.title.align=0.5,
+  theme(legend.position = "right",
         plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         plot.caption = element_text(hjust = 0.5),
-        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
-        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
+        axis.text.y = element_markdown(face = "bold", size = 12),
+        axis.text.x = element_text(face = "bold", size = 12),
         axis.ticks.length = unit(0, "cm"),
         panel.grid.major = element_blank(),
         panel.border = element_blank(),
         panel.grid.major.y = element_blank(),
         panel.grid.major.x = element_blank(),
-        panel.grid.minor = element_blank()) +
-  coord_flip() +
-  theme(aspect.ratio=10/50)
+        panel.grid.minor = element_blank()) 
 ```
 
 
 <br>
 
 ## High Utilizers and Booking Types
-
-### Top 1%
 
 ```{r}
 df_hus_entrances <- adm_all %>% 
@@ -455,14 +447,11 @@ df_hus_entrances <- adm_all %>%
          county, 
          fy,
          num_entrances,
-         high_utilizer_4_times,
-         high_utilizer_1_pct,
-         high_utilizer_5_pct,
-         high_utilizer_10_pct) %>% 
+         hu_group_exclusive) %>% 
   distinct() %>% 
   filter(sentence_status_standard != "UNKNOWN")
 
-df1 <- table(df_hus_entrances$sentence_status_standard, df_hus_entrances$high_utilizer_1_pct)
+df1 <- table(df_hus_entrances$sentence_status_standard, df_hus_entrances$hu_group_exclusive)
 table1 <- prop.table(df1, 2)
 table1 <- as.data.frame(cbind(df1, table1))
 table1 <- table1 %>% rownames_to_column("Entrance Type")
@@ -485,108 +474,26 @@ reactable(table1,
             },
             footerStyle = list(fontWeight = "bold")
           ),
-          columnGroups = list(
-            colGroup(name = "Top 1% HU", columns = c("Yes", "Yes.1")),
-            colGroup(name = "Not Top 1% HU", columns = c("No", "No.1"))
-          ),
           compact = TRUE,
           fullWidth = FALSE,
           columns = list(
             `Entrance Type` = colDef(name = "", minWidth = 200, style = list(fontWeight = "bold")),
-            `No`    = colDef(name = "N", minWidth = 100),
-            `Yes`   = colDef(name = "N", minWidth = 100),
-            `No.1`  = colDef(name = "%", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
-            `Yes.1` = colDef(name = "%", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
+            `Top 1%`        = colDef(name = "Top 1% (N)",  minWidth = 100),
+            `Top 5%`        = colDef(name = "Top 5% (N)",  minWidth = 100),
+            `Top 10%`       = colDef(name = "Top 10% (N)", minWidth = 100),
+            `Non-HU%`       = colDef(name = "Non-HU (N)",  minWidth = 100),
+
+            `Top 1%.1`      = colDef(name = "Top 1% (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            `Top 5%.1`      = colDef(name = "Top 5% (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            `Top 10%.1`     = colDef(name = "Top 10% (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            `Non-HU.1`      = colDef(name = "Non-HU (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
             )
           ) %>%
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
 
-### Top 5%
 
-```{r}
-df1 <- table(df_hus_entrances$sentence_status_standard, df_hus_entrances$high_utilizer_5_pct)
-table1 <- prop.table(df1, 2)
-table1 <- as.data.frame(cbind(df1, table1))
-table1 <- table1 %>% rownames_to_column("Entrance Type")
-reactable(table1,
-          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
-          pagination = FALSE,
-          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
-                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-          defaultColDef = reactable::colDef(
-            format = colFormat(separators = TRUE), align = "left", minWidth = 100,
-            footer = function(values, name) {
-              if (name %in% c("Drug court-related booking", "Not a drug court-related booking")) {
-                htmltools::div(paste0("", formatC(
-                  x = sum(values),
-                  digits = 0,
-                  big.mark = ",",
-                  format = "f"
-                )))
-              }
-            },
-            footerStyle = list(fontWeight = "bold")
-          ),
-          columnGroups = list(
-            colGroup(name = "Top 5% HU", columns = c("Yes", "Yes.1")),
-            colGroup(name = "Not Top 5% HU", columns = c("No", "No.1"))
-          ),
-          compact = TRUE,
-          fullWidth = FALSE,
-          columns = list(
-            `Entrance Type` = colDef(name = "", minWidth = 200, style = list(fontWeight = "bold")),
-            `No`    = colDef(name = "N", minWidth = 100),
-            `Yes`   = colDef(name = "N", minWidth = 100),
-            `No.1`  = colDef(name = "%", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
-            `Yes.1` = colDef(name = "%", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
-            )
-          ) %>%
-add_source(paste(""), font_style = "italic", font_size = 14)
-```
 
-### Top 10%
-
-```{r}
-df1 <- table(df_hus_entrances$sentence_status_standard, df_hus_entrances$high_utilizer_10_pct)
-table1 <- prop.table(df1, 2)
-table1 <- as.data.frame(cbind(df1, table1))
-table1 <- table1 %>% rownames_to_column("Entrance Type")
-reactable(table1,
-          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
-          pagination = FALSE,
-          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
-                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-          defaultColDef = reactable::colDef(
-            format = colFormat(separators = TRUE), align = "left", minWidth = 100,
-            footer = function(values, name) {
-              if (name %in% c("Drug court-related booking", "Not a drug court-related booking")) {
-                htmltools::div(paste0("", formatC(
-                  x = sum(values),
-                  digits = 0,
-                  big.mark = ",",
-                  format = "f"
-                )))
-              }
-            },
-            footerStyle = list(fontWeight = "bold")
-          ),
-          columnGroups = list(
-            colGroup(name = "Top 10% HU", columns = c("Yes", "Yes.1")),
-            colGroup(name = "Not Top 10% HU", columns = c("No", "No.1"))
-          ),
-          compact = TRUE,
-          fullWidth = FALSE,
-          columns = list(
-            `Entrance Type` = colDef(name = "", minWidth = 200, style = list(fontWeight = "bold")),
-            `No`    = colDef(name = "N", minWidth = 100),
-            `Yes`   = colDef(name = "N", minWidth = 100),
-            `No.1`  = colDef(name = "%", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
-            `Yes.1` = colDef(name = "%", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
-            )
-          ) %>%
-add_source(paste(""), font_style = "italic", font_size = 14)
-```
 
 <br>
 
@@ -608,10 +515,7 @@ df_drug_courts <- adm_all %>%
          county, 
          fy,
          num_entrances,
-         high_utilizer_4_times,
-         high_utilizer_1_pct,
-         high_utilizer_5_pct,
-         high_utilizer_10_pct,
+         hu_group_exclusive,
          drug_court_pretrial,
          drug_court_sentenced,
          crime_type_lookup,
@@ -629,10 +533,7 @@ df_drug_courts <- df_drug_courts %>%
          county, 
          fy,
          num_entrances,
-         high_utilizer_4_times,
-         high_utilizer_1_pct,
-         high_utilizer_5_pct,
-         high_utilizer_10_pct,
+         hu_group_exclusive,
          drug_court_pretrial,
          drug_court_sentenced,
          crime_type_lookup,
@@ -640,18 +541,10 @@ df_drug_courts <- df_drug_courts %>%
   filter(!is.na(drug_court_pretrial) & !is.na(drug_court_sentenced)) %>% 
   distinct() %>% 
   mutate(drug_court = case_when(drug_court_pretrial == 1 | drug_court_sentenced == 1 ~ "Drug court-related booking", 
-                                drug_court_pretrial == 0 | drug_court_sentenced == 0 ~ "Not a drug court-related booking"),
-         high_utilizer_1_pct = case_when(high_utilizer_1_pct == "Yes" ~ "High Utilizer (Top 1%)",
-                                         high_utilizer_1_pct == "No"  ~ "Not High Utilizer (Top 1%)"),
-         high_utilizer_5_pct = case_when(high_utilizer_5_pct == "Yes" ~ "High Utilizer (Top 5%)",
-                                         high_utilizer_5_pct == "No"  ~ "Not High Utilizer (Top 5%)"),
-         high_utilizer_10_pct = case_when(high_utilizer_10_pct == "Yes" ~ "High Utilizer (Top 10%)",
-                                         high_utilizer_10_pct == "No"  ~ "Not High Utilizer (Top 10%)"))
+                                drug_court_pretrial == 0 | drug_court_sentenced == 0 ~ "Not a drug court-related booking"))
 ```
 
-### Overview
-
-#### Drug court-related bookings by county
+### Drug court-related bookings by county
 
 ```{r}
 df1 <- table(df_drug_courts$county, df_drug_courts$drug_court)
@@ -695,14 +588,10 @@ reactable(table1,
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
 
-
-
-### High Utilizers
-
-#### Drug court-related bookings for top 1% high utilizers
+### Drug court-related bookings by high utilizers (Row sums)
 
 ```{r}
-df1 <- table(df_drug_courts$high_utilizer_1_pct, df_drug_courts$drug_court)
+df1 <- table(df_drug_courts$hu_group_exclusive, df_drug_courts$drug_court)
 table1 <- prop.table(df1, 2)
 table1 <- as.data.frame(cbind(df1, table1))
 table1 <- table1 %>% rownames_to_column("HU Type")
@@ -743,11 +632,15 @@ reactable(table1,
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
 
-#### Drug court-related bookings for top 5% high utilizers
+
+
+
+
+### Drug court-related bookings by high utilizers (Column sums)
 
 ```{r}
-df1 <- table(df_drug_courts$high_utilizer_5_pct, df_drug_courts$drug_court)
-table1 <- prop.table(df1, 2)
+df1 <- table(df_drug_courts$hu_group_exclusive, df_drug_courts$drug_court)
+table1 <- prop.table(df1, 1)
 table1 <- as.data.frame(cbind(df1, table1))
 table1 <- table1 %>% rownames_to_column("HU Type")
 
@@ -786,48 +679,3 @@ reactable(table1,
           ) %>%
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
-
-#### Drug court-related bookings for top 10% high utilizers
-
-```{r}
-df1 <- table(df_drug_courts$high_utilizer_10_pct, df_drug_courts$drug_court)
-table1 <- prop.table(df1, 2)
-table1 <- as.data.frame(cbind(df1, table1))
-table1 <- table1 %>% rownames_to_column("HU Type")
-
-reactable(table1,
-          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
-          pagination = FALSE,
-          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
-                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-          defaultColDef = reactable::colDef(
-            format = colFormat(separators = TRUE), align = "left", minWidth = 100,
-            footer = function(values, name) {
-              if (name %in% c("Drug court-related booking", "Not a drug court-related booking")) {
-                htmltools::div(paste0("", formatC(
-                  x = sum(values),
-                  digits = 0,
-                  big.mark = ",",
-                  format = "f"
-                )))
-              }
-            },
-            footerStyle = list(fontWeight = "bold")
-          ),
-          columnGroups = list(
-            colGroup(name = "Drug court-related booking", columns = c("Drug court-related booking", "Drug court-related booking.1")),
-            colGroup(name = "Not a drug court-related booking", columns = c("Not a drug court-related booking", "Not a drug court-related booking.1"))
-          ),
-          compact = TRUE,
-          fullWidth = FALSE,
-          columns = list(
-            `HU Type`                            = colDef(name = "", minWidth = 200, style = list(fontWeight = "bold")),
-            `Drug court-related booking`         = colDef(name = "N", minWidth = 100),
-            `Not a drug court-related booking`   = colDef(name = "N", minWidth = 100),
-            `Drug court-related booking.1`       = colDef(name = "%", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
-            `Not a drug court-related booking.1` = colDef(name = "%", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
-            )
-          ) %>%
-add_source(paste(""), font_style = "italic", font_size = 14)
-```
-

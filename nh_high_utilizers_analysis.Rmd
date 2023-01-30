@@ -19,6 +19,9 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
+
+# Change HU variable to 1% = 1 percent, 5% = 2-5 percent, 10% = 6-10 percent
+medicaid_jail_all <- fnc_hu_group_exclusive(medicaid_jail_all)
 ```
 
 ## How we define people who are high utilizers of the jail system
@@ -26,8 +29,13 @@ medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds")
 We defined people who are high utilizers of the jail system as the top 1%, 5%, or 10% of people entering jails from FY2019 to FY2021. De-identified jail administrative data was provided by DHHS, which includes a unique id for each person to account for entrances at more than one jail.   
 
 ```{r}
+########################################
+# Entrances overview
+########################################
+
 # DHHS data
-# create temporary id for function and create fy variable
+# Rename variables
+# Get fiscal year based on booking date
 entrances_dhhs <- medicaid_jail_all %>% 
   mutate(id = unique_person_id,
          fy = case_when(booking_date > "2018-06-30" & booking_date < "2019-07-01" ~ 2019,
@@ -42,7 +50,7 @@ amt_people_entered_county <- entrances_dhhs %>%
   dplyr::group_by(county) %>%
   dplyr::summarise(total = n())
 
-# Df of total number of people entered by FY by county
+# Number of people entered by FY by county
 df_people_entered_county <- entrances_dhhs %>%
   dplyr::ungroup() %>%
   dplyr::select(id, fy, county) %>%
@@ -56,8 +64,7 @@ df_people_entered_county <- entrances_dhhs %>%
   left_join(amt_people_entered_county, by = "county") %>%
   adorn_totals("row") %>%
   mutate(change_19_21 = (`2021`-`2019`)/`2019`) %>%
-  mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)",
-                            county == "Total" ~ "State",
+  mutate(county = case_when(county == "Total" ~ "State",
                             TRUE ~ county))
 
 # Number of entrances by county for all three years
@@ -79,13 +86,10 @@ df_entrances_county <- entrances_dhhs %>%
   mutate(`2019` = as.numeric(`2019`),
          `2020` = as.numeric(`2020`),
          `2021` = as.numeric(`2021`)) %>%
-  left_join(amt_entrances_county, by = "county")
-
-df_entrances_county <- df_entrances_county %>%
+  left_join(amt_entrances_county, by = "county") %>%
   adorn_totals("row") %>%
   mutate(change_19_21 = (`2021`-`2019`)/`2019`) %>%
-  mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)",
-                            county == "Total" ~ "State",
+  mutate(county = case_when(county == "Total" ~ "State",
                             TRUE ~ county))
 
 # Average number of entrances/fy by county
@@ -115,230 +119,102 @@ df_entrances_people_county <- df_people_entered_county %>% rename_with(~paste0("
 df_entrances_table <- merge(df_entrances_county, df_entrances_people_county, by = "county", all.x = TRUE, all.y = TRUE)
 df_entrances_table <- merge(df_entrances_table, df_avg_entrances_county, by = "county", all.x = TRUE, all.y = TRUE)
 
-# Summary info for each type of HU
-# Ignore warnings
-df_hu_4_times_summary <- fnc_hus_descriptive_summary(entrances_dhhs, "high_utilizer_4_times", "Yes", "Coos (bookings only)")
-df_hu_1_pct_summary   <- fnc_hus_descriptive_summary(entrances_dhhs, "high_utilizer_1_pct",   "Yes", "Coos (bookings only)")
-df_hu_5_pct_summary   <- fnc_hus_descriptive_summary(entrances_dhhs, "high_utilizer_5_pct",   "Yes", "Coos (bookings only)")
-df_hu_10_pct_summary  <- fnc_hus_descriptive_summary(entrances_dhhs, "high_utilizer_10_pct",  "Yes", "Coos (bookings only)")
+########################################
+# HU People
+########################################
 
-# reactable tables by HU (will combine for presentations)
-table_hu_4_times_summary <- fnc_reactable_hus_descriptive_summary(df_hu_4_times_summary)
-table_hu_1_pct_summary   <- fnc_reactable_hus_descriptive_summary(df_hu_1_pct_summary)
-table_hu_5_pct_summary   <- fnc_reactable_hus_descriptive_summary(df_hu_5_pct_summary)
-table_hu_10_pct_summary  <- fnc_reactable_hus_descriptive_summary(df_hu_10_pct_summary)
+# Count number of people by county
+hu_people_county <- entrances_dhhs %>%
+  ungroup() %>%
+  select(county,
+         id,
+         num_entrances,
+         hu_group_exclusive) %>%
+  distinct() %>%
+  group_by(county, hu_group_exclusive) %>%
+  summarise(total_hu_people  = n()) 
 
-# Subset data for total entrances (HU and non-HU), total people, and average number of entrances a year
-# Created in incarceration_patterns_entrances.R
-df_entrances1 <- df_entrances_table %>% select(county, entrances_total, people_entered_total, avg_entrances)
+# Count number of people by state
+hu_people_state <- entrances_dhhs %>%
+  ungroup() %>%
+  select(county,
+         id,
+         num_entrances,
+         hu_group_exclusive) %>%
+  distinct() %>%
+  group_by(hu_group_exclusive) %>% 
+  summarise(total_hu_people  = n()) %>%
+  mutate(county = "State")
 
-# Add labels to metrics to identify 1, 5, and 10%
-data_1_pct <- df_hu_1_pct_summary  %>% rename_with(~paste0(., "_1_pct"),  -c("county"))
-data_5_pct <- df_hu_5_pct_summary  %>% rename_with(~paste0(., "_5_pct"),  -c("county"))
-data_10_pct <- df_hu_10_pct_summary %>% rename_with(~paste0(., "_10_pct"), -c("county"))
+# Add data together
+hu_people <- rbind(hu_people_county, hu_people_state)
 
-# Combine county entrances and county HU entrances info
-df_1_5_10 <- df_entrances1 %>%
-  left_join(data_1_pct, by = "county") %>%
-  left_join(data_5_pct, by = "county") %>%
-  left_join(data_10_pct, by = "county") %>%
-  mutate(freq_1_pct = total_hu_entrances_1_pct/entrances_total,
-         freq_5_pct = total_hu_entrances_5_pct/entrances_total,
-         freq_10_pct = total_hu_entrances_10_pct/entrances_total) %>%
-  mutate(range_1_pct = paste(min_1_pct, max_1_pct, sep = "-"),
-         range_5_pct = paste(min_5_pct, max_5_pct, sep = "-"),
-         range_10_pct = paste(min_10_pct, max_10_pct, sep = "-")) %>%
+########################################
+# HU ENTRANCES
+########################################
+
+# Count number of entrances by county
+hu_entrances_county <- entrances_dhhs %>%
+  ungroup() %>%
+  select(county,
+         booking_id,
+         num_entrances,
+         hu_group_exclusive) %>%
+  distinct() %>%
+  group_by(county, hu_group_exclusive) %>%
+  summarise(total_hu_entrances = n()) 
+
+# Count number of entrances by state
+hu_entrances_state <- entrances_dhhs %>%
+  ungroup() %>%
+  select(county,
+         booking_id,
+         num_entrances,
+         hu_group_exclusive) %>%
+  distinct() %>%
+  group_by(hu_group_exclusive) %>%
+  summarise(total_hu_entrances = n()) %>%
+  mutate(county = "State")
+
+# Add data together
+hu_entrances <- rbind(hu_entrances_county, hu_entrances_state)
+
+########################################
+# HU min median mean max range
+########################################
+
+# Summary of hu entrances by county
+hu_summary_county <- entrances_dhhs %>%
+  ungroup() %>%
+  select(county, id, num_entrances, hu_group_exclusive) %>%
+  distinct() %>%
+  group_by(county, hu_group_exclusive) %>%
+  summarise(min    = min(num_entrances, na.rm = T),
+            median = median(num_entrances, na.rm = T),
+            mean   = mean(num_entrances, na.rm = T),
+            max    = max(num_entrances, na.rm = T)) %>%
+  select(county, everything()) 
+
+# Summary of hu entrances by state
+hu_summary_state <- entrances_dhhs %>%
+  ungroup() %>%
+  select(id, num_entrances, hu_group_exclusive) %>%
+  distinct() %>%
+  group_by(hu_group_exclusive) %>%
+  summarise(min    = min(num_entrances, na.rm = T),
+            median = median(num_entrances, na.rm = T),
+            mean   = mean(num_entrances, na.rm = T),
+            max    = max(num_entrances, na.rm = T)) %>%
+  mutate(county = "State") %>%
+  select(county, everything())
+
+# Add data together
+hu_summary <- rbind(hu_summary_county, hu_summary_state)
+
+# Final summary table
+hu_table <- hu_summary %>%
+  left_join(hu_people, by = c("county", "hu_group_exclusive")) %>%
+  left_join(hu_entrances, by = c("county", "hu_group_exclusive")) %>%
   arrange(county %in% "State")
 ```
 
-## Table 1. Median, average, minimum, and maximum number of entrances per person by high utilizer type and county.
-
-```{r}
-# Reactable table for presentation showing the number of HU's, min, med, mean, max, etc.
-reactable(df_1_5_10,
-          pagination = FALSE,
-          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
-          rowStyle = function(index) {
-            if (index %in% c(10)) {
-              list(`border-top` = "thin solid",
-                   fontWeight = "bold")
-            }
-          },
-          columnGroups = list(
-            colGroup(name = "Top 1% HU's",  columns = c("total_hu_entrances_1_pct",  "total_hu_people_1_pct",  
-                                                        "freq_1_pct",  "min_1_pct",  "median_1_pct", "mean_1_pct", 
-                                                        "max_1_pct", "range_1_pct")),
-            colGroup(name = "Top 5% HU's",  columns = c("total_hu_entrances_5_pct",  "total_hu_people_5_pct",  
-                                                        "freq_5_pct",  "min_5_pct",  "median_5_pct", "mean_5_pct", 
-                                                        "max_5_pct", "range_5_pct")),
-            colGroup(name = "Top 10% HU's",  columns = c("total_hu_entrances_10_pct", "total_hu_people_10_pct", 
-                                                         "freq_10_pct", "min_10_pct", "median_10_pct", "mean_10_pct", 
-                                                         "max_10_pct", "range_10_pct"))
-          ),
-          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
-                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-          defaultColDef = reactable::colDef(
-            format = colFormat(separators = TRUE), align = "center"),
-          compact = TRUE,
-          fullWidth = FALSE,
-          columns = list(
-            county                = colDef(show = T, minWidth = 190, name = "County", align = "left",
-                                           style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
-            entrances_total       = colDef(show = F, minWidth = 100, name = "Total Entrances"),
-            people_entered_total  = colDef(show = F, minWidth = 100,  name = "Total People"),
-            avg_entrances         = colDef(show = F, minWidth = 130, name = "Avg Entrances Per Person",
-                                           format = colFormat(percent = FALSE, digits = 1),
-                                           style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            total_hu_entrances_1_pct = colDef(show = F, minWidth = 100, name = "HU's (Entrances)"),
-            total_hu_people_1_pct    = colDef(show = F, minWidth = 100, name = "HU's (People)"),
-            freq_1_pct               = colDef(show = F, minWidth = 100, name = "Proportion of HU Entrances",
-                                              style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"),
-                                              format = colFormat(percent = TRUE, digits = 1)),
-            min_1_pct                = colDef(show = F, minWidth = 100, name = "Minimum Number of Entrances Per Person"),
-            median_1_pct             = colDef(show = T, minWidth = 100, name = "Median Number of Entrances Per Person"),
-            mean_1_pct               = colDef(show = T, minWidth = 130, name = "Avg Number of Entrances Per Person", format = colFormat(percent = FALSE, digits = 1)),
-            range_1_pct              = colDef(show = T, minWidth = 100, name = "Min - Max Number of Entrances Per Person",
-                                              style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            max_1_pct                = colDef(show = F, minWidth = 130, name = "Maximum Number of Entrances Per Person",
-                                              style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            total_hu_entrances_5_pct = colDef(show = F, minWidth = 100, name = "HU's (Entrances)"),
-            total_hu_people_5_pct    = colDef(show = F, minWidth = 100, name = "HU's (People)"),
-            freq_5_pct               = colDef(show = F, minWidth = 100, name = "Proportion of HU Entrances",
-                                              style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"),
-                                              format = colFormat(percent = TRUE, digits = 1)),
-            min_5_pct                = colDef(show = F, minWidth = 100, name = "Minimum Number of Entrances Per Person"),
-            median_5_pct             = colDef(show = T, minWidth = 100, name = "Median Number of Entrances Per Person"),
-            mean_5_pct               = colDef(show = T, minWidth = 130, name = "Avg Number of Entrances Per Person", format = colFormat(percent = FALSE, digits = 1)),
-            range_5_pct              = colDef(show = T, minWidth = 100, name = "Min - Max Number of Entrances Per Person",
-                                              style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            max_5_pct                = colDef(show = F, minWidth = 130, name = "Maximum Number of Entrances Per Person",
-                                              style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            total_hu_entrances_10_pct = colDef(show = F, minWidth = 100, name = "HU's (Entrances)"),
-            total_hu_people_10_pct    = colDef(show = F, minWidth = 100, name = "HU's (People)"),
-            freq_10_pct               = colDef(show = F, minWidth = 100, name = "Proportion of HU Entrances",
-                                               style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"),
-                                               format = colFormat(percent = TRUE, digits = 1)),
-            min_10_pct                = colDef(show = F, minWidth = 100, name = "Minimum Number of Entrances Per Person"),
-            median_10_pct             = colDef(show = T, minWidth = 100, name = "Median Number of Entrances Per Person"),
-            mean_10_pct               = colDef(show = T, minWidth = 130, name = "Avg Number of Entrances Per Person", format = colFormat(percent = FALSE, digits = 1)),
-            range_10_pct              = colDef(show = T, minWidth = 100, name = "Min - Max Number of Entrances Per Person"),
-
-            max_10_pct                = colDef(show = F, minWidth = 130, name = "Maximum Number of Entrances Per Person",
-                                              style = list(position = "sticky", borderRight = "1px solid #d3d3d3"))
-
-))
-```
-
-## Table 2. Number of entrances, people, and proportion of high utilizer entrances by high utilizer type and county.
-
-```{r}
-reactable(df_1_5_10,
-          pagination = FALSE,
-          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
-          rowStyle = function(index) {
-            if (index %in% c(10)) {
-              list(`border-top` = "thin solid",
-                   fontWeight = "bold")
-            }
-          },
-          columnGroups = list(
-            colGroup(name = "Top 1% HU's",  columns = c("total_hu_entrances_1_pct",  "total_hu_people_1_pct",  
-                                                        "freq_1_pct",  "min_1_pct",  "median_1_pct", 
-                                                        "mean_1_pct", "max_1_pct", "range_1_pct")),
-            colGroup(name = "Top 5% HU's",  columns = c("total_hu_entrances_5_pct",  "total_hu_people_5_pct",  
-                                                        "freq_5_pct",  "min_5_pct",  "median_5_pct", 
-                                                        "mean_5_pct", "max_5_pct", "range_5_pct")),
-            colGroup(name = "Top 10% HU's",  columns = c("total_hu_entrances_10_pct", "total_hu_people_10_pct", 
-                                                         "freq_10_pct", "min_10_pct", "median_10_pct", 
-                                                         "mean_10_pct", "max_10_pct", "range_10_pct"))
-          ),
-          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
-                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-          defaultColDef = reactable::colDef(
-            format = colFormat(separators = TRUE), align = "center"),
-          compact = TRUE,
-          fullWidth = FALSE,
-          columns = list(
-            county                = colDef(show = T, minWidth = 190, name = "County", align = "left",
-                                           style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
-            entrances_total       = colDef(show = F, minWidth = 100, name = "Total Entrances"),
-            people_entered_total  = colDef(show = F, minWidth = 100,  name = "Total People"),
-            avg_entrances         = colDef(show = F, minWidth = 130, name = "Avg Entrances Per Person",
-                                           format = colFormat(percent = FALSE, digits = 1),
-                                           style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            total_hu_entrances_1_pct = colDef(show = T, minWidth = 100, name = "HU's (Entrances)"),
-            total_hu_people_1_pct    = colDef(show = T, minWidth = 100, name = "HU's (People)"),
-            freq_1_pct               = colDef(show = T, minWidth = 100, name = "Proportion of HU Entrances",
-                                              style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"),
-                                              format = colFormat(percent = TRUE, digits = 1)),
-            min_1_pct                = colDef(show = F, minWidth = 100, name = "Minimum Number of Entrances Per Person"),
-            median_1_pct             = colDef(show = F, minWidth = 100, name = "Median Number of Entrances Per Person"),
-            mean_1_pct               = colDef(show = F, minWidth = 130, name = "Avg Number of Entrances Per Person", format = colFormat(percent = FALSE, digits = 1)),
-            range_1_pct              = colDef(show = F, minWidth = 100, name = "Min - Max Number of Entrances Per Person",
-                                              style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            max_1_pct                = colDef(show = F, minWidth = 130, name = "Maximum Number of Entrances Per Person",
-                                              style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            total_hu_entrances_5_pct = colDef(show = T, minWidth = 100, name = "HU's (Entrances)"),
-            total_hu_people_5_pct    = colDef(show = T, minWidth = 100, name = "HU's (People)"),
-            freq_5_pct               = colDef(show = T, minWidth = 100, name = "Proportion of HU Entrances",
-                                              style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"),
-                                              format = colFormat(percent = TRUE, digits = 1)),
-            min_5_pct                = colDef(show = F, minWidth = 100, name = "Minimum Number of Entrances Per Person"),
-            median_5_pct             = colDef(show = F, minWidth = 100, name = "Median Number of Entrances Per Person"),
-            mean_5_pct               = colDef(show = F, minWidth = 130, name = "Avg Number of Entrances Per Person", format = colFormat(percent = FALSE, digits = 1)),
-            range_5_pct              = colDef(show = F, minWidth = 100, name = "Min - Max Number of Entrances Per Person",
-                                              style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            max_5_pct                = colDef(show = F, minWidth = 130, name = "Maximum Number of Entrances Per Person",
-                                              style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            total_hu_entrances_10_pct = colDef(show = T, minWidth = 100, name = "HU's (Entrances)"),
-            total_hu_people_10_pct    = colDef(show = T, minWidth = 100, name = "HU's (People)"),
-            freq_10_pct               = colDef(show = T, minWidth = 100, name = "Proportion of HU Entrances",
-                                               style = list(fontWeight = "bold"),
-                                               format = colFormat(percent = TRUE, digits = 1)),
-            min_10_pct                = colDef(show = F, minWidth = 100, name = "Minimum Number of Entrances Per Person"),
-            median_10_pct             = colDef(show = F, minWidth = 100, name = "Median Number of Entrances Per Person"),
-            mean_10_pct               = colDef(show = F, minWidth = 130, name = "Avg Number of Entrances Per Person", format = colFormat(percent = FALSE, digits = 1)),
-            range_10_pct              = colDef(show = F, minWidth = 100, name = "Min - Max Number of Entrances Per Person",
-                                               style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-
-            max_10_pct                = colDef(show = F, minWidth = 130, name = "Maximum Number of Entrances Per Person",
-                                               style = list(position = "sticky", borderRight = "1px solid #d3d3d3"))
-
-          ))
-```
-
-<br>
-
-## Table 3. Top 1% High Utilizers: Number of HU entrances, number of HU people, minimum, median, average, and maximum number of entrances per person by county.
-
-```{r}
-table_hu_1_pct_summary
-```
-
-<br>
-
-## Table 4. Top 5% High Utilizers: Number of HU entrances, number of HU people, minimum, median, average, and maximum number of entrances per person by county.
-
-```{r}
-table_hu_5_pct_summary
-```
-
-<br>
-
-## Table 5. Top 10% High Utilizers: Number of HU entrances, number of HU people, minimum, median, average, and maximum number of entrances per person by county.
-
-```{r}
-table_hu_10_pct_summary
-```
-
-<br>
