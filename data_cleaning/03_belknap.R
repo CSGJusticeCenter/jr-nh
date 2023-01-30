@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: belknap.R
-# Last updated: December 8, 2022
+# Last updated: January 30, 2023
 # Author: Mari Roberts
 
 # Standardize files across counties
@@ -14,10 +14,16 @@
 
 ################################################################################
 
+# Clean variable names
+# Make charge code NA since county does not have charge code
+# Assign race labels
+# Make data names consistent with other counties
+# Fix date formats
+# Add county label
 belknap_adm_all <- belknap_adm.xlsx %>%
   clean_names() %>%
   mutate(charge_code = NA,
-         # comments show what the jail indicated the letter stands for
+         # Comments show what the jail indicated the letter stands for
          race_label = case_when(race == "A"  ~ "Asian/Pacific Islander",
                                 race == "B"  ~ "Black",
                                 race == "C"  ~ "Asian/Pacific Islander",       # Chinese
@@ -47,17 +53,6 @@ belknap_adm_all <- belknap_adm.xlsx %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
          county = "Belknap")
-
-# Custom functions below creates the variables we need and relabels codes so they're consistent across counties.
-# Creates booking_id, los, fy, num_entrances, high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
-#    pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
-#    pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other pc variables).
-# Ignore warning messages.
-
-# Note about LOS: some people can be booked on the same day for multiple charges.
-# For example, someone could enter jail on a protective custody hold on 10/19 with a release
-#   date of 10/20 but also be booked for a criminal charge on 10/19 with a release date of 10/26
-#   For this reason, find the maximum release date for each booking id (created using id and booking_date).
 
 # Create fy, age, los, recode race, and order variables
 belknap_adm <- fnc_data_setup(belknap_adm_all)
@@ -153,7 +148,7 @@ belknap_adm <- belknap_adm %>%
          booking_date,
          everything())
 
-# create pc hold variable
+# Create pc hold variable
 belknap_adm <- belknap_adm %>%
   mutate(pc_hold = ifelse(
     sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold"
@@ -169,12 +164,12 @@ belknap_adm <- fnc_add_data_labels(belknap_adm)
 # Remove duplicates
 belknap_adm <- belknap_adm %>% distinct()
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 belknap_adm <- belknap_adm %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
-# create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for Belknap
+# Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for Belknap
 belknap_adm <- belknap_adm %>%
   mutate(drug_court_pretrial  = NA,
          drug_court_sentenced = NA)
@@ -238,9 +233,8 @@ belknap_adm <- belknap_adm %>%
                                           "101-180",
                                           "Over 180")))
 
-# Remove rows with all missing data (37 entries).
-# Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
-# Don't remove Strafford since all of their info is blank except for dates.
+# Remove rows with all missing data
+# Find and remove bookings that have no information
 all_nas <- belknap_adm %>%
   filter(is.na(charge_desc) &
            is.na(booking_type) &
@@ -250,30 +244,12 @@ belknap_adm1 <- belknap_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
-# Charges
-
-################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-################################################################################
-
 # Medicaid data file
 
 ################################################################################
 
-# clean names
-# create race labels
+# Clean names
+# Create race and gender labels
 belknap_medicaid <- belknap_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
@@ -295,19 +271,16 @@ belknap_medicaid <- belknap_medicaid.xlsx %>%
                               jail_sex == "T"  ~ "Transgender")) %>%
   mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
 
-# create a unique booking id per person per booking date
+# Create a unique booking id per person per booking date
 belknap_medicaid$booking_id <- belknap_medicaid %>% group_indices(unique_person_id, booking_date)
 belknap_medicaid <- belknap_medicaid %>%
   mutate(booking_id = paste("Belknap", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 belknap_medicaid <- belknap_medicaid %>%
   filter(booking_date > "2018-06-30" & booking_date < "2021-07-01")
-
-# # Does the medicaid file have the same number of unique individuals as the adm?
-# length(unique(belknap_adm$id)); length(unique(belknap_medicaid$unique_person_id))
 
 ################################################################################
 

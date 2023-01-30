@@ -573,6 +573,7 @@ fnc_reactable_booking_recordings <- function(df){
               total                 = colDef(align = "left", minWidth = 300, name = "Number of Occurrences")
             ))
 }
+
 fnc_reactable_charges_booking_recordings <- function(df){
   reactable(df,
             style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),

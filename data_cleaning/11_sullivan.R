@@ -1,31 +1,33 @@
 ############################################
 # Project: JRI New Hampshire
 # File: sullivan.R
-# Last updated: December 8, 2022
+# Last updated: January 30, 2023
 # Author: Mari Roberts
 
 # Standardize files across counties
 # FY July 1, 2018 – June 30, 2021
 ############################################
 
-###################
-# Sullivan County
-###################
+################################################################################
 
-# clean variable names
-sullivan_adm_all <- clean_names(sullivan_adm.xlsx)
+# Administrative data file
 
-# fix date formats
-sullivan_adm_all$booking_date_time <- as.POSIXct(sullivan_adm_all$booking_date_time, format = '%m/%d/%Y %H:%M')
-sullivan_adm_all$booking_date_time <- format(sullivan_adm_all$booking_date_time, "%m/%d/%Y")
-sullivan_adm_all$booking_date_time <- as.Date(sullivan_adm_all$booking_date_time, format = "%m/%d/%Y")
+################################################################################
 
-sullivan_adm_all$release_date_time <- as.POSIXct(sullivan_adm_all$release_date_time, format = '%m/%d/%Y %H:%M')
-sullivan_adm_all$release_date_time <- format(sullivan_adm_all$release_date_time, "%m/%d/%Y")
-sullivan_adm_all$release_date_time <- as.Date(sullivan_adm_all$release_date_time, format = "%m/%d/%Y")
-
-# clean variable names
-sullivan_adm_all <- sullivan_adm_all %>%
+# Clean variable names
+# Make release type NA since county doesn't have this data
+# Assign race labels
+# Make data names consistent with other counties
+# Fix date formats
+# Add county label
+sullivan_adm_all <- sullivan_adm.xlsx %>%
+  clean_names() %>%
+  mutate(booking_date_time = as.POSIXct(booking_date_time, format = '%m/%d/%Y %H:%M:%S'),
+         release_date_time = as.POSIXct(release_date_time, format = '%m/%d/%Y %H:%M:%S')) %>%
+  mutate(booking_date_time = format(booking_date_time, "%m/%d/%Y"),
+         release_date_time = format(release_date_time, "%m/%d/%Y")) %>%
+  mutate(booking_date_time = as.Date(booking_date_time, format = "%m/%d/%Y"),
+         release_date_time = as.Date(release_date_time, format = "%m/%d/%Y")) %>%
   mutate(release_type = NA,
          race_label = case_when(
            race == "A"  ~ "Asian/Pacific Islander",
@@ -37,8 +39,7 @@ sullivan_adm_all <- sullivan_adm_all %>%
            race == "N"  ~ "American Indian/Alaskan Native", # American Indian/Alaskan Native Hispanic
            race == "P"  ~ "Asian/Pacific Islander",
            race == "U"  ~ "Unknown",
-           race == "W"  ~ "White"
-         )) %>%
+           race == "W"  ~ "White")) %>%
   dplyr::select(id = id_number_inmate_number,
                 inmate_id = inmate_num,
                 yob = year,
@@ -55,17 +56,6 @@ sullivan_adm_all <- sullivan_adm_all %>%
                 sentence_status) %>%
   mutate(county = "Sullivan") %>%
   distinct()
-
-# Custom functions below creates the variables we need and relabels codes so they're consistent across counties.
-# Creates booking_id, los, fy, num_entrances, high_utilizer_1_pct(y/n), high_utilizer_5_pct(y/n), high_utilizer_10_pct(y/n),
-#    pc_hold_booking(y/n), pc_hold_charge(y/n), pc_hold_sentence(y/n), pc_hold_release(y/n),
-#    pc_hold(y/n) which is the overall pc hold variable (if pc hold was indicated in other pc variables).
-# Ignore warning messages.
-
-# Note about LOS: some people can be booked on the same day for multiple charges.
-# For example, someone could enter jail on a protective custody hold on 10/19 with a release
-#   date of 10/20 but also be booked for a criminal charge on 10/19 with a release date of 10/26
-#   For this reason, find the maximum release date for each booking id (created using id and booking_date).
 
 # Create fy, age, los, recode race, and order variables
 sullivan_adm <- fnc_data_setup(sullivan_adm_all)
@@ -132,7 +122,7 @@ sullivan_adm <- sullivan_adm %>%
 
   select(county, fy, id, inmate_id, booking_id, charge_code, charge_desc, booking_type, sentence_status, sentence_status_standard, release_type, booking_date, everything())
 
-# create pc hold variable
+# Create pc hold variable
 sullivan_adm <- sullivan_adm %>%
   mutate(pc_hold = ifelse(
     sentence_status_standard == "PROTECTIVE CUSTODY", "PC Hold", "Non-PC Hold"
@@ -147,12 +137,12 @@ sullivan_adm <- fnc_add_data_labels(sullivan_adm)
 # Remove duplicates
 sullivan_adm <- sullivan_adm %>% distinct()
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 sullivan_adm <- sullivan_adm %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 
-# create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for sullivan
+# Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for sullivan
 sullivan_adm <- sullivan_adm %>%
   mutate(drug_court_pretrial  = NA,
          drug_court_sentenced = NA)
@@ -216,9 +206,8 @@ sullivan_adm <- sullivan_adm %>%
                                           "101-180",
                                           "Over 180")))
 
-# Remove rows with all missing data (37 entries).
-# Find and remove bookings that have no information. These are likely errors. - CHECK WITH EACH JAIL.
-# Don't remove sullivan since all of their info is blank except for dates.
+# Remove rows with all missing data
+# Find and remove bookings that have no information
 all_nas <- sullivan_adm %>%
   filter(is.na(charge_desc) &
            is.na(booking_type) &
@@ -228,30 +217,13 @@ sullivan_adm1 <- sullivan_adm %>% anti_join(all_nas) %>% distinct()
 
 ################################################################################
 
-# Charges
-
-################################################################################
-
-
-
-
-
-
-
-
-
-
-
-
-
-################################################################################
-
 # Medicaid data file
 
 ################################################################################
 
-# clean names
-# create race labels
+# Clean names
+# Create race and gender labels
+# Fix date formats
 sullivan_medicaid <- sullivan_medicaid.xlsx %>%
   clean_names() %>%
   distinct() %>%
@@ -269,36 +241,28 @@ sullivan_medicaid <- sullivan_medicaid.xlsx %>%
       jail_race == "N"  ~ "American Indian/Alaskan Native", # American Indian/Alaskan Native Hispanic
       jail_race == "P"  ~ "Asian/Pacific Islander",
       jail_race == "U"  ~ "Unknown",
-      jail_race == "W"  ~ "White"
-    ),
+      jail_race == "W"  ~ "White"),
     jail_sex = case_when(jail_sex == "F"  ~ "Female",
                          jail_sex == "M"  ~ "Male",
-                         jail_sex == "U"  ~ "Unknown")
-  ) %>%
-  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex))
+                         jail_sex == "U"  ~ "Unknown")) %>%
+  mutate(jail_sex = ifelse(is.na(jail_sex), "Unknown", jail_sex)) %>%
+  mutate(booking_date <- as.POSIXct(booking_date, format = '%m/%d/%Y %H:%M:%S'),
+         release_date <- as.POSIXct(release_date, format = '%m/%d/%Y %H:%M:%S')) %>%
+  mutate(booking_date <- format(booking_date, "%m/%d/%Y"),
+         release_date <- format(release_date, "%m/%d/%Y")) %>%
+  mutate(booking_date <- as.Date(booking_date, format = "%m/%d/%Y"),
+         release_date <- as.Date(release_date, format = "%m/%d/%Y"))
 
-# fix date formats
-sullivan_medicaid$booking_date <- as.POSIXct(sullivan_medicaid$booking_date, format = '%m/%d/%Y %H:%M:%S')
-sullivan_medicaid$booking_date <- format(sullivan_medicaid$booking_date, "%m/%d/%Y")
-sullivan_medicaid$booking_date <- as.Date(sullivan_medicaid$booking_date, format = "%m/%d/%Y")
-
-sullivan_medicaid$release_date <- as.POSIXct(sullivan_medicaid$release_date, format = '%m/%d/%Y %H:%M:%S')
-sullivan_medicaid$release_date <- format(sullivan_medicaid$release_date, "%m/%d/%Y")
-sullivan_medicaid$release_date <- as.Date(sullivan_medicaid$release_date, format = "%m/%d/%Y")
-
-# create a unique booking id per person per booking date
+# Create a unique booking id per person per booking date
 sullivan_medicaid$booking_id <- sullivan_medicaid %>% group_indices(unique_person_id, booking_date)
 sullivan_medicaid <- sullivan_medicaid %>%
   mutate(booking_id = paste("Sullivan", "booking", booking_id, sep = "_")) %>%
   select(unique_person_id, booking_id, everything())
 
-# remove bookings before and after study dates
+# Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
 sullivan_medicaid <- sullivan_medicaid %>%
   filter(booking_date > "2018-06-30" & booking_date < "2021-07-01")
-
-# # Does the medicaid file have the same number of unique individuals as the adm? Off by 90
-# length(unique(sullivan_adm$id)); length(unique(sullivan_medicaid$unique_person_id))
 
 ################################################################################
 
