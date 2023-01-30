@@ -988,11 +988,14 @@ medicaid_jail_spmi_opioid_table <- jail_medicaid_analytic_individual_booking_lev
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
                    `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1]),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter, (% of overall sample)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter, (% of Medicaid sample)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ SPMI Primary Diagnosis (N)` = n_distinct(unique_person_id[study_spmi_flag==1]),
-                   `Individuals w/ SPMI Primary Diagnosis (%)` = scales::percent(`Individuals w/ SPMI Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SPMI Primary Diagnosis (% of overall sample)` = scales::percent(`Individuals w/ SPMI Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SPMI Primary Diagnosis (% of Medicaid sample)` = scales::percent(`Individuals w/ SPMI Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ Opioid-related Primary Diagnosis (N)` = n_distinct(unique_person_id[study_opioid_related_flag==1]),
-                   `Individuals w/ Opioid-related Primary Diagnosis (%)` = scales::percent(`Individuals w/ Opioid-related Primary Diagnosis (N)`/`Overall Individuals (N)`))
+                   `Individuals w/ Opioid-related Primary Diagnosis (% of overall sample)` = scales::percent(`Individuals w/ Opioid-related Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ Opioid-related Primary Diagnosis (% of Medicaid sample)` = scales::percent(`Individuals w/ Opioid-related Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`))
 
 ### print table via kableextra
 kable(medicaid_jail_spmi_opioid_table, 

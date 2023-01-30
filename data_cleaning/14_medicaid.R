@@ -461,6 +461,9 @@ table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
 ### now we will create two analytic files from medicaid_enrollment_categories_encounters 
 ### and one analytic file from medicaid_enrollment
 
+### See full notes and business rules for variable creation in data dictionary for analytic files here:
+###  https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=zLytTB
+
 ### three medicaid analytic files to create: 
 
 ## 1. individual level file: this file will have flags based on the encounter-level 
@@ -564,7 +567,8 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                              na.rm=TRUE),
          post_bh_mh_or_sud_service_primary_dx_flag = pmax(post_mh_service_primary_dx_flag,post_sud_service_primary_dx_flag,
                                                na.rm=TRUE),
-         post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[post_study_window_medicaid_match_flag==1],na.rm=TRUE),
+         post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[post_study_window_medicaid_match_flag==1],
+                                                           na.rm=TRUE),
          post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
                                                        na.rm=TRUE),
          post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
@@ -593,6 +597,8 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                            na.rm=TRUE),
          study_bh_mh_or_sud_service_primary_dx_flag = pmax(study_mh_service_primary_dx_flag,study_sud_service_primary_dx_flag,
                                              na.rm=TRUE),
+         study_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[study_window_medicaid_match_flag==1],
+                                                            na.rm=TRUE),
          study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[study_window_medicaid_match_flag==1],
                                                      na.rm=TRUE),
          study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[study_window_medicaid_match_flag==1],
@@ -616,11 +622,11 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   mutate(across(.cols = pre_mh_service_primary_dx_flag:study_opioid_related_flag, 
                 ~ ifelse(is.infinite(.x),
                          0, .x))) %>% 
-### now de-dup by individual 
+  ### now de-dup by individual 
       distinct(unique_person_id, .keep_all=TRUE) %>%
-### removing all columns that were specific to encounter- or enrollment-level data
-### since we have created an individual-level file with flags from the encounter and enrollment data,
-### i am removing the now irrelevant columns to avoid any confusion
+  ### removing all columns that were specific to encounter- or enrollment-level data
+  ### since we have created an individual-level file with flags from the encounter and enrollment data,
+  ### i am removing the now irrelevant columns to avoid any confusion
       dplyr::select(unique_person_id,
                     overall_bh_flag = overall_bh_flag_max,
                     study_window_medicaid_match_flag_overall:post_study_window_medicaid_match_flag_overall,

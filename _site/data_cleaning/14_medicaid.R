@@ -336,16 +336,8 @@ write_rds(medicaid_jail_all,
 # join medicaid_enrollment, medicaid_categories, medicaid_encounters, and medicaid_jail_all
 ################################################################################
 
+### use tidylog to get stats when joining, filtering, and grouping
 library(tidylog)
-
-### we previously joined these two files to add short_desc and long_desc of eligibility codes to 
-### medicaid_enrollment so commenting out now
-
-# ### join medicaid_enrollment and medicaid_categories
-# medicaid_enrollment_categories <- left_join(medicaid_enrollment,
-#                                             medicaid_categories,
-#                                             by = "eligibility_code")
-
 
 ### join medicaid_enrollment_categories and medicaid_categories
 ### to join medicaid_encounters to medicaid_enrollment, 
@@ -420,7 +412,34 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
                   sud_pharmacy_service,
                   other_service), 
                 as.numeric)) %>% 
-  dplyr::filter(keep_record_flag==1) 
+  dplyr::filter(keep_record_flag==1) %>% 
+
+  ### now create encounter-level flags for SMPI (servere and persistent mental illness) based on primary diagnosis
+  ### currently using definition from Donald et al.	2019:	“Severe persistent mental illnesses (SPMIs) are 
+  ### those that are prolonged and recurrent, impair activities of daily living, and require long-term treatment. 
+  ### Common diagnoses include schizophrenia, bipolar disorder, and major depression."
+  
+  ### Current SPMI flag business rule: dx_prmry_clinical_classification=="Schizophrenia and other psychotic disorders", "Schizophrenia spectrum and other psychotic disorders",
+  ### "Depressive disorders", "Bipolar and related disorders" (note there's also "Suicidal ideation/attempt/intentional self-harm",
+  ### "Anxiety and fear-related disorders","Anxiety disorders")
+  
+  ### then create flag for opioid-related primary diagnoses
+  ### Current opioid-related diagnosis business rule: dx_prmry_clinical_classification=="Opioid-related disorders" (there's also "Substance-related disorders" w/ far fewer encounters)
+
+
+  ### QUESTION TO ASK UMA: why do we have clinical classifications for primary dx that are not BH (e.g. gout or burns) -- do these have flags for primary diagnosis?
+  ### decide on which classification/text to use
+
+  ### TO DO: create excel list of all diagnoses with current grouping decisions to run by Mari, Sofia, and team
+  ### also confirm that dx_prmry_clinical_classification is the best diagnosis classification to use
+
+  mutate(spmi_flag = ifelse(dx_prmry_clinical_classification%in%c("Schizophrenia and other psychotic disorders",
+                                                                "Schizophrenia spectrum and other psychotic disorders",
+                                                                "Depressive disorders",
+                                                                "Bipolar and related disorders"),
+                          1,0),
+         opioid_related_flag = ifelse(dx_prmry_clinical_classification=="Opioid-related disorders",
+                                    1,0))
 
 ### de-dup dataframe by individual to see how many individuals are in which group (1,2,3)
 ### looks like all but about ... of all individuals in medicaid enrollment file have 
@@ -433,7 +452,7 @@ medicaid_enrollment_categories_encounters_dedup <- medicaid_enrollment_categorie
 
 ### how many individuals don't have any BH encounter records?
 ### of the 13,276 unique individuals in the file, ~2,500 had no BH encounter records (~19%)
-### how does this finding, that 81% of the Medicaid sample had at least one BH Medicaid encounter 
+### i wonder how does this finding, that 81% of the Medicaid sample had at least one BH Medicaid encounter 
 ### compare to the general NH Medicaid population?
 table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
       useNA = 'always') 
@@ -530,7 +549,11 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          pre_sud_pharmacy_service_flag = max(sud_pharmacy_service[pre_study_window_medicaid_match_flag==1],
                                              na.rm=TRUE),
          pre_other_service_flag = max(other_service[pre_study_window_medicaid_match_flag==1],
-                                      na.rm=TRUE)) %>% 
+                                      na.rm=TRUE),
+         pre_spmi_flag = max(spmi_flag[pre_study_window_medicaid_match_flag==1],
+                            na.rm=TRUE),
+         pre_opioid_related_flag = max(opioid_related_flag[pre_study_window_medicaid_match_flag==1],
+                             na.rm=TRUE)) %>% 
   
   ### then post-study window flags
   mutate(post_bh_flag = max(overall_bh_flag[post_study_window_medicaid_match_flag==1],
@@ -541,7 +564,8 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                              na.rm=TRUE),
          post_bh_mh_or_sud_service_primary_dx_flag = pmax(post_mh_service_primary_dx_flag,post_sud_service_primary_dx_flag,
                                                na.rm=TRUE),
-         post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[post_study_window_medicaid_match_flag==1],na.rm=TRUE),
+         post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[post_study_window_medicaid_match_flag==1],
+                                                           na.rm=TRUE),
          post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
                                                        na.rm=TRUE),
          post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
@@ -555,6 +579,10 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          post_sud_pharmacy_service_flag = max(sud_pharmacy_service[post_study_window_medicaid_match_flag==1],
                                               na.rm=TRUE),
          post_other_service_flag = max(other_service[post_study_window_medicaid_match_flag==1],
+                                       na.rm=TRUE),
+         post_spmi_flag = max(spmi_flag[post_study_window_medicaid_match_flag==1],
+                             na.rm=TRUE),
+         post_opioid_related_flag = max(opioid_related_flag[post_study_window_medicaid_match_flag==1],
                                        na.rm=TRUE)) %>% 
 
   ### now create flags for study window -- all prefixed with 'study_'
@@ -564,38 +592,43 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                           na.rm=TRUE),
          study_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[study_window_medicaid_match_flag==1],
                                            na.rm=TRUE),
-       study_bh_mh_or_sud_service_primary_dx_flag = pmax(study_mh_service_primary_dx_flag,study_sud_service_primary_dx_flag,
+         study_bh_mh_or_sud_service_primary_dx_flag = pmax(study_mh_service_primary_dx_flag,study_sud_service_primary_dx_flag,
                                              na.rm=TRUE),
-       study_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[study_window_medicaid_match_flag==1],na.rm=TRUE),
-       study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[study_window_medicaid_match_flag==1],
+         study_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[study_window_medicaid_match_flag==1],
+                                                            na.rm=TRUE),
+         study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[study_window_medicaid_match_flag==1],
                                                      na.rm=TRUE),
-       study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[study_window_medicaid_match_flag==1],
+         study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[study_window_medicaid_match_flag==1],
                                                          na.rm=TRUE),
-       study_ed_visit_or_service_flag = max(ed_visit_or_service[study_window_medicaid_match_flag==1],
+         study_ed_visit_or_service_flag = max(ed_visit_or_service[study_window_medicaid_match_flag==1],
                                            na.rm=TRUE),
-       study_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[study_window_medicaid_match_flag==1],
+         study_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[study_window_medicaid_match_flag==1],
                                                      na.rm=TRUE),
-       study_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[study_window_medicaid_match_flag==1],
+         study_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[study_window_medicaid_match_flag==1],
                                                       na.rm=TRUE),
-       study_sud_pharmacy_service_flag = max(sud_pharmacy_service[study_window_medicaid_match_flag==1],
+         study_sud_pharmacy_service_flag = max(sud_pharmacy_service[study_window_medicaid_match_flag==1],
                                             na.rm=TRUE),
-       study_other_service_flag = max(other_service[study_window_medicaid_match_flag==1],
-                              na.rm=TRUE)) %>%
+         study_other_service_flag = max(other_service[study_window_medicaid_match_flag==1],
+                              na.rm=TRUE),
+         study_spmi_flag = max(spmi_flag[study_window_medicaid_match_flag==1],
+                              na.rm=TRUE),
+         study_opioid_related_flag = max(opioid_related_flag[study_window_medicaid_match_flag==1],
+                                        na.rm=TRUE)) %>%
   ungroup() %>% 
   ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
-  mutate(across(.cols = pre_mh_service_primary_dx_flag:study_other_service_flag, 
+  mutate(across(.cols = pre_mh_service_primary_dx_flag:study_opioid_related_flag, 
                 ~ ifelse(is.infinite(.x),
                          0, .x))) %>% 
-### now de-dup by individual 
+  ### now de-dup by individual 
       distinct(unique_person_id, .keep_all=TRUE) %>%
-### removing all columns that were specific to encounter- or enrollment-level data
-### since we have created an individual-level file with flags from the encounter and enrollment data,
-### i am removing the now irrelevant columns to avoid any confusion
+  ### removing all columns that were specific to encounter- or enrollment-level data
+  ### since we have created an individual-level file with flags from the encounter and enrollment data,
+  ### i am removing the now irrelevant columns to avoid any confusion
       dplyr::select(unique_person_id,
                     overall_bh_flag = overall_bh_flag_max,
                     study_window_medicaid_match_flag_overall:post_study_window_medicaid_match_flag_overall,
-                    study_bh_flag:study_other_service_flag,
-                    pre_bh_flag:post_other_service_flag) %>% 
+                    study_bh_flag:study_opioid_related_flag,
+                    pre_bh_flag:post_opioid_related_flag) %>% 
         ### change unique_person_id to character for join with medicaid jail data
         mutate(unique_person_id = as.character(unique_person_id))
 
@@ -628,6 +661,8 @@ write_rds(medicaid_enrollment_categories_encounters_individual_jail_all,
 ## 2. next, we'll create the encounter/diagnosis level file: this file will allow us to explore the medicaid encounters/diagnosis-level data
 # with greater specificity (e.g., counts of SUD encounters as well as proximity of either encounters or medicaid enrollment to booking)
 
+### 1/27: We may only need this file for reimbursement analysis, if we are only interested in absence/presence of certain diagnoses
+### as opposed to the counts of them
 
 
 ###########################################################################################################################
