@@ -36,21 +36,21 @@ The following booking patterns were found using jail administrative data submitt
 df_sentence_statuses <- bookings_entrances %>% select(sentence_status_standard, booking_id) %>% distinct() %>% 
   mutate(sentence_status_standard = ifelse(sentence_status_standard == "UNKNOWN", NA, sentence_status_standard)) 
 
-df1 <- df_sentence_statuses %>% 
+data1 <- df_sentence_statuses %>% 
   group_by(sentence_status_standard) %>% 
   summarise(total = n()) %>% 
   filter(!is.na(sentence_status_standard)) %>% 
   mutate(sum = sum(total),
          yesno = "Yes") %>% 
   mutate(difference = sum-total)
-temp <- df1 %>% 
+temp <- data1 %>% 
     mutate(yesno = "No") %>% 
     select(-c(total, sum)) %>% 
     rename(total = difference)
-df1 <- df1 %>% select(-c(sum, difference))
-df1 <- rbind(df1, temp)
+data1 <- data1 %>% select(-c(sum, difference))
+data1 <- rbind(data1, temp)
 
-df1 <- group_by(df1, sentence_status_standard) %>% mutate(pct = total/sum(total)*100) %>%
+data1 <- group_by(data1, sentence_status_standard) %>% mutate(pct = total/sum(total)*100) %>%
   mutate(pct = round(pct, 0),
          sentence_status_standard = case_when(
            sentence_status_standard == "PRETRIAL" ~ "Pretrial",
@@ -58,22 +58,22 @@ df1 <- group_by(df1, sentence_status_standard) %>% mutate(pct = total/sum(total)
            sentence_status_standard == "SENTENCED" ~ "Sentenced",
            sentence_status_standard == "OTHER" ~ "Other"))
 
-df1 <- as.data.frame(df1)
-df1 <- df1 %>% mutate(pct = paste0(pct, "%"))
-df1$sentence_status_standard <- factor(df1$sentence_status_standard,levels = c("Other",
+data1 <- as.data.frame(data1)
+data1 <- data1 %>% mutate(pct = paste0(pct, "%"))
+data1$sentence_status_standard <- factor(data1$sentence_status_standard,levels = c("Other",
                                                                                "Sentenced",
                                                                                "Protective Custody",
                                                                                "Pretrial"))
 
 # percent barchart of booking types
-ggplot(df1, aes(x = sentence_status_standard, y = total, fill = yesno)) +
+ggplot(data1, aes(x = sentence_status_standard, y = total, fill = yesno)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent,
                      expand = expansion(mult = c(0, .1))) +
   scale_fill_manual(values=c("lightgray", jri_green)) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(df1$yesno == "No", "lightgray", "white")) +
+            color = ifelse(data1$yesno == "No", "lightgray", "white")) +
   theme_no_axes +
   theme(legend.position = "none",
         legend.justification = c(0, 0),
@@ -198,7 +198,7 @@ kable(df_sentence_statuses_county_pct,
 This is how we standardized booking types in Carroll County. It's possible that some of the booking types should be in "Pretrial" instead of "Other."
 
 ```{r}
-df1 <- adm_all %>% 
+data1 <- adm_all %>% 
   filter(county == "Carroll") %>% 
   group_by(sentence_status, sentence_status_standard) %>% 
   summarise(total = n()) %>% 
@@ -207,7 +207,7 @@ df1 <- adm_all %>%
          `Booking Type (Standardized)` = sentence_status_standard,
          `Total Bookings (N)` = total)
 
-kable(df1, 
+kable(data1, 
       format.args = list(big.mark = ","), 
       align=rep('l')) %>%
   kable_styling(bootstrap_options = c("striped", 
@@ -227,9 +227,9 @@ kable(df1,
 ### Charge Type by Booking Type (Row Sums)
 
 ```{r}
-df1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
-table1 <- prop.table(df1, 1)
-table1 <- as.data.frame(cbind(df1, table1))
+data1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
+table1 <- prop.table(data1, 1)
+table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("Charge Type")
 
 table1 <- table1 %>% 
@@ -310,9 +310,9 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 ### Charge Type by Booking Type (Column Sums)
 
 ```{r}
-df1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
-table1 <- prop.table(df1, 2)
-table1 <- as.data.frame(cbind(df1, table1))
+data1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
+table1 <- prop.table(data1, 2)
+table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("Charge Type")
 
 table1 <- table1 %>% 
@@ -392,12 +392,12 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 ```
 
 ```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
-df1 <- gather(table_pct, booking_type, percent, `Other (%)`:`Unknown (%)`, factor_key=TRUE)
-df1 <- df1 %>% filter(booking_type != "Unknown (%)" & booking_type != "Protective Custody (%)") %>% 
+data1 <- gather(table_pct, booking_type, percent, `Other (%)`:`Unknown (%)`, factor_key=TRUE)
+data1 <- data1 %>% filter(booking_type != "Unknown (%)" & booking_type != "Protective Custody (%)") %>% 
   mutate(percent_label = scales::percent(percent,
                                          accuracy = 1))
 
-ggplot(data = df1, 
+ggplot(data = data1, 
        aes(y = percent, 
            x = booking_type, 
            fill = forcats::fct_rev(`Charge Type`))) + 
@@ -451,9 +451,9 @@ df_hus_entrances <- adm_all %>%
   distinct() %>% 
   filter(sentence_status_standard != "UNKNOWN")
 
-df1 <- table(df_hus_entrances$sentence_status_standard, df_hus_entrances$hu_group_exclusive)
-table1 <- prop.table(df1, 2)
-table1 <- as.data.frame(cbind(df1, table1))
+data1 <- table(df_hus_entrances$sentence_status_standard, df_hus_entrances$hu_group_exclusive)
+table1 <- prop.table(data1, 2)
+table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("Entrance Type")
 reactable(table1,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
@@ -506,24 +506,8 @@ Specialty court programs for people involved in the criminal jusice system with 
 Felony drug court programs for adult offenders are available in Belknap, Carroll, Cheshire, Coos, Grafton, Hillsborough (North and South), Merrimack, Rockingham, and Strafford Counties. A defendant who enters those drug court programs must reside in the County where drug court is offered, in addition to having committed the crime in that county. 
 
 ```{r}
-# Select variables and remove duplicates
-df_drug_courts <- adm_all %>% 
-  filter(pc_hold == "Non-PC Hold") %>% 
-  select(id, 
-         booking_id, 
-         sentence_status_standard,
-         county, 
-         fy,
-         num_entrances,
-         hu_group_exclusive,
-         drug_court_pretrial,
-         drug_court_sentenced,
-         crime_type_lookup,
-         descriptor_lookup) %>% 
-  distinct()
-
 # Select variables and counties to look at drug courts
-df_drug_courts <- df_drug_courts %>% 
+df_drug_courts <- adm_all %>% 
   filter(county == "Cheshire" |
          county == "Hillsborough" |
          county == "Rockingham") %>% 
@@ -547,9 +531,9 @@ df_drug_courts <- df_drug_courts %>%
 ### Drug court-related bookings by county
 
 ```{r}
-df1 <- table(df_drug_courts$county, df_drug_courts$drug_court)
-table1 <- prop.table(df1, 1)
-table1 <- as.data.frame(cbind(df1, table1))
+data1 <- table(df_drug_courts$county, df_drug_courts$drug_court)
+table1 <- prop.table(data1, 1)
+table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("County")
 
 reactable(table1,
@@ -591,9 +575,9 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 ### Drug court-related bookings by high utilizers (Row sums)
 
 ```{r}
-df1 <- table(df_drug_courts$hu_group_exclusive, df_drug_courts$drug_court)
-table1 <- prop.table(df1, 2)
-table1 <- as.data.frame(cbind(df1, table1))
+data1 <- table(df_drug_courts$hu_group_exclusive, df_drug_courts$drug_court)
+table1 <- prop.table(data1, 2)
+table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("HU Type")
 
 reactable(table1,
@@ -631,6 +615,27 @@ reactable(table1,
           ) %>%
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
+```{r}
+# Select variables
+data1 <- df_drug_courts %>%
+  select(county,
+         fy,
+         id,
+         booking_id,
+         hu_group_exclusive,
+         drug_court) %>%
+  distinct() %>%
+  filter(!is.na(drug_court)) %>%
+  group_by(drug_court, hu_group_exclusive) %>%
+  summarise(total = n())
+
+data1 <- group_by(data1) %>%
+  mutate(pct = total/sum(total)*100) %>%
+  mutate(pct = round(pct, 0))
+data1 <- as.data.frame(data1)
+data1 <- data1 %>% mutate(pct = paste0(pct, "%")) %>% 
+  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")))
+```
 
 
 
@@ -639,9 +644,9 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 ### Drug court-related bookings by high utilizers (Column sums)
 
 ```{r}
-df1 <- table(df_drug_courts$hu_group_exclusive, df_drug_courts$drug_court)
-table1 <- prop.table(df1, 1)
-table1 <- as.data.frame(cbind(df1, table1))
+data1 <- table(df_drug_courts$hu_group_exclusive, df_drug_courts$drug_court)
+table1 <- prop.table(data1, 1)
+table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("HU Type")
 
 reactable(table1,

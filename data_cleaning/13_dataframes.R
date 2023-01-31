@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: dataframes.R
-# Last updated: January 30, 2023
+# Last updated: January 31, 2023
 # Author: Mari Roberts
 
 # Combine county data and create dataframes used in analyses and visualizations
@@ -84,31 +84,6 @@ bookings_entrances <- bookings_entrances %>%
   group_by(booking_id) %>%
   mutate(all_sentence_statuses=paste(sort(unique(sentence_status_standard)), collapse=" & ")) %>%
   select(county:sentence_status_standard, all_sentence_statuses, everything()) %>%
-  distinct()
-
-##########
-
-# ENTRANCES (No Coos) - not using for now.
-
-##########
-
-# Remove Coos.
-entrances <- bookings_entrances_all %>%
-  select(county,
-         fy,
-         id,
-         booking_id,
-         num_entrances,
-         los,
-         los_category,
-         high_utilizer_4_times,
-         high_utilizer_1_pct,
-         high_utilizer_5_pct,
-         high_utilizer_10_pct,
-         month_year_text,
-         month_year) %>%
-  filter(county != "Coos") %>%
-  droplevels() %>%
   distinct()
 
 ##########

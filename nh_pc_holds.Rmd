@@ -254,8 +254,7 @@ df_entrances_with_pc_holds <- df_entrances_with_pc_holds %>%
               total_entrances = colDef(minWidth = 100, name = "Total Entrances", align = "center"),
               total_pc_holds  = colDef(minWidth = 100, name = "PC Holds (Entrances)", align = "center"),
               total_people    = colDef(minWidth = 100, name = "PC Holds (People)", align = "center"),
-              freq            = colDef(minWidth = 100, style = list(fontWeight = "bold"), name = "% PC Hold Entrances", format = colFormat(percent = TRUE, digits = 1), align = "center"))) %>%
-  add_source("Coos bookings and Strafford entrances were not included when calculating the proportion of entrances that are PC holds.", font_style = "italic", font_size = 14)
+              freq            = colDef(minWidth = 100, style = list(fontWeight = "bold"), name = "% PC Hold Entrances", format = colFormat(percent = TRUE, digits = 1), align = "center"))) 
 ```
 
 ```{r}
@@ -264,8 +263,7 @@ data1 <- df_pch %>%
   group_by(county, pc_hold_in_booking) %>% summarise(total = n())
 data1 <- group_by(data1, county) %>% mutate(pct = round(total/sum(total)*100, 1))
 data1 <- as.data.frame(data1)
-data1 <- data1 %>% mutate(pct = round(pct, digits = 0)) %>%
-  mutate(pct = paste0(pct, "%"))
+data1 <- data1 %>% mutate(pct = round(pct, digits = 0)) 
 
 PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_in_booking)) +
   geom_col(colour = "white", position = "fill") +
@@ -274,12 +272,12 @@ PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_i
                     na.value = "white",
                     labels = c("Non-PC      ","PC", " ")
                     ) +
-  geom_text(aes(label = pct, fontface = 'bold'),
+  geom_text(aes(label = ifelse(pct > 4, paste(pct, "%"), ""), 
+                fontface = 'bold'),
             position = position_fill(vjust = 0.5),
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
             color = case_when(data1$pc_hold_in_booking == "Non-PC Hold" ~ "black",
-                              data1$county == "Hillsborough" ~ "white",
                               TRUE ~ "white")) +
   theme_minimal() +
   theme(panel.grid.minor.y = element_blank(),
@@ -296,7 +294,7 @@ PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_i
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
 ```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_pchold_prop, file="img/PRES_gg_pchold_prop.png", width = 12,  height = 7, dpi = 100)
 knitr::include_graphics("img/PRES_gg_pchold_prop.png")
 ```

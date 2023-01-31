@@ -59,7 +59,7 @@ library(openxlsx)
 # sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
 
 # Change path depending on SP name ########################################
-FULL_JC_FOLDER <- "MR"
+FULL_JC_FOLDER <- "AB"
 
 if (FULL_JC_FOLDER == "AB"){
   sp_data_path <- csgjcr::csg_sp_path(file.path("JR_NH"))
