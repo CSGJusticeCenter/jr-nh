@@ -281,7 +281,7 @@ PRES_table_entrances_people_county <-
 PRES_table_entrances_people_county
 ```
 
-```{r, out.width="75%", echo=FALSE, layout = "l-body"}
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
 # Subset data and create categories for number of entrances
 data1 <- entrances_dhhs %>%
   ungroup() %>%

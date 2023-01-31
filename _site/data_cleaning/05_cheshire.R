@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: cheshire.R
-# Last updated: January 30, 2023
+# Last updated: January 31, 2023
 # Author: Mari Roberts
 
 # Standardize files across counties
@@ -192,8 +192,10 @@ cheshire_adm <- cheshire_adm %>%
 
 # Create pretrial drug court and sentenced drug court variables
 cheshire_adm <- cheshire_adm %>%
-  mutate(drug_court_pretrial  = ifelse(sentence_status == "PRE-TRIAL / DRUG COURT", 1, 0),
-         drug_court_sentenced = ifelse(sentence_status == "SENTENCED / DRUG COURT", 1, 0))
+  mutate(drug_court_pretrial  = case_when(sentence_status == "PRE-TRIAL / DRUG COURT" ~ 1,
+                                          TRUE ~ 0),
+         drug_court_sentenced = case_when(sentence_status == "SENTENCED / DRUG COURT" ~ 1,
+                                          TRUE ~ 0))
 
 # If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.

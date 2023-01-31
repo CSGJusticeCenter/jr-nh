@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: rockingham.R
-# Last updated: January 30, 2023
+# Last updated: January 31, 2023
 # Author: Mari Roberts
 
 # Standardize files across counties
@@ -130,18 +130,14 @@ rockingham_adm <- fnc_sex_labels(rockingham_adm)
 # Add data labels
 rockingham_adm <- fnc_add_data_labels(rockingham_adm)
 
-# Remove duplicates
-rockingham_adm <- rockingham_adm %>% distinct()
-
 # Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-rockingham_adm <- rockingham_adm %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
-
 # Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for rockingham
 rockingham_adm <- rockingham_adm %>%
-  mutate(drug_court_pretrial  = ifelse(booking_type == "DRUG COURT SENTENCING ORDER" & sentence_status == "PRETRIAL", 1, 0),
-         drug_court_sentenced = ifelse(booking_type == "DRUG COURT SENTENCING ORDER" & sentence_status == "SENTENCED", 1, 0))
+  distinct() %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
+  mutate(drug_court_pretrial  = case_when(booking_type == "DRUG COURT SENTENCING ORDER" & sentence_status == "PRETRIAL"  ~ 1, TRUE ~ 0),
+         drug_court_sentenced = case_when(booking_type == "DRUG COURT SENTENCING ORDER" & sentence_status == "SENTENCED" ~ 1, TRUE ~ 0))
 
 # If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.
@@ -169,12 +165,10 @@ rockingham_adm <- rockingham_adm %>%
 # Fix los issues
 # Remove negatives because of data entry issues with booking and release dates
 # If release date is missing, then change los to NA instead of Inf
-rockingham_adm <- rockingham_adm %>%
-  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
-  filter(los_max >= 0 | is.na(los_max))
-
 # Create los categories
 rockingham_adm <- rockingham_adm %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max)) %>%
   mutate(los_category =
            case_when(los_max == 0 ~ "0",
                      los_max == 1 ~ "1",
