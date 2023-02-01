@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: belknap.R
-# Last updated: January 31, 2023
+# Last updated: February 1, 2023
 # Author: Mari Roberts
 
 # Standardize files across counties
@@ -42,7 +42,7 @@ belknap_adm_all <- belknap_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                housing = housing_instability_or_homelessness_indicator,
+                homeless = housing_instability_or_homelessness_indicator,
                 charge_code,
                 charge_desc = charged_offense_code_description_including_technical_violations_of_supervision,
                 booking_date,
@@ -52,7 +52,10 @@ belknap_adm_all <- belknap_adm.xlsx %>%
                 sentence_status = sentencing_status) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
-         county = "Belknap")
+         county = "Belknap",
+         homeless = case_when(homeless == "yes" ~ "Homeless",
+                              homeless == "no" ~ "Not Homeless",
+                              is.na(homeless) ~ "Unknown"))
 
 # Create fy, age, los, recode race, and order variables
 belknap_adm <- fnc_data_setup(belknap_adm_all)
@@ -166,17 +169,13 @@ belknap_adm <- belknap_adm %>% distinct()
 
 # Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-belknap_adm <- belknap_adm %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
-
 # Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for Belknap
-belknap_adm <- belknap_adm %>%
-  mutate(drug_court_pretrial  = NA,
-         drug_court_sentenced = NA)
-
 # If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.
 belknap_adm <- belknap_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
+  mutate(drug_court_pretrial  = NA,
+         drug_court_sentenced = NA) %>%
 
   # Race
   dplyr::group_by(id) %>%
@@ -200,12 +199,10 @@ belknap_adm <- belknap_adm %>%
 # Fix los issues
 # Remove negatives because of data entry issues with booking and release dates
 # If release date is missing, then change los to NA instead of Inf
-belknap_adm <- belknap_adm %>%
-  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
-  filter(los_max >= 0 | is.na(los_max))
-
 # Create los categories
 belknap_adm <- belknap_adm %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max)) %>%
   mutate(los_category =
            case_when(los_max == 0 ~ "0",
                      los_max == 1 ~ "1",
@@ -240,7 +237,9 @@ all_nas <- belknap_adm %>%
            is.na(booking_type) &
            is.na(release_type) &
            is.na(sentence_status))
-belknap_adm1 <- belknap_adm %>% anti_join(all_nas) %>% distinct()
+belknap_adm1 <- belknap_adm %>%
+  anti_join(all_nas) %>%
+  distinct()
 
 ################################################################################
 

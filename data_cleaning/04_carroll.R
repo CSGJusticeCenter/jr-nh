@@ -40,7 +40,7 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                housing,
+                homeless = housing,
                 charge_code,
                 charge_desc = charge,
                 booking_date = booking_dt_tm,
@@ -50,7 +50,10 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
                 sentence_status = sentencing_status) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
-         county = "Carroll") %>%
+         county = "Carroll",
+         homeless = case_when(homeless == "Homeless" ~ "Homeless",
+                              homeless == "Housed" ~ "Not Homeless",
+                              is.na(homeless) ~ "Unknown")) %>%
   distinct()
 
 # Create fy, age, los, recode race, and order variables
@@ -162,17 +165,13 @@ carroll_adm <- carroll_adm %>% distinct()
 
 # Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-carroll_adm <- carroll_adm %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
-
 # Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for carroll
-carroll_adm <- carroll_adm %>%
-  mutate(drug_court_pretrial  = NA,
-         drug_court_sentenced = NA)
-
 # If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.
 carroll_adm <- carroll_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
+  mutate(drug_court_pretrial  = NA,
+         drug_court_sentenced = NA) %>%
 
   # Race
   dplyr::group_by(id) %>%
@@ -196,12 +195,10 @@ carroll_adm <- carroll_adm %>%
 # Fix los issues
 # Remove negatives because of data entry issues with booking and release dates
 # If release date is missing, then change los to NA instead of Inf
-carroll_adm <- carroll_adm %>%
-  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
-  filter(los_max >= 0 | is.na(los_max))
-
 # Create los categories
 carroll_adm <- carroll_adm %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max)) %>%
   mutate(los_category =
            case_when(los_max == 0 ~ "0",
                      los_max == 1 ~ "1",

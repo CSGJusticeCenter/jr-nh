@@ -46,7 +46,7 @@ sullivan_adm_all <- sullivan_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex = gender,
-                housing = housing,
+                homeless = housing,
                 charge_code = charge_id,
                 charge_desc = charge,
                 booking_date = booking_date_time,
@@ -54,10 +54,14 @@ sullivan_adm_all <- sullivan_adm.xlsx %>%
                 release_date = release_date_time,
                 release_type,
                 sentence_status) %>%
-  mutate(county = "Sullivan") %>%
+  mutate(county = "Sullivan",
+         homeless = case_when(homeless = str_detect(homeless, regex("\\bhomeless", ignore_case = TRUE)) ~ "Homeless",
+                              homeless = str_detect(homeless, regex("\\bunknown", ignore_case = TRUE)) ~ "Unknown",
+                              is.na(homeless) ~ "Not Homeless",
+                              TRUE ~ "Not Homeless")) %>%
   distinct()
 
-# Create fy, age, los, recode race, and order variables
+sum# Create fy, age, los, recode race, and order variables
 sullivan_adm <- fnc_data_setup(sullivan_adm_all)
 
 # Add booking id using id and booking date
@@ -139,17 +143,13 @@ sullivan_adm <- sullivan_adm %>% distinct()
 
 # Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-sullivan_adm <- sullivan_adm %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
-
 # Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for sullivan
-sullivan_adm <- sullivan_adm %>%
-  mutate(drug_court_pretrial  = NA,
-         drug_court_sentenced = NA)
-
 # If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.
 sullivan_adm <- sullivan_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
+  mutate(drug_court_pretrial  = NA,
+         drug_court_sentenced = NA) %>%
 
   # Race
   dplyr::group_by(id) %>%
@@ -173,12 +173,10 @@ sullivan_adm <- sullivan_adm %>%
 # Fix los issues
 # Remove negatives because of data entry issues with booking and release dates
 # If release date is missing, then change los to NA instead of Inf
-sullivan_adm <- sullivan_adm %>%
-  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
-  filter(los_max >= 0 | is.na(los_max))
-
 # Create los categories
 sullivan_adm <- sullivan_adm %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max)) %>%
   mutate(los_category =
            case_when(los_max == 0 ~ "0",
                      los_max == 1 ~ "1",

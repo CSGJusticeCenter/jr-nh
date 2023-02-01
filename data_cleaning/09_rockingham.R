@@ -38,7 +38,7 @@ rockingham_adm_all <- rockingham_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                housing = homelessness,
+                homeless = homelessness,
                 charge_code = charge_id,
                 charge_desc = charge_description,
                 booking_date = arrival_date_and_time,
@@ -50,7 +50,10 @@ rockingham_adm_all <- rockingham_adm.xlsx %>%
          release_date = format(release_date, format = "%m/%d/%Y"),
          county = "Rockingham") %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
-         release_date = as.Date(release_date, format = "%m/%d/%Y")) %>%
+         release_date = as.Date(release_date, format = "%m/%d/%Y"),
+         homeless = case_when(homeless == "Homeless" ~ "Homeless",
+                              homeless == "Not Homeless" ~ "Not Homeless",
+                              is.na(homeless) ~ "Unknown")) %>%
   distinct()
 
 # Create fy, age, los, recode race, and order variables
@@ -204,7 +207,6 @@ all_nas <- rockingham_adm %>%
            is.na(release_type) &
            is.na(sentence_status))
 rockingham_adm1 <- rockingham_adm %>% anti_join(all_nas) %>% distinct()
-
 
 ################################################################################
 

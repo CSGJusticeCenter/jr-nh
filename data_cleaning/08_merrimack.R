@@ -41,7 +41,7 @@ merrimack_adm_all <- merrimack_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                housing = housing_instability,
+                homeless = housing_instability,
                 charge_code,
                 charge_desc = charges,
                 booking_date,
@@ -51,7 +51,11 @@ merrimack_adm_all <- merrimack_adm.xlsx %>%
                 sentence_status) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
-         county = "Merrimack") %>%
+         county = "Merrimack",
+         homeless = case_when(homeless == "Unhoused" ~ "Homeless",
+                              homeless == "Housed" ~ "Not Homeless",
+                              is.na(homeless) ~ "Unknown",
+                              homeless == "Unknown" ~ "Unknown")) %>%
   distinct()
 
 # Create fy, age, los, recode race, and order variables
@@ -162,18 +166,14 @@ merrimack_adm <- merrimack_adm %>% distinct()
 
 # Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-merrimack_adm <- merrimack_adm %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
-
 # Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for merrimack
-# there is info on drug court violations in the charge descriptions though
-merrimack_adm <- merrimack_adm %>%
-  mutate(drug_court_pretrial  = NA,
-         drug_court_sentenced = NA)
-
+# There is info on drug court violations in the charge descriptions though
 # If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.
 merrimack_adm <- merrimack_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
+  mutate(drug_court_pretrial  = NA,
+         drug_court_sentenced = NA) %>%
 
   # Race
   dplyr::group_by(id) %>%
@@ -197,12 +197,10 @@ merrimack_adm <- merrimack_adm %>%
 # Fix los issues
 # Remove negatives because of data entry issues with booking and release dates
 # If release date is missing, then change los to NA instead of Inf
-merrimack_adm <- merrimack_adm %>%
-  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
-  filter(los_max >= 0 | is.na(los_max))
-
 # Create los categories
 merrimack_adm <- merrimack_adm %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max)) %>%
   mutate(los_category =
            case_when(los_max == 0 ~ "0",
                      los_max == 1 ~ "1",

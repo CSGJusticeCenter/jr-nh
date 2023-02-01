@@ -52,6 +52,7 @@ bookings_entrances_all <- adm_all %>%
                 age,
                 age_category,
                 gender,
+                homeless,
                 booking_id,
                 los = los_max,
                 los_category,
@@ -86,32 +87,6 @@ bookings_entrances <- bookings_entrances %>%
   select(county:sentence_status_standard, all_sentence_statuses, everything()) %>%
   distinct()
 
-##########
-
-# REMOVE PC HOLDS FROM BOOKINGS TO GET ACTUAL BOOKING NUMBERS (No Strafford)
-
-##########
-
-# Remove Strafford, all Coos are non-PC holds
-booking_no_pc_hold <- bookings_entrances_all %>%
-  filter(pc_hold == "Non-PC Hold") %>%
-  select(county,
-         fy,
-         id,
-         booking_id,
-         num_entrances,
-         los,
-         los_category,
-         high_utilizer_4_times,
-         high_utilizer_1_pct,
-         high_utilizer_5_pct,
-         high_utilizer_10_pct,
-         month_year_text,
-         month_year) %>%
-  filter(county != "Strafford") %>%
-  droplevels() %>%
-  distinct()
-
 ################################################################################
 
 # PC hold data frame
@@ -135,23 +110,10 @@ df_pch <- bookings_entrances %>%
 
 ################################################################################
 
-# Counties in data
-
-################################################################################
-
-# Get list of counties
-counties <- adm_all$county %>%
-  unique() %>%
-  sort()
-
-################################################################################
-
 # Save data to sharepoint. Not Medicaid data.
 
 ################################################################################
 
 save(adm_all,            file=paste0(sp_data_path, "/Data/r_data/adm_all.Rda",            sep = ""))
 save(bookings_entrances, file=paste0(sp_data_path, "/Data/r_data/bookings_entrances.Rda", sep = ""))
-save(entrances,          file=paste0(sp_data_path, "/Data/r_data/entrances.Rda",          sep = ""))
-save(booking_no_pc_hold, file=paste0(sp_data_path, "/Data/r_data/booking_no_pc_hold.Rda", sep = ""))
 save(df_pch,             file=paste0(sp_data_path, "/Data/r_data/df_pch.Rda",             sep = ""))

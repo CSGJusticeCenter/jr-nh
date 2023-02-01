@@ -26,7 +26,7 @@ strafford_adm_all <- strafford_adm.xlsx %>%
          charge_desc = NA,
          booking_type = NA,
          release_type = NA,
-         housing = NA,
+         homeless = NA,
          sentence_status = NA,
          race_label = case_when(
            race == "A" ~ "Asian/Pacific Islander",
@@ -43,7 +43,7 @@ strafford_adm_all <- strafford_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                housing,
+                homeless,
                 charge_code,
                 charge_desc,
                 booking_date,
@@ -104,17 +104,13 @@ strafford_adm <- strafford_adm %>% distinct()
 
 # Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-strafford_adm <- strafford_adm %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
-
 # Create pretrial drug court and sentenced drug court variables - NA, since there is no data on drug courts for strafford
-strafford_adm <- strafford_adm %>%
-  mutate(drug_court_pretrial  = NA,
-         drug_court_sentenced = NA)
-
 # If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.
 strafford_adm <- strafford_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
+  mutate(drug_court_pretrial  = NA,
+         drug_court_sentenced = NA) %>%
 
   # Race
   dplyr::group_by(id) %>%
@@ -138,12 +134,10 @@ strafford_adm <- strafford_adm %>%
 # Fix los issues
 # Remove negatives because of data entry issues with booking and release dates
 # If release date is missing, then change los to NA instead of Inf
+# Create los categories
 strafford_adm <- strafford_adm %>%
   mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
-  filter(los_max >= 0 | is.na(los_max))
-
-# Create los categories
-strafford_adm1 <- strafford_adm %>%
+  filter(los_max >= 0 | is.na(los_max)) %>%
   mutate(los_category =
            case_when(los_max == 0 ~ "0",
                      los_max == 1 ~ "1",
