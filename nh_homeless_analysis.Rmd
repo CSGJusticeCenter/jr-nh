@@ -25,7 +25,7 @@ source("data_cleaning/rdas.R")
 # Save dataframe for this analysis
 # See if someone was homeless at any booking
 df_homeless_entrances <- bookings_entrances %>% 
-  filter(county != "Cheshire" | county != "Strafford") %>% 
+  filter(county != "Cheshire" & county != "Strafford" & county != "Carroll") %>% 
   filter(homeless != "Unknown" & !is.na(homeless)) %>% 
   dplyr::group_by(id) %>%
   mutate(all_homeless_types=paste(sort(unique(homeless)), collapse="&")) %>%
@@ -59,7 +59,6 @@ df_people_county_fy <- df_homeless_entrances %>%
   dplyr::summarise(total = n()) 
 
 # Save number of people by county 
-# Remove Cheshire and Strafford since they do not have data on homelessness
 df_people_county <- df_homeless_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(id, county) %>%
@@ -71,7 +70,6 @@ df_people_county <- df_homeless_entrances %>%
 The following counties provided reliable data on homelessness:  
 
 - Belknap  
-- Carroll  
 - Coos  
 - Hillsborough  
 - Merrimack  
@@ -104,7 +102,7 @@ reactable(homeless_county,
             format = colFormat(separators = TRUE), align = "left", minWidth = 100
           ),
           rowStyle = function(index) {
-              if (index %in% c(8)) {
+              if (index %in% c(7)) {
                 list(`border-top` = "thin solid",
                      fontWeight = "bold")
               }
@@ -126,7 +124,9 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-## High utlizers experiencing homelessness
+## High utlizers experiencing homelessness (State-wide)
+
+**40% of Top 1% high utilizers were homeless at least once when they were booked into jail.**
 
 ```{r}
 # Count number and proportion of HUs who were homeless by county and by fiscal year
@@ -172,6 +172,9 @@ reactable(homeless_hu_fy,
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
 
+<br>
+
+## High utlizers experiencing homelessness by county
 
 
 
