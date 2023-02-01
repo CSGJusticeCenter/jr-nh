@@ -87,27 +87,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>JRI New Hampshire Project: JRI New Hampshire</title>
+  <title>JRI New Hampshire Project: Timing of Medicaid Eligibility and Jail Bookings</title>
 
 
   <link rel="icon" type="image/png" href="img/favicon.png"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="JRI New Hampshire Project: JRI New Hampshire"/>
+  <meta property="og:title" content="JRI New Hampshire Project: Timing of Medicaid Eligibility and Jail Bookings"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="JRI New Hampshire Project"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="JRI New Hampshire Project: JRI New Hampshire"/>
+  <meta property="twitter:title" content="JRI New Hampshire Project: Timing of Medicaid Eligibility and Jail Bookings"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","site"]}},"value":[{"type":"character","attributes":{},"value":["JRI New Hampshire"]},{"type":"character","attributes":{},"value":["distill::distill_website"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Timing of Medicaid Eligibility and Jail Bookings"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2367,6 +2367,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2386,7 +2388,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"JRI New Hampshire","authors":[]}
+{"title":"Timing of Medicaid Eligibility and Jail Bookings","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2461,7 +2463,7 @@ Research
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>JRI New Hampshire</h1>
+<h1>Timing of Medicaid Eligibility and Jail Bookings</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2469,88 +2471,402 @@ Research
 
 
 <div class="d-article">
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="img/csg-logo.png" width="70%" /></p>
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a
+href="#dhhs-medicaid-match-and-jail-booking-descriptive-analysis-loss-of-medicaid-coverage-and-jail-bookings"
+id="toc-dhhs-medicaid-match-and-jail-booking-descriptive-analysis-loss-of-medicaid-coverage-and-jail-bookings">DHHS
+Medicaid Match and Jail Booking Descriptive Analysis: Loss of Medicaid
+Coverage and Jail Bookings</a>
+<ul>
+<li><a href="#tables" id="toc-tables">Tables</a>
+<ul>
+<li><a
+href="#table-1-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-enrollment-level"
+id="toc-table-1-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-enrollment-level">Table
+1: Timing of Medicaid Eligiblity End Dates and Jail Bookings
+(Enrollment-level)</a></li>
+<li><a
+href="#table-2-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-individual-level"
+id="toc-table-2-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-individual-level">Table
+2: Timing of Medicaid Eligiblity End Dates and Jail Bookings
+(Individual-level)</a></li>
+<li><a
+href="#table-3-how-long-does-medicaid-re-enrollment-take-enrollment-level"
+id="toc-table-3-how-long-does-medicaid-re-enrollment-take-enrollment-level">Table
+3: How long does Medicaid re-enrollment take?
+(Enrollment-level)</a></li>
+<li><a
+href="#table-4-average-jail-length-of-stay-when-medicaid-enrollmenteligibility-ends-enrollment-level"
+id="toc-table-4-average-jail-length-of-stay-when-medicaid-enrollmenteligibility-ends-enrollment-level">Table
+4: Average Jail Length of Stay when Medicaid Enrollment/Eligibility Ends
+(Enrollment-level)</a></li>
+</ul></li>
+<li><a href="#visuals" id="toc-visuals">Visuals</a></li>
+</ul></li>
+</ul>
+</nav>
 </div>
-<p>Welcome to the JRI New Hampshire project website. This is a private,
-password protected website that should not be shared externally. Use the
-navigation in the top right corner to view county reports and other
-analyses.</p>
+<h1
+id="dhhs-medicaid-match-and-jail-booking-descriptive-analysis-loss-of-medicaid-coverage-and-jail-bookings">DHHS
+Medicaid Match and Jail Booking Descriptive Analysis: Loss of Medicaid
+Coverage and Jail Bookings</h1>
 <p><br></p>
-<p><strong>Project Purpose:</strong></p>
-<p>This project will focus on the prevalence of people with behavioral
-health needs moving through local county jails and the availability and
-impact of existing services and supports for this population
-statewide.</p>
-<p>Goal 1: Improve criminal justice and public health outcomes for
-people with behavioral health conditions who are high utilizers of the
-health and jail systems.</p>
-<p>Goal 2: Reduce gaps in the state’s data systems and information
-sharing capacity by working with agencies and staff to build data
-collection and analysis capacities.</p>
-<p>Matching data from all 10 counties’ jails with data from the
-Department of Health and Human Services (DHHS) would distinguish New
-Hampshire as the first state in the country to conduct a statewide jail
-to Medicaid data analysis.</p>
-<p><br></p>
+<h2 id="tables">Tables</h2>
+<h3
+id="table-1-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-enrollment-level">Table
+1: Timing of Medicaid Eligiblity End Dates and Jail Bookings
+(Enrollment-level)</h3>
+<p><strong>The following three tables explore the question on slide 44 –
+Is Medicaid enrollment starting again when people are released from
+jail?</strong></p>
+<p><strong>NOTE: While these tables indicate loss of Medicaid
+enrollment/eligibility/coverage that occurs during or soon after
+incarceration in jail, we cannot definitively attribute the reason for
+the loss to be incarceration because we don’t have data on reasons for
+enrollment eligibility loss from DHHS. It will be important to
+acknowledge this if we present these data</strong></p>
+<p><strong>For definitions of each column/flag created in the analytic
+file, see full data dictionary here (Enrollment-level File tab): <a
+href="https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=JADcH8"
+class="uri">https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=JADcH8</a></strong></p>
+<p>This table explores the percentages of Medicaid enrollments (ONLY for
+individuals who matched to Medicaid data) where enrollment/eligibility
+ended during incarceration as well as within 20 days of release from
+jail</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="img/nh-jri-flow.png" width="100%" /></p>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Overall Medicaid Enrollments (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending in or within 20 days of Release from Jail (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending in or within 20 days of Release from Jail (%)
+</th>
+<th style="text-align:center;">
+Enrollments Ending in Jail (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending in Jail (%)
+</th>
+<th style="text-align:center;">
+Enrollments Ending within 5 Days of Release from Jail (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending within 5 Days of Release from Jail (%)
+</th>
+<th style="text-align:center;">
+Enrollments Ending 5-10 Days of Release from Jail (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending 5-10 Days of Release from Jail (%)
+</th>
+<th style="text-align:center;">
+Enrollments Ending 10-15 Days of Release from Jail (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending 10-15 Days of Release from Jail (%)
+</th>
+<th style="text-align:center;">
+Enrollments Ending 15-20 Days of Release from Jail (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending 15-20 Days of Release from Jail (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+58,909
+</td>
+<td style="text-align:center;">
+3,019
+</td>
+<td style="text-align:center;">
+5.1%
+</td>
+<td style="text-align:center;">
+1,825
+</td>
+<td style="text-align:center;">
+3.1%
+</td>
+<td style="text-align:center;">
+303
+</td>
+<td style="text-align:center;">
+0.5%
+</td>
+<td style="text-align:center;">
+264
+</td>
+<td style="text-align:center;">
+0.4%
+</td>
+<td style="text-align:center;">
+328
+</td>
+<td style="text-align:center;">
+0.6%
+</td>
+<td style="text-align:center;">
+299
+</td>
+<td style="text-align:center;">
+0.5%
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<p><br></p>
-<p><strong>Scope of Work</strong></p>
-<ul>
-<li><p>Facilitating cross-system data match to analyze county jail and
-Medicaid claims data.</p></li>
-<li><p>Analyzing jail data on high utilizers with behavioral health
-needs.</p></li>
-<li><p>Analyzing racial disproportionalities in jail
-incarceration.</p></li>
-<li><p>Conducting focus groups with providers, stakeholders, and jail
-staff.</p></li>
-<li><p>Assessing behavioral health needs, demographic characteristics,
-and available resources.</p></li>
-<li><p>Assessing the collaboration between behavioral health and
-criminal justice agencies.</p></li>
-<li><p>Identifying gaps in data systems to support improved data
-collection and analysis capacities.</p></li>
-<li><p>Identifying alternatives to incarceration programs to provide an
-overview of local available services.</p></li>
-</ul>
-<p><strong>Key Questions</strong></p>
-<p><em>Jail admissions:</em></p>
-<ul>
-<li><p>How many people are booked into New Hampshire jails
-annually?</p></li>
-<li><p>What are the most common jail admission and release
-types?</p></li>
-<li><p>What is the average length of incarceration in jail?</p></li>
-<li><p>How are protective custody holds factored into the jail
-population?</p></li>
-</ul>
-<p><em>High utilizers in jails:</em></p>
-<ul>
-<li><p>What percent of annual jail bookings are for people identified as
-high utilizers?</p></li>
-<li><p>Is this percentage different for protective custody
-bookings?</p></li>
-<li><p>What percent of the daily jail population do high utilizers
-account for?</p></li>
-</ul>
-<p><em>Demographics of the high utilizer population:</em></p>
-<ul>
-<li><p>How does the high utilizer jail population compare to others in
-jail in terms of gender, race, and ethnicity?</p></li>
-<li><p>What other indicators exist among the high utilizer population in
-jail including their Medicaid enrollment status or Medicaid eligibility,
-their housing status, and indicators of substance use and/or mental
-illness?</p></li>
-</ul>
-<p><strong>Project Links</strong></p>
-<ul>
-<li><a href="https://github.com/CSGJusticeCenter/jr-nh">Github
-repository</a></li>
-</ul>
-<p><br></p>
+<p><br><br></p>
+<h3
+id="table-2-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-individual-level">Table
+2: Timing of Medicaid Eligiblity End Dates and Jail Bookings
+(Individual-level)</h3>
+<p><strong>NOTE: While these tables indicate loss of Medicaid
+enrollment/eligibility/coverage that occurs during or soon after
+incarceration in jail, we cannot definitively attribute the reason for
+the loss to be incarceration because we don’t have data on reasons for
+enrollment eligibility loss from DHHS. It will be important to
+acknowledge this if we present these data</strong></p>
+<p>This table explores the percentage of individuals (ONLY for
+individuals who matched to Medicaid data) who experienced Medicaid
+enrollments where eligibility ended during incarceration as well as
+within 20 days of release from jail</p>
+<p>We should probably think through the best way to talk about the
+enrollment-level versus individual-level analysis and why the numbers
+look so different</p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Overall Individuals (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending in or within 20 days of Release from
+Jail (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending in or within 20 days of Release from
+Jail (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending in Jail (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending in Jail (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending within 5 Days of Release from Jail (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending within 5 Days of Release from Jail (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending 5-10 Days of Release from Jail (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending 5-10 Days of Release from Jail (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending 10-15 Days of Release from Jail (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending 10-15 Days of Release from Jail (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending 15-20 Days of Release from Jail (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Enrollments Ending 15-20 Days of Release from Jail (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+12,862
+</td>
+<td style="text-align:center;">
+2,371
+</td>
+<td style="text-align:center;">
+18.4%
+</td>
+<td style="text-align:center;">
+1,457
+</td>
+<td style="text-align:center;">
+11.3%
+</td>
+<td style="text-align:center;">
+297
+</td>
+<td style="text-align:center;">
+2.3%
+</td>
+<td style="text-align:center;">
+259
+</td>
+<td style="text-align:center;">
+2.0%
+</td>
+<td style="text-align:center;">
+318
+</td>
+<td style="text-align:center;">
+2.5%
+</td>
+<td style="text-align:center;">
+294
+</td>
+<td style="text-align:center;">
+2.3%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h3
+id="table-3-how-long-does-medicaid-re-enrollment-take-enrollment-level">Table
+3: How long does Medicaid re-enrollment take? (Enrollment-level)</h3>
+<p><strong>NOTE: While these tables indicate loss of Medicaid
+enrollment/eligibility/coverage that occurs during or soon after
+incarceration in jail, we cannot definitively attribute the reason for
+the loss to be incarceration because we don’t have data on reasons for
+enrollment eligibility loss from DHHS. It will be important to
+acknowledge this if we present these data</strong></p>
+<p><strong>To do: how should we understand/treat overlapping enrollment
+periods? It is fairly rare, but does result in some weird calculations
+of time differences between the ending of one enrollment period and the
+beginning of the next. For now I’m filtering out differences of less
+than 0 days in calculations of mean and median</strong></p>
+<p>This table explores the average number of days from the end of
+Medicaid eligibility (when it occurs during or within 20 days after
+incarceration) to re-enrollment/the following Medicaid eligibility start
+date for an individual. Analysis is at the enrollment-level</p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Overall Medicaid Enrollments (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending in or within 20 days of Release from Jail (% of all
+enrollments)
+</th>
+<th style="text-align:center;">
+Mean Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)
+</th>
+<th style="text-align:center;">
+Median Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)
+</th>
+<th style="text-align:center;">
+Enrollments Ending in or within 20 days of Release from Jail, No
+Re-enrollment Records (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending in or within 20 days of Release from Jail, No
+Re-enrollment Records (% of enrollments that ended)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+58,909
+</td>
+<td style="text-align:center;">
+5.1%
+</td>
+<td style="text-align:center;">
+80.3
+</td>
+<td style="text-align:center;">
+4
+</td>
+<td style="text-align:center;">
+562
+</td>
+<td style="text-align:center;">
+18.6%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h3
+id="table-4-average-jail-length-of-stay-when-medicaid-enrollmenteligibility-ends-enrollment-level">Table
+4: Average Jail Length of Stay when Medicaid Enrollment/Eligibility Ends
+(Enrollment-level)</h3>
+<p><strong>NOTE: While these tables indicate loss of Medicaid
+enrollment/eligibility/coverage that occurs during or soon after
+incarceration in jail, we cannot definitively attribute the reason for
+the loss to be incarceration because we don’t have data on reasons for
+enrollment eligibility loss from DHHS. It will be important to
+acknowledge this if we present these data</strong></p>
+<p>This table explores the average number of days spent in jail when
+Medicaid enrollment/eligibility ends either during incarceration or
+within 20 days of release from jail</p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Overall Medicaid Enrollments (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending in or within 20 days of Release from Jail (N)
+</th>
+<th style="text-align:center;">
+Enrollments Ending in or within 20 days of Release from Jail (% of all
+enrollments)
+</th>
+<th style="text-align:center;">
+Mean Jail Length of Stay (Days)
+</th>
+<th style="text-align:center;">
+Median Jail Length of Stay (Days)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+58,909
+</td>
+<td style="text-align:center;">
+3,019
+</td>
+<td style="text-align:center;">
+5.1%
+</td>
+<td style="text-align:center;">
+116.6
+</td>
+<td style="text-align:center;">
+57
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h2 id="visuals">Visuals</h2>
+<p>TBD</p>
+<p><br><br></p>
 <div class="sourceCode" id="cb1"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

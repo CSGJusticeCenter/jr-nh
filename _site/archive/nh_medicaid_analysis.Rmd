@@ -1,0 +1,1027 @@
+---
+title: "Medicaid Trends"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    self_contained: false
+---
+
+```{r include=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","tidylog")
+
+```
+
+```{r include=FALSE}
+### set chunk output 
+knitr::opts_chunk$set(
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
+  dev = "ragg_png",
+  cache = FALSE
+  )
+
+### set path using csg_sp_path
+sp_data_path <- csg_sp_path(file.path("JR_NH"))
+
+```
+
+```{r include=FALSE}
+### import adm_all -- jail administrative that we'll compare to the numbers from the medicaid match files
+load(paste0(sp_data_path, "/Data/r_data/adm_all.Rda", 
+            sep = "")) 
+
+### de-dup by individual and booking -- these are the two units of analysis for comparisons to the medicaid data
+### here we are de-duping bookings with multiple charges as we don't need that information for this comparison
+adm_all_dedup <- adm_all %>% 
+  ungroup() %>% 
+  distinct(id, 
+           booking_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(id,
+                                    booking_id)) ### creating unique booking id with both individual and booking IDs
+
+
+### import medicaid_jail_all -- medicaid jail data that we'll compare to the numbers from the jail administrative files
+### this file lives on the external hard drive (created and exported in `14_medicaid.R`)
+medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
+
+### de-dup (there are a few duplicate bookings) and create booking id for analysis
+medicaid_jail_all_dedup <- medicaid_jail_all %>% 
+  distinct(unique_person_id, 
+           booking_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id,
+                                    booking_id)) ### creating unique booking id with both individual and booking IDs
+
+### import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
+### file is unique by individual/booking
+### this file lives on the external hard drive (created and exported in `14_medicaid.R`)
+jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
+
+### de-dup (there are a few duplicate bookings) and create booking id for analysis
+jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_individual_booking_level %>% 
+  distinct(unique_person_id, 
+           booking_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id,
+                                    booking_id)) ### creating unique booking id with both individual and booking IDs
+```         
+
+# DHHS Medicaid Match and Jail Booking Descriptive Analysis 
+
+<br>
+
+## Tables
+
+
+### Table 1. Data Check: Unique Individuals and Bookings in Administrative Jail Data versus Medicaid Jail Data
+
+Note: With Medicaid data, the count of unique individuals in each jail will not add up to the statewide total as some individuals were booked at multiple jails. Thus, they appear in multiple individual jail counts, but only once in the statewide count. For this reason, it is probably best to only compare differences in unique individuals at the jail-level. 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create table of unique individuals and bookings by county using the adm_all_dedup file
+
+# by county
+adm_all_dedup_county_table <- adm_all_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Unique Individuals, Jail Data (N)` = n_distinct(id),
+                   `Unique Bookings, Jail Data (N)` = n_distinct(unique_person_booking_id))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+adm_all_dedup_overall_table <- adm_all_dedup %>% 
+  dplyr::summarise(`Unique Individuals, Jail Data (N)` = n_distinct(id),
+                   `Unique Bookings, Jail Data (N)` = n_distinct(unique_person_booking_id))  %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# join county and statewide files 
+adm_all_dedup_county_statewide_count_table <- rbind(adm_all_dedup_county_table,
+                                                    adm_all_dedup_overall_table)
+
+### create table of unique individuals and bookings by county using the medicaid_jail_all file
+
+# by county
+medicaid_jail_all_county_table <- medicaid_jail_all_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Unique Individuals, Medicaid Data (N)` = n_distinct(unique_person_id),
+                   `Unique Bookings, Medicaid Data (N)` = n_distinct(unique_person_booking_id))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+medicaid_jail_all_overall_table <- medicaid_jail_all_dedup %>% 
+  dplyr::summarise(`Unique Individuals, Medicaid Data (N)` = n_distinct(unique_person_id),
+                   `Unique Bookings, Medicaid Data (N)` = n_distinct(unique_person_booking_id))  %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# join county and statewide files 
+medicaid_jail_all_county_statewide_count_table <- rbind(medicaid_jail_all_county_table,
+                                                    medicaid_jail_all_overall_table)
+
+### now cbind adm_all_dedup_county_statewide_count_table and medicaid_jail_all_county_statewide_count_table
+jail_adm_medicaid_count_table <- inner_join(adm_all_dedup_county_statewide_count_table,
+                                       medicaid_jail_all_county_statewide_count_table,
+                                       by = "Jail") %>% 
+  mutate(`Difference in Unique Individuals (N)` = abs(`Unique Individuals, Jail Data (N)` - `Unique Individuals, Medicaid Data (N)`),
+         `Difference in Unique Bookings (N)` = abs(`Unique Bookings, Jail Data (N)` - `Unique Bookings, Medicaid Data (N)`)) %>% 
+  dplyr::select(`Jail`,
+                `Unique Individuals, Jail Data (N)`,
+                `Unique Individuals, Medicaid Data (N)`,
+                `Difference in Unique Individuals (N)`,
+                `Unique Bookings, Jail Data (N)`,
+                `Unique Bookings, Medicaid Data (N)`,
+                `Difference in Unique Bookings (N)`) 
+  
+### print table via kableextra
+kable(jail_adm_medicaid_count_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(10, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(7, bold = TRUE)
+```
+
+<br><br>
+
+### Table 2. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters"
+
+Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. I am currently using all behavioral health data from the Medicaid Encounter file, regardless of timing (before, during, or after the study period)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file
+
+# by county
+medicaid_jail_percent_match_county_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[overall_bh_flag==1]),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Overall Bookings (N)` = n_distinct(unique_person_id,
+                                                      booking_id),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ Medicaid Match (%)` = scales::percent(`Bookings w/ Medicaid Match (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[overall_bh_flag==1]),
+                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+medicaid_jail_percent_match_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[overall_bh_flag==1]),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Overall Bookings (N)` = n_distinct(unique_person_id,
+                                                      booking_id),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ Medicaid Match (%)` = scales::percent(`Bookings w/ Medicaid Match (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[overall_bh_flag==1]),
+                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`))  %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_percent_match_county_statewide_table <- rbind(medicaid_jail_percent_match_county_table,
+                                                            medicaid_jail_percent_match_overall_table)
+
+### print table via kableextra
+kable(medicaid_jail_percent_match_county_statewide_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(10, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(6, bold = TRUE) %>% 
+  column_spec(9, bold = TRUE) %>% 
+  column_spec(11, bold = TRUE)
+```
+
+<br><br>
+
+### Table 3. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters": by timing of BH Encounter
+
+Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. 
+
+**The following table is split out by timing of behavioral health Medicaid encounter: before, during, or after the study period. See logic below**
+
+Pre-study period: Medicaid eligibility end date < 7/1/2018
+
+Study period: Medicaid eligibility end date >= 7/1/2018 & Medicaid eligibility start date <= 6/30/2021
+
+Post-study period: Medicaid eligibility start date > 6/30/2021 (b/c this was a very small sample, I have only presented pre- and study-window counts and percentages)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file -- by timing of medicaid enrollment and BH encounters relative to jail admin sample/study window
+
+# by county
+medicaid_jail_percent_match_county_timing_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ Medicaid Match, Pre-Study (N)` = n_distinct(unique_person_id[pre_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ Medicaid Match, Pre-Study (%)` = scales::percent(`Individuals w/ Medicaid Match, Pre-Study (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ Medicaid Match, Study Window (N)` = n_distinct(unique_person_id[study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ Medicaid Match, Study Window (%)` = scales::percent(`Individuals w/ Medicaid Match, Study Window (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ any BH Encounter (N)` = n_distinct(unique_person_id[overall_bh_flag==1]),
+                   `Individuals w/ any BH Encounter (%)` = scales::percent(`Individuals w/ any BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter, Pre-Study (N)` = n_distinct(unique_person_id[pre_bh_flag==1]),
+                   `Individuals w/ BH Encounter, Pre-Study (%)` = scales::percent(`Individuals w/ BH Encounter, Pre-Study (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter, Study Window (N)` = n_distinct(unique_person_id[study_bh_flag==1]),
+                   `Individuals w/ BH Encounter, Study Window (%)` = scales::percent(`Individuals w/ BH Encounter, Study Window (N)`/`Overall Individuals (N)`))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+medicaid_jail_percent_match_overall_timing_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ Medicaid Match, Pre-Study (N)` = n_distinct(unique_person_id[pre_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ Medicaid Match, Pre-Study (%)` = scales::percent(`Individuals w/ Medicaid Match, Pre-Study (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ Medicaid Match, Study Window (N)` = n_distinct(unique_person_id[study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ Medicaid Match, Study Window (%)` = scales::percent(`Individuals w/ Medicaid Match, Study Window (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ any BH Encounter (N)` = n_distinct(unique_person_id[overall_bh_flag==1]),
+                   `Individuals w/ any BH Encounter (%)` = scales::percent(`Individuals w/ any BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter, Pre-Study (N)` = n_distinct(unique_person_id[pre_bh_flag==1]),
+                   `Individuals w/ BH Encounter, Pre-Study (%)` = scales::percent(`Individuals w/ BH Encounter, Pre-Study (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter, Study Window (N)` = n_distinct(unique_person_id[study_bh_flag==1]),
+                   `Individuals w/ BH Encounter, Study Window (%)` = scales::percent(`Individuals w/ BH Encounter, Study Window (N)`/`Overall Individuals (N)`))  %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_percent_match_county_statewide_timing_table <- rbind(medicaid_jail_percent_match_county_timing_table,
+                                                                   medicaid_jail_percent_match_overall_timing_table)
+
+### print table via kableextra
+kable(medicaid_jail_percent_match_county_statewide_timing_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(10, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(6, bold = TRUE) %>% 
+  column_spec(8, bold = TRUE) %>% 
+  column_spec(10, bold = TRUE) %>% 
+  column_spec(12, bold = TRUE) %>% 
+  column_spec(14, bold = TRUE)
+```
+
+<br><br>
+
+### Table 4. Percentage of High Utilizer Individuals with Medicaid Match and Behavioral Health "Encounters"
+
+Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. I am currently using all behavioral health data from the Medicaid Encounter file, regardless of timing (before, during, or after the study period)
+
+Grouping of individuals into 'high utilizer' percentile groups is based on statewide data, using the Medicaid match files from DHHS, as opposed to county-level data. In other words 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when(
+    high_utilizer_10_pct=="No" ~ 4,
+    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct=="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
+
+### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file
+
+# by county
+medicaid_jail_percent_match_high_util_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[overall_bh_flag==1]),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+# statewide
+medicaid_jail_percent_match_high_util_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[overall_bh_flag==1]),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`))  %>% 
+  dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_percent_match_high_util_statewide_table <- rbind(medicaid_jail_percent_match_high_util_table,
+                                                               medicaid_jail_percent_match_high_util_overall_table)
+
+### print table via kableextra
+kable(medicaid_jail_percent_match_high_util_statewide_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(6, bold = TRUE) 
+
+```
+
+<br><br>
+
+### Table 5. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility
+
+Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period). 
+
+**Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count** 
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create table of highlighting the percentage of the medicaid sample that experienced homelessness at the beginning of any medicaid enrollment period in DHHS pull
+
+# by county
+medicaid_jail_homelessness_county_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1]),
+                   `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+medicaid_jail_homelessness_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+   dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1]),
+                   `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_homelessness_county_statewide_table <- rbind(medicaid_jail_homelessness_county_table,
+                                                           medicaid_jail_homelessness_overall_table)
+
+### print table via kableextra
+kable(medicaid_jail_homelessness_county_statewide_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(10, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(7, bold = TRUE)
+
+```
+
+<br><br>
+
+### Table 6. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility
+
+Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period). 
+
+**Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count** 
+
+**Statistics for individuals who are high utilizers of jail are based on the top 10% percentile of statewide bookings.**
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create table of highlighting the percentage of the medicaid sample that experienced homelessness at the beginning of any medicaid enrollment period in DHHS pull
+
+# by county
+medicaid_jail_homelessness_hu_county_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+                   `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+                   `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+# statewide
+medicaid_jail_homelessness_hu_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+                   `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+                   `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>%  
+  dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_homelessness_hu_county_statewide_table <- rbind(medicaid_jail_homelessness_hu_county_table,
+                                                              medicaid_jail_homelessness_hu_overall_table)
+
+### print table via kableextra
+kable(medicaid_jail_homelessness_hu_county_statewide_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(7, bold = TRUE)
+
+```
+
+<br><br>
+
+### Table 7. Percentage of Individuals with Behavioral Health "Encounters" by Treatment, Service, and Programming Type
+
+Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. 
+
+**For this analysis, we are only including BH-encounters that occurred during the study window (Medicaid eligibility end date >= 7/1/2018 & Medicaid eligibility start date <= 6/30/2021)**
+
+**For definitions of each column/flag created in the analytic file, see full data dictionary here (Individual-level File tab): https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=JADcH8** 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file
+
+# by county
+medicaid_jail_county_bh_service_type_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[study_bh_flag==1]),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1]),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_sud_service_primary_dx_flag==1]),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[study_service_provided_by_cmhc_provider_flag==1]),
+                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by ED (N)` = n_distinct(unique_person_id[study_ed_visit_or_service_flag==1]),
+                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Pharmacy Service (N)` = n_distinct(unique_person_id[study_mental_health_pharmacy_service_flag==1]),
+                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_id[study_sud_pharmacy_service_flag==1]),
+                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ Other BH Service (N)` = n_distinct(unique_person_id[study_other_service_flag==1]),
+                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Overall Individuals (N)`)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+medicaid_jail_overall_bh_service_type_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[study_bh_flag==1]),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1]),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_sud_service_primary_dx_flag==1]),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[study_service_provided_by_cmhc_provider_flag==1]),
+                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by ED (N)` = n_distinct(unique_person_id[study_ed_visit_or_service_flag==1]),
+                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Pharmacy Service (N)` = n_distinct(unique_person_id[study_mental_health_pharmacy_service_flag==1]),
+                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_id[study_sud_pharmacy_service_flag==1]),
+                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ Other BH Service (N)` = n_distinct(unique_person_id[study_other_service_flag==1]),
+                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Overall Individuals (N)`)) %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_county_statewide_bh_service_type_table <- rbind(medicaid_jail_county_bh_service_type_table,
+                                                              medicaid_jail_overall_bh_service_type_table)
+
+### print table via kableextra
+kable(medicaid_jail_county_statewide_bh_service_type_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(10, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(6, bold = TRUE) %>% 
+  column_spec(8, bold = TRUE) %>% 
+  column_spec(10, bold = TRUE) %>% 
+  column_spec(12, bold = TRUE) %>% 
+  column_spec(14, bold = TRUE) %>% 
+  column_spec(16, bold = TRUE) %>% 
+  column_spec(18, bold = TRUE) %>% 
+  column_spec(20, bold = TRUE) %>% 
+  column_spec(22, bold = TRUE)
+```
+
+<br><br>
+
+### Table 8. Percentage of Bookings with Behavioral Health "Encounters" by Treatment, Service, and Programming Type
+
+Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. I am currently using all behavioral health data from the Medicaid Encounter file, regardless of timing (before, during, or after the study period). For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file by booking (unique_person_booking_id)
+
+# by county
+medicaid_jail_county_bh_service_type_booking_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Overall Bookings (N)` = n_distinct(unique_person_booking_id),
+                   `Bookings w/ any Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ any Medicaid Match (%)` = scales::percent(`Bookings w/ any Medicaid Match (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[study_bh_flag==1]),
+                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[study_mh_service_primary_dx_flag==1]),
+                   `Bookings w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[study_sud_service_primary_dx_flag==1]),
+                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_booking_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
+                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_booking_id[study_service_provided_by_cmhc_provider_flag==1]),
+                   `Bookings w/ BH Service provided by CMHC (%)` = scales::percent(`Bookings w/ BH Service provided by CMHC (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by ED (N)` = n_distinct(unique_person_booking_id[study_ed_visit_or_service_flag==1]),
+                   `Bookings w/ BH Service provided by ED (%)` = scales::percent(`Bookings w/ BH Service provided by ED (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Pharmacy Service (N)` = n_distinct(unique_person_booking_id[study_mental_health_pharmacy_service_flag==1]),
+                   `Bookings w/ MH Pharmacy Service (%)` = scales::percent(`Bookings w/ MH Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_booking_id[study_sud_pharmacy_service_flag==1]),
+                   `Bookings w/ SUD Pharmacy Service (%)` = scales::percent(`Bookings w/ SUD Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ Other BH Service (N)` = n_distinct(unique_person_booking_id[study_other_service_flag==1]),
+                   `Bookings w/ Other BH Service (%)` = scales::percent(`Bookings w/ Other BH Service (N)`/`Overall Bookings (N)`)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Jail` = county) 
+
+# statewide
+medicaid_jail_overall_bh_service_type_booking_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+   dplyr::summarise(`Overall Bookings (N)` = n_distinct(unique_person_booking_id),
+                   `Bookings w/ any Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ any Medicaid Match (%)` = scales::percent(`Bookings w/ any Medicaid Match (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[study_bh_flag==1]),
+                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[study_mh_service_primary_dx_flag==1]),
+                   `Bookings w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[study_sud_service_primary_dx_flag==1]),
+                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_booking_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
+                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_booking_id[study_service_provided_by_cmhc_provider_flag==1]),
+                   `Bookings w/ BH Service provided by CMHC (%)` = scales::percent(`Bookings w/ BH Service provided by CMHC (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by ED (N)` = n_distinct(unique_person_booking_id[study_ed_visit_or_service_flag==1]),
+                   `Bookings w/ BH Service provided by ED (%)` = scales::percent(`Bookings w/ BH Service provided by ED (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Pharmacy Service (N)` = n_distinct(unique_person_booking_id[study_mental_health_pharmacy_service_flag==1]),
+                   `Bookings w/ MH Pharmacy Service (%)` = scales::percent(`Bookings w/ MH Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_booking_id[study_sud_pharmacy_service_flag==1]),
+                   `Bookings w/ SUD Pharmacy Service (%)` = scales::percent(`Bookings w/ SUD Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ Other BH Service (N)` = n_distinct(unique_person_booking_id[study_other_service_flag==1]),
+                   `Bookings w/ Other BH Service (%)` = scales::percent(`Bookings w/ Other BH Service (N)`/`Overall Bookings (N)`)) %>% 
+  dplyr::mutate(`Jail` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_county_statewide_bh_service_type_booking_table <- rbind(medicaid_jail_county_bh_service_type_booking_table,
+                                                                      medicaid_jail_overall_bh_service_type_booking_table)
+
+### print table via kableextra
+kable(medicaid_jail_county_statewide_bh_service_type_booking_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(10, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(6, bold = TRUE) %>% 
+  column_spec(8, bold = TRUE) %>% 
+  column_spec(10, bold = TRUE) %>% 
+  column_spec(12, bold = TRUE) %>% 
+  column_spec(14, bold = TRUE) %>% 
+  column_spec(16, bold = TRUE) %>% 
+  column_spec(18, bold = TRUE) %>% 
+  column_spec(20, bold = TRUE) %>% 
+  column_spec(22, bold = TRUE)
+```
+
+<br><br>
+
+
+### Table 9: Mental Health and Substance Use Disorder Service Medicaid Encounters by High Utilizer Grouping
+
+Note: Include note on different timing (study period only versus all periods in earlier tables) -- this explains slight difference in numbers with BH encounter %, for instance)
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+# by hu_group_exclusive
+medicaid_jail_county_bh_service_type_hu_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(n_distinct(unique_person_id[medicaid_match_flag==1])/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(n_distinct(unique_person_id[study_bh_flag==1])/`Overall Individuals (N)`),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1]),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_sud_service_primary_dx_flag==1]),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+# statewide
+medicaid_jail_overall_bh_service_type_hu_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(n_distinct(unique_person_id[medicaid_match_flag==1])/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(n_distinct(unique_person_id[study_bh_flag==1])/`Overall Individuals (N)`),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1]),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_sud_service_primary_dx_flag==1]),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`)) %>% 
+  dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_county_statewide_bh_service_type_hu_table <- rbind(medicaid_jail_county_bh_service_type_hu_table,
+                                                                 medicaid_jail_overall_bh_service_type_hu_table)
+
+### print table via kableextra
+kable(medicaid_jail_county_statewide_bh_service_type_hu_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(6, bold = TRUE) %>% 
+  column_spec(8, bold = TRUE) %>% 
+  column_spec(10, bold = TRUE)
+
+```
+
+<br><br>
+
+### Table 10: CMHC and ED Visits by High Utilizer Grouping
+
+Note: Need to think through substantial difference between mean and median ED visits and how to talk through each metric if we end up presenting them. Related to this, there seem to be a handful of outliers (e.g., 100+ ED visits) that I need to further explore. 
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+### need to recode count of ED services from NA to 0 when medicaid_match_flag==1 before we calculate the mean
+### NA values now indicate that individual didn't match to medicaid data whereas 0 indicates that individual did
+### match to medicaid data, but had no recorded BH-related ED visits
+### also need to de-dup file by individual before taking mean -- so that we have one ED visit count per individual, not
+### per booking
+jail_medicaid_analytic_individual_booking_level_dedup_ed_visit_count_recode <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  mutate(study_ed_visit_or_service_encounter_count = ifelse(is.na(study_ed_visit_or_service_encounter_count)==TRUE & medicaid_match_flag==1,
+                                                            0,study_ed_visit_or_service_encounter_count)) %>% 
+  distinct(unique_person_id,
+           .keep_all=TRUE)
+
+# by hu_group_exclusive
+medicaid_jail_ed_visits_hu_table <- jail_medicaid_analytic_individual_booking_level_dedup_ed_visit_count_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(n_distinct(unique_person_id[medicaid_match_flag==1])/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[study_service_provided_by_cmhc_provider_flag==1]),
+                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by ED (N)` = n_distinct(unique_person_id[study_ed_visit_or_service_flag==1]),
+                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Overall Individuals (N)`),
+                   `Mean ED visits for BH Service per Individual (Medicaid match sample)` = round(mean(study_ed_visit_or_service_encounter_count[medicaid_match_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (Medicaid match sample)` = round(median(study_ed_visit_or_service_encounter_count[medicaid_match_flag==1], na.rm = TRUE), digits = 1),
+                   `Mean ED visits for BH Service per Individual (BH encounter sample mean)` = round(mean(study_ed_visit_or_service_encounter_count[study_bh_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (BH encounter sample mean)` = round(median(study_ed_visit_or_service_encounter_count[study_bh_flag==1], na.rm = TRUE), digits = 1),
+                   `Mean ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)` = round(mean(study_ed_visit_or_service_encounter_count[study_ed_visit_or_service_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)` = round(median(study_ed_visit_or_service_encounter_count[study_ed_visit_or_service_flag==1], na.rm = TRUE), digits = 1)) %>%
+  ungroup() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+# statewide
+medicaid_jail_ed_visits_hu_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_ed_visit_count_recode %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(n_distinct(unique_person_id[medicaid_match_flag==1])/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[study_service_provided_by_cmhc_provider_flag==1]),
+                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by ED (N)` = n_distinct(unique_person_id[study_ed_visit_or_service_flag==1]),
+                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Overall Individuals (N)`),
+                   `Mean ED visits for BH Service per Individual (Medicaid match sample)` = round(mean(study_ed_visit_or_service_encounter_count[medicaid_match_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (Medicaid match sample)` = round(median(study_ed_visit_or_service_encounter_count[medicaid_match_flag==1], na.rm = TRUE), digits = 1),
+                   `Mean ED visits for BH Service per Individual (BH encounter sample mean)` = round(mean(study_ed_visit_or_service_encounter_count[study_bh_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (BH encounter sample mean)` = round(median(study_ed_visit_or_service_encounter_count[study_bh_flag==1], na.rm = TRUE), digits = 1),
+                   `Mean ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)` = round(mean(study_ed_visit_or_service_encounter_count[study_ed_visit_or_service_flag==1], na.rm = TRUE), digits = 1),
+                   `Median ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)` = round(median(study_ed_visit_or_service_encounter_count[study_ed_visit_or_service_flag==1], na.rm = TRUE), digits = 1)) %>%
+  dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_ed_visits_hu_overall_table <- rbind(medicaid_jail_ed_visits_hu_table,
+                                                  medicaid_jail_ed_visits_hu_overall_table)
+
+### print table via kableextra
+kable(medicaid_jail_ed_visits_hu_overall_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE) %>% 
+  column_spec(5, bold = TRUE) %>% 
+  column_spec(7, bold = TRUE) %>% 
+  column_spec(8, bold = TRUE) %>% 
+  column_spec(9, bold = TRUE) %>% 
+  column_spec(10, bold = TRUE) %>% 
+  column_spec(11, bold = TRUE) %>% 
+  column_spec(12, bold = TRUE) %>% 
+  column_spec(13, bold = TRUE)
+```
+
+<br><br>
+
+### Table 11: Pharmacy Visits and Other Behavioral Health Services by High Utilizer Grouping
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+# by hu_group_exclusive
+medicaid_jail_county_pharmacy_type_hu_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(n_distinct(unique_person_id[medicaid_match_flag==1])/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(n_distinct(unique_person_id[study_bh_flag==1])/`Overall Individuals (N)`),
+                    `Individuals w/ MH Pharmacy Service (N)` = n_distinct(unique_person_id[study_mental_health_pharmacy_service_flag==1]),
+                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_id[study_sud_pharmacy_service_flag==1]),
+                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ Other BH Service (N)` = n_distinct(unique_person_id[study_other_service_flag==1]),
+                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Overall Individuals (N)`)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+# statewide
+medicaid_jail_county_pharmacy_type_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(n_distinct(unique_person_id[medicaid_match_flag==1])/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(n_distinct(unique_person_id[study_bh_flag==1])/`Overall Individuals (N)`),
+                    `Individuals w/ MH Pharmacy Service (N)` = n_distinct(unique_person_id[study_mental_health_pharmacy_service_flag==1]),
+                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_id[study_sud_pharmacy_service_flag==1]),
+                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ Other BH Service (N)` = n_distinct(unique_person_id[study_other_service_flag==1]),
+                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Overall Individuals (N)`)) %>% 
+  dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_county_statewide_pharmacy_type_hu_table <- rbind(medicaid_jail_county_pharmacy_type_hu_table,
+                                                               medicaid_jail_county_pharmacy_type_overall_table)
+
+### print table via kableextra
+kable(medicaid_jail_county_statewide_pharmacy_type_hu_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(6, bold = TRUE) %>% 
+  column_spec(8, bold = TRUE) %>% 
+  column_spec(10, bold = TRUE)
+
+```
+
+<br><br>
+
+### Table 12: Timing of Medicaid Eligiblity End Dates and Jail Bookings (Enrollment-level)
+
+**The following three tables explore the question on slide 44 -- Is Medicaid enrollment starting again when people are released from jail?**
+
+**NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don't have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data**
+
+**For definitions of each column/flag created in the analytic file, see full data dictionary here (Enrollment-level File tab): https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=JADcH8**
+
+
+This table explores the percentages of Medicaid enrollments (ONLY for individuals who matched to Medicaid data) where enrollment/eligibility ended during incarceration as well as within 20 days of release from jail
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+### import medicaid_enrollment_jail_timing_all -- the analytic file with flags based on timing/overlap of medicaid eligibility end dates and jail booking/release dates
+### this file lives on the external hard drive (created and exported in `14_medicaid.R`)
+medicaid_enrollment_jail_timing_all <- read_rds("D:/Analytic/medicaid_enrollment_jail_timing_all.rds") 
+
+# statewide
+medicaid_enrollment_jail_timing_all_overall_table <- medicaid_enrollment_jail_timing_all %>% 
+  dplyr::summarise(`Overall Medicaid Enrollments (N)` = n_distinct(unique_medicaid_enrollment_id),
+                   `Enrollments Ending in or within 20 days of Release from Jail (N)` = n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1]),
+                   `Enrollments Ending in or within 20 days of Release from Jail (%)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Enrollments Ending in Jail (N)` = n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_jail==1]),
+                   `Enrollments Ending in Jail (%)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_jail==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Enrollments Ending within 5 Days of Release from Jail (N)` = n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_after_jail_within_5_days==1]),
+                   `Enrollments Ending within 5 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_after_jail_within_5_days==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Enrollments Ending 5-10 Days of Release from Jail (N)` = n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_after_jail_within_10_days==1]),
+                   `Enrollments Ending 5-10 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_after_jail_within_10_days==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Enrollments Ending 10-15 Days of Release from Jail (N)` = n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_after_jail_within_15_days==1]),
+                   `Enrollments Ending 10-15 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_after_jail_within_15_days==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Enrollments Ending 15-20 Days of Release from Jail (N)` = n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_after_jail_within_20_days==1]),
+                   `Enrollments Ending 15-20 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_after_jail_within_20_days==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1)) 
+
+### print table via kableextra
+kable(medicaid_enrollment_jail_timing_all_overall_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
+
+### Table 13: Timing of Medicaid Eligiblity End Dates and Jail Bookings (Individual-level)
+
+**NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don't have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data**
+
+This table explores the percentage of individuals (ONLY for individuals who matched to Medicaid data) who experienced Medicaid enrollments where eligibility ended during incarceration as well as within 20 days of release from jail
+
+
+We should probably think through the best way to talk about the enrollment-level versus individual-level analysis and why the numbers look so different
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+# statewide
+medicaid_enrollment_jail_timing_all_individual_table <- medicaid_enrollment_jail_timing_all %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Enrollments Ending in or within 20 days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1]),
+                   `Individuals w/ Enrollments Ending in or within 20 days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending in Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_during_jail==1]),
+                   `Individuals w/ Enrollments Ending in Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_during_jail==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending within 5 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_5_days==1]),
+                   `Individuals w/ Enrollments Ending within 5 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_5_days==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending 5-10 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_10_days==1]),
+                   `Individuals w/ Enrollments Ending 5-10 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_10_days==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending 10-15 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_15_days==1]),
+                   `Individuals w/ Enrollments Ending 10-15 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_15_days==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending 15-20 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_20_days==1]),
+                   `Individuals w/ Enrollments Ending 15-20 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_20_days==1])/`Overall Individuals (N)`, accuracy=.1)) 
+
+### print table via kableextra
+kable(medicaid_enrollment_jail_timing_all_individual_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
+
+### Table 14: How long does Medicaid re-enrollment take? (Enrollment-level)
+
+**NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don't have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data**
+
+**To do: how should we understand/treat overlapping enrollment periods? It is fairly rare, but does result in some weird calculations of time differences between the ending of one enrollment period and the beginning of the next. For now I'm filtering out differences of less than 0 days in calculations of mean and median**
+
+This table explores the average number of days from the end of Medicaid eligibility (when it occurs during or within 20 days after incarceration) to re-enrollment/the following Medicaid eligibility start date for an individual. Analysis is at the enrollment-level
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+# statewide
+medicaid_enrollment_jail_timing_to_re_enroll_table <- medicaid_enrollment_jail_timing_all %>% 
+  dplyr::summarise(`Overall Medicaid Enrollments (N)` = n_distinct(unique_medicaid_enrollment_id),
+                   `Enrollments Ending in or within 20 days of Release from Jail (% of all enrollments)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Mean Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)` = round(mean(medicaid_eligibility_end_next_begin_diff_days[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_next_begin_diff_days>=0], na.rm = TRUE), digits = 1),
+                   `Median Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)` = round(median(medicaid_eligibility_end_next_begin_diff_days[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_next_begin_diff_days>=0], na.rm = TRUE), digits = 1),
+                   `Enrollments Ending in or within 20 days of Release from Jail, No Re-enrollment Records (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_no_new_begin_flag==1]),
+                   `Enrollments Ending in or within 20 days of Release from Jail, No Re-enrollment Records (% of enrollments that ended)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_no_new_begin_flag==1])/n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1]), accuracy=.1)) 
+
+### print table via kableextra
+kable(medicaid_enrollment_jail_timing_to_re_enroll_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
+
+### Table 15: Average Jail Length of Stay when Medicaid Enrollment/Eligibility Ends (Enrollment-level)
+
+**NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don't have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data**
+
+This table explores the average number of days spent in jail when Medicaid enrollment/eligibility ends either during incarceration or within 20 days of release from jail
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+# statewide
+medicaid_enrollment_ends_average_jail_los_table <- medicaid_enrollment_jail_timing_all %>% 
+  dplyr::summarise(`Overall Medicaid Enrollments (N)` = n_distinct(unique_medicaid_enrollment_id),
+                    `Enrollments Ending in or within 20 days of Release from Jail (N)` = n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1]),
+                   `Enrollments Ending in or within 20 days of Release from Jail (% of all enrollments)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Mean Jail Length of Stay (Days)` = round(mean(jail_los_medicaid_enroll_ends, na.rm = TRUE), digits = 1),
+                   `Median Jail Length of Stay (Days)` = round(median(jail_los_medicaid_enroll_ends, na.rm = TRUE), digits = 1)) 
+
+### print table via kableextra
+kable(medicaid_enrollment_ends_average_jail_los_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
+
+### Table 16: Percentage of Individuals with SPMI or Opioid-related Primary Diagnoses (Individual-level)
+
+This table explores the percentage of individuals in the sample with SPMI or Opioid-related Primary Diagnoses *during the study window (2018-2021)*. This analysis is based on the following slides in the powerpoint: 
+
+* Slide 38: A closer look at serious SPMI's (bipolar disorder, schizophrenia, etc.) 
+
+* Slide 40: HU's ____% more likely to have an opioid use disorder
+
+**See full notes and business rules for variable creation in data dictionary for individual-level analytic file here: https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=zLytTB**
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+# statewide
+medicaid_jail_spmi_opioid_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1]),
+                   `Individuals w/ BH Encounter, (% of overall sample)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter, (% of Medicaid sample)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Individuals w/ any Medicaid Match (N)`),
+                   `Individuals w/ SPMI Primary Diagnosis (N)` = n_distinct(unique_person_id[study_spmi_flag==1]),
+                   `Individuals w/ SPMI Primary Diagnosis (% of overall sample)` = scales::percent(`Individuals w/ SPMI Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SPMI Primary Diagnosis (% of Medicaid sample)` = scales::percent(`Individuals w/ SPMI Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
+                   `Individuals w/ Opioid-related Primary Diagnosis (N)` = n_distinct(unique_person_id[study_opioid_related_flag==1]),
+                   `Individuals w/ Opioid-related Primary Diagnosis (% of overall sample)` = scales::percent(`Individuals w/ Opioid-related Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ Opioid-related Primary Diagnosis (% of Medicaid sample)` = scales::percent(`Individuals w/ Opioid-related Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`))
+
+### print table via kableextra
+kable(medicaid_jail_spmi_opioid_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
+
+**Next steps:**
+
+*Additional Analyses for encounter-level analytic file:*
+
+* Slide 43: From 2019 to 2021, service providers were reimbursed X% less than the national average. From 2019 to 2021, service providers were reimbursed an average of $X per claim.
+
+<br><br>
+
+## Visuals
+
+TBD
+
+
+<br><br>
+

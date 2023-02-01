@@ -19,7 +19,6 @@ library(readr)
 library(janitor)
 library(lubridate)
 library(tidyverse)
-library(lubridate)
 library(ggplot2)
 library(dplyr)
 library(kableExtra)
@@ -45,6 +44,8 @@ library(rvg)
 library(reactablefmtr)
 library(ggtext)
 library(openxlsx)
+library(svDialogs)
+
 
 ###################
 # Local and research sharepoint
@@ -59,7 +60,10 @@ library(openxlsx)
 # sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
 
 # Change path depending on SP name ########################################
-FULL_JC_FOLDER <- "MR"
+# soft code initials for switch between us when setting sp_data_path (use pop-up dialog box from svDialogs)
+# sorry if this makes you now download svDialogs for it to work, Mari! and we may decide that it's too much lol
+FULL_JC_FOLDER <- svDialogs::dlg_input(message = "Enter initials (e.g. MR)", default = "")$res
+# FULL_JC_FOLDER <- "MR"
 
 if (FULL_JC_FOLDER == "AB"){
   sp_data_path <- csgjcr::csg_sp_path(file.path("JR_NH"))
