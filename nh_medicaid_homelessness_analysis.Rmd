@@ -171,7 +171,7 @@ kable(medicaid_jail_homelessness_county_statewide_table,
 
 <br><br>
 
-### Table 2. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility by County Type (Rural vs Urban)
+### Table 2. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility by County Type (by rural/urban classification)
 
 Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period). 
 
