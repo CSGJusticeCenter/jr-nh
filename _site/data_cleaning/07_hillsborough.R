@@ -35,7 +35,7 @@ hillsborough_adm_all <- hillsborough_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                housing = homeless_y_n,   # switch N to Y? - not using anyway
+                homeless = homeless_y_n,
                 charge_code,
                 charge_desc = charges,
                 booking_date,
@@ -45,7 +45,10 @@ hillsborough_adm_all <- hillsborough_adm.xlsx %>%
                 sentence_status = sentencing_status) %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%y"),
          release_date = as.Date(release_date, format = "%m/%d/%y"),
-         county = "Hillsborough") %>%
+         county = "Hillsborough",
+         homeless = case_when(homeless == "Y" ~ "Homeless",
+                              homeless == "N" ~ "Not Homeless",
+                              is.na(homeless) ~ "Unknown")) %>%
   distinct()
 
 # Create fy, age, los, recode race, and order variables
@@ -169,11 +172,9 @@ hillsborough_adm <- hillsborough_adm %>% distinct()
 
 # Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-hillsborough_adm <- hillsborough_adm %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
-
 # Create pretrial drug court and sentenced drug court variables
 hillsborough_adm <- hillsborough_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
   mutate(drug_court_pretrial  = case_when(sentence_status == "PRE TRIAL DRUG COURT (MANCH)" |
                                        sentence_status == "PRE TRIAL DRUG COURT (NASHUA)" |
                                        sentence_status == "PRETRIAL DRUG COURT SATCO" |
@@ -219,12 +220,10 @@ hillsborough_adm <- hillsborough_adm %>%
 # Fix los issues
 # Remove negatives because of data entry issues with booking and release dates
 # If release date is missing, then change los to NA instead of Inf
-hillsborough_adm <- hillsborough_adm %>%
-  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
-  filter(los_max >= 0 | is.na(los_max))
-
 # Create los categories
 hillsborough_adm <- hillsborough_adm %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max)) %>%
   mutate(los_category =
            case_when(los_max == 0 ~ "0",
                      los_max == 1 ~ "1",

@@ -8,7 +8,7 @@ navbar:
   right:
     - text: "Project Overview"
       href: index.html
-    - text: "Overall Trends"
+    - text: "Jail Trends"
       menu:
         - text: "Incarceration Patterns"
           href: nh_incarceration_patterns.html
@@ -20,6 +20,8 @@ navbar:
           href: nh_charge_type_analysis.html
         - text: "High Utilizers"
           href: nh_high_utilizers_analysis.html
+        - text: "Homeless"
+          href: nh_homeless_analysis.html
         - text: "Racial Disparities"
           href: nh_racial_disparities.html
     - text: "Medicaid Trends"

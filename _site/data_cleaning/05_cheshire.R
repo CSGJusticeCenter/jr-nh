@@ -38,7 +38,7 @@ cheshire_adm_all <- cheshire_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                housing = housing_instability_or_homelessness_indicator,
+                homeless = housing_instability_or_homelessness_indicator,
                 charge_code = charge_offence_code,
                 charge_desc = charged_offense_code_description_including_technical_violations_of_supervision,
                 booking_date,
@@ -187,19 +187,15 @@ cheshire_adm <- cheshire_adm %>% distinct()
 
 # Remove bookings before and after study dates
 # July 1, 2018, to June 30, 2021
-cheshire_adm <- cheshire_adm %>%
-  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
-
 # Create pretrial drug court and sentenced drug court variables
-cheshire_adm <- cheshire_adm %>%
-  mutate(drug_court_pretrial  = case_when(sentence_status == "PRE-TRIAL / DRUG COURT" ~ 1,
-                                          TRUE ~ 0),
-         drug_court_sentenced = case_when(sentence_status == "SENTENCED / DRUG COURT" ~ 1,
-                                          TRUE ~ 0))
-
 # If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.
 cheshire_adm <- cheshire_adm %>%
+  filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
+  mutate(drug_court_pretrial  = case_when(sentence_status == "PRE-TRIAL / DRUG COURT" ~ 1,
+                                          TRUE ~ 0),
+         drug_court_sentenced = case_when(sentence_status == "SENTENCED / DRUG COURT" ~ 1,
+                                          TRUE ~ 0)) %>%
 
   # Race
   dplyr::group_by(id) %>%
@@ -223,12 +219,10 @@ cheshire_adm <- cheshire_adm %>%
 # Fix los issues
 # Remove negatives because of data entry issues with booking and release dates
 # If release date is missing, then change los to NA instead of Inf
-cheshire_adm <- cheshire_adm %>%
-  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
-  filter(los_max >= 0 | is.na(los_max))
-
 # Create los categories
 cheshire_adm <- cheshire_adm %>%
+  mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
+  filter(los_max >= 0 | is.na(los_max))  %>%
   mutate(los_category =
            case_when(los_max == 0 ~ "0",
                      los_max == 1 ~ "1",
@@ -264,6 +258,9 @@ all_nas <- cheshire_adm %>%
            is.na(release_type) &
            is.na(sentence_status))
 cheshire_adm1 <- cheshire_adm %>% anti_join(all_nas) %>% distinct()
+
+# Make homeless NA because this data is likely inaccurate. It says that no one was homeless which is very unlikely.
+cheshire_adm1 <- cheshire_adm1 %>% mutate(homeless = NA)
 
 ################################################################################
 

@@ -34,6 +34,7 @@ fnc_data_setup <- function(df){
                   race = race_label,
                   gender = sex,
                   age,
+                  homeless,
                   charge_code,
                   charge_desc,
                   booking_date,
@@ -164,6 +165,7 @@ fnc_add_data_labels <- function(df){
            gender,
            age,
            age_category,
+           homeless,
            charge_code,
            charge_desc,
            booking_date,
@@ -194,6 +196,7 @@ fnc_add_data_labels <- function(df){
   df1$age                      <- as.numeric(df1$age)
   df1$gender                   <- as.factor(df1$gender)
   df1$age_category             <- as.character(df1$age_category)
+  df1$homeless                  <- as.factor(df1$homeless)
   df1$charge_code              <- as.character(df1$charge_code)
   df1$charge_desc              <- as.character(df1$charge_desc)
   df1$booking_type             <- as.character(df1$booking_type)
@@ -222,6 +225,7 @@ fnc_add_data_labels <- function(df){
                   gender                   = "Gender",
                   age                      = "Age (years)",
                   age_category             = "Age category",
+                  homeless                 = "Whether individual is homeless",
                   charge_code              = "Charge code",
                   charge_desc              = "Charge description",
                   booking_date             = "Booking date",
