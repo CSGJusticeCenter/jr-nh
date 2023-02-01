@@ -1,0 +1,178 @@
+---
+title: "Housing Analysis"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    theme: theme.css
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
+  dev = "ragg_png",
+  cache = FALSE
+  )
+
+# Load functions, packages, and data
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/rdas.R")
+
+# Save dataframe for this analysis
+# See if someone was homeless at any booking
+df_homeless_entrances <- bookings_entrances %>% 
+  filter(county != "Cheshire" | county != "Strafford") %>% 
+  filter(homeless != "Unknown" & !is.na(homeless)) %>% 
+  dplyr::group_by(id) %>%
+  mutate(all_homeless_types=paste(sort(unique(homeless)), collapse="&")) %>%
+  mutate(homeless_in_booking = case_when(all_homeless_types == 'Homeless&Not Homeless' | all_homeless_types == 'Homeless' ~ "Homeless",
+                                         all_homeless_types == "Not Homeless" ~ "Not Homeless")) 
+
+# Save number of entrances by county and by fiscal year
+df_entrances_county_fy <- df_homeless_entrances %>%
+  select(booking_id, fy, county) %>%
+  distinct() %>%
+  group_by(fy, county) %>%
+  summarise(total = n()) %>%
+  spread(fy, total) %>% 
+  clean_names() %>% 
+  mutate(total = x2019+x2020+x2021)
+
+# Save number of entrances by county
+df_entrances_county <- df_homeless_entrances %>%
+  select(booking_id, county) %>%
+  distinct() %>%
+  group_by(county) %>%
+  summarise(total = n()) %>%
+  clean_names()
+
+# Save number of people by county and by fiscal year
+df_people_county_fy <- df_homeless_entrances %>%
+  dplyr::ungroup() %>%
+  dplyr::select(id, fy, county) %>%
+  dplyr::distinct() %>%
+  dplyr::group_by(county, fy) %>%
+  dplyr::summarise(total = n()) 
+
+# Save number of people by county 
+# Remove Cheshire and Strafford since they do not have data on homelessness
+df_people_county <- df_homeless_entrances %>%
+  dplyr::ungroup() %>%
+  dplyr::select(id, county) %>%
+  dplyr::distinct() %>%
+  dplyr::group_by(county) %>%
+  dplyr::summarise(number_of_people = n()) 
+```
+
+The following counties provided reliable data on homelessness:  
+
+- Belknap  
+- Carroll  
+- Coos  
+- Hillsborough  
+- Merrimack  
+- Rockingham  
+- Sullivan  
+
+## Number of people experiencing homelessness  
+
+```{r}
+# Count number and proportion of people who were homeless by county and by fiscal year
+homeless_county <- df_homeless_entrances %>% 
+  select(id, county, homeless_in_booking) %>% 
+  distinct() %>% 
+  group_by(county, homeless_in_booking) %>% 
+  summarise(total = n()) %>% 
+  spread(homeless_in_booking, total) %>% 
+  clean_names() %>% 
+  left_join(df_people_county, by = "county") %>% 
+  adorn_totals("row") %>% 
+  mutate(pct_homeless     = homeless/number_of_people,
+         pct_not_homeless = not_homeless/number_of_people)
+
+# Reactable table
+reactable(homeless_county,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          pagination = FALSE,
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left", minWidth = 100
+          ),
+          rowStyle = function(index) {
+              if (index %in% c(8)) {
+                list(`border-top` = "thin solid",
+                     fontWeight = "bold")
+              }
+            },
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            county           = colDef(name = "County", minWidth = 200, style = list(fontWeight = "bold")),
+            homeless         = colDef(name = "Homeless (N)", minWidth = 100),
+            not_homeless     = colDef(name = "Not Homeless (N)", minWidth = 100),
+            number_of_people = colDef(name = "Total Number of People (N)", minWidth = 100,
+                                      style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+            pct_homeless     = colDef(name = "Homeless (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            pct_not_homeless = colDef(name = "Not Homeless (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
+            )
+          ) %>%
+add_source(paste(""), font_style = "italic", font_size = 14)
+```
+
+<br>
+
+## High utlizers experiencing homelessness
+
+```{r}
+# Count number and proportion of HUs who were homeless by county and by fiscal year
+homeless_hu_fy <- df_homeless_entrances %>% 
+  select(id, homeless_in_booking, hu_group_exclusive) %>% 
+  distinct() %>% 
+  group_by(homeless_in_booking, hu_group_exclusive) %>% 
+  summarise(total = n()) %>% 
+  spread(homeless_in_booking, total) %>% 
+  clean_names() %>% 
+  adorn_totals("row") %>% 
+  mutate(number_of_people = homeless + not_homeless,
+         pct_homeless     = homeless/number_of_people,
+         pct_not_homeless = not_homeless/number_of_people)
+
+# Reactable table
+reactable(homeless_hu_fy,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          pagination = FALSE,
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left", minWidth = 100
+          ),
+          rowStyle = function(index) {
+              if (index %in% c(5)) {
+                list(`border-top` = "thin solid",
+                     fontWeight = "bold")
+              }
+            },
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu_group_exclusive = colDef(name = "", minWidth = 200, style = list(fontWeight = "bold")),
+            homeless           = colDef(name = "Homeless (N)", minWidth = 100),
+            not_homeless       = colDef(name = "Not Homeless (N)", minWidth = 100),
+            number_of_people   = colDef(name = "Total Number of People (N)", minWidth = 100,
+                                        style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+            pct_homeless       = colDef(name = "Homeless (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            pct_not_homeless   = colDef(name = "Not Homeless (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
+            )
+          ) %>%
+add_source(paste(""), font_style = "italic", font_size = 14)
+```
+
+
+
+
+

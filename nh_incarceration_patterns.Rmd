@@ -23,6 +23,14 @@ source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
 daily_pop_costs   <- read_rds("D:/Analytic/daily_pop_costs.rds") 
+
+# DHHS data
+# create temporary id for function and create fy variable
+entrances_dhhs <- medicaid_jail_all %>% 
+  mutate(id = unique_person_id,
+         fy = case_when(booking_date > "2018-06-30" & booking_date < "2019-07-01" ~ 2019,
+                        booking_date > "2019-06-30" & booking_date < "2020-07-01" ~ 2020,
+                        booking_date > "2020-06-30" & booking_date < "2021-07-01" ~ 2021))
 ```
 
 # Entrances
@@ -33,14 +41,6 @@ daily_pop_costs   <- read_rds("D:/Analytic/daily_pop_costs.rds")
 ### People Entered  
 
 ```{r, results='asis'}
-# DHHS data
-# create temporary id for function and create fy variable
-entrances_dhhs <- medicaid_jail_all %>% 
-  mutate(id = unique_person_id,
-         fy = case_when(booking_date > "2018-06-30" & booking_date < "2019-07-01" ~ 2019,
-                        booking_date > "2019-06-30" & booking_date < "2020-07-01" ~ 2020,
-                        booking_date > "2020-06-30" & booking_date < "2021-07-01" ~ 2021))
-
 # Total number of people entered (no duplicates for counting by FY)
 amt_people_entered <- entrances_dhhs %>%
   dplyr::ungroup() %>%

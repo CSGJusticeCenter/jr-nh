@@ -114,6 +114,10 @@ df_pch <- bookings_entrances %>%
 
 ################################################################################
 
+# Change HU variable to 1% = 1 percent, 5% = 2-5 percent, 10% = 6-10 percent
+bookings_entrances <- fnc_hu_group_exclusive(bookings_entrances)
+adm_all <- fnc_hu_group_exclusive(adm_all)
+
 save(adm_all,            file=paste0(sp_data_path, "/Data/r_data/adm_all.Rda",            sep = ""))
 save(bookings_entrances, file=paste0(sp_data_path, "/Data/r_data/bookings_entrances.Rda", sep = ""))
 save(df_pch,             file=paste0(sp_data_path, "/Data/r_data/df_pch.Rda",             sep = ""))

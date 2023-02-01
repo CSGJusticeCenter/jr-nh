@@ -233,8 +233,10 @@ hu_table <- hu_summary %>%
 ## Top 1%
 
 ```{r}
+# Filter to top 1%
 hu_1_pct <- hu_table %>% filter(hu_group_exclusive == "Top 1%") %>% select(-hu_group_exclusive)
 
+# Create reactable table
 reactable(hu_1_pct,
           pagination = FALSE,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
@@ -269,8 +271,10 @@ reactable(hu_1_pct,
 ## Top 5%
 
 ```{r}
+# Filter to top 5%
 hu_5_pct <- hu_table %>% filter(hu_group_exclusive == "Top 5%") %>% select(-hu_group_exclusive)
 
+# Create reactable table
 reactable(hu_5_pct,
           pagination = FALSE,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
@@ -305,8 +309,10 @@ reactable(hu_5_pct,
 ## Top 10%
 
 ```{r}
+# Filter to top 10%
 hu_10_pct <- hu_table %>% filter(hu_group_exclusive == "Top 10%") %>% select(-hu_group_exclusive)
 
+# Create reactable table
 reactable(hu_10_pct,
           pagination = FALSE,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),

@@ -22,9 +22,6 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
-
-# Change HU variable to 1% = 1 percent, 5% = 2-5 percent, 10% = 6-10 percent
-bookings_entrances <- fnc_hu_group_exclusive(bookings_entrances)
 ```
 
 # Protective Custody Holds
@@ -48,7 +45,7 @@ amt_pch_pct <- data1 %>% filter(pc_hold_in_booking == "PC Hold")
 amt_pch_pct <- amt_pch_pct$freq*100
 amt_pch_pct <- round(amt_pch_pct, 1)
 
-# print header for pc hold section
+# Print sentence
 cat("**Protective custody holds accounted for ", amt_pch_pct, "% of bookings from 2019 to 2021.** Coos and Strafford are not included in this calculation due to missing data.\n\n", sep = "")
 ```
 
@@ -58,13 +55,14 @@ cat("**Protective custody holds accounted for ", amt_pch_pct, "% of bookings fro
 # Data for ggplots showing the number of entrances and proportion of PC holds by FY
 data1 <- df_pch %>%
   filter(county != "Coos" | county != "Strafford") %>%
-  group_by(fy, pc_hold_in_booking) %>% summarise(total = n()) %>% filter(!is.na(pc_hold_in_booking))
+  group_by(fy, pc_hold_in_booking) %>% 
+  summarise(total = n()) %>% 
+  filter(!is.na(pc_hold_in_booking)) %>% 
+  group_by(fy) %>% mutate(pct = total/sum(total)*100) %>%
+  mutate(pct = round(pct, 1),
+         pct = paste0(pct, "%"))
 
 # Grouped bar chart showing the proportion of PC holds by FY
-data1 <- group_by(data1, fy) %>% mutate(pct = total/sum(total)*100) %>%
-  mutate(pct = round(pct, 1))
-data1 <- as.data.frame(data1)
-data1 <- data1 %>% mutate(pct = paste0(pct, "%"))
 PRES_gg_pch_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = pc_hold_in_booking)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
@@ -258,13 +256,13 @@ df_entrances_with_pc_holds <- df_entrances_with_pc_holds %>%
 ```
 
 ```{r}
-# Data for ggplots showing the number of entrances and proportion of PC holds by FY
+# Proportion of PC holds by county
 data1 <- df_pch %>%
-  group_by(county, pc_hold_in_booking) %>% summarise(total = n())
-data1 <- group_by(data1, county) %>% mutate(pct = round(total/sum(total)*100, 1))
-data1 <- as.data.frame(data1)
-data1 <- data1 %>% mutate(pct = round(pct, digits = 0)) 
+  group_by(county, pc_hold_in_booking) %>% summarise(total = n()) %>% 
+  group_by(county) %>% mutate(pct = round(total/sum(total)*100, 1)) %>% 
+  mutate(pct = round(pct, digits = 0)) 
 
+# Stacked bar chart showing proportion of pc holds by county
 PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_in_booking)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
@@ -304,8 +302,7 @@ knitr::include_graphics("img/PRES_gg_pchold_prop.png")
 **Some counties saw decreases in PC holds while others saw increases.**  
 
 ```{r}
-# table_pc_holds_fy_county
-# Remove Coos and Strafford from table
+# Remove Coos and Strafford since they dont have data on PC holds
 data1 <- df_pc_holds_fy_county %>% filter(county != "Coos" & county != "Strafford") %>% droplevels()
 
 # Table showing the number and proportion of PC holds each FY by county
@@ -317,7 +314,8 @@ table_pc_holds_fy_county
 <br>
 
 ```{r}
-# Select variables
+# Select variables, remove Coos and Strafford
+# Count number of pc holds by HU group
 data1 <- bookings_entrances %>%
   filter(county != "Coos" & county != "Strafford") %>%
   select(county,
@@ -330,17 +328,14 @@ data1 <- bookings_entrances %>%
   filter(!is.na(pc_hold_in_booking)) %>%
   filter(pc_hold_in_booking == "PC Hold") %>%
   group_by(pc_hold_in_booking, hu_group_exclusive) %>%
-  summarise(total = n())
-
-data1 <- group_by(data1) %>%
+  summarise(total = n()) %>%
   mutate(pct = total/sum(total)*100) %>%
-  mutate(pct = round(pct, 0))
-data1 <- as.data.frame(data1)
-data1 <- data1 %>% mutate(pct = paste0(pct, "%")) %>% 
+  mutate(pct = round(pct, 0)) %>% 
+  mutate(pct = paste0(pct, "%")) %>% 
   mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")))
 
-# One stacked barplot for all three years
-PRES_gg_hu_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, fill = hu_group_exclusive )) +
+# One stacked barplot for all three years then create a pie chart
+PRES_gg_pie_hu_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, fill = hu_group_exclusive )) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")) +
@@ -350,10 +345,7 @@ PRES_gg_hu_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, fill
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
-        axis.title.y = element_blank())
-
-# Pie chart for all three years
-PRES_gg_pie_hu_pc_holds <- PRES_gg_hu_pc_holds +
+        axis.title.y = element_blank()) +
   coord_polar("y", start=0) +
   theme_no_axes +
   theme_minimal()+
@@ -378,7 +370,7 @@ knitr::include_graphics("img/PRES_gg_pie_hu_pc_holds.png")
 ```
 
 ```{r}
-# Select variables
+# Select variables and count number of pc holds by HU group and county
 data1 <- bookings_entrances %>%
   select(county,
          fy,
@@ -390,12 +382,11 @@ data1 <- bookings_entrances %>%
   #filter(!is.na(pc_hold_in_booking)) %>%
   group_by(county, pc_hold_in_booking, hu_group_exclusive) %>%
   summarise(total = n()) %>%
-  filter(pc_hold_in_booking == "PC Hold")
-data1 <- group_by(data1, county) %>% mutate(pct = round(total/sum(total)*100, 0))
-data1 <- as.data.frame(data1)
-data1 <- data1 %>%
+  filter(pc_hold_in_booking == "PC Hold") %>% 
+  mutate(pct = round(total/sum(total)*100, 0)) %>% 
   mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")))
 
+# Stacked bar chart showing the proportion of HU PC holds out of all entrances
 PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = hu_group_exclusive )) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
