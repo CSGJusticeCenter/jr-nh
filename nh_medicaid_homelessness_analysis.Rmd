@@ -284,6 +284,61 @@ kable(medicaid_jail_homelessness_hu_county_statewide_table,
 
 <br><br>
 
+### Table 4. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility (**study period only**)
+
+Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards).
+
+**Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count** 
+
+**Statistics for individuals who are high utilizers of jail are based on the top 10% percentile of statewide bookings.**
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create table of highlighting the percentage of the medicaid sample that experienced homelessness at the beginning of any medicaid enrollment period in DHHS pull
+
+# by county
+medicaid_jail_homelessness_hu_county_study_period_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(study_homeless_on_eligibility_begin_flag==1)]),
+                   `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(study_homeless_on_eligibility_begin_flag==1)]),
+                   `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
+  ungroup() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+# statewide
+medicaid_jail_homelessness_hu_overall_study_period_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(study_homeless_on_eligibility_begin_flag==1)]),
+                   `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(study_homeless_on_eligibility_begin_flag==1)]),
+                   `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>%   
+  dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_homelessness_hu_county_statewide_study_period_table <- rbind(medicaid_jail_homelessness_hu_county_study_period_table,
+                                                              medicaid_jail_homelessness_hu_overall_study_period_table)
+
+### print table via kableextra
+kable(medicaid_jail_homelessness_hu_county_statewide_study_period_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(7, bold = TRUE)
+
+```
+
+<br><br>
+
 ## Visuals
 
 TBD

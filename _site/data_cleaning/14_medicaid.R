@@ -414,7 +414,7 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
                 as.numeric)) %>% 
   dplyr::filter(keep_record_flag==1) %>% 
 
-  ### now create encounter-level flags for SMPI (servere and persistent mental illness) based on primary diagnosis
+  ### now create encounter-level flags for SMPI (severe and persistent mental illness) based on primary diagnosis
   ### currently using definition from Donald et al.	2019:	“Severe persistent mental illnesses (SPMIs) are 
   ### those that are prolonged and recurrent, impair activities of daily living, and require long-term treatment. 
   ### Common diagnoses include schizophrenia, bipolar disorder, and major depression."
