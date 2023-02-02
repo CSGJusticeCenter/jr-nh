@@ -231,38 +231,51 @@ reactable(
           pagination = FALSE,
           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
                                  headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultExpanded = TRUE,
           defaultColDef = reactable::colDef(
-            format = colFormat(separators = TRUE), align = "left", minWidth = 100,
-            aggregated = JS("
-              function(cellInfo) {
-                for (var i = 0; i < cellInfo.subRows.length; i++) {
-                  var row = cellInfo.subRows[i]
-                  if (row.hu_group_exclusive === 'All HUs') {
-                    return row[cellInfo.column.id]
-                  }
-                }
-              }
-            ")
+            format = colFormat(separators = TRUE), align = "left", minWidth = 100
+            # # shows first row but it's duplicated
+            # aggregated = JS("
+            #   function(cellInfo) {
+            #     for (var i = 0; i < cellInfo.subRows.length; i++) {
+            #       var row = cellInfo.subRows[i]
+            #       if (row.hu_group_exclusive === 'All HUs') {
+            #         return row[cellInfo.column.id]
+            #       }
+            #     }
+            #   }
+            # ")
           ),
           rowStyle = function(index) {
               if (index %in% c(1, 2, 3, 4, 5, 6)) {
-                list(#`border-top` = "thin solid",
+                list(`border-top` = "thin solid",
                      fontWeight = "bold")
-              } 
+              }
+              else if (housing_hu_county[index, "hu_group_exclusive"] == "Top 1%") {
+                  list(fontWeight = "bold",
+                       color = jri_light_blue)
+              } else if(housing_hu_county[index, "hu_group_exclusive"] == "Top 5%"){
+                 list(fontWeight = "bold",
+                       color = jri_green)
+              } else if(housing_hu_county[index, "hu_group_exclusive"] == "Top 10%"){
+                 list(fontWeight = "bold",
+                       color = jri_orange)
+              }
           },
           compact = TRUE,
           fullWidth = FALSE,
           columns = list(
             county             = colDef(name = "County", minWidth = 175, 
-                                        style = list(fontWeight = "bold")),
+                                        style = list(fontWeight = "bold"),
+                                              grouped = JS("function(cellInfo) {return cellInfo.value}")), # remove paranthesis around county showing number of drop down options
             hu_group_exclusive = colDef(name = "", minWidth = 175),
+                                        
             unhoused           = colDef(name = "Unhoused (N)", minWidth = 100),
             housed             = colDef(name = "Housed (N)", minWidth = 100),
             number_of_people   = colDef(name = "Total Number of People (N)", minWidth = 100,
                                         style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
             pct_unhoused       = colDef(name = "Unhoused (%)", minWidth = 100, 
-                                        format = colFormat(percent = TRUE, digits = 0), 
-                                        style = list(fontWeight = "bold")),
+                                        format = colFormat(percent = TRUE, digits = 0)),
             pct_housed         = colDef(name = "Housed (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
             )
           ) %>%
