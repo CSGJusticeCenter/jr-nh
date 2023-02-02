@@ -228,9 +228,9 @@ kable(medicaid_jail_percent_match_county_statewide_table,
                                        "responsive"), 
                  row_label_position = "l") %>% 
   row_spec(10, bold = TRUE) %>% 
-  column_spec(4, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE, color = jri_green) %>% 
   column_spec(6, bold = TRUE, color = jri_orange) %>% 
-  column_spec(9, bold = TRUE) %>% 
+  column_spec(9, bold = TRUE, color = jri_green) %>% 
   column_spec(11, bold = TRUE, color = jri_orange)
 ```
 
@@ -297,9 +297,9 @@ kable(medicaid_jail_percent_match_cdc_statewide_table,
                                        "responsive"), 
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE) %>% 
-  column_spec(5, bold = TRUE) %>% 
+  column_spec(5, bold = TRUE, color = jri_green) %>% 
   column_spec(7, bold = TRUE, color = jri_orange) %>% 
-  column_spec(10, bold = TRUE) %>% 
+  column_spec(10, bold = TRUE, color = jri_green) %>% 
   column_spec(12, bold = TRUE, color = jri_orange)
 ```
 
@@ -371,7 +371,7 @@ kable(medicaid_jail_percent_match_county_statewide_timing_table,
                                        "responsive"), 
                  row_label_position = "l") %>% 
   row_spec(10, bold = TRUE) %>% 
-  column_spec(4, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE, color = jri_green) %>% 
   column_spec(6, bold = TRUE) %>% 
   column_spec(8, bold = TRUE) %>% 
   column_spec(10, bold = TRUE, color = jri_orange) %>% 
@@ -555,7 +555,7 @@ kable(medicaid_jail_percent_match_high_util_statewide_table,
                                        "responsive"), 
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE) %>% 
-  column_spec(4, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE, color = jri_green) %>% 
   column_spec(6, bold = TRUE, color = jri_orange) 
 ```
 
