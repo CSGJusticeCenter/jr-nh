@@ -125,7 +125,7 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-## High utlizers and Housing (State-wide)
+## High utlizers and housing (State-wide)
 
 **42% of Top 1% high utilizers were unhoused at least once when they were booked into jail.**
 
@@ -143,6 +143,37 @@ housing_hu_fy <- df_housing_entrances %>%
          pct_unhoused     = unhoused/number_of_people,
          pct_housed = housed/number_of_people)
 
+# Get totals for HU's
+housing_hu_total <- df_housing_entrances %>%
+  filter(hu_group_exclusive == "Top 1%" | 
+         hu_group_exclusive == "Top 5%" |
+         hu_group_exclusive == "Top 10%") %>% 
+  select(id, housing_in_booking) %>%
+  distinct() %>%
+  group_by(housing_in_booking) %>%
+  summarise(total = n()) %>%
+  spread(housing_in_booking, total) %>%
+  clean_names() %>%
+  mutate(hu_group_exclusive = "All HUs",
+         number_of_people = unhoused + housed,
+         pct_unhoused     = unhoused/number_of_people,
+         pct_housed       = housed/number_of_people)
+
+# Add totals to table and set up for viewing
+housing_hu_fy <- rbind(housing_hu_fy, housing_hu_total)
+housing_hu_fy <- housing_hu_fy %>% 
+  mutate(pct_unhoused = paste(round(pct_unhoused*100, 0), "%", sep = ""),
+         pct_housed   = paste(round(pct_housed*100, 0), "%", sep = ""),
+         arrange      = case_when(hu_group_exclusive == "All HUs" ~ 1,
+                                  hu_group_exclusive == "Top 1%"  ~ 2,
+                                  hu_group_exclusive == "Top 5%"  ~ 3,
+                                  hu_group_exclusive == "Top 10%" ~ 4,
+                                  hu_group_exclusive == "Non-HU"  ~ 5,
+                                  hu_group_exclusive == "Total"   ~ 6)) %>% 
+  arrange(arrange) %>% 
+  select(-arrange) %>% 
+  select(hu_group_exclusive, unhoused, housed, everything())
+
 # Reactable table
 reactable(housing_hu_fy,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
@@ -153,7 +184,7 @@ reactable(housing_hu_fy,
             format = colFormat(separators = TRUE), align = "left", minWidth = 100
           ),
           rowStyle = function(index) {
-              if (index %in% c(5)) {
+              if (index %in% c(6)) {
                 list(`border-top` = "thin solid",
                      fontWeight = "bold")
               }
@@ -175,7 +206,7 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-## Housing by County
+## High utlizers and housing (County)
 
 ```{r}
 # Count number and proportion of HUs who were unhoused by county and by fiscal year
@@ -186,7 +217,6 @@ housing_hu_county <- df_housing_entrances %>%
   summarise(total = n()) %>% 
   spread(housing_in_booking, total) %>% 
   clean_names() %>% 
-  # adorn_totals("row") %>% 
   mutate_at(c("housed",
               "unhoused"), ~replace_na(.,0)) %>% 
   mutate(number_of_people = unhoused + housed,
@@ -234,17 +264,6 @@ reactable(
           defaultExpanded = TRUE,
           defaultColDef = reactable::colDef(
             format = colFormat(separators = TRUE), align = "left", minWidth = 100
-            # # shows first row but it's duplicated
-            # aggregated = JS("
-            #   function(cellInfo) {
-            #     for (var i = 0; i < cellInfo.subRows.length; i++) {
-            #       var row = cellInfo.subRows[i]
-            #       if (row.hu_group_exclusive === 'All HUs') {
-            #         return row[cellInfo.column.id]
-            #       }
-            #     }
-            #   }
-            # ")
           ),
           rowStyle = function(index) {
               if (index %in% c(1, 2, 3, 4, 5, 6)) {

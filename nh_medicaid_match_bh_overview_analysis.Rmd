@@ -8,8 +8,10 @@ output:
 ---
 
 ```{r include=FALSE}
-# load packages
+# Load functions, packages, and data
 source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/rdas.R")
 ```
 
 ```{r include=FALSE}
@@ -21,17 +23,9 @@ knitr::opts_chunk$set(
   dev = "ragg_png",
   cache = FALSE
   )
-
-### set path using csg_sp_path
-sp_data_path <- csg_sp_path(file.path("JR_NH"))
-
 ```
 
 ```{r include=FALSE}
-### import adm_all -- jail administrative that we'll compare to the numbers from the medicaid match files
-load(paste0(sp_data_path, "/Data/r_data/adm_all.Rda", 
-            sep = "")) 
-
 ### de-dup by individual and booking -- these are the two units of analysis for comparisons to the medicaid data
 ### here we are de-duping bookings with multiple charges as we don't need that information for this comparison
 adm_all_dedup <- adm_all %>% 
@@ -180,6 +174,7 @@ kable(jail_adm_medicaid_count_table,
 
 <br><br>
 
+
 ### Table 2. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters"
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. I am currently using all behavioral health data from the Medicaid Encounter file, regardless of timing (before, during, or after the study period)
@@ -234,12 +229,13 @@ kable(medicaid_jail_percent_match_county_statewide_table,
                  row_label_position = "l") %>% 
   row_spec(10, bold = TRUE) %>% 
   column_spec(4, bold = TRUE) %>% 
-  column_spec(6, bold = TRUE) %>% 
+  column_spec(6, bold = TRUE, color = jri_orange) %>% 
   column_spec(9, bold = TRUE) %>% 
-  column_spec(11, bold = TRUE)
+  column_spec(11, bold = TRUE, color = jri_orange)
 ```
 
 <br><br>
+
 
 ### Table 3. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters" (by rural/urban classification)
 
@@ -301,10 +297,10 @@ kable(medicaid_jail_percent_match_cdc_statewide_table,
                                        "responsive"), 
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE) %>% 
-  column_spec(4, bold = TRUE) %>% 
-  column_spec(6, bold = TRUE) %>% 
-  column_spec(9, bold = TRUE) %>% 
-  column_spec(11, bold = TRUE)
+  column_spec(5, bold = TRUE) %>% 
+  column_spec(7, bold = TRUE, color = jri_orange) %>% 
+  column_spec(10, bold = TRUE) %>% 
+  column_spec(12, bold = TRUE, color = jri_orange)
 ```
 
 <br><br>
@@ -377,7 +373,7 @@ kable(medicaid_jail_percent_match_county_statewide_timing_table,
   column_spec(4, bold = TRUE) %>% 
   column_spec(6, bold = TRUE) %>% 
   column_spec(8, bold = TRUE) %>% 
-  column_spec(10, bold = TRUE) %>% 
+  column_spec(10, bold = TRUE, color = jri_orange) %>% 
   column_spec(12, bold = TRUE) %>% 
   column_spec(14, bold = TRUE)
 ```
@@ -441,8 +437,7 @@ kable(medicaid_jail_percent_match_high_util_statewide_table,
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE) %>% 
   column_spec(4, bold = TRUE) %>% 
-  column_spec(6, bold = TRUE) 
-
+  column_spec(6, bold = TRUE, color = jri_orange) 
 ```
 
 <br><br>
