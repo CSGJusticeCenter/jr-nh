@@ -305,6 +305,7 @@ kable(medicaid_jail_percent_match_cdc_statewide_table,
 
 <br><br>
 
+
 ### Table 4. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters": by timing of BH Encounter
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. 
@@ -378,6 +379,124 @@ kable(medicaid_jail_percent_match_county_statewide_timing_table,
   column_spec(14, bold = TRUE)
 ```
 
+```{r}
+# Calculate proportion of individuals that matched to Medicaid from 2014-2021
+df_medicaid_match <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Overall Individuals (N)`                  = n_distinct(unique_person_id),
+                   
+                   `Individuals w/ any Medicaid Match (N)`    = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any Medicaid Match`        = `Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`,
+                   
+                   `Individuals w/out any Medicaid Match (N)` = `Overall Individuals (N)` - `Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out any Medicaid Match`     = `Individuals w/out any Medicaid Match (N)`/`Overall Individuals (N)`)  %>% 
+  ungroup() %>% 
+  select(county,
+         `Individuals w/ any Medicaid Match`,
+         `Individuals w/out any Medicaid Match`)
+
+# Change from wide to long format
+df_medicaid_match <- gather(df_medicaid_match, population, pct, `Individuals w/ any Medicaid Match`:`Individuals w/out any Medicaid Match`, factor_key=TRUE) 
+df_medicaid_match <- df_medicaid_match %>% 
+  mutate(population = factor(population, 
+                             levels = c("Individuals w/out any Medicaid Match",
+                                        "Individuals w/ any Medicaid Match"))) %>% 
+  mutate(pct1 = round(pct*100, 0))
+  
+# Stacked bar chart showing the proportion of people matched to Medicaid by county
+PRES_gg_medicaid_match <- ggplot(df_medicaid_match, aes(x = county, y = pct, fill = population)) +
+  geom_col(colour = "white", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_green),
+                    na.value = "white") +
+  geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
+                fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.8,
+            size = 10, family = "Franklin Gothic Book",
+            color = case_when(df_medicaid_match$population == "Individuals w/ any Medicaid Match" ~ "white",
+                              TRUE ~ "black")) +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
+        axis.text.y = element_text(size = 28, color = "black"),
+        legend.position = "right",
+        legend.justification = c(1, 0.5),
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
+  #geom_hline(yintercept = mean(df_medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_medicaid_match, file="img/PRES_gg_medicaid_match.png", width = 16,  height = 6, dpi = 100)
+knitr::include_graphics("img/PRES_gg_medicaid_match.png")
+```
+
+
+
+```{r}
+# Calculate proportion of individuals that matched to Medicaid and had a BH history at any point from 2014-2021
+df_bh_match <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Overall Individuals (N)`                  = n_distinct(unique_person_id),
+                   `Individuals w/ any BH Encounter (N)`      = n_distinct(unique_person_id[overall_bh_flag==1]),
+                   `Individuals w/ any BH Encounter`          = `Individuals w/ any BH Encounter (N)`/`Overall Individuals (N)`,
+                   `Individuals w/out any BH Encounter (N)`   = `Overall Individuals (N)` - `Individuals w/ any BH Encounter (N)`,
+                   `Individuals w/out any BH Encounter`       = `Individuals w/out any BH Encounter (N)`/`Overall Individuals (N)`,
+                   )  %>% 
+  ungroup() %>% 
+  select(county,
+         `Individuals w/ any BH Encounter`,
+         `Individuals w/out any BH Encounter`)
+
+# Change from wide to long format
+df_bh_match <- gather(df_bh_match, population, pct, `Individuals w/ any BH Encounter`:`Individuals w/out any BH Encounter`, factor_key=TRUE)
+
+# Change from wide to long format
+df_bh_match <- df_bh_match %>% 
+  mutate(population = factor(population, 
+                             levels = c("Individuals w/out any BH Encounter",
+                                        "Individuals w/ any BH Encounter"))) %>% 
+  mutate(pct1 = round(pct*100, 0))
+
+# Stacked bar chart showing the proportion of people matched to BH encounter by county
+PRES_gg_bh_match <- ggplot(df_bh_match, aes(x = county, y = pct, fill = population)) +
+  geom_col(colour = "white", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_orange),
+                    na.value = "white") +
+  geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
+                fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.8,
+            size = 10, family = "Franklin Gothic Book",
+            color = case_when(df_bh_match$population == "Individuals w/ any BH Encounter" ~ "white",
+                              TRUE ~ "black")) +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
+        axis.text.y = element_text(size = 28, color = "black"),
+        legend.position = "right",
+        legend.justification = c(1, 0.5),
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_bh_match, file="img/PRES_gg_bh_match.png", width = 16,  height = 6, dpi = 100)
+knitr::include_graphics("img/PRES_gg_bh_match.png")
+```
+
 <br><br>
 
 ### Table 5. Percentage of High Utilizer Individuals with Medicaid Match and Behavioral Health "Encounters"
@@ -439,11 +558,5 @@ kable(medicaid_jail_percent_match_high_util_statewide_table,
   column_spec(4, bold = TRUE) %>% 
   column_spec(6, bold = TRUE, color = jri_orange) 
 ```
-
-<br><br>
-
-## Visuals
-
-TBD
 
 <br><br>
