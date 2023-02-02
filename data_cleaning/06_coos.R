@@ -36,7 +36,7 @@ coos_adm_all <- coos_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                homeless = homelessness_indicator,
+                housing = homelessness_indicator,
                 charge_code,
                 charge_desc = charges,
                 booking_date = booking_dt_tm,
@@ -47,9 +47,9 @@ coos_adm_all <- coos_adm.xlsx %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
          county = "Coos",
-         homeless = case_when(homeless == "Unhoused" ~ "Homeless",
-                              homeless == "Housed" ~ "Not Homeless",
-                              is.na(homeless) ~ "Unknown")) %>%
+         housing = case_when(housing == "Unhoused" ~ "Unhoused",
+                             housing == "Housed"   ~ "Housed",
+                             is.na(housing)        ~ "Unknown")) %>%
   distinct()
 
 # Create fy, age, los, recode race, and order variables

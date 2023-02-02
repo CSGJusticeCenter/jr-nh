@@ -26,7 +26,7 @@ strafford_adm_all <- strafford_adm.xlsx %>%
          charge_desc = NA,
          booking_type = NA,
          release_type = NA,
-         homeless = NA,
+         housing = NA,
          sentence_status = NA,
          race_label = case_when(
            race == "A" ~ "Asian/Pacific Islander",
@@ -43,7 +43,7 @@ strafford_adm_all <- strafford_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                homeless,
+                housing,
                 charge_code,
                 charge_desc,
                 booking_date,

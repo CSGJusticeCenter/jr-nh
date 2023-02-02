@@ -34,7 +34,7 @@ fnc_data_setup <- function(df){
                   race = race_label,
                   gender = sex,
                   age,
-                  homeless,
+                  housing,
                   charge_code,
                   charge_desc,
                   booking_date,
@@ -165,7 +165,7 @@ fnc_add_data_labels <- function(df){
            gender,
            age,
            age_category,
-           homeless,
+           housing,
            charge_code,
            charge_desc,
            booking_date,
@@ -196,7 +196,7 @@ fnc_add_data_labels <- function(df){
   df1$age                      <- as.numeric(df1$age)
   df1$gender                   <- as.factor(df1$gender)
   df1$age_category             <- as.character(df1$age_category)
-  df1$homeless                  <- as.factor(df1$homeless)
+  df1$housing                  <- as.character(df1$housing)
   df1$charge_code              <- as.character(df1$charge_code)
   df1$charge_desc              <- as.character(df1$charge_desc)
   df1$booking_type             <- as.character(df1$booking_type)
@@ -225,7 +225,7 @@ fnc_add_data_labels <- function(df){
                   gender                   = "Gender",
                   age                      = "Age (years)",
                   age_category             = "Age category",
-                  homeless                 = "Whether individual is homeless",
+                  housing                  = "Whether individual is housed or unhoused",
                   charge_code              = "Charge code",
                   charge_desc              = "Charge description",
                   booking_date             = "Booking date",
@@ -277,6 +277,14 @@ fnc_hu_group_exclusive <- function(df){
       hu_group_exclusive = factor(hu_group_exclusive,
                                   levels = c(1,2,3,4),
                                   labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
+  # df <- df %>%
+  #   mutate(hu_group_exclusive = case_when(
+  #     high_utilizer_10_pct=="No" ~ "Non-HU",
+  #     high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ "Top 10%",
+  #     high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ "Top 5%",
+  #     high_utilizer_1_pct=="Yes" ~ "Top 1%",
+  #     TRUE ~ "Unknown"),
+  #     hu_group_exclusive = ifelse(hu_group_exclusive == "Unknown", NA, hu_group_exclusive))
 }
 
 # Get prop of variable

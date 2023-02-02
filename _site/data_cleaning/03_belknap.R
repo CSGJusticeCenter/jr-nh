@@ -42,7 +42,7 @@ belknap_adm_all <- belknap_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                homeless = housing_instability_or_homelessness_indicator,
+                housing = housing_instability_or_homelessness_indicator,
                 charge_code,
                 charge_desc = charged_offense_code_description_including_technical_violations_of_supervision,
                 booking_date,
@@ -53,9 +53,9 @@ belknap_adm_all <- belknap_adm.xlsx %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
          county = "Belknap",
-         homeless = case_when(homeless == "yes" ~ "Homeless",
-                              homeless == "no" ~ "Not Homeless",
-                              is.na(homeless) ~ "Unknown"))
+         housing = case_when(housing == "yes" ~ "Unhoused",
+                             housing == "no"  ~ "Housed",
+                             is.na(housing)   ~ "Unknown"))
 
 # Create fy, age, los, recode race, and order variables
 belknap_adm <- fnc_data_setup(belknap_adm_all)

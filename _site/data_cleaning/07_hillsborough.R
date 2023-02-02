@@ -35,7 +35,7 @@ hillsborough_adm_all <- hillsborough_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                homeless = homeless_y_n,
+                housing = homeless_y_n,
                 charge_code,
                 charge_desc = charges,
                 booking_date,
@@ -46,9 +46,9 @@ hillsborough_adm_all <- hillsborough_adm.xlsx %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%y"),
          release_date = as.Date(release_date, format = "%m/%d/%y"),
          county = "Hillsborough",
-         homeless = case_when(homeless == "Y" ~ "Homeless",
-                              homeless == "N" ~ "Not Homeless",
-                              is.na(homeless) ~ "Unknown")) %>%
+         housing = case_when(housing == "Y" ~ "Unhoused",
+                             housing == "N" ~ "Housed",
+                             is.na(housing) ~ "Unknown")) %>%
   distinct()
 
 # Create fy, age, los, recode race, and order variables

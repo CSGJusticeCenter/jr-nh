@@ -40,7 +40,7 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                homeless = housing,
+                housing,
                 charge_code,
                 charge_desc = charge,
                 booking_date = booking_dt_tm,
@@ -51,9 +51,9 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
   mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
          release_date = as.Date(release_date, format = "%m/%d/%Y"),
          county = "Carroll",
-         homeless = case_when(homeless == "Homeless" ~ "Homeless",
-                              homeless == "Housed" ~ "Not Homeless",
-                              is.na(homeless) ~ "Unknown")) %>%
+         housing = case_when(housing == "Homeless" ~ "Unhoused",
+                             housing == "Housed"   ~ "Housed",
+                             is.na(housing)        ~ "Unknown")) %>%
   distinct()
 
 # Create fy, age, los, recode race, and order variables

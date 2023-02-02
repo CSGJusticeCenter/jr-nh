@@ -38,7 +38,7 @@ cheshire_adm_all <- cheshire_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex,
-                homeless = housing_instability_or_homelessness_indicator,
+                housing = housing_instability_or_homelessness_indicator, # not reliable
                 charge_code = charge_offence_code,
                 charge_desc = charged_offense_code_description_including_technical_violations_of_supervision,
                 booking_date,
@@ -259,8 +259,8 @@ all_nas <- cheshire_adm %>%
            is.na(sentence_status))
 cheshire_adm1 <- cheshire_adm %>% anti_join(all_nas) %>% distinct()
 
-# Make homeless NA because this data is likely inaccurate. It says that no one was homeless which is very unlikely.
-cheshire_adm1 <- cheshire_adm1 %>% mutate(homeless = NA)
+# Make housing NA because this data is likely inaccurate. It says that no one was housing which is very unlikely.
+cheshire_adm1 <- cheshire_adm1 %>% mutate(housing = NA)
 
 ################################################################################
 

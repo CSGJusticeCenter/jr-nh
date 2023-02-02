@@ -23,17 +23,18 @@ source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
 
 # Save dataframe for this analysis
-# See if someone was homeless at any booking
-df_homeless_entrances <- bookings_entrances %>% 
+# See if someone was unhoused at any booking
+df_housing_entrances <- bookings_entrances %>% 
   filter(county != "Cheshire" & county != "Strafford" & county != "Carroll") %>% 
-  filter(homeless != "Unknown" & !is.na(homeless)) %>% 
+  filter(housing != "Unknown" & !is.na(housing)) %>% 
   dplyr::group_by(id) %>%
-  mutate(all_homeless_types=paste(sort(unique(homeless)), collapse="&")) %>%
-  mutate(homeless_in_booking = case_when(all_homeless_types == 'Homeless&Not Homeless' | all_homeless_types == 'Homeless' ~ "Homeless",
-                                         all_homeless_types == "Not Homeless" ~ "Not Homeless")) 
+  mutate(all_housing_types=paste(sort(unique(housing)), collapse="&")) %>%
+  mutate(housing_in_booking = case_when(all_housing_types == 'Housed&Unhoused' | 
+                                        all_housing_types == 'Unhoused'          ~ "Unhoused",
+                                        all_housing_types == "Housed"            ~ "Housed"))
 
 # Save number of entrances by county and by fiscal year
-df_entrances_county_fy <- df_homeless_entrances %>%
+df_entrances_county_fy <- df_housing_entrances %>%
   select(booking_id, fy, county) %>%
   distinct() %>%
   group_by(fy, county) %>%
@@ -43,7 +44,7 @@ df_entrances_county_fy <- df_homeless_entrances %>%
   mutate(total = x2019+x2020+x2021)
 
 # Save number of entrances by county
-df_entrances_county <- df_homeless_entrances %>%
+df_entrances_county <- df_housing_entrances %>%
   select(booking_id, county) %>%
   distinct() %>%
   group_by(county) %>%
@@ -51,7 +52,7 @@ df_entrances_county <- df_homeless_entrances %>%
   clean_names()
 
 # Save number of people by county and by fiscal year
-df_people_county_fy <- df_homeless_entrances %>%
+df_people_county_fy <- df_housing_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(id, fy, county) %>%
   dplyr::distinct() %>%
@@ -59,7 +60,7 @@ df_people_county_fy <- df_homeless_entrances %>%
   dplyr::summarise(total = n()) 
 
 # Save number of people by county 
-df_people_county <- df_homeless_entrances %>%
+df_people_county <- df_housing_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(id, county) %>%
   dplyr::distinct() %>%
@@ -67,7 +68,7 @@ df_people_county <- df_homeless_entrances %>%
   dplyr::summarise(number_of_people = n()) 
 ```
 
-The following counties provided reliable data on homelessness:  
+The following counties provided reliable data on housing:  
 
 - Belknap  
 - Coos  
@@ -76,24 +77,24 @@ The following counties provided reliable data on homelessness:
 - Rockingham  
 - Sullivan  
 
-## Number of people experiencing homelessness  
+## Number of people experiencing housing  
 
 ```{r}
-# Count number and proportion of people who were homeless by county and by fiscal year
-homeless_county <- df_homeless_entrances %>% 
-  select(id, county, homeless_in_booking) %>% 
+# Count number and proportion of people who were housing by county and by fiscal year
+housing_county <- df_housing_entrances %>% 
+  select(id, county, housing_in_booking) %>% 
   distinct() %>% 
-  group_by(county, homeless_in_booking) %>% 
+  group_by(county, housing_in_booking) %>% 
   summarise(total = n()) %>% 
-  spread(homeless_in_booking, total) %>% 
+  spread(housing_in_booking, total) %>% 
   clean_names() %>% 
   left_join(df_people_county, by = "county") %>% 
   adorn_totals("row") %>% 
-  mutate(pct_homeless     = homeless/number_of_people,
-         pct_not_homeless = not_homeless/number_of_people)
+  mutate(pct_unhoused = unhoused/number_of_people,
+         pct_housed   = housed/number_of_people)
 
 # Reactable table
-reactable(homeless_county,
+reactable(housing_county,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
@@ -111,12 +112,12 @@ reactable(homeless_county,
           fullWidth = FALSE,
           columns = list(
             county           = colDef(name = "County", minWidth = 200, style = list(fontWeight = "bold")),
-            homeless         = colDef(name = "Homeless (N)", minWidth = 100),
-            not_homeless     = colDef(name = "Not Homeless (N)", minWidth = 100),
+            unhoused         = colDef(name = "Unhoused (N)", minWidth = 100),
+            housed     = colDef(name = "Housed (N)", minWidth = 100),
             number_of_people = colDef(name = "Total Number of People (N)", minWidth = 100,
                                       style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-            pct_homeless     = colDef(name = "Homeless (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
-            pct_not_homeless = colDef(name = "Not Homeless (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
+            pct_unhoused     = colDef(name = "Unhoused (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            pct_housed = colDef(name = "Housed (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
             )
           ) %>%
 add_source(paste(""), font_style = "italic", font_size = 14)
@@ -124,26 +125,26 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-## High utlizers experiencing homelessness (State-wide)
+## High utlizers and Housing (State-wide)
 
-**40% of Top 1% high utilizers were homeless at least once when they were booked into jail.**
+**42% of Top 1% high utilizers were unhoused at least once when they were booked into jail.**
 
 ```{r}
-# Count number and proportion of HUs who were homeless by county and by fiscal year
-homeless_hu_fy <- df_homeless_entrances %>% 
-  select(id, homeless_in_booking, hu_group_exclusive) %>% 
+# Count number and proportion of HUs who were unhoused by county and by fiscal year
+housing_hu_fy <- df_housing_entrances %>% 
+  select(id, housing_in_booking, hu_group_exclusive) %>% 
   distinct() %>% 
-  group_by(homeless_in_booking, hu_group_exclusive) %>% 
+  group_by(housing_in_booking, hu_group_exclusive) %>% 
   summarise(total = n()) %>% 
-  spread(homeless_in_booking, total) %>% 
+  spread(housing_in_booking, total) %>% 
   clean_names() %>% 
   adorn_totals("row") %>% 
-  mutate(number_of_people = homeless + not_homeless,
-         pct_homeless     = homeless/number_of_people,
-         pct_not_homeless = not_homeless/number_of_people)
+  mutate(number_of_people = unhoused + housed,
+         pct_unhoused     = unhoused/number_of_people,
+         pct_housed = housed/number_of_people)
 
 # Reactable table
-reactable(homeless_hu_fy,
+reactable(housing_hu_fy,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
@@ -161,12 +162,12 @@ reactable(homeless_hu_fy,
           fullWidth = FALSE,
           columns = list(
             hu_group_exclusive = colDef(name = "", minWidth = 200, style = list(fontWeight = "bold")),
-            homeless           = colDef(name = "Homeless (N)", minWidth = 100),
-            not_homeless       = colDef(name = "Not Homeless (N)", minWidth = 100),
+            unhoused           = colDef(name = "Unhoused (N)", minWidth = 100),
+            housed             = colDef(name = "Housed (N)", minWidth = 100),
             number_of_people   = colDef(name = "Total Number of People (N)", minWidth = 100,
                                         style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-            pct_homeless       = colDef(name = "Homeless (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
-            pct_not_homeless   = colDef(name = "Not Homeless (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
+            pct_unhoused       = colDef(name = "Unhoused (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            pct_housed         = colDef(name = "Housed (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
             )
           ) %>%
 add_source(paste(""), font_style = "italic", font_size = 14)
@@ -174,8 +175,90 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-## High utlizers experiencing homelessness by county
+## High utlizers and Housing (by County)
 
+```{r}
+# Count number and proportion of HUs who were unhoused by county and by fiscal year
+housing_hu_county <- df_housing_entrances %>% 
+  select(id, county, housing_in_booking, hu_group_exclusive) %>% 
+  distinct() %>% 
+  group_by(county, housing_in_booking, hu_group_exclusive) %>% 
+  summarise(total = n()) %>% 
+  spread(housing_in_booking, total) %>% 
+  clean_names() %>% 
+  # adorn_totals("row") %>% 
+  mutate(number_of_people = unhoused + housed,
+         pct_unhoused     = unhoused/number_of_people,
+         pct_housed = housed/number_of_people)
 
+# Get totals by county
+housing_hu_county_total <- df_housing_entrances %>%
+  select(id, county, housing_in_booking) %>%
+  distinct() %>%
+  group_by(county, housing_in_booking) %>%
+  summarise(total = n()) %>%
+  spread(housing_in_booking, total) %>%
+  clean_names() %>%
+  # adorn_totals("row") %>%
+  mutate(hu_group_exclusive = "Overall",
+         number_of_people = unhoused + housed,
+         pct_unhoused     = unhoused/number_of_people,
+         pct_housed       = housed/number_of_people)
+
+# Add totals to table
+housing_hu_county <- rbind(housing_hu_county, housing_hu_county_total)
+housing_hu_county <- housing_hu_county %>% arrange(county) %>% 
+  mutate(pct_unhoused = paste(round(pct_unhoused*100, 0), "%", sep = ""),
+         pct_housed   = paste(round(pct_housed*100, 0), "%", sep = ""),
+         arrange      = case_when(hu_group_exclusive == "Overall" ~ 1,
+                                  hu_group_exclusive == "Non-HU"  ~ 2,
+                                  hu_group_exclusive == "Top 10%" ~ 3,
+                                  hu_group_exclusive == "Top 5%" ~ 4,
+                                  hu_group_exclusive == "Top 1%" ~ 5)) %>% 
+  arrange(arrange) %>% 
+  select(-arrange)
+
+# Create reactable table with expandable rows for details in each county
+reactable(
+  housing_hu_county,
+  groupBy = "county",
+  style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          pagination = FALSE,
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left", minWidth = 100,
+            aggregated = JS("
+              function(cellInfo) {
+                for (var i = 0; i < cellInfo.subRows.length; i++) {
+                  var row = cellInfo.subRows[i]
+                  if (row.hu_group_exclusive === 'Overall') {
+                    return row[cellInfo.column.id]
+                  }
+                }
+              }
+            ")
+          ),
+          rowStyle = function(index) {
+              if (index %in% c(1, 2, 3, 4, 5, 6)) {
+                list(#`border-top` = "thin solid",
+                     fontWeight = "bold")
+              } 
+          },
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            county             = colDef(name = "County", minWidth = 175, style = list(fontWeight = "bold")),
+            hu_group_exclusive = colDef(name = "", minWidth = 100),
+            unhoused           = colDef(name = "Unhoused (N)", minWidth = 100, aggregate = "max"),
+            housed             = colDef(name = "Housed (N)", minWidth = 100),
+            number_of_people   = colDef(name = "Total Number of People (N)", minWidth = 100,
+                                        style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+            pct_unhoused       = colDef(name = "Unhoused (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0), aggregate = "sum"),
+            pct_housed         = colDef(name = "Housed (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
+            )
+          ) %>%
+add_source(paste(""), font_style = "italic", font_size = 14)
+```
 
 

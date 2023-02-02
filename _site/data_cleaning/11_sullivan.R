@@ -46,7 +46,7 @@ sullivan_adm_all <- sullivan_adm.xlsx %>%
                 race_code = race,
                 race_label,
                 sex = gender,
-                homeless = housing,
+                housing,
                 charge_code = charge_id,
                 charge_desc = charge,
                 booking_date = booking_date_time,
@@ -55,10 +55,10 @@ sullivan_adm_all <- sullivan_adm.xlsx %>%
                 release_type,
                 sentence_status) %>%
   mutate(county = "Sullivan",
-         homeless = case_when(homeless = str_detect(homeless, regex("\\bhomeless", ignore_case = TRUE)) ~ "Homeless",
-                              homeless = str_detect(homeless, regex("\\bunknown", ignore_case = TRUE)) ~ "Unknown",
-                              is.na(homeless) ~ "Not Homeless",
-                              TRUE ~ "Not Homeless")) %>%
+         housing = case_when(housing = str_detect(housing, regex("\\bhomeless", ignore_case = TRUE)) ~ "Unhoused",
+                             housing = str_detect(housing, regex("\\bunknown", ignore_case = TRUE))  ~ "Unknown",
+                              is.na(housing) ~ "Housed",
+                              TRUE           ~ "Housed")) %>%
   distinct()
 
 sum# Create fy, age, los, recode race, and order variables

@@ -52,7 +52,7 @@ bookings_entrances_all <- adm_all %>%
                 age,
                 age_category,
                 gender,
-                homeless,
+                housing,
                 booking_id,
                 los = los_max,
                 los_category,
