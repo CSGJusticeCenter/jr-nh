@@ -5,14 +5,14 @@
       "title": "High Utilizers Trends (Archive/Jail Data Only)",
       "author": [],
       "contents": "\r\n\r\nContents\r\nHow we define High\r\nUtilizers\r\nTop 1%\r\nTop 5%\r\nTop 10%\r\n\r\nThese findings are from the jail administrative data submitted to\r\nCSG, not the data submitted to DHHS. This page is for comparing our\r\nprevious findings on high utilizers with our new findings on high\r\nutilizers using the de-identified data from DHHS.\r\nHow we define High Utilizers\r\nwe defined high utilizers (HU) as the top 1%, 5%, or 10% of people\r\nbooked into jails from FY2019 to FY2021.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nTop 1%\r\n\r\n\r\n\r\n\r\nTop 5%\r\n\r\n\r\n\r\n\r\nTop 10%\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
-      "last_modified": "2023-02-02T10:56:24-05:00"
+      "last_modified": "2023-02-02T11:27:47-05:00"
     },
     {
       "path": "archive_incarceration_patterns.html",
       "title": "Incarceration Trends (Archive/Jail Data Only)",
       "author": [],
       "contents": "\r\n\r\nContents\r\nBookings\r\nPeople\r\nBooked\r\nNumber of\r\nBookings\r\n\r\nEntrances\r\nPeople\r\nEntered\r\nNumber\r\nof Entrances\r\n\r\n\r\nThe following incarceration patterns were found using jail\r\nadministrative data submitted directly to CSG.\r\nBookings\r\nIncludes: People booked into jail for a criminal\r\ncharge.Does Not Include: PC holds.\r\nCounties: All New Hampshire counties except Grafton\r\nand Strafford. Strafford is excluded because their data does not\r\ndifferentiate between bookings and PC holds.\r\nPeople Booked\r\n\r\nThere were 19,043 people booked into NH jails between FY2019\r\nto FY2021.\r\n\r\n\r\nNumber of Bookings\r\nPlease Note: This section reflects the number of bookings per fiscal\r\nyear, not the number of people.\r\n\r\nThere were 31,959 bookings across New Hampshire from FY2019\r\nto FY2021.\r\n\r\n\r\n\r\n\r\nCounties saw variations in the number of bookings but they all saw a\r\ndecrease in the past three years.\r\n\r\n\r\n\r\n\r\nEntrances\r\nIncludes: People booked into jail for a criminal\r\ncharge (“bookings”) and protective custody (PC) holds.\r\nCounties: All New Hampshire counties except Grafton.\r\nIncludes Coos bookings, but not PC holds.\r\nPeople Entered\r\n\r\nThere were 32,177 people who entered into NH jails between\r\nFY2019 to FY2021.\r\n\r\n\r\nNumber of Entrances\r\nPlease Note: This section reflects the number of entrances per fiscal\r\nyear, not the number of people.\r\n\r\nThere were 51,545 entrances across New Hampshire from FY2019\r\nto FY2021 and an overall decrease of 38.1% since FY2019.\r\n\r\n\r\n\r\n\r\nCounties saw variations in the number of Entrances but they all saw a\r\ndecrease in the past three years.\r\n\r\n\r\n\r\nOn average, people entered jails 1.6 times from 2019 to\r\n2021.\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
-      "last_modified": "2023-02-02T10:56:24-05:00"
+      "last_modified": "2023-02-02T11:27:47-05:00"
     },
     {
       "path": "index.html",
@@ -67,8 +67,8 @@
       "path": "nh_homeless_analysis.html",
       "title": "Housing Analysis",
       "author": [],
-      "contents": "\r\n\r\nContents\r\nNumber of people experiencing housing\r\nHigh utlizers and Housing (State-wide)\r\nHigh utlizers and Housing (by County)\r\n\r\nThe following counties provided reliable data on housing:\r\nBelknap\r\nCoos\r\nHillsborough\r\nMerrimack\r\nRockingham\r\nSullivan\r\nNumber of people experiencing housing\r\n\r\n\r\n\r\n\r\n\r\nHigh utlizers and Housing (State-wide)\r\n42% of Top 1% high utilizers were unhoused at least once when they were booked into jail.\r\n\r\n\r\n\r\n\r\n\r\nHigh utlizers and Housing (by County)\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
-      "last_modified": "2023-02-02T10:56:24-05:00"
+      "contents": "\r\n\r\nContents\r\nHousing by County\r\nHigh utlizers and Housing (State-wide)\r\nHousing by County\r\n\r\nThe following counties provided reliable data on housing:\r\nBelknap\r\nCoos\r\nHillsborough\r\nMerrimack\r\nRockingham\r\nSullivan\r\nHousing by County\r\n\r\n\r\n\r\n\r\n\r\nHigh utlizers and Housing (State-wide)\r\n42% of Top 1% high utilizers were unhoused at least once when they were booked into jail.\r\n\r\n\r\n\r\n\r\n\r\nHousing by County\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+      "last_modified": "2023-02-02T11:27:47-05:00"
     },
     {
       "path": "nh_incarceration_patterns.html",

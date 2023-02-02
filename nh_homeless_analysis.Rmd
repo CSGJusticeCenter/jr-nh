@@ -77,7 +77,7 @@ The following counties provided reliable data on housing:
 - Rockingham  
 - Sullivan  
 
-## Number of people experiencing housing  
+## Housing by County  
 
 ```{r}
 # Count number and proportion of people who were housing by county and by fiscal year
@@ -175,7 +175,7 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-## High utlizers and Housing (by County)
+## Housing by County
 
 ```{r}
 # Count number and proportion of HUs who were unhoused by county and by fiscal year
@@ -187,36 +187,41 @@ housing_hu_county <- df_housing_entrances %>%
   spread(housing_in_booking, total) %>% 
   clean_names() %>% 
   # adorn_totals("row") %>% 
+  mutate_at(c("housed",
+              "unhoused"), ~replace_na(.,0)) %>% 
   mutate(number_of_people = unhoused + housed,
          pct_unhoused     = unhoused/number_of_people,
          pct_housed = housed/number_of_people)
 
-# Get totals by county
+# Get totals by county for HU's
 housing_hu_county_total <- df_housing_entrances %>%
+  filter(hu_group_exclusive == "Top 1%" | 
+         hu_group_exclusive == "Top 5%" |
+         hu_group_exclusive == "Top 10%") %>% 
   select(id, county, housing_in_booking) %>%
   distinct() %>%
   group_by(county, housing_in_booking) %>%
   summarise(total = n()) %>%
   spread(housing_in_booking, total) %>%
   clean_names() %>%
-  # adorn_totals("row") %>%
-  mutate(hu_group_exclusive = "Overall",
+  mutate(hu_group_exclusive = "All HUs",
          number_of_people = unhoused + housed,
          pct_unhoused     = unhoused/number_of_people,
          pct_housed       = housed/number_of_people)
 
-# Add totals to table
+# Add totals to table and set up for viewing
 housing_hu_county <- rbind(housing_hu_county, housing_hu_county_total)
 housing_hu_county <- housing_hu_county %>% arrange(county) %>% 
   mutate(pct_unhoused = paste(round(pct_unhoused*100, 0), "%", sep = ""),
          pct_housed   = paste(round(pct_housed*100, 0), "%", sep = ""),
-         arrange      = case_when(hu_group_exclusive == "Overall" ~ 1,
-                                  hu_group_exclusive == "Non-HU"  ~ 2,
-                                  hu_group_exclusive == "Top 10%" ~ 3,
-                                  hu_group_exclusive == "Top 5%" ~ 4,
-                                  hu_group_exclusive == "Top 1%" ~ 5)) %>% 
+         arrange      = case_when(hu_group_exclusive == "All HUs" ~ 1,
+                                  hu_group_exclusive == "Top 1%"  ~ 2,
+                                  hu_group_exclusive == "Top 5%"  ~ 3,
+                                  hu_group_exclusive == "Top 10%" ~ 4,
+                                  hu_group_exclusive == "Non-HU"  ~ 5)) %>% 
   arrange(arrange) %>% 
-  select(-arrange)
+  select(-arrange) %>% 
+  select(county, hu_group_exclusive, unhoused, housed, everything())
 
 # Create reactable table with expandable rows for details in each county
 reactable(
@@ -232,7 +237,7 @@ reactable(
               function(cellInfo) {
                 for (var i = 0; i < cellInfo.subRows.length; i++) {
                   var row = cellInfo.subRows[i]
-                  if (row.hu_group_exclusive === 'Overall') {
+                  if (row.hu_group_exclusive === 'All HUs') {
                     return row[cellInfo.column.id]
                   }
                 }
@@ -248,13 +253,16 @@ reactable(
           compact = TRUE,
           fullWidth = FALSE,
           columns = list(
-            county             = colDef(name = "County", minWidth = 175, style = list(fontWeight = "bold")),
-            hu_group_exclusive = colDef(name = "", minWidth = 100),
-            unhoused           = colDef(name = "Unhoused (N)", minWidth = 100, aggregate = "max"),
+            county             = colDef(name = "County", minWidth = 175, 
+                                        style = list(fontWeight = "bold")),
+            hu_group_exclusive = colDef(name = "", minWidth = 175),
+            unhoused           = colDef(name = "Unhoused (N)", minWidth = 100),
             housed             = colDef(name = "Housed (N)", minWidth = 100),
             number_of_people   = colDef(name = "Total Number of People (N)", minWidth = 100,
                                         style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-            pct_unhoused       = colDef(name = "Unhoused (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0), aggregate = "sum"),
+            pct_unhoused       = colDef(name = "Unhoused (%)", minWidth = 100, 
+                                        format = colFormat(percent = TRUE, digits = 0), 
+                                        style = list(fontWeight = "bold")),
             pct_housed         = colDef(name = "Housed (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
             )
           ) %>%
