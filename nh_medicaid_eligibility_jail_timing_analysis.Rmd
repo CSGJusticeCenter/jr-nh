@@ -119,7 +119,90 @@ kable(medicaid_enrollment_jail_timing_all_individual_table,
 
 <br><br>
 
-### Table 3: How long does Medicaid re-enrollment take? (Enrollment-level)
+### Table 3: Timing of Medicaid Eligiblity End Dates and Jail Bookings by HU Grouping (Individual-level)
+
+**NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don't have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data**
+
+This table explores the percentage of individuals (ONLY for individuals who matched to Medicaid data) who experienced Medicaid enrollments where eligibility ended during incarceration as well as within 20 days of release from jail
+
+
+We should probably think through the best way to talk about the enrollment-level versus individual-level analysis and why the numbers look so different
+
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+medicaid_enrollment_jail_timing_all_hu_recode <- medicaid_enrollment_jail_timing_all %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when(
+    high_utilizer_10_pct=="No" ~ 4,
+    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct=="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
+
+# HU grouping
+medicaid_enrollment_jail_timing_hu_individual_table <- medicaid_enrollment_jail_timing_all_hu_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Enrollments Ending in or within 20 days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1]),
+                   `Individuals w/ Enrollments Ending in or within 20 days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending in Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_during_jail==1]),
+                   `Individuals w/ Enrollments Ending in Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_during_jail==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending within 5 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_5_days==1]),
+                   `Individuals w/ Enrollments Ending within 5 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_5_days==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending 5-10 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_10_days==1]),
+                   `Individuals w/ Enrollments Ending 5-10 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_10_days==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending 10-15 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_15_days==1]),
+                   `Individuals w/ Enrollments Ending 10-15 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_15_days==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending 15-20 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_20_days==1]),
+                   `Individuals w/ Enrollments Ending 15-20 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_20_days==1])/`Overall Individuals (N)`, accuracy=.1)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+# statewide
+medicaid_enrollment_jail_timing_overall_individual_table <- medicaid_enrollment_jail_timing_all_hu_recode %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Enrollments Ending in or within 20 days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1]),
+                   `Individuals w/ Enrollments Ending in or within 20 days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending in Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_during_jail==1]),
+                   `Individuals w/ Enrollments Ending in Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_during_jail==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending within 5 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_5_days==1]),
+                   `Individuals w/ Enrollments Ending within 5 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_5_days==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending 5-10 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_10_days==1]),
+                   `Individuals w/ Enrollments Ending 5-10 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_10_days==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending 10-15 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_15_days==1]),
+                   `Individuals w/ Enrollments Ending 10-15 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_15_days==1])/`Overall Individuals (N)`, accuracy=.1),
+                   `Individuals w/ Enrollments Ending 15-20 Days of Release from Jail (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_20_days==1]),
+                   `Individuals w/ Enrollments Ending 15-20 Days of Release from Jail (%)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_after_jail_within_20_days==1])/`Overall Individuals (N)`, accuracy=.1)) %>% 
+  dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_enrollment_jail_timing_hu_overall_individual_table <- rbind(medicaid_enrollment_jail_timing_hu_individual_table,
+                                                                 medicaid_enrollment_jail_timing_overall_individual_table)
+
+### print table via kableextra
+kable(medicaid_enrollment_jail_timing_hu_overall_individual_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE) %>% 
+  column_spec(4, bold = TRUE) %>% 
+  column_spec(6, bold = TRUE) %>% 
+  column_spec(8, bold = TRUE) %>% 
+  column_spec(10, bold = TRUE) %>% 
+  column_spec(12, bold = TRUE) %>% 
+  column_spec(14, bold = TRUE)
+```
+
+<br><br>
+
+### Table 4: How long does Medicaid re-enrollment take? (Enrollment-level)
 
 **NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don't have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data**
 
@@ -151,7 +234,7 @@ kable(medicaid_enrollment_jail_timing_to_re_enroll_table,
 
 <br><br>
 
-### Table 4: Average Jail Length of Stay when Medicaid Enrollment/Eligibility Ends (Enrollment-level)
+### Table 5: Average Jail Length of Stay when Medicaid Enrollment/Eligibility Ends (Enrollment-level)
 
 **NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don't have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data**
 

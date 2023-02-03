@@ -529,7 +529,6 @@ medicaid_jail_overall_bh_service_type_hu_table <- jail_medicaid_analytic_individ
                    `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)`/`Overall Individuals (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`)) %>% 
-  ungroup() %>% 
   dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
 
 # rbind county and statewide files 
