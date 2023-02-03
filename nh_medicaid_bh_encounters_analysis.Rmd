@@ -120,7 +120,7 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc <- left_join
 
 ### Table 1. Percentage of Individuals with Behavioral Health "Encounters" by Treatment, Service, and Programming Type
 
-Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. Dual diagnosis indicates that individual had at least one Mental Health- and one Substance Use Disorder-related primary diagnoses in the Medicaid data. 
+Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. Co-Occurring Disorders indicates that individual had at least one Mental Health- and one Substance Use Disorder-related primary diagnoses in the Medicaid data. 
 
 **For this analysis, we are only including BH-encounters that occurred during the study window (Medicaid eligibility end date >= 7/1/2018 & Medicaid eligibility start date <= 6/30/2021)**
 
@@ -141,8 +141,8 @@ medicaid_jail_county_bh_service_type_table <- jail_medicaid_analytic_individual_
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Overall Individuals (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[study_service_provided_by_cmhc_provider_flag==1]),
@@ -169,8 +169,8 @@ medicaid_jail_overall_bh_service_type_table <- jail_medicaid_analytic_individual
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Overall Individuals (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[study_service_provided_by_cmhc_provider_flag==1]),
@@ -216,7 +216,7 @@ kable(medicaid_jail_county_statewide_bh_service_type_table,
 
 ### Table 2. Percentage of Individuals with Behavioral Health "Encounters" by Treatment, Service, and Programming Type (by rural/urban classification)
 
-Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. Dual diagnosis indicates that individual had at least one Mental Health- and one Substance Use Disorder-related primary diagnoses in the Medicaid data. 
+Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. Co-Occurring Disorders indicates that individual had at least one Mental Health- and one Substance Use Disorder-related primary diagnoses in the Medicaid data. 
 
 **County-level CDC rural/urban county classification comes from https://www.cdc.gov/nchs/data_access/urban_rural.htm**
 
@@ -239,8 +239,8 @@ medicaid_jail_cdc_bh_service_type_table <- jail_medicaid_analytic_individual_boo
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Overall Individuals (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[study_service_provided_by_cmhc_provider_flag==1]),
@@ -267,8 +267,8 @@ medicaid_jail_cdc_overall_bh_service_type_table <- jail_medicaid_analytic_indivi
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Overall Individuals (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[study_service_provided_by_cmhc_provider_flag==1]),
@@ -496,7 +496,7 @@ kable(medicaid_jail_cdc_statewide_bh_service_type_booking_table,
 
 ### Table 5: Mental Health and Substance Use Disorder Service Medicaid Encounters by High Utilizer Grouping
 
-Note: Include note on different timing (*study period only versus all periods in earlier tables*) -- this explains slight difference in numbers with BH encounter %, for instance). Dual diagnosis indicates that individual had at least one Mental Health- and one Substance Use Disorder-related primary diagnoses in the Medicaid data.
+Note: Include note on different timing (*study period only versus all periods in earlier tables*) -- this explains slight difference in numbers with BH encounter %, for instance). Co-Occurring Disorders indicates that individual had at least one Mental Health- and one Substance Use Disorder-related primary diagnoses in the Medicaid data.
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE} 
 # by hu_group_exclusive
@@ -509,8 +509,8 @@ medicaid_jail_county_bh_service_type_hu_table <- jail_medicaid_analytic_individu
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Overall Individuals (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`)) %>% 
   ungroup() %>% 
@@ -525,8 +525,8 @@ medicaid_jail_overall_bh_service_type_hu_table <- jail_medicaid_analytic_individ
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Dual Diagnoses (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[study_mh_service_primary_dx_flag==1 & study_sud_service_primary_dx_flag==1]),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Overall Individuals (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[study_bh_mh_or_sud_service_secondary_dx_flag==1]),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`)) %>% 
   dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
