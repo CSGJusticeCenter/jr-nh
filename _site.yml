@@ -30,8 +30,10 @@ navbar:
           href: nh_medicaid_match_bh_overview_analysis.html
         - text: "Homelessness"
           href: nh_medicaid_homelessness_analysis.html
-        - text: "Behaviorial Health Encounters"
-          href: nh_medicaid_bh_encounters_analysis.html
+        - text: "Behaviorial Health Encounters, County-level"
+          href: nh_medicaid_bh_encounters_county_analysis.html
+        - text: "Behaviorial Health Encounters, HU-level"
+          href: nh_medicaid_bh_encounters_hu_analysis.html
         - text: "End of Medicaid Eligibility and Jail Booking Analysis"
           href: nh_medicaid_eligibility_jail_timing_analysis.html
     - text: "Archive"
