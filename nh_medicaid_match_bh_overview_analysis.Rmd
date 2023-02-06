@@ -379,6 +379,10 @@ kable(medicaid_jail_percent_match_county_statewide_timing_table,
   column_spec(14, bold = TRUE)
 ```
 
+<br>
+
+**Statewide, 47% of individuals were matched to Medicaid services, with variation among counties.**  
+
 ```{r}
 # Calculate proportion of individuals that matched to Medicaid from 2014-2021
 df_medicaid_match <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
@@ -437,7 +441,9 @@ ggsave(PRES_gg_medicaid_match, file="img/PRES_gg_medicaid_match.png", width = 16
 knitr::include_graphics("img/PRES_gg_medicaid_match.png")
 ```
 
+<br>
 
+**Statewide, 38% of individuals were matched to behavioral health-related Medicaid services, with variation among counties.**
 
 ```{r}
 # Calculate proportion of individuals that matched to Medicaid and had a BH history at any point from 2014-2021
