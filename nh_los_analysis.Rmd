@@ -1,0 +1,129 @@
+---
+title: "Length of Stay"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
+  dev = "ragg_png",
+  cache = FALSE
+  )
+
+# Load packages, functions and Medicaid data
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
+
+# Change HU variable to 1% = 1 percent, 5% = 2-5 percent, 10% = 6-10 percent
+medicaid_jail_all <- fnc_hu_group_exclusive(medicaid_jail_all)
+```
+
+# Length of Stay, Statewide from 2019 to 2021
+
+```{r}
+# DHHS data
+# Rename variables
+# Get fiscal year based on booking date
+# Get los and los category
+entrances_dhhs <- medicaid_jail_all %>% 
+  mutate(id = unique_person_id,
+         fy = case_when(booking_date > "2018-06-30" & booking_date < "2019-07-01" ~ 2019,
+                        booking_date > "2019-06-30" & booking_date < "2020-07-01" ~ 2020,
+                        booking_date > "2020-06-30" & booking_date < "2021-07-01" ~ 2021),
+         booking_date = ymd(as_date(booking_date)),
+         release_date = ymd(as_date(release_date)), 
+         jail_los = as.numeric(difftime(release_date,
+                                        booking_date,
+                                        units="days"))) %>% 
+    mutate(los_category =
+           case_when(jail_los == 0 ~ "0",
+                     jail_los == 1 ~ "1",
+                     jail_los == 2 ~ "2",
+                     jail_los == 3 ~ "3",
+                     jail_los == 4 ~ "4",
+                     jail_los == 5 ~ "5",
+                     jail_los >= 6   & jail_los <= 10  ~ "6-10",
+                     jail_los >= 11  & jail_los <= 30  ~ "11-30",
+                     jail_los >= 31  & jail_los <= 50  ~ "31-50",
+                     jail_los >= 50  & jail_los <= 100 ~ "50-100",
+                     jail_los >= 101 & jail_los <= 180 ~ "101-180",
+                     jail_los >  180                   ~ "Over 180")) %>%
+  mutate(los_category = factor(los_category,
+                               levels = c("0",
+                                          "1",
+                                          "2",
+                                          "3",
+                                          "4",
+                                          "5",
+                                          "6-10",
+                                          "11-30",
+                                          "31-50",
+                                          "50-100",
+                                          "101-180",
+                                          "Over 180")))
+
+# Length of stay for all people
+# Remove instances where release date is earlier than booking date and NAs
+df_jail_los_entrances <- entrances_dhhs %>%
+  select(fy,
+         county,
+         id,
+         booking_id,
+         jail_los,
+         los_category,
+         hu_group_exclusive) %>%
+  distinct() %>%
+  filter(!is.na(jail_los) & jail_los >= 0)
+
+overall_los_summary <- df_jail_los_entrances %>%
+  group_by() %>%
+  summarise(
+    min    = min(jail_los, na.rm = T),
+    median = median(jail_los, na.rm = T),
+    mean   = mean(c(jail_los, na.rm = T)),
+    max    = max(jail_los, na.rm = T)) %>%
+  mutate(mean = round(mean, 1)) %>% 
+  mutate(hu_group_exclusive = "All (HU's and non-HU's)") %>% select(hu_group_exclusive, everything())
+
+# Length of Stay for High Utilizers
+hu_los_summary <- df_jail_los_entrances %>%
+  group_by(hu_group_exclusive) %>%
+  summarise(
+    min    = min(jail_los, na.rm = T),
+    median = median(jail_los, na.rm = T),
+    mean   = mean(c(jail_los, na.rm = T)),
+    max    = max(jail_los, na.rm = T)) %>%
+  mutate(mean = round(mean, 1)) 
+
+hu_los_summary <- rbind(hu_los_summary, overall_los_summary)
+
+reactable(hu_los_summary,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          rowStyle = function(index) {
+            if (index %in% c(5)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+          columns = list(
+            hu_group_exclusive = colDef(minWidth = 190, name = "",
+                                 style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+            min    = colDef(minWidth = 90, name = "Minimum"),
+            median = colDef(minWidth = 90, name = "Median"),
+            mean   = colDef(minWidth = 90, name = "Mean"),
+            max    = colDef(minWidth = 90, name = "Maximum")))
+```
+

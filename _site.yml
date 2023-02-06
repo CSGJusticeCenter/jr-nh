@@ -22,6 +22,8 @@ navbar:
           href: nh_high_utilizers_analysis.html
         - text: "Homeless"
           href: nh_homeless_analysis.html
+        - text: "Length of Stay"
+          href: nh_los_analysis.html
         - text: "Racial Disparities"
           href: nh_racial_disparities.html
     - text: "Medicaid Trends"
