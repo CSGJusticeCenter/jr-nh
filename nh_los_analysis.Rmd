@@ -126,4 +126,265 @@ reactable(hu_los_summary,
             mean   = colDef(minWidth = 90, name = "Mean"),
             max    = colDef(minWidth = 90, name = "Maximum")))
 ```
+```{r}
+# Filter to LOS for all HU's
+data1 <- df_jail_los_entrances %>% 
+  filter(hu_group_exclusive != "Non-HU") %>% 
+  group_by(hu_group_exclusive,los_category) %>% 
+  summarise(total = n()) 
+
+gg_los_category <- ggplot(data1, aes(los_category, total)) +
+  geom_bar(aes(fill = hu_group_exclusive), position = "dodge", stat="identity", width = 0.75) +
+  scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange),
+                    labels = c("Top 1%      ","Top 5%      ", "Top 10%")) +
+  scale_y_continuous(labels = label_number(big.mark = ",")) +
+  xlab("Length of Stay (Days)") + ylab("Number of People") +
+  theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
+    axis.text.y = element_text(size = 18, color = "black"),
+    axis.title.x = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(size = 18, color = "black"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+    legend.position = "top",
+    legend.justification = c(0, 0),
+    legend.title=element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 18, color = "black")
+  )
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(gg_los_category, file="img/gg_los_category.png", width = 12,  height = 5, dpi = 100)
+knitr::include_graphics("img/gg_los_category.png")
+```
+
+**Average and Median Length of Stay for High Utilizers**
+
+```{r}
+# Filter to LOS for all HU's
+data1 <- df_jail_los_entrances %>% 
+  filter(hu_group_exclusive != "Non-HU") %>% 
+  group_by(los_category) %>% 
+  summarise(total = n()) 
+
+gg_hu_los_category <- ggplot(data1) +
+
+  geom_bar(aes(x = los_category, y = total, fill = jri_orange), stat="identity", width = 0.75) +
+  labs(x = "Length of Stay (Days)", y = "Number of People\n") +
+  scale_fill_manual(values=c(jri_orange)) +
+
+  # Median
+  geom_vline(xintercept = 3, linetype = "dashed", colour = "darkgray",size = 1) +
+  geom_richtext(aes(x=3, y=3400, label="Median LOS = 2"),
+                color = "white",
+                size = 7.5,
+                fontface = 'bold',
+                fill = "darkgray",
+                label.r = unit(0, "lines"),
+                label.padding = unit(c(.5, .5, .5, .5), "lines"),
+                nudge_x = 1,
+                #angle = 90
+                ) +
+
+  # Mean
+  geom_vline(xintercept = 8, linetype = "dashed", colour = "darkgray",size = 1) +
+  geom_richtext(aes(x=8, y=3400, label="Average LOS = 22"),
+                color = "white",
+                size = 7.5,
+                fontface = 'bold',
+                fill = "darkgray",
+                label.r = unit(0, "lines"),
+                label.padding = unit(c(.5, .5, .5, .5), "lines"),
+                nudge_x = 1.1,
+                ) +
+  
+  scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ",")) +
+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45,size = 22, color = "black",
+                                   hjust=1),
+        axis.text.y = element_text(size = 22, color = "black"),
+        axis.title = element_text(color = "black"),
+        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "none")
+
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(gg_hu_los_category, file="img/gg_hu_los_category.png", width = 12,  height = 5, dpi = 100)
+knitr::include_graphics("img/gg_hu_los_category.png")
+```
+
+**Proportion of entrances for HU's with each LOS category**
+
+```{r}
+# Filter to LOS for all HU's and calculate number of people/prop of people with los category
+hu_los_prop <- df_jail_los_entrances %>% 
+  filter(hu_group_exclusive != "Non-HU") %>% 
+  group_by(los_category) %>% 
+  summarise(total = n()) %>% 
+  mutate(pct = total/sum(total)) %>%
+  mutate(pct = round(pct, 2),
+         pct_label = paste0(round(pct*100,0), "%"),
+         hu_group_exclusive = "High Utilizer")
+
+PRES_gg_los_prop <- ggplot(hu_los_prop, aes(x = los_category, y = pct, fill = jri_orange)) +
+
+  geom_bar(stat="identity", width = 0.75) +
+  labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
+  
+  geom_text(aes(label = pct_label, fontface = 'bold'), #position = position_fill(vjust = 0.5),
+            vjust = -1,
+          size = 7.5, family = "Franklin Gothic Book",
+          color = "black") +
+  
+  scale_fill_manual(values=c(jri_orange)) +
+  scale_y_continuous(labels = scales::percent, limits = c(0, .4)) +
+  theme_minimal() +
+  theme_no_axes +
+  theme(axis.text.x = element_text(angle = 45,size = 22, color = "black",
+                                   hjust=1),
+        axis.text.y = element_blank(),
+        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "none")
+
+```
+
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_los_prop, file="img/PRES_gg_los_prop.png", width = 12,  height = 5, dpi = 100)
+knitr::include_graphics("img/PRES_gg_los_prop.png")
+```
+
+**Proportion of entrances for non-HU's with each LOS category**
+
+```{r}
+# Filter to LOS for all non-HU's and calculate number of people/prop of people with los category
+non_hu_los_prop <- df_jail_los_entrances %>% 
+  filter(hu_group_exclusive == "Non-HU") %>% 
+  group_by(los_category) %>% 
+  summarise(total = n()) %>% 
+  mutate(pct = total/sum(total)) %>%
+  mutate(pct = round(pct, 2),
+         pct_label = paste0(round(pct*100,0), "%"),
+         hu_group_exclusive = "Non-High Utilizer")
+
+PRES_gg_nonhu_los_prop <- ggplot(non_hu_los_prop, aes(x = los_category, y = pct, fill = jri_orange)) +
+
+  geom_bar(stat="identity", width = 0.75) +
+  labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
+  
+  geom_text(aes(label = pct_label, fontface = 'bold'), #position = position_fill(vjust = 0.5),
+            vjust = -1,
+          size = 7.5, family = "Franklin Gothic Book",
+          color = "black") +
+  
+  scale_fill_manual(values=c(jri_dark_blue)) +
+  scale_y_continuous(labels = scales::percent, limits = c(0, .4)) +
+  theme_minimal() +
+  theme_no_axes +
+  theme(axis.text.x = element_text(angle = 45,size = 22, color = "black",
+                                   hjust=1),
+        axis.text.y = element_blank(),
+        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "none")
+
+```
+
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_nonhu_los_prop, file="img/PRES_gg_nonhu_los_prop.png", width = 12,  height = 5, dpi = 100)
+knitr::include_graphics("img/PRES_gg_nonhu_los_prop.png")
+```
+
+```{r}
+los_prop <- rbind(non_hu_los_prop, hu_los_prop)
+los_prop <- los_prop %>% 
+  mutate(los_category = factor(los_category,
+                   levels = c("Over 180",
+                              "101-180",
+                              "50-100",
+                              "31-50",
+                              "11-30",
+                              "6-10",
+                              "5",
+                              "4",
+                              "3",
+                              "2",
+                              "1",
+                              "0")))
+
+PRES_gg_nonhu_hu_los_prop <- ggplot(los_prop, aes(x = los_category, y = pct, fill = hu_group_exclusive)) +
+
+  geom_bar(position="dodge", stat="identity", width = 0.75) +
+  labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
+  
+  geom_text(aes(label = pct_label, fontface = 'bold'), 
+            position = position_dodge(width = .9),
+            hjust = -.3,
+            size = 7.5, family = "Franklin Gothic Book",
+            color = ifelse(los_prop$hu_group_exclusive == "Non-High Utilizer", jri_dark_blue, jri_orange)) +
+  
+  scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
+  scale_y_continuous(labels = scales::percent, limits = c(0, .4)) +
+  theme_minimal() +
+  theme_no_axes +
+  coord_flip() +
+  theme(axis.text.x = element_blank(),
+        #axis.text.y = element_blank(),
+        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank())
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_nonhu_hu_los_prop, file="img/PRES_gg_nonhu_hu_los_prop.png", width = 8,  height = 10, dpi = 100)
+knitr::include_graphics("img/PRES_gg_nonhu_hu_los_prop.png")
+```
+
+```{r}
+PRES_gg_diverge_nonhu_hu_los_prop <- los_prop %>%
+  mutate(pct = ifelse(hu_group_exclusive == "High Utilizer",
+                                 pct,
+                                 -1*pct)) %>% 
+  ggplot(aes(x = los_category, y = pct, fill = hu_group_exclusive))+
+  geom_bar(stat = "identity") +
+  labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
+  geom_text(aes(label = pct_label),
+           size = 7.5, family = "Franklin Gothic Book",
+           position = position_stack(vjust = 0.5),
+           color = "white",
+           fontface = "bold") + 
+  
+  scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
+  theme_minimal() +
+  theme_no_axes +
+  coord_flip() +
+  theme(axis.text.x = element_blank(),
+        #axis.text.y = element_blank(),
+        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank())
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_diverge_nonhu_hu_los_prop, file="img/PRES_gg_diverge_nonhu_hu_los_prop.png", width = 9,  height = 8, dpi = 100)
+knitr::include_graphics("img/PRES_gg_diverge_nonhu_hu_los_prop.png")
+```
 
