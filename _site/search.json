@@ -46,8 +46,8 @@
       "path": "nh_high_utilizers_analysis.html",
       "title": "High Utilizers",
       "author": [],
-      "contents": "\r\n\r\nContents\r\nHow we define people who are high utilizers of the jail system\r\nTop 1%\r\nTop 5%\r\nTop 10%\r\nNon-High Utilizer\r\n\r\nHow we define people who are high utilizers of the jail system\r\nWe defined people who are high utilizers of the jail system as the top 1%, 5%, or 10% of people entering jails from FY2019 to FY2021. De-identified jail administrative data was provided by DHHS, which includes a unique id for each person to account for entrances at more than one jail.\r\n\r\n\r\n\r\nTop 1%\r\n\r\n\r\n\r\nTop 5%\r\n\r\n\r\n\r\nTop 10%\r\n\r\n\r\n\r\nNon-High Utilizer\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
-      "last_modified": "2023-02-06T14:55:10-05:00"
+      "contents": "\r\n\r\nContents\r\nHow we define people who are high utilizers of the jail system\r\nBed Days\r\nTop 1%\r\nTop 5%\r\nTop 10%\r\nNon-High Utilizer\r\n\r\nHow we define people who are high utilizers of the jail system\r\nWe defined people who are high utilizers of the jail system as the top 1%, 5%, or 10% of people entering jails from FY2019 to FY2021. De-identified jail administrative data was provided by DHHS, which includes a unique id for each person to account for entrances at more than one jail.\r\n\r\n\r\n\r\n\r\nBed Days\r\nOne bed-day is defined as one person spending one day in jail. So, one person spending 10 days in jail equals 10 bed-days. Five people each spending two days in jail also represents a total of 10 bed-days (5 people each day * 2 days = 10 bed-days). If a jail has an ADP of 100 over the course of one year, then 36,500 bed-days were used in that year (100 * 365 days = 36,500 bed-days).\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\nTop 1%\r\n\r\n\r\n\r\nTop 5%\r\n\r\n\r\n\r\nTop 10%\r\n\r\n\r\n\r\nNon-High Utilizer\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n\r\n",
+      "last_modified": "2023-02-07T16:01:24-05:00"
     },
     {
       "path": "nh_homeless_analysis.html",

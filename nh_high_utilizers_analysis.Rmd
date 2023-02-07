@@ -23,6 +23,20 @@ medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds")
 
 # Change HU variable to 1% = 1 percent, 5% = 2-5 percent, 10% = 6-10 percent
 medicaid_jail_all <- fnc_hu_group_exclusive(medicaid_jail_all)
+
+# DHHS data
+# Rename variables
+# Get fiscal year based on booking date
+entrances_dhhs <- medicaid_jail_all %>% 
+  mutate(id = unique_person_id,
+         fy = case_when(booking_date > "2018-06-30" & booking_date < "2019-07-01" ~ 2019,
+                        booking_date > "2019-06-30" & booking_date < "2020-07-01" ~ 2020,
+                        booking_date > "2020-06-30" & booking_date < "2021-07-01" ~ 2021),
+         booking_date = ymd(as_date(booking_date)),
+         release_date = ymd(as_date(release_date)), 
+         jail_los = as.numeric(difftime(release_date,
+                                        booking_date,
+                                        units="days")))
 ```
 
 ## How we define people who are high utilizers of the jail system
@@ -33,15 +47,6 @@ We defined people who are high utilizers of the jail system as the top 1%, 5%, o
 ########################################
 # Entrances overview
 ########################################
-
-# DHHS data
-# Rename variables
-# Get fiscal year based on booking date
-entrances_dhhs <- medicaid_jail_all %>% 
-  mutate(id = unique_person_id,
-         fy = case_when(booking_date > "2018-06-30" & booking_date < "2019-07-01" ~ 2019,
-                        booking_date > "2019-06-30" & booking_date < "2020-07-01" ~ 2020,
-                        booking_date > "2020-06-30" & booking_date < "2021-07-01" ~ 2021))
 
 # Number of people entered by county for all three years
 amt_people_entered_county <- entrances_dhhs %>%
@@ -230,6 +235,88 @@ hu_table <- hu_summary %>%
          median,
          mean)
 ```
+
+<br>
+
+## Bed Days
+
+One bed-day is defined as one person spending one day in jail. So, one person spending 10 days in jail equals 10 bed-days. Five people each spending two days in jail also represents a total of 10 bed-days (5 people each day * 2 days = 10 bed-days). If a jail has an ADP of 100 over the course of one year, then 36,500 bed-days were used in that year (100 * 365 days = 36,500 bed-days).  
+
+```{r}
+bed_days <- entrances_dhhs %>% 
+  ungroup() %>% 
+  select(id, booking_id, hu_group_exclusive, jail_los) %>% 
+  distinct() %>% 
+  group_by(hu_group_exclusive) %>% 
+  summarise(total_bed_days = sum(jail_los, na.rm = TRUE)) %>%
+  mutate(total = sum(total_bed_days),
+         pct = total_bed_days/total,
+         pct_label = paste(round(pct*100, 0), "%", sep = ""),
+         state = "NH") %>% 
+  select(-total)
+
+# Create reactable table
+reactable(bed_days,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu_group_exclusive = colDef(show = T, minWidth = 100, name = ""),
+            state = colDef(show = F),
+            pct_label = colDef(show = F),
+            total_bed_days     = colDef(show = T, minWidth = 100, name = "Number of Bed Days"),
+            pct                = colDef(show = T, minWidth = 130, name = "Proportion of Bed Days", format = colFormat(percent = TRUE, digits = 1))
+          )
+)
+```
+
+```{r}
+# One stacked barplot for all three years and then make it a pie chart
+PRES_gg_pie_beddays <- 
+  ggplot(bed_days, aes(x = state, y = total_bed_days, fill = hu_group_exclusive )) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray")) +
+  geom_text(aes(label = pct_label, fontface = 'bold'), position = position_fill(vjust = 0.5),
+            size = 7.5, family = "Franklin Gothic Book",
+            color = ifelse(bed_days$hu_group_exclusive == "Non-HU", "black", "white")) +
+  theme_axes +
+  theme(legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank(),
+        axis.title.y = element_blank()) +
+  coord_polar("y", start=0) +
+  theme_no_axes +
+  theme_minimal()+
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.border = element_blank(),
+    panel.grid=element_blank(),
+    axis.ticks = element_blank(),
+    plot.title=element_text(size=14, face="bold"),
+    axis.text.x=element_blank(),
+    axis.text.y=element_blank(),
+    legend.title = element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+```
+
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_pie_beddays, file="img/PRES_gg_pie_beddays.png", width = 5,  height = 5, dpi = 100, bg='transparent')
+knitr::include_graphics("img/PRES_gg_pie_beddays.png")
+```
+
+
+<br>
 
 ## Top 1%
 
@@ -427,7 +514,7 @@ PRES_gg_hu_pct_barchart <- ggplot(data1, aes(x = county, y = total_hu_entrances,
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_hu_pct_barchart, file="img/PRES_gg_hu_pct_barchart.png", width = 6,  height = 5, dpi = 100, bg='transparent')
+ggsave(PRES_gg_hu_pct_barchart, file="img/PRES_gg_hu_pct_barchart.png", width = 6,  height = 5, dpi = 100)
 knitr::include_graphics("img/PRES_gg_hu_pct_barchart.png")
 ```
 
