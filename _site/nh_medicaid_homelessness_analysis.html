@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -785,6 +786,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1026,10 +1028,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1861,9 +1859,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1875,6 +1885,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1974,6 +2009,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1996,7 +2033,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2366,9 +2403,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
   <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+  <script src="site_libs/react-17.0.0/react.min.js"></script>
+  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
+  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+  <script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+  <link href="site_libs/reactable-0.4.3/reactable.css" rel="stylesheet" />
+  <script src="site_libs/reactable-binding-0.4.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2413,6 +2457,7 @@ Jail Trends
 <a href="nh_charge_type_analysis.html">Charge Types</a>
 <a href="nh_high_utilizers_analysis.html">High Utilizers</a>
 <a href="nh_homeless_analysis.html">Homeless</a>
+<a href="nh_los_analysis.html">Length of Stay</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
 </div>
 </div>
@@ -2425,7 +2470,8 @@ Medicaid Trends
 <div class="nav-dropdown-content">
 <a href="nh_medicaid_match_bh_overview_analysis.html">Medicaid Match and BH Overview</a>
 <a href="nh_medicaid_homelessness_analysis.html">Homelessness</a>
-<a href="nh_medicaid_bh_encounters_analysis.html">Behaviorial Health Encounters</a>
+<a href="nh_medicaid_bh_encounters_county_analysis.html">Behaviorial Health Encounters, County-level</a>
+<a href="nh_medicaid_bh_encounters_hu_analysis.html">Behaviorial Health Encounters, HU-level</a>
 <a href="nh_medicaid_eligibility_jail_timing_analysis.html">End of Medicaid Eligibility and Jail Booking Analysis</a>
 </div>
 </div>
@@ -2476,66 +2522,27 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a
-href="#dhhs-medicaid-match-and-jail-booking-descriptive-analysis-individuals-experiencing-homelessness"
-id="toc-dhhs-medicaid-match-and-jail-booking-descriptive-analysis-individuals-experiencing-homelessness">DHHS
-Medicaid Match and Jail Booking Descriptive Analysis: Individuals
-Experiencing Homelessness</a>
+<li><a href="#dhhs-medicaid-match-and-jail-booking-descriptive-analysis-individuals-experiencing-homelessness" id="toc-dhhs-medicaid-match-and-jail-booking-descriptive-analysis-individuals-experiencing-homelessness">DHHS Medicaid Match and Jail Booking Descriptive Analysis: Individuals Experiencing Homelessness</a>
 <ul>
 <li><a href="#tables" id="toc-tables">Tables</a>
 <ul>
-<li><a
-href="#table-1.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility"
-id="toc-table-1.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table
-1. Percentage of Individuals/Bookings who were Experiencing Homelessness
-at time of Medicaid Eligibility</a></li>
-<li><a
-href="#table-2.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-by-county-type-by-ruralurban-classification"
-id="toc-table-2.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-by-county-type-by-ruralurban-classification">Table
-2. Percentage of Individuals/Bookings who were Experiencing Homelessness
-at time of Medicaid Eligibility by County Type (by rural/urban
-classification)</a></li>
-<li><a
-href="#table-3.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility"
-id="toc-table-3.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table
-3. Percentage of High Utilizer Individuals/Bookings who were
-Experiencing Homelessness at time of Medicaid Eligibility</a></li>
-<li><a
-href="#table-4.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-study-period-only"
-id="toc-table-4.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-study-period-only">Table
-4. Percentage of High Utilizer Individuals/Bookings who were
-Experiencing Homelessness at time of Medicaid Eligibility (<strong>study
-period only</strong>)</a></li>
+<li><a href="#table-1.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility" id="toc-table-1.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table 1. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility</a></li>
+<li><a href="#table-2.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-by-county-type-by-ruralurban-classification" id="toc-table-2.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-by-county-type-by-ruralurban-classification">Table 2. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility by County Type (by rural/urban classification)</a></li>
+<li><a href="#table-3.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility" id="toc-table-3.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table 3. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility</a></li>
+<li><a href="#table-4.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-study-period-only" id="toc-table-4.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-study-period-only">Table 4. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility (<strong>study period only</strong>)</a></li>
+<li><a href="#table-5.-percentage-of-people-with-bh-needs-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility" id="toc-table-5.-percentage-of-people-with-bh-needs-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table 5. Percentage of People with BH needs who were Experiencing Homelessness at time of Medicaid Eligibility</a></li>
 </ul></li>
-<li><a href="#visuals" id="toc-visuals">Visuals</a></li>
+<li><a href="#comparing-jail-data-and-medicaid-data" id="toc-comparing-jail-data-and-medicaid-data">Comparing Jail Data and Medicaid Data</a></li>
 </ul></li>
 </ul>
 </nav>
 </div>
-<h1
-id="dhhs-medicaid-match-and-jail-booking-descriptive-analysis-individuals-experiencing-homelessness">DHHS
-Medicaid Match and Jail Booking Descriptive Analysis: Individuals
-Experiencing Homelessness</h1>
+<h1 id="dhhs-medicaid-match-and-jail-booking-descriptive-analysis-individuals-experiencing-homelessness">DHHS Medicaid Match and Jail Booking Descriptive Analysis: Individuals Experiencing Homelessness</h1>
 <p><br></p>
 <h2 id="tables">Tables</h2>
-<h3
-id="table-1.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table
-1. Percentage of Individuals/Bookings who were Experiencing Homelessness
-at time of Medicaid Eligibility</h3>
-<p>Note: Since we only have homelessness data for individuals who
-matched to Medicaid enrollment data, our denominator for these metrics
-will be the sample of individuals who have at least one Medicaid
-enrollment during the study window (i.e., individuals who did not match
-to Medicaid data are excluded here). Because of this decision as well as
-the fact that the DHHS data notes whether an individual was experiencing
-homelessness at the beginning of a given Medicaid enrollment period. In
-other words, we wouldn’t know if someone had housing at the beginning of
-enrollment and then experienced homelessness afterwards). I am currently
-using all homelessness data from the Medicaid Enrollment files,
-regardless of timing (before, during, or after the study period).</p>
-<p><strong>Because of these factors, we should all discuss how we
-understand and explain this measure. At the very least, we probably want
-to acknowledge that this is likely an under count</strong></p>
+<h3 id="table-1.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table 1. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility</h3>
+<p>Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn’t know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period).</p>
+<p><strong>Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -2797,29 +2804,42 @@ Statewide
 </tbody>
 </table>
 </div>
+<p><br></p>
+<div class="layout-chunk" data-layout="l-body">
+<pre><code># A tibble: 18 × 5
+   county       total_pop total   pct type        
+   &lt;chr&gt;            &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;       
+ 1 Belknap           1604   394 0.246 Homeless    
+ 2 Belknap           1604  1210 0.754 Not Homeless
+ 3 Carroll           1055   262 0.248 Homeless    
+ 4 Carroll           1055   793 0.752 Not Homeless
+ 5 Cheshire           967   292 0.302 Homeless    
+ 6 Cheshire           967   675 0.698 Not Homeless
+ 7 Coos               344    81 0.235 Homeless    
+ 8 Coos               344   263 0.765 Not Homeless
+ 9 Hillsborough      4055  1174 0.290 Homeless    
+10 Hillsborough      4055  2881 0.710 Not Homeless
+11 Merrimack         2396   707 0.295 Homeless    
+12 Merrimack         2396  1689 0.705 Not Homeless
+13 Rockingham        2758   672 0.244 Homeless    
+14 Rockingham        2758  2086 0.756 Not Homeless
+15 Strafford         2269   647 0.285 Homeless    
+16 Strafford         2269  1622 0.715 Not Homeless
+17 Sullivan           758   186 0.245 Homeless    
+18 Sullivan           758   572 0.755 Not Homeless</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<p><strong>From 2019 to 2021, 25% of people who were matched to Medicaid had experienced homelessness.</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="img/PRES_gg_homeless_county.png" width="100%" /></p>
+</div>
 <p><br><br></p>
-<h3
-id="table-2.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-by-county-type-by-ruralurban-classification">Table
-2. Percentage of Individuals/Bookings who were Experiencing Homelessness
-at time of Medicaid Eligibility by County Type (by rural/urban
-classification)</h3>
-<p>Note: Since we only have homelessness data for individuals who
-matched to Medicaid enrollment data, our denominator for these metrics
-will be the sample of individuals who have at least one Medicaid
-enrollment during the study window (i.e., individuals who did not match
-to Medicaid data are excluded here). Because of this decision as well as
-the fact that the DHHS data notes whether an individual was experiencing
-homelessness at the beginning of a given Medicaid enrollment period. In
-other words, we wouldn’t know if someone had housing at the beginning of
-enrollment and then experienced homelessness afterwards). I am currently
-using all homelessness data from the Medicaid Enrollment files,
-regardless of timing (before, during, or after the study period).</p>
-<p><strong>Because of these factors, we should all discuss how we
-understand and explain this measure. At the very least, we probably want
-to acknowledge that this is likely an under count</strong></p>
-<p><strong>County-level CDC rural/urban county classification comes from
-<a href="https://www.cdc.gov/nchs/data_access/urban_rural.htm"
-class="uri">https://www.cdc.gov/nchs/data_access/urban_rural.htm</a></strong></p>
+<h3 id="table-2.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-by-county-type-by-ruralurban-classification">Table 2. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility by County Type (by rural/urban classification)</h3>
+<p>Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn’t know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period).</p>
+<p><strong>Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count</strong></p>
+<p><strong>County-level CDC rural/urban county classification comes from <a href="https://www.cdc.gov/nchs/data_access/urban_rural.htm" class="uri">https://www.cdc.gov/nchs/data_access/urban_rural.htm</a></strong></p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -2985,26 +3005,10 @@ Statewide
 </table>
 </div>
 <p><br><br></p>
-<h3
-id="table-3.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table
-3. Percentage of High Utilizer Individuals/Bookings who were
-Experiencing Homelessness at time of Medicaid Eligibility</h3>
-<p>Note: Since we only have homelessness data for individuals who
-matched to Medicaid enrollment data, our denominator for these metrics
-will be the sample of individuals who have at least one Medicaid
-enrollment during the study window (i.e., individuals who did not match
-to Medicaid data are excluded here). Because of this decision as well as
-the fact that the DHHS data notes whether an individual was experiencing
-homelessness at the beginning of a given Medicaid enrollment period. In
-other words, we wouldn’t know if someone had housing at the beginning of
-enrollment and then experienced homelessness afterwards). I am currently
-using all homelessness data from the Medicaid Enrollment files,
-regardless of timing (before, during, or after the study period).</p>
-<p><strong>Because of these factors, we should all discuss how we
-understand and explain this measure. At the very least, we probably want
-to acknowledge that this is likely an under count</strong></p>
-<p><strong>Statistics for individuals who are high utilizers of jail are
-based on the top 10% percentile of statewide bookings.</strong></p>
+<h3 id="table-3.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table 3. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility</h3>
+<p>Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn’t know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period).</p>
+<p><strong>Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count</strong></p>
+<p><strong>Statistics for individuals who are high utilizers of jail are based on the top 10% percentile of statewide bookings.</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -3152,25 +3156,10 @@ Statewide
 </table>
 </div>
 <p><br><br></p>
-<h3
-id="table-4.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-study-period-only">Table
-4. Percentage of High Utilizer Individuals/Bookings who were
-Experiencing Homelessness at time of Medicaid Eligibility (<strong>study
-period only</strong>)</h3>
-<p>Note: Since we only have homelessness data for individuals who
-matched to Medicaid enrollment data, our denominator for these metrics
-will be the sample of individuals who have at least one Medicaid
-enrollment during the study window (i.e., individuals who did not match
-to Medicaid data are excluded here). Because of this decision as well as
-the fact that the DHHS data notes whether an individual was experiencing
-homelessness at the beginning of a given Medicaid enrollment period. In
-other words, we wouldn’t know if someone had housing at the beginning of
-enrollment and then experienced homelessness afterwards).</p>
-<p><strong>Because of these factors, we should all discuss how we
-understand and explain this measure. At the very least, we probably want
-to acknowledge that this is likely an under count</strong></p>
-<p><strong>Statistics for individuals who are high utilizers of jail are
-based on the top 10% percentile of statewide bookings.</strong></p>
+<h3 id="table-4.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-study-period-only">Table 4. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility (<strong>study period only</strong>)</h3>
+<p>Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn’t know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards).</p>
+<p><strong>Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count</strong></p>
+<p><strong>Statistics for individuals who are high utilizers of jail are based on the top 10% percentile of statewide bookings.</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -3318,11 +3307,27 @@ Statewide
 </table>
 </div>
 <p><br><br></p>
-<h2 id="visuals">Visuals</h2>
-<p>TBD</p>
+<h3 id="table-5.-percentage-of-people-with-bh-needs-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table 5. Percentage of People with BH needs who were Experiencing Homelessness at time of Medicaid Eligibility</h3>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b5fd6f63aef84199a0d8" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-b5fd6f63aef84199a0d8">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan"],"bh_number_of_people":[1192,835,800,272,3398,2059,2253,1898,546],"bh_homeless":[346,232,266,70,1057,650,599,585,159],"bh_homeless_pct":[0.290268456375839,0.277844311377246,0.3325,0.257352941176471,0.311065332548558,0.315687226809131,0.265867731913005,0.308219178082192,0.291208791208791],"no_bh_number_of_people":[1192,835,800,272,3398,2059,2253,1898,546],"no_bh_homeless":[47,29,25,10,116,56,72,61,26],"no_bh_homeless_pct":[0.0394295302013423,0.0347305389221557,0.03125,0.0367647058823529,0.0341377280753384,0.0271976687712482,0.0319573901464714,0.0321390937829294,0.0476190476190476]},"columns":[{"id":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","style":{"fontWeight":"bold"}},{"id":"bh_number_of_people","name":"Total Number of People Matched to Medicaid (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"bh_homeless","name":"People Experiencing Homelessness (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"bh_homeless_pct","name":"People Experiencing Homelessness (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":150,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"no_bh_number_of_people","name":"no_bh_number_of_people","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left","show":false},{"id":"no_bh_homeless","name":"People Experiencing Homelessness (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"no_bh_homeless_pct","name":"People Experiencing Homelessness (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":150,"align":"left"}],"columnGroups":[{"name":"People with BH Encounters","columns":["bh_homeless","bh_homeless_pct"]},{"name":"People without BH Encounters","columns":["no_bh_homeless","no_bh_homeless_pct"]}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"713791d821a5869f696b87ab9bde9208"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
 <p><br><br></p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<p><br><br></p>
+<h2 id="comparing-jail-data-and-medicaid-data">Comparing Jail Data and Medicaid Data</h2>
+<p><br><br>
+<br><br></p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
