@@ -2406,13 +2406,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
   <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
-  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
-  <script src="site_libs/react-17.0.0/react.min.js"></script>
-  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
-  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
-  <script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
-  <link href="site_libs/reactable-0.4.3/reactable.css" rel="stylesheet" />
-  <script src="site_libs/reactable-binding-0.4.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2805,29 +2798,6 @@ Statewide
 </table>
 </div>
 <p><br></p>
-<div class="layout-chunk" data-layout="l-body">
-<pre><code># A tibble: 18 × 5
-   county       total_pop total   pct type        
-   &lt;chr&gt;            &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;chr&gt;       
- 1 Belknap           1604   394 0.246 Homeless    
- 2 Belknap           1604  1210 0.754 Not Homeless
- 3 Carroll           1055   262 0.248 Homeless    
- 4 Carroll           1055   793 0.752 Not Homeless
- 5 Cheshire           967   292 0.302 Homeless    
- 6 Cheshire           967   675 0.698 Not Homeless
- 7 Coos               344    81 0.235 Homeless    
- 8 Coos               344   263 0.765 Not Homeless
- 9 Hillsborough      4055  1174 0.290 Homeless    
-10 Hillsborough      4055  2881 0.710 Not Homeless
-11 Merrimack         2396   707 0.295 Homeless    
-12 Merrimack         2396  1689 0.705 Not Homeless
-13 Rockingham        2758   672 0.244 Homeless    
-14 Rockingham        2758  2086 0.756 Not Homeless
-15 Strafford         2269   647 0.285 Homeless    
-16 Strafford         2269  1622 0.715 Not Homeless
-17 Sullivan           758   186 0.245 Homeless    
-18 Sullivan           758   572 0.755 Not Homeless</code></pre>
-</div>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -3318,16 +3288,14 @@ Statewide
 
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b5fd6f63aef84199a0d8" style="width:auto;height:auto;"></div>
-<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
-<script type="application/json" data-for="htmlwidget-b5fd6f63aef84199a0d8">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan"],"bh_number_of_people":[1192,835,800,272,3398,2059,2253,1898,546],"bh_homeless":[346,232,266,70,1057,650,599,585,159],"bh_homeless_pct":[0.290268456375839,0.277844311377246,0.3325,0.257352941176471,0.311065332548558,0.315687226809131,0.265867731913005,0.308219178082192,0.291208791208791],"no_bh_number_of_people":[1192,835,800,272,3398,2059,2253,1898,546],"no_bh_homeless":[47,29,25,10,116,56,72,61,26],"no_bh_homeless_pct":[0.0394295302013423,0.0347305389221557,0.03125,0.0367647058823529,0.0341377280753384,0.0271976687712482,0.0319573901464714,0.0321390937829294,0.0476190476190476]},"columns":[{"id":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","style":{"fontWeight":"bold"}},{"id":"bh_number_of_people","name":"Total Number of People Matched to Medicaid (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"bh_homeless","name":"People Experiencing Homelessness (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"bh_homeless_pct","name":"People Experiencing Homelessness (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":150,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"no_bh_number_of_people","name":"no_bh_number_of_people","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left","show":false},{"id":"no_bh_homeless","name":"People Experiencing Homelessness (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"no_bh_homeless_pct","name":"People Experiencing Homelessness (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":150,"align":"left"}],"columnGroups":[{"name":"People with BH Encounters","columns":["bh_homeless","bh_homeless_pct"]},{"name":"People without BH Encounters","columns":["no_bh_homeless","no_bh_homeless_pct"]}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"713791d821a5869f696b87ab9bde9208"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+
 </div>
 <p><br><br></p>
 <p><br><br></p>
 <h2 id="comparing-jail-data-and-medicaid-data">Comparing Jail Data and Medicaid Data</h2>
 <p><br><br>
 <br><br></p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
