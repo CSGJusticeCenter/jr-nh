@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: carroll.R
-# Last updated: January 31, 2023
+# Last updated: February 10, 2023
 # Author: Mari Roberts
 
 # Standardize files across counties
@@ -15,26 +15,49 @@
 ################################################################################
 
 # Clean variable names
-# Make release type NA since county does not have release type
-# Assign race labels
-# Make data names consistent with other counties
-# Fix date formats
-# Add county label
+# Make 3rd row the header, rename variables
 carroll_adm_all <- carroll_bookings.xlsx %>%
+  row_to_names(row_number = 3) %>%
   clean_names() %>%
-  mutate(booking_dt_tm = .POSIXct(booking_dt_tm, tz="UTC"),
-         release_dt_tm = .POSIXct(release_dt_tm, tz="UTC")) %>%
-  mutate(booking_dt_tm = format(booking_dt_tm, "%m/%d/%Y"),
-         release_dt_tm = format(release_dt_tm, "%m/%d/%Y")) %>%
+  rename(inmate_id = inmate_number,
+         charge_code = na,
+         charge_desc = na_2,
+         booking_type = na_3) %>%
+  select(-c(na_4:na_11)) %>%
+
+  # Set release type and housing to NA since we don't have this data
+  mutate(release_type = NA,
+         housing = NA,
+         id = NA,
+         yob = as.numeric(yob),
+         county = "Carroll") %>%
+
+  # If NA, use inmate ID, race, sex, yob, sentence status from previous row
+  fill(inmate_id, .direction = "down") %>%
+  fill(race, .direction = "down") %>%
+  fill(sex, .direction = "down") %>%
+  fill(yob, .direction = "down") %>%
+  fill(sentence_status, .direction = "down") %>%
+
+  # Change to date format to get rid of unneccessary text
   mutate(booking_dt_tm = as.Date(booking_dt_tm, format = "%m/%d/%Y"),
          release_dt_tm = as.Date(release_dt_tm, format = "%m/%d/%Y")) %>%
-  mutate(release_type = NA,
-         race_label = case_when(race == "A"  ~ "Asian/Pacific Islander",
+
+  # If NA, use booking date and release date from previous row
+  fill(booking_dt_tm, .direction = "down") %>%
+  fill(release_dt_tm, .direction = "down") %>%
+  filter(charge_code != "Charge Code") %>%
+
+  # Remove duplicates ---- what do reference numbers mean? Someone can have 4 charges for simple assult which looks like duplicates but then have multiple reference numbers
+  distinct() %>%
+
+  # Fix race variable
+  mutate(race_label = case_when(race == "A"  ~ "Asian/Pacific Islander",
                                 race == "B"  ~ "Black",
                                 race == "I"  ~ "American Indian/Alaskan Native",
                                 race == "U"  ~ "Unknown",
                                 race == "W"  ~ "White")) %>%
-  dplyr::select(id = unique_person_id,
+  dplyr::select(id,
                 inmate_id,
                 yob,
                 race_code = race,
@@ -42,19 +65,13 @@ carroll_adm_all <- carroll_bookings.xlsx %>%
                 sex,
                 housing,
                 charge_code,
-                charge_desc = charge,
+                charge_desc,
                 booking_date = booking_dt_tm,
                 booking_type,
                 release_date = release_dt_tm,
                 release_type,
-                sentence_status = sentencing_status) %>%
-  mutate(booking_date = as.Date(booking_date, format = "%m/%d/%Y"),
-         release_date = as.Date(release_date, format = "%m/%d/%Y"),
-         county = "Carroll",
-         housing = case_when(housing == "Homeless" ~ "Unhoused",
-                             housing == "Housed"   ~ "Housed",
-                             is.na(housing)        ~ "Unknown")) %>%
-  distinct()
+                sentence_status,
+                county)
 
 # Create fy, age, los, recode race, and order variables
 carroll_adm <- fnc_data_setup(carroll_adm_all)

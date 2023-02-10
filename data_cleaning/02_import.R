@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: import.R
-# Last updated: May 12, 2022
+# Last updated: February 10, 2022
 # Author: Mari Roberts
 
 # Imports files from jail partners
@@ -44,8 +44,7 @@ belknap_medicaid.xlsx  <- read_excel("D:/Belknap County Jail Data From DHHS.xlsx
 ###################
 
 # carroll county separates their data into releases and bookings which will be joined
-carroll_releases.xlsx  <- read_excel(paste0(sp_data_path, "/Data/Carroll County/CSG release data 7.1.2018-6.30.2021.xls"))
-carroll_bookings.xlsx  <- read_excel(paste0(sp_data_path, "/Data/Carroll County/CSG data 7.1.2018-6.30-2021.xls"))
+carroll_bookings.xlsx  <- read_excel(paste0(sp_data_path, "/Data/Carroll County/July0118-June3021.xls"))
 carroll_medicaid.xlsx  <- read_excel("D:/Carroll County Jail Data From DHHS.xlsx")
 
 ###################
