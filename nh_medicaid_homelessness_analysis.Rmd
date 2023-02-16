@@ -128,7 +128,7 @@ Note: Since we only have homelessness data for individuals who matched to Medica
 **Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count** 
 
 
-**Update**: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021)
+**Update**: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. "% of Overall Sample")
 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
@@ -291,7 +291,7 @@ Note: Since we only have homelessness data for individuals who matched to Medica
 **County-level CDC rural/urban county classification comes from https://www.cdc.gov/nchs/data_access/urban_rural.htm**
 
 
-**Update**: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021)
+**Update**: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. "% of Overall Sample")
 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
@@ -354,7 +354,7 @@ Note: Since we only have homelessness data for individuals who matched to Medica
 **Statistics for individuals who are high utilizers of jail are based on the top 10% percentile of statewide bookings.**
 
 
-**Update**: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021)
+**Update**: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. "% of Overall Sample")
 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
@@ -406,7 +406,7 @@ kable(medicaid_jail_homelessness_hu_county_statewide_table,
 
 ### Table 4. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility (**study period only for comparison**)
 
-Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards).
+Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. "% of Overall Sample").
 
 **Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count** 
 

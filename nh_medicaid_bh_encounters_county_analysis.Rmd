@@ -122,7 +122,7 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc <- left_join
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. Co-Occurring Disorders indicates that individual had at least one Mental Health- and one Substance Use Disorder-related primary diagnoses in the Medicaid data. 
 
-**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021)
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. "% of Overall Sample")
 
 **For definitions of each column/flag created in the analytic file, see full data dictionary here (Individual-level File tab): https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=JADcH8** 
 
@@ -134,27 +134,27 @@ medicaid_jail_county_bh_service_type_table <- jail_medicaid_analytic_individual_
   dplyr::group_by(county) %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
-                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1 & pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_bh_mh_or_sud_service_secondary_dx_flag==1]),
-                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[pre_or_study_service_provided_by_cmhc_provider_flag==1]),
-                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ BH Service provided by ED (N)` = n_distinct(unique_person_id[pre_or_study_ed_visit_or_service_flag==1]),
-                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH Pharmacy Service (N)` = n_distinct(unique_person_id[pre_or_study_mental_health_pharmacy_service_flag==1]),
-                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_id[pre_or_study_sud_pharmacy_service_flag==1]),
-                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ Other BH Service (N)` = n_distinct(unique_person_id[pre_or_study_other_service_flag==1]),
-                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Overall Individuals (N)`)) %>% 
+                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Individuals w/ any Medicaid Match (N)`)) %>% 
   ungroup() %>% 
   dplyr::rename(`Jail` = county) 
 
@@ -162,27 +162,27 @@ medicaid_jail_county_bh_service_type_table <- jail_medicaid_analytic_individual_
 medicaid_jail_overall_bh_service_type_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
-                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1 & pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_bh_mh_or_sud_service_secondary_dx_flag==1]),
-                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[pre_or_study_service_provided_by_cmhc_provider_flag==1]),
-                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ BH Service provided by ED (N)` = n_distinct(unique_person_id[pre_or_study_ed_visit_or_service_flag==1]),
-                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH Pharmacy Service (N)` = n_distinct(unique_person_id[pre_or_study_mental_health_pharmacy_service_flag==1]),
-                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_id[pre_or_study_sud_pharmacy_service_flag==1]),
-                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ Other BH Service (N)` = n_distinct(unique_person_id[pre_or_study_other_service_flag==1]),
-                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Overall Individuals (N)`)) %>% 
+                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Individuals w/ any Medicaid Match (N)`)) %>% 
   dplyr::mutate(`Jail` = "Statewide") 
 
 # rbind county and statewide files 
@@ -219,7 +219,7 @@ kable(medicaid_jail_county_statewide_bh_service_type_table,
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. Co-Occurring Disorders indicates that individual had at least one Mental Health- and one Substance Use Disorder-related primary diagnoses in the Medicaid data. 
 
-**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. "% of Overall Sample")
 
 **County-level CDC rural/urban county classification comes from https://www.cdc.gov/nchs/data_access/urban_rural.htm**
 
@@ -233,55 +233,54 @@ medicaid_jail_cdc_bh_service_type_table <- jail_medicaid_analytic_individual_boo
   dplyr::group_by(cdc_urban_rural_classification) %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
-                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1 & pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_bh_mh_or_sud_service_secondary_dx_flag==1]),
-                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[pre_or_study_service_provided_by_cmhc_provider_flag==1]),
-                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ BH Service provided by ED (N)` = n_distinct(unique_person_id[pre_or_study_ed_visit_or_service_flag==1]),
-                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH Pharmacy Service (N)` = n_distinct(unique_person_id[pre_or_study_mental_health_pharmacy_service_flag==1]),
-                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_id[pre_or_study_sud_pharmacy_service_flag==1]),
-                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ Other BH Service (N)` = n_distinct(unique_person_id[pre_or_study_other_service_flag==1]),
-                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Overall Individuals (N)`)) %>% 
+                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Individuals w/ any Medicaid Match (N)`)) %>% 
   ungroup() %>% 
   dplyr::rename(`CDC County Classification` = cdc_urban_rural_classification) 
 
 # statewide
-medicaid_jail_cdc_overall_bh_service_type_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc %>% 
-  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+medicaid_jail_cdc_overall_bh_service_type_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc %>%   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
-                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1 & pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_bh_mh_or_sud_service_secondary_dx_flag==1]),
-                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_id[pre_or_study_service_provided_by_cmhc_provider_flag==1]),
-                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by CMHC (%)` = scales::percent(`Individuals w/ BH Service provided by CMHC (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ BH Service provided by ED (N)` = n_distinct(unique_person_id[pre_or_study_ed_visit_or_service_flag==1]),
-                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ BH Service provided by ED (%)` = scales::percent(`Individuals w/ BH Service provided by ED (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ MH Pharmacy Service (N)` = n_distinct(unique_person_id[pre_or_study_mental_health_pharmacy_service_flag==1]),
-                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ MH Pharmacy Service (%)` = scales::percent(`Individuals w/ MH Pharmacy Service (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_id[pre_or_study_sud_pharmacy_service_flag==1]),
-                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Overall Individuals (N)`),
+                   `Individuals w/ SUD Pharmacy Service (%)` = scales::percent(`Individuals w/ SUD Pharmacy Service (N)`/`Individuals w/ any Medicaid Match (N)`),
                    `Individuals w/ Other BH Service (N)` = n_distinct(unique_person_id[pre_or_study_other_service_flag==1]),
-                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Overall Individuals (N)`)) %>% 
+                   `Individuals w/ Other BH Service (%)` = scales::percent(`Individuals w/ Other BH Service (N)`/`Individuals w/ any Medicaid Match (N)`)) %>% 
   dplyr::mutate(`CDC County Classification` = "Statewide") 
 
 # rbind county and statewide files 
@@ -318,7 +317,7 @@ kable(medicaid_jail_cdc_statewide_bh_service_type_table,
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. I am currently using all behavioral health data from the Medicaid Encounter file, regardless of timing (before, during, or after the study period). For this analysis, encounter type is broken down into mental health, substance use disorder, whether service is affiliated with CMHC provider (Community Mental Health Centers), emergency department visit, pharmacy service for mental health, pharmacy service for substance use disorder, as well as other services. 
 
-**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. "% of Overall Sample")
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE} 
 ### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using pre_or_study_window_medicaid_match_flag_overall) by county using the medicaid_jail_all file by booking (unique_person_booking_id)
@@ -330,49 +329,49 @@ medicaid_jail_county_bh_service_type_booking_table <- jail_medicaid_analytic_ind
                    `Bookings w/ any Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Bookings w/ any Medicaid Match (%)` = scales::percent(`Bookings w/ any Medicaid Match (N)`/`Overall Bookings (N)`),
                    `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[pre_or_study_bh_flag==1]),
-                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_mh_service_primary_dx_flag==1]),
-                   `Bookings w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ MH Service Encounter, Primary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ SUD Service Encounter, Primary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_bh_mh_or_sud_service_secondary_dx_flag==1]),
-                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_booking_id[pre_or_study_service_provided_by_cmhc_provider_flag==1]),
-                   `Bookings w/ BH Service provided by CMHC (%)` = scales::percent(`Bookings w/ BH Service provided by CMHC (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by CMHC (%)` = scales::percent(`Bookings w/ BH Service provided by CMHC (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ BH Service provided by ED (N)` = n_distinct(unique_person_booking_id[pre_or_study_ed_visit_or_service_flag==1]),
-                   `Bookings w/ BH Service provided by ED (%)` = scales::percent(`Bookings w/ BH Service provided by ED (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by ED (%)` = scales::percent(`Bookings w/ BH Service provided by ED (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH Pharmacy Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_mental_health_pharmacy_service_flag==1]),
-                   `Bookings w/ MH Pharmacy Service (%)` = scales::percent(`Bookings w/ MH Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Pharmacy Service (%)` = scales::percent(`Bookings w/ MH Pharmacy Service (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_sud_pharmacy_service_flag==1]),
-                   `Bookings w/ SUD Pharmacy Service (%)` = scales::percent(`Bookings w/ SUD Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Pharmacy Service (%)` = scales::percent(`Bookings w/ SUD Pharmacy Service (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ Other BH Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_other_service_flag==1]),
-                   `Bookings w/ Other BH Service (%)` = scales::percent(`Bookings w/ Other BH Service (N)`/`Overall Bookings (N)`)) %>% 
+                   `Bookings w/ Other BH Service (%)` = scales::percent(`Bookings w/ Other BH Service (N)`/`Bookings w/ any Medicaid Match (N)`)) %>% 
   ungroup() %>% 
   dplyr::rename(`Jail` = county) 
 
 # statewide
 medicaid_jail_overall_bh_service_type_booking_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
-   dplyr::summarise(`Overall Bookings (N)` = n_distinct(unique_person_booking_id),
+  dplyr::summarise(`Overall Bookings (N)` = n_distinct(unique_person_booking_id),
                    `Bookings w/ any Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Bookings w/ any Medicaid Match (%)` = scales::percent(`Bookings w/ any Medicaid Match (N)`/`Overall Bookings (N)`),
                    `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[pre_or_study_bh_flag==1]),
-                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_mh_service_primary_dx_flag==1]),
-                   `Bookings w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ MH Service Encounter, Primary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ SUD Service Encounter, Primary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_bh_mh_or_sud_service_secondary_dx_flag==1]),
-                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_booking_id[pre_or_study_service_provided_by_cmhc_provider_flag==1]),
-                   `Bookings w/ BH Service provided by CMHC (%)` = scales::percent(`Bookings w/ BH Service provided by CMHC (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by CMHC (%)` = scales::percent(`Bookings w/ BH Service provided by CMHC (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ BH Service provided by ED (N)` = n_distinct(unique_person_booking_id[pre_or_study_ed_visit_or_service_flag==1]),
-                   `Bookings w/ BH Service provided by ED (%)` = scales::percent(`Bookings w/ BH Service provided by ED (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by ED (%)` = scales::percent(`Bookings w/ BH Service provided by ED (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH Pharmacy Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_mental_health_pharmacy_service_flag==1]),
-                   `Bookings w/ MH Pharmacy Service (%)` = scales::percent(`Bookings w/ MH Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Pharmacy Service (%)` = scales::percent(`Bookings w/ MH Pharmacy Service (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_sud_pharmacy_service_flag==1]),
-                   `Bookings w/ SUD Pharmacy Service (%)` = scales::percent(`Bookings w/ SUD Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Pharmacy Service (%)` = scales::percent(`Bookings w/ SUD Pharmacy Service (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ Other BH Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_other_service_flag==1]),
-                   `Bookings w/ Other BH Service (%)` = scales::percent(`Bookings w/ Other BH Service (N)`/`Overall Bookings (N)`)) %>% 
+                   `Bookings w/ Other BH Service (%)` = scales::percent(`Bookings w/ Other BH Service (N)`/`Bookings w/ any Medicaid Match (N)`)) %>% 
   dplyr::mutate(`Jail` = "Statewide") 
 
 # rbind county and statewide files 
@@ -410,7 +409,7 @@ Note: "Encounters" include any behavioral health-related medical/clinical or pha
 
 **County-level CDC rural/urban county classification comes from https://www.cdc.gov/nchs/data_access/urban_rural.htm**
 
-**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. "% of Overall Sample")
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE} 
 ### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using pre_or_study_window_medicaid_match_flag_overall) by county using the medicaid_jail_all file by booking (unique_person_booking_id)
@@ -424,51 +423,51 @@ medicaid_jail_cdc_bh_service_type_booking_table <- jail_medicaid_analytic_indivi
                    `Bookings w/ any Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Bookings w/ any Medicaid Match (%)` = scales::percent(`Bookings w/ any Medicaid Match (N)`/`Overall Bookings (N)`),
                    `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[pre_or_study_bh_flag==1]),
-                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_mh_service_primary_dx_flag==1]),
-                   `Bookings w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ MH Service Encounter, Primary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ SUD Service Encounter, Primary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_bh_mh_or_sud_service_secondary_dx_flag==1]),
-                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_booking_id[pre_or_study_service_provided_by_cmhc_provider_flag==1]),
-                   `Bookings w/ BH Service provided by CMHC (%)` = scales::percent(`Bookings w/ BH Service provided by CMHC (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by CMHC (%)` = scales::percent(`Bookings w/ BH Service provided by CMHC (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ BH Service provided by ED (N)` = n_distinct(unique_person_booking_id[pre_or_study_ed_visit_or_service_flag==1]),
-                   `Bookings w/ BH Service provided by ED (%)` = scales::percent(`Bookings w/ BH Service provided by ED (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by ED (%)` = scales::percent(`Bookings w/ BH Service provided by ED (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH Pharmacy Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_mental_health_pharmacy_service_flag==1]),
-                   `Bookings w/ MH Pharmacy Service (%)` = scales::percent(`Bookings w/ MH Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Pharmacy Service (%)` = scales::percent(`Bookings w/ MH Pharmacy Service (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_sud_pharmacy_service_flag==1]),
-                   `Bookings w/ SUD Pharmacy Service (%)` = scales::percent(`Bookings w/ SUD Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Pharmacy Service (%)` = scales::percent(`Bookings w/ SUD Pharmacy Service (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ Other BH Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_other_service_flag==1]),
-                   `Bookings w/ Other BH Service (%)` = scales::percent(`Bookings w/ Other BH Service (N)`/`Overall Bookings (N)`)) %>% 
+                   `Bookings w/ Other BH Service (%)` = scales::percent(`Bookings w/ Other BH Service (N)`/`Bookings w/ any Medicaid Match (N)`)) %>% 
   ungroup() %>% 
   dplyr::rename(`CDC County Classification` = cdc_urban_rural_classification) 
 
 # statewide
 medicaid_jail_cdc_overall_bh_service_type_booking_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc %>% 
-   dplyr::summarise(`Number of Counties (N)` = n_distinct(county,
+  dplyr::summarise(`Number of Counties (N)` = n_distinct(county,
                                                          na.rm = TRUE),
-                    `Overall Bookings (N)` = n_distinct(unique_person_booking_id),
+                   `Overall Bookings (N)` = n_distinct(unique_person_booking_id),
                    `Bookings w/ any Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Bookings w/ any Medicaid Match (%)` = scales::percent(`Bookings w/ any Medicaid Match (N)`/`Overall Bookings (N)`),
                    `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[pre_or_study_bh_flag==1]),
-                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Encounter (%)` = scales::percent(`Bookings w/ BH Encounter (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_mh_service_primary_dx_flag==1]),
-                   `Bookings w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ MH Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ MH Service Encounter, Primary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_sud_service_primary_dx_flag==1]),
-                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ SUD Service Encounter, Primary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Bookings w/ SUD Service Encounter, Primary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_booking_id[pre_or_study_bh_mh_or_sud_service_secondary_dx_flag==1]),
-                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Bookings w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_booking_id[pre_or_study_service_provided_by_cmhc_provider_flag==1]),
-                   `Bookings w/ BH Service provided by CMHC (%)` = scales::percent(`Bookings w/ BH Service provided by CMHC (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by CMHC (%)` = scales::percent(`Bookings w/ BH Service provided by CMHC (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ BH Service provided by ED (N)` = n_distinct(unique_person_booking_id[pre_or_study_ed_visit_or_service_flag==1]),
-                   `Bookings w/ BH Service provided by ED (%)` = scales::percent(`Bookings w/ BH Service provided by ED (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ BH Service provided by ED (%)` = scales::percent(`Bookings w/ BH Service provided by ED (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ MH Pharmacy Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_mental_health_pharmacy_service_flag==1]),
-                   `Bookings w/ MH Pharmacy Service (%)` = scales::percent(`Bookings w/ MH Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ MH Pharmacy Service (%)` = scales::percent(`Bookings w/ MH Pharmacy Service (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ SUD Pharmacy Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_sud_pharmacy_service_flag==1]),
-                   `Bookings w/ SUD Pharmacy Service (%)` = scales::percent(`Bookings w/ SUD Pharmacy Service (N)`/`Overall Bookings (N)`),
+                   `Bookings w/ SUD Pharmacy Service (%)` = scales::percent(`Bookings w/ SUD Pharmacy Service (N)`/`Bookings w/ any Medicaid Match (N)`),
                    `Bookings w/ Other BH Service (N)` = n_distinct(unique_person_booking_id[pre_or_study_other_service_flag==1]),
-                   `Bookings w/ Other BH Service (%)` = scales::percent(`Bookings w/ Other BH Service (N)`/`Overall Bookings (N)`)) %>% 
+                   `Bookings w/ Other BH Service (%)` = scales::percent(`Bookings w/ Other BH Service (N)`/`Bookings w/ any Medicaid Match (N)`)) %>% 
   dplyr::mutate(`CDC County Classification` = "Statewide") 
 
 # rbind county and statewide files 
