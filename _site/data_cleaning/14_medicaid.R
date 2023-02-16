@@ -413,19 +413,25 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
                   other_service), 
                 as.numeric)) %>% 
   dplyr::filter(keep_record_flag==1) %>% 
+  
+  ### SMI definition now pulling from National Alliance on Mental Illness New Hampshire (NAMI NH)
+  ### include: 
+# Schizophrenia (dx_prmry_clinical_classification=="Schizophrenia and other psychotic disorders", "Schizophrenia spectrum and other psychotic disorders")
+# Bipolar Disorder ("Bipolar and related disorders")
+# Major Depression ("Depressive disorders")
+# Post-Traumatic Stress Disorder ("Trauma- and stressor-related disorders")
+# Borderline Personality Disorder ("Personality disorders")
+# Obsessive-Compulsive Disorder ("Obsessive-compulsive and related disorders", "Disruptive, impulse-control and conduct disorder")
+# Panic Disorder, 
+# Phobias, 
+# Eating Disorders
+### also included: "Mood disorders","Other specified and unspecified mood disorders"
 
-  ### now create encounter-level flags for SMPI (severe and persistent mental illness) based on primary diagnosis
-  ### currently using definition from Donald et al.	2019:	“Severe persistent mental illnesses (SPMIs) are 
-  ### those that are prolonged and recurrent, impair activities of daily living, and require long-term treatment. 
-  ### Common diagnoses include schizophrenia, bipolar disorder, and major depression."
-  
-  ### Current SPMI flag business rule: dx_prmry_clinical_classification=="Schizophrenia and other psychotic disorders", "Schizophrenia spectrum and other psychotic disorders",
-  ### "Depressive disorders", "Bipolar and related disorders" (note there's also "Suicidal ideation/attempt/intentional self-harm",
-  ### "Anxiety and fear-related disorders","Anxiety disorders")
-  
+# not currently coded, but perhaps should be: "Suicidal ideation/attempt/intentional self-harm","Anxiety and fear-related disorders","Anxiety disorders","Attention deficit conduct and disruptive behavior disorders"
+# "Developmental disorders", "Hallucinogen-related disorders"
+
   ### then create flag for opioid-related primary diagnoses
   ### Current opioid-related diagnosis business rule: dx_prmry_clinical_classification=="Opioid-related disorders" (there's also "Substance-related disorders" w/ far fewer encounters)
-
 
   ### QUESTION TO ASK UMA: why do we have clinical classifications for primary dx that are not BH (e.g. gout or burns) -- do these have flags for primary diagnosis?
   ### decide on which classification/text to use
@@ -433,10 +439,16 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
   ### TO DO: create excel list of all diagnoses with current grouping decisions to run by Mari, Sofia, and team
   ### also confirm that dx_prmry_clinical_classification is the best diagnosis classification to use
 
-  mutate(spmi_flag = ifelse(dx_prmry_clinical_classification%in%c("Schizophrenia and other psychotic disorders",
+  mutate(smi_flag = ifelse(dx_prmry_clinical_classification%in%c("Schizophrenia and other psychotic disorders",
                                                                 "Schizophrenia spectrum and other psychotic disorders",
                                                                 "Depressive disorders",
-                                                                "Bipolar and related disorders"),
+                                                                "Bipolar and related disorders",
+                                                                "Trauma- and stressor-related disorders",
+                                                                "Personality disorders",
+                                                                "Obsessive-compulsive and related disorders", 
+                                                                "Disruptive, impulse-control and conduct disorder",
+                                                                "Mood disorders",
+                                                                "Other specified and unspecified mood disorders"),
                           1,0),
          opioid_related_flag = ifelse(dx_prmry_clinical_classification=="Opioid-related disorders",
                                     1,0))
@@ -507,10 +519,15 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   ### also -- we are using Medicaid eligibility start and end dates for inclusion in study window 
   ### (i.e. Medicaid eligibility end date >= 7/1/2018 & Medicaid eligibility start date <= 6/30/2021)
 
+  ### update: adding 'pre_or_study_window_medicaid_match_flag' because we have decided to filter analysis on 
+  ### medicaid encounters that occur prior to or during the study period in the jail admin sample
+
   mutate(study_window_medicaid_match_flag = ifelse(eligibility_end_date >= as_date("2018-07-01") & eligibility_begin_date <= as_date("2021-06-30"),
                                                        1,0),
          pre_study_window_medicaid_match_flag = ifelse(eligibility_end_date < as_date("2018-07-01"),
                                         1,0),
+         pre_or_study_window_medicaid_match_flag = ifelse(eligibility_begin_date <= as_date("2021-06-30"),
+                                                       1,0),
          post_study_window_medicaid_match_flag = ifelse(eligibility_begin_date > as_date("2021-06-30"),
                                         1,0),
          ### here i'm creating an encounter-level flag for whether a record is flagged as BH-related due to 
@@ -524,6 +541,8 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   mutate(study_window_medicaid_match_flag_overall = max(study_window_medicaid_match_flag,
                                                             na.rm=TRUE),
          pre_study_window_medicaid_match_flag_overall = max(pre_study_window_medicaid_match_flag,
+                                                            na.rm=TRUE),
+         pre_or_study_window_medicaid_match_flag_overall = max(pre_or_study_window_medicaid_match_flag,
                                                             na.rm=TRUE),
          post_study_window_medicaid_match_flag_overall = max(post_study_window_medicaid_match_flag,
                                                             na.rm=TRUE)) %>% 
@@ -553,40 +572,70 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                              na.rm=TRUE),
          pre_other_service_flag = max(other_service[pre_study_window_medicaid_match_flag==1],
                                       na.rm=TRUE),
-         pre_spmi_flag = max(spmi_flag[pre_study_window_medicaid_match_flag==1],
+         pre_smi_flag = max(smi_flag[pre_study_window_medicaid_match_flag==1],
                             na.rm=TRUE),
          pre_opioid_related_flag = max(opioid_related_flag[pre_study_window_medicaid_match_flag==1],
                              na.rm=TRUE)) %>% 
   
-  ### then post-study window flags
-  mutate(post_bh_flag = max(overall_bh_flag[post_study_window_medicaid_match_flag==1],
-                           na.rm=TRUE),
-         post_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
-                                            na.rm=TRUE),
-         post_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
-                                             na.rm=TRUE),
-         post_bh_mh_or_sud_service_primary_dx_flag = pmax(post_mh_service_primary_dx_flag,post_sud_service_primary_dx_flag,
+  # ### then post-study window flags
+  # mutate(post_bh_flag = max(overall_bh_flag[post_study_window_medicaid_match_flag==1],
+  #                          na.rm=TRUE),
+  #        post_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
+  #                                           na.rm=TRUE),
+  #        post_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
+  #                                            na.rm=TRUE),
+  #        post_bh_mh_or_sud_service_primary_dx_flag = pmax(post_mh_service_primary_dx_flag,post_sud_service_primary_dx_flag,
+  #                                              na.rm=TRUE),
+  #        post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[post_study_window_medicaid_match_flag==1],
+  #                                                          na.rm=TRUE),
+  #        post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
+  #                                                      na.rm=TRUE),
+  #        post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
+  #                                                          na.rm=TRUE),
+  #        post_ed_visit_or_service_flag = max(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
+  #                                            na.rm=TRUE),
+  #        post_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
+  #                                                      na.rm=TRUE),
+  #        post_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[post_study_window_medicaid_match_flag==1],
+  #                                                       na.rm=TRUE),
+  #        post_sud_pharmacy_service_flag = max(sud_pharmacy_service[post_study_window_medicaid_match_flag==1],
+  #                                             na.rm=TRUE),
+  #        post_other_service_flag = max(other_service[post_study_window_medicaid_match_flag==1],
+  #                                      na.rm=TRUE),
+  #        post_smi_flag = max(smi_flag[post_study_window_medicaid_match_flag==1],
+  #                            na.rm=TRUE),
+  #        post_opioid_related_flag = max(opioid_related_flag[post_study_window_medicaid_match_flag==1],
+  #                                      na.rm=TRUE)) %>% 
+  
+  ### then pre or study window flags
+  mutate(pre_or_study_bh_flag = max(overall_bh_flag[pre_or_study_window_medicaid_match_flag==1],
+                            na.rm=TRUE),
+         pre_or_study_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[pre_or_study_window_medicaid_match_flag==1],
                                                na.rm=TRUE),
-         post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[post_study_window_medicaid_match_flag==1],
+         pre_or_study_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[pre_or_study_window_medicaid_match_flag==1],
+                                                na.rm=TRUE),
+         pre_or_study_bh_mh_or_sud_service_primary_dx_flag = pmax(pre_or_study_mh_service_primary_dx_flag,pre_or_study_sud_service_primary_dx_flag,
+                                                          na.rm=TRUE),
+         pre_or_study_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[pre_or_study_window_medicaid_match_flag==1],
                                                            na.rm=TRUE),
-         post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
+         pre_or_study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[pre_or_study_window_medicaid_match_flag==1],
                                                        na.rm=TRUE),
-         post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
+         pre_or_study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[pre_or_study_window_medicaid_match_flag==1],
                                                            na.rm=TRUE),
-         post_ed_visit_or_service_flag = max(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
+         pre_or_study_ed_visit_or_service_flag = max(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1],
                                              na.rm=TRUE),
-         post_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
-                                                       na.rm=TRUE),
-         post_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[post_study_window_medicaid_match_flag==1],
+         pre_or_study_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1],
                                                         na.rm=TRUE),
-         post_sud_pharmacy_service_flag = max(sud_pharmacy_service[post_study_window_medicaid_match_flag==1],
+         pre_or_study_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[pre_or_study_window_medicaid_match_flag==1],
+                                                        na.rm=TRUE),
+         pre_or_study_sud_pharmacy_service_flag = max(sud_pharmacy_service[pre_or_study_window_medicaid_match_flag==1],
                                               na.rm=TRUE),
-         post_other_service_flag = max(other_service[post_study_window_medicaid_match_flag==1],
+         pre_or_study_other_service_flag = max(other_service[pre_or_study_window_medicaid_match_flag==1],
                                        na.rm=TRUE),
-         post_spmi_flag = max(spmi_flag[post_study_window_medicaid_match_flag==1],
+         pre_or_study_smi_flag = max(smi_flag[pre_or_study_window_medicaid_match_flag==1],
                              na.rm=TRUE),
-         post_opioid_related_flag = max(opioid_related_flag[post_study_window_medicaid_match_flag==1],
-                                       na.rm=TRUE)) %>% 
+         pre_or_study_opioid_related_flag = max(opioid_related_flag[pre_or_study_window_medicaid_match_flag==1],
+                                        na.rm=TRUE)) %>% 
 
   ### now create flags for study window -- all prefixed with 'study_'
   mutate(study_bh_flag = max(overall_bh_flag[study_window_medicaid_match_flag==1],
@@ -613,7 +662,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                             na.rm=TRUE),
          study_other_service_flag = max(other_service[study_window_medicaid_match_flag==1],
                               na.rm=TRUE),
-         study_spmi_flag = max(spmi_flag[study_window_medicaid_match_flag==1],
+         study_smi_flag = max(smi_flag[study_window_medicaid_match_flag==1],
                               na.rm=TRUE),
          study_opioid_related_flag = max(opioid_related_flag[study_window_medicaid_match_flag==1],
                                         na.rm=TRUE)) %>%
@@ -630,8 +679,9 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
       dplyr::select(unique_person_id,
                     overall_bh_flag = overall_bh_flag_max,
                     study_window_medicaid_match_flag_overall:post_study_window_medicaid_match_flag_overall,
+                    pre_or_study_bh_flag:pre_or_study_opioid_related_flag,
                     study_bh_flag:study_opioid_related_flag,
-                    pre_bh_flag:post_opioid_related_flag) %>% 
+                    pre_bh_flag:pre_opioid_related_flag) %>% 
         ### change unique_person_id to character for join with medicaid jail data
         mutate(unique_person_id = as.character(unique_person_id))
 

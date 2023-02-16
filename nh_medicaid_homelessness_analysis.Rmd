@@ -21,6 +21,10 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
+
+# ### set path using csg_sp_path
+# sp_data_path <- csg_sp_path(file.path("JR_NH"))
+
 ```
 
 ```{r include=FALSE}
@@ -120,9 +124,12 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc <- left_join
 
 ### Table 1. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility
 
-Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period). 
+Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). 
 
 **Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count** 
+
+
+**Update**: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021)
 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
@@ -131,19 +138,15 @@ Note: Since we only have homelessness data for individuals who matched to Medica
 # by county
 medicaid_jail_homelessness_county_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(county) %>% 
-  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    
-                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_homeless_on_eligibility_begin_flag==1| 
-                                                                                                     study_homeless_on_eligibility_begin_flag==1| 
-                                                                                                     post_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    
                    `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
                    
-                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    
-                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_homeless_on_eligibility_begin_flag==1| 
-                                                                                                          study_homeless_on_eligibility_begin_flag==1 | 
-                                                                                                          post_homeless_on_eligibility_begin_flag==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    
                    `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
   ungroup() %>% 
@@ -151,18 +154,14 @@ medicaid_jail_homelessness_county_table <- jail_medicaid_analytic_individual_boo
 
 # statewide
 medicaid_jail_homelessness_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-   dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
-                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_homeless_on_eligibility_begin_flag==1| 
-                                                                                                     study_homeless_on_eligibility_begin_flag==1 | 
-                                                                                                     post_homeless_on_eligibility_begin_flag==1]),
+   dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    
                    `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
                    
-                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    
-                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_homeless_on_eligibility_begin_flag==1| 
-                                                                                                          study_homeless_on_eligibility_begin_flag==1 | 
-                                                                                                          post_homeless_on_eligibility_begin_flag==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    
                    `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
   dplyr::mutate(`Jail` = "Statewide") 
@@ -285,11 +284,15 @@ knitr::include_graphics("img/PRES_gg_homeless_county.png")
 
 ### Table 2. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility by County Type (by rural/urban classification)
 
-Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period). 
+Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). 
 
 **Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count** 
 
 **County-level CDC rural/urban county classification comes from https://www.cdc.gov/nchs/data_access/urban_rural.htm**
+
+
+**Update**: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021)
+
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### create table of highlighting the percentage of the medicaid sample that experienced homelessness at the beginning of any medicaid enrollment period in DHHS pull
@@ -299,11 +302,11 @@ medicaid_jail_homelessness_cdc_table <- jail_medicaid_analytic_individual_bookin
   dplyr::group_by(cdc_urban_rural_classification) %>% 
   dplyr::summarise(`Number of Counties (N)` = n_distinct(county,
                                                          na.rm = TRUE),
-                   `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
-                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
-                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
-                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1]),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
   ungroup() %>% 
   dplyr::rename(`CDC County Classification` = cdc_urban_rural_classification) 
@@ -312,11 +315,11 @@ medicaid_jail_homelessness_cdc_table <- jail_medicaid_analytic_individual_bookin
 medicaid_jail_homelessness_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc %>% 
    dplyr::summarise(`Number of Counties (N)` = n_distinct(county,
                                                          na.rm = TRUE),
-                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
-                    `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1]),
+                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                    `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                     `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
-                    `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
-                    `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1]),
+                    `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                    `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                     `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
   dplyr::mutate(`CDC County Classification` = "Statewide") 
 
@@ -343,11 +346,14 @@ kable(medicaid_jail_homelessness_cdc_statewide_table,
 
 ### Table 3. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility
 
-Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). I am currently using all homelessness data from the Medicaid Enrollment files, regardless of timing (before, during, or after the study period). 
+Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). 
 
 **Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count** 
 
 **Statistics for individuals who are high utilizers of jail are based on the top 10% percentile of statewide bookings.**
+
+
+**Update**: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021)
 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
@@ -356,22 +362,22 @@ Note: Since we only have homelessness data for individuals who matched to Medica
 # by county
 medicaid_jail_homelessness_hu_county_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
-                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
-                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
-                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
   ungroup() %>% 
   dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
 
 # statewide
 medicaid_jail_homelessness_hu_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
-                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
-                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[medicaid_match_flag==1]),
-                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(pre_homeless_on_eligibility_begin_flag | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>%  
   dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
 
@@ -396,7 +402,7 @@ kable(medicaid_jail_homelessness_hu_county_statewide_table,
 
 <br><br>
 
-### Table 4. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility (**study period only**)
+### Table 4. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility (**study period only for comparison**)
 
 Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn't know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards).
 
@@ -411,10 +417,10 @@ Note: Since we only have homelessness data for individuals who matched to Medica
 # by county
 medicaid_jail_homelessness_hu_county_study_period_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[study_window_medicaid_match_flag_overall==1]),
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(study_homeless_on_eligibility_begin_flag==1)]),
                    `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
-                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[study_window_medicaid_match_flag_overall==1]),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(study_homeless_on_eligibility_begin_flag==1)]),
                    `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
   ungroup() %>% 
@@ -422,10 +428,10 @@ medicaid_jail_homelessness_hu_county_study_period_table <- jail_medicaid_analyti
 
 # statewide
 medicaid_jail_homelessness_hu_overall_study_period_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[study_window_medicaid_match_flag_overall==1]),
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[(study_homeless_on_eligibility_begin_flag==1)]),
                    `Individuals w/ any experience of homelessness (%)` = scales::percent(`Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`),
-                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[study_window_medicaid_match_flag_overall==1]),
+                   `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[(study_homeless_on_eligibility_begin_flag==1)]),
                    `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>%   
   dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
@@ -458,24 +464,20 @@ kable(medicaid_jail_homelessness_hu_county_statewide_study_period_table,
 medicaid_bh_homeless_people_county <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   group_by(county) %>% 
   dplyr::summarise(# Number of people on Medicaid
-                   medicaid_n  = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   medicaid_n  = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    
                    # Number of people experiencing homelessness
-                   homeless_n = n_distinct(unique_person_id[pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                                            study_homeless_on_eligibility_begin_flag == 1 | 
-                                                            post_homeless_on_eligibility_begin_flag  == 1 ]),
+                   homeless_n = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                   
                    ########
                    # People with BH encounters
                    ########
                    
                    # Number of people on Medicaid and BH encounters
-                   bh_people_n = n_distinct(unique_person_id[study_bh_flag==1]),
+                   bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
                    
                    # Number of people on Medicaid and BH encounters, and homeless
-                   bh_people_homeless_n = n_distinct(unique_person_id[study_bh_flag==1 & (pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                                                                          study_homeless_on_eligibility_begin_flag == 1 | 
-                                                                                          post_homeless_on_eligibility_begin_flag  == 1)]),
+                   bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    # Pct of people who dont have BH and are homeless
                    bh_people_homeless_pct = bh_people_homeless_n/bh_people_n,
                    
@@ -484,12 +486,10 @@ medicaid_bh_homeless_people_county <- jail_medicaid_analytic_individual_booking_
                    ########
                    
                    # Number of people on Medicaid and without BH encounters
-                   no_bh_people_n = n_distinct(unique_person_id[study_bh_flag==0]),
+                   no_bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0]),
                    
                    # Number of people on Medicaid and without BH encounters, and homeless
-                   no_bh_people_homeless_n = n_distinct(unique_person_id[study_bh_flag==0 & (pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                                                                             study_homeless_on_eligibility_begin_flag == 1 | 
-                                                                                             post_homeless_on_eligibility_begin_flag  == 1)]),
+                   no_bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
                   
                    # Pct of people who dont have BH and are homeless
                    no_bh_people_homeless_pct = no_bh_people_homeless_n/no_bh_people_n
@@ -498,24 +498,20 @@ medicaid_bh_homeless_people_county <- jail_medicaid_analytic_individual_booking_
 # Number of people by state
 medicaid_bh_homeless_people_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::summarise(# Number of people on Medicaid
-                   medicaid_n  = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   medicaid_n  = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    
                    # Number of people experiencing homelessness
-                   homeless_n = n_distinct(unique_person_id[pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                                            study_homeless_on_eligibility_begin_flag == 1 | 
-                                                            post_homeless_on_eligibility_begin_flag  == 1 ]),
+                   homeless_n = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                   
                    ########
                    # People with BH encounters
                    ########
                    
                    # Number of people on Medicaid and BH encounters
-                   bh_people_n = n_distinct(unique_person_id[study_bh_flag==1]),
+                   bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
                    
                    # Number of people on Medicaid and BH encounters, and homeless
-                   bh_people_homeless_n = n_distinct(unique_person_id[study_bh_flag==1 & (pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                                                                          study_homeless_on_eligibility_begin_flag == 1 | 
-                                                                                          post_homeless_on_eligibility_begin_flag  == 1)]),
+                   bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    # Pct of people who dont have BH and are homeless
                    bh_people_homeless_pct = bh_people_homeless_n/bh_people_n,
                    
@@ -524,12 +520,10 @@ medicaid_bh_homeless_people_state <- jail_medicaid_analytic_individual_booking_l
                    ########
                    
                    # Number of people on Medicaid and without BH encounters
-                   no_bh_people_n = n_distinct(unique_person_id[study_bh_flag==0]),
+                   no_bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0]),
                    
                    # Number of people on Medicaid and without BH encounters, and homeless
-                   no_bh_people_homeless_n = n_distinct(unique_person_id[study_bh_flag==0 & (pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                                                                             study_homeless_on_eligibility_begin_flag == 1 | 
-                                                                                             post_homeless_on_eligibility_begin_flag  == 1)]),
+                   no_bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
                   
                    # Pct of people who dont have BH and are homeless
                    no_bh_people_homeless_pct = no_bh_people_homeless_n/no_bh_people_n
@@ -594,24 +588,20 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 medicaid_bh_homeless_people_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   group_by(hu_group_exclusive) %>% 
   dplyr::summarise(# Number of people on Medicaid
-    medicaid_n  = n_distinct(unique_person_id[medicaid_match_flag==1]),
+    medicaid_n  = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
     
     # Number of people experiencing homelessness
-    homeless_n = n_distinct(unique_person_id[pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                               study_homeless_on_eligibility_begin_flag == 1 | 
-                                               post_homeless_on_eligibility_begin_flag  == 1 ]),
+    homeless_n = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
     
     ########
     # People with BH encounters
     ########
     
     # Number of people on Medicaid and BH encounters
-    bh_people_n = n_distinct(unique_person_id[study_bh_flag==1]),
+    bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
     
     # Number of people on Medicaid and BH encounters, and homeless
-    bh_people_homeless_n = n_distinct(unique_person_id[study_bh_flag==1 & (pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                                                             study_homeless_on_eligibility_begin_flag == 1 | 
-                                                                             post_homeless_on_eligibility_begin_flag  == 1)]),
+    bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
     # Pct of people who dont have BH and are homeless
     bh_people_homeless_pct = bh_people_homeless_n/bh_people_n,
     
@@ -623,9 +613,7 @@ medicaid_bh_homeless_people_hu <- jail_medicaid_analytic_individual_booking_leve
     no_bh_people_n = n_distinct(unique_person_id[study_bh_flag==0]),
     
     # Number of people on Medicaid and without BH encounters, and homeless
-    no_bh_people_homeless_n = n_distinct(unique_person_id[study_bh_flag==0 & (pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                                                                study_homeless_on_eligibility_begin_flag == 1 | 
-                                                                                post_homeless_on_eligibility_begin_flag  == 1)]),
+    no_bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
     
     # Pct of people who dont have BH and are homeless
     no_bh_people_homeless_pct = no_bh_people_homeless_n/no_bh_people_n
@@ -634,24 +622,20 @@ medicaid_bh_homeless_people_hu <- jail_medicaid_analytic_individual_booking_leve
 # Number of people by state
 medicaid_bh_homeless_people_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::summarise(# Number of people on Medicaid
-    medicaid_n  = n_distinct(unique_person_id[medicaid_match_flag==1]),
+    medicaid_n  = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
     
     # Number of people experiencing homelessness
-    homeless_n = n_distinct(unique_person_id[pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                               study_homeless_on_eligibility_begin_flag == 1 | 
-                                               post_homeless_on_eligibility_begin_flag  == 1 ]),
+    homeless_n = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
     
     ########
     # People with BH encounters
     ########
     
     # Number of people on Medicaid and BH encounters
-    bh_people_n = n_distinct(unique_person_id[study_bh_flag==1]),
+    bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
     
     # Number of people on Medicaid and BH encounters, and homeless
-    bh_people_homeless_n = n_distinct(unique_person_id[study_bh_flag==1 & (pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                                                             study_homeless_on_eligibility_begin_flag == 1 | 
-                                                                             post_homeless_on_eligibility_begin_flag  == 1)]),
+    bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
     # Pct of people who dont have BH and are homeless
     bh_people_homeless_pct = bh_people_homeless_n/bh_people_n,
     
@@ -663,9 +647,7 @@ medicaid_bh_homeless_people_state <- jail_medicaid_analytic_individual_booking_l
     no_bh_people_n = n_distinct(unique_person_id[study_bh_flag==0]),
     
     # Number of people on Medicaid and without BH encounters, and homeless
-    no_bh_people_homeless_n = n_distinct(unique_person_id[study_bh_flag==0 & (pre_homeless_on_eligibility_begin_flag   == 1 | 
-                                                                                study_homeless_on_eligibility_begin_flag == 1 | 
-                                                                                post_homeless_on_eligibility_begin_flag  == 1)]),
+    no_bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
     
     # Pct of people who dont have BH and are homeless
     no_bh_people_homeless_pct = no_bh_people_homeless_n/no_bh_people_n
@@ -722,10 +704,6 @@ reactable(medicaid_bh_homeless_people_overview,
 ```
 
 
-
-
-<br><br>
-
 <br><br>
 
 ## Comparing Jail Data and Medicaid Data
@@ -740,10 +718,10 @@ reactable(medicaid_bh_homeless_people_overview,
 # by county
 dhhs_housing_hu_pct <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(medicaid_match_n = n_distinct(unique_person_id[medicaid_match_flag==1]),
-                   homeless_n       = n_distinct(unique_person_id[(pre_homeless_on_eligibility_begin_flag ==1 | study_homeless_on_eligibility_begin_flag==1 | post_homeless_on_eligibility_begin_flag==1)]),
+  dplyr::summarise(medicaid_match_n = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   homeless_n       = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    homeless_pct     = homeless_n/medicaid_match_n,
-                   not_homeless_n   = n_distinct(unique_person_id[(pre_homeless_on_eligibility_begin_flag ==0 & study_homeless_on_eligibility_begin_flag==0 & post_homeless_on_eligibility_begin_flag==0)]),
+                   not_homeless_n   = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==0]),
                    not_homeless_pct = not_homeless_n/medicaid_match_n) %>% 
   select(hu_group_exclusive,
          homeless = homeless_pct,
@@ -793,10 +771,4 @@ jail_medicaid_housing_hu_pct <- rbind(jail_housing_hu_pct,
                                       dhhs_housing_hu_pct)
 ```
 
-
-
-
-
-
-<br><br>
 <br><br>
