@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
   )
 
 ### set path using csg_sp_path
-sp_data_path <- csg_sp_path(file.path("JR_NH"))
+# sp_data_path <- csg_sp_path(file.path("JR_NH"))
 
 ```
 
@@ -175,7 +175,8 @@ kable(medicaid_jail_county_statewide_bh_service_type_hu_table,
   column_spec(6, bold = TRUE) %>% 
   column_spec(8, bold = TRUE) %>% 
   column_spec(10, bold = TRUE) %>% 
-  column_spec(12, bold = TRUE)
+  column_spec(12, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 
 ```
 
@@ -258,7 +259,8 @@ kable(medicaid_jail_ed_visits_hu_overall_table,
   column_spec(10, bold = TRUE) %>% 
   column_spec(11, bold = TRUE) %>% 
   column_spec(12, bold = TRUE) %>% 
-  column_spec(13, bold = TRUE)
+  column_spec(13, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 ```
 
 <br><br>
@@ -313,7 +315,8 @@ kable(medicaid_jail_county_statewide_pharmacy_type_hu_table,
   column_spec(4, bold = TRUE) %>% 
   column_spec(6, bold = TRUE) %>% 
   column_spec(8, bold = TRUE) %>% 
-  column_spec(10, bold = TRUE)
+  column_spec(10, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 
 ```
 
@@ -403,7 +406,8 @@ kable(medicaid_jail_smi_opioid_hu_grouping_statewide_table,
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE) %>% 
   column_spec(10, bold = TRUE) %>% 
-  column_spec(13, bold = TRUE)
+  column_spec(13, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 
 ```
 

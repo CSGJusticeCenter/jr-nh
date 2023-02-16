@@ -10,14 +10,12 @@ output:
 ```{r include=FALSE}
 # Load functions, packages, and data
 source("data_cleaning/00_library.R")
-
-# ### set path using csg_sp_path
-sp_data_path <- csg_sp_path(file.path("JR_NH"))
-
-# source("data_cleaning/01_functions.R")
+source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
 
 
+# ### set path using csg_sp_path
+# sp_data_path <- csg_sp_path(file.path("JR_NH"))
 ```
 
 ```{r include=FALSE}
@@ -176,7 +174,7 @@ kable(jail_adm_medicaid_count_table,
   row_spec(10, bold = TRUE) %>% 
   column_spec(4, bold = TRUE) %>% 
   column_spec(7, bold = TRUE) %>% 
-  scroll_box(width = "100%")
+  scroll_box(width = "130%")
 ```
 
 <br><br>
@@ -241,7 +239,7 @@ kable(medicaid_jail_percent_match_county_statewide_table,
   column_spec(6, bold = TRUE, color = jri_orange) %>% 
   column_spec(9, bold = TRUE, color = jri_green) %>% 
   column_spec(11, bold = TRUE, color = jri_orange) %>% 
-  scroll_box(width = "100%")
+  scroll_box(width = "130%")
 ```
 
 <br><br>
@@ -313,7 +311,7 @@ kable(medicaid_jail_percent_match_cdc_statewide_table,
   column_spec(7, bold = TRUE, color = jri_orange) %>% 
   column_spec(10, bold = TRUE, color = jri_green) %>% 
   column_spec(12, bold = TRUE, color = jri_orange) %>% 
-  scroll_box(width = "100%")
+  scroll_box(width = "130%")
 ```
 
 <br><br>
@@ -390,7 +388,7 @@ kable(medicaid_jail_percent_match_county_statewide_timing_table,
   column_spec(10, bold = TRUE, color = jri_orange) %>% 
   column_spec(12, bold = TRUE) %>% 
   column_spec(14, bold = TRUE) %>% 
-  scroll_box(width = "100%")
+  scroll_box(width = "130%")
 ``` 
 
 <br>
@@ -579,7 +577,7 @@ kable(medicaid_jail_percent_match_high_util_statewide_table,
   row_spec(5, bold = TRUE) %>% 
   column_spec(4, bold = TRUE, color = jri_green) %>% 
   column_spec(6, bold = TRUE, color = jri_orange) %>% 
-  scroll_box(width = "100%")
+  scroll_box(width = "130%")
 ```
 
 <br><br>

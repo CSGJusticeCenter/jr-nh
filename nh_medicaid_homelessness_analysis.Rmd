@@ -24,7 +24,6 @@ source("data_cleaning/rdas.R")
 
 # ### set path using csg_sp_path
 # sp_data_path <- csg_sp_path(file.path("JR_NH"))
-
 ```
 
 ```{r include=FALSE}
@@ -181,7 +180,8 @@ kable(medicaid_jail_homelessness_county_statewide_table,
                  row_label_position = "l") %>% 
   row_spec(10, bold = TRUE) %>% 
   column_spec(4, bold = TRUE) %>% 
-  column_spec(7, bold = TRUE)
+  column_spec(7, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 
 ```
 
@@ -338,7 +338,8 @@ kable(medicaid_jail_homelessness_cdc_statewide_table,
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE) %>% 
   column_spec(5, bold = TRUE) %>% 
-  column_spec(8, bold = TRUE)
+  column_spec(8, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 
 ```
 
@@ -396,7 +397,8 @@ kable(medicaid_jail_homelessness_hu_county_statewide_table,
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE) %>% 
   column_spec(4, bold = TRUE) %>% 
-  column_spec(7, bold = TRUE)
+  column_spec(7, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 
 ```
 
@@ -451,7 +453,8 @@ kable(medicaid_jail_homelessness_hu_county_statewide_study_period_table,
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE) %>% 
   column_spec(4, bold = TRUE) %>% 
-  column_spec(7, bold = TRUE)
+  column_spec(7, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 
 ```
 
@@ -576,8 +579,6 @@ reactable(medicaid_bh_homeless_people_overview,
           ) %>%
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
-
-<br><br>
 
 <br><br>
 

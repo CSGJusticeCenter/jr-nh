@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
   )
 
 ### set path using csg_sp_path
-sp_data_path <- csg_sp_path(file.path("JR_NH"))
+# sp_data_path <- csg_sp_path(file.path("JR_NH"))
 
 ```
 
@@ -209,7 +209,8 @@ kable(medicaid_jail_county_statewide_bh_service_type_table,
   column_spec(18, bold = TRUE) %>% 
   column_spec(20, bold = TRUE) %>% 
   column_spec(22, bold = TRUE) %>% 
-  column_spec(24, bold = TRUE)
+  column_spec(24, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 ```
 
 <br><br>
@@ -307,7 +308,8 @@ kable(medicaid_jail_cdc_statewide_bh_service_type_table,
   column_spec(18, bold = TRUE) %>% 
   column_spec(20, bold = TRUE) %>% 
   column_spec(22, bold = TRUE) %>% 
-  column_spec(24, bold = TRUE) 
+  column_spec(24, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 ```
 
 <br><br>
@@ -396,7 +398,8 @@ kable(medicaid_jail_county_statewide_bh_service_type_booking_table,
   column_spec(16, bold = TRUE) %>% 
   column_spec(18, bold = TRUE) %>% 
   column_spec(20, bold = TRUE) %>% 
-  column_spec(22, bold = TRUE)
+  column_spec(22, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 ```
 
 <br><br>
@@ -491,7 +494,8 @@ kable(medicaid_jail_cdc_statewide_bh_service_type_booking_table,
   column_spec(17, bold = TRUE) %>% 
   column_spec(19, bold = TRUE) %>% 
   column_spec(21, bold = TRUE) %>% 
-  column_spec(23, bold = TRUE)
+  column_spec(23, bold = TRUE) %>% 
+  scroll_box(width = "130%")
 ```
 
 <br><br>
