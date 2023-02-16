@@ -10,11 +10,14 @@ output:
 ```{r include=FALSE}
 # Load functions, packages, and data
 source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/rdas.R")
 
 # ### set path using csg_sp_path
-# sp_data_path <- csg_sp_path(file.path("JR_NH"))
+sp_data_path <- csg_sp_path(file.path("JR_NH"))
+
+# source("data_cleaning/01_functions.R")
+source("data_cleaning/rdas.R")
+
+
 ```
 
 ```{r include=FALSE}
@@ -172,7 +175,8 @@ kable(jail_adm_medicaid_count_table,
                  row_label_position = "l") %>% 
   row_spec(10, bold = TRUE) %>% 
   column_spec(4, bold = TRUE) %>% 
-  column_spec(7, bold = TRUE)
+  column_spec(7, bold = TRUE) %>% 
+  scroll_box(width = "100%")
 ```
 
 <br><br>
@@ -182,7 +186,7 @@ kable(jail_adm_medicaid_count_table,
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. 
 
-**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during  the study period
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during  the study period. All percentages reflect the % of the entire sample, not just the Medicaid sample
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file
@@ -236,7 +240,8 @@ kable(medicaid_jail_percent_match_county_statewide_table,
   column_spec(4, bold = TRUE, color = jri_green) %>% 
   column_spec(6, bold = TRUE, color = jri_orange) %>% 
   column_spec(9, bold = TRUE, color = jri_green) %>% 
-  column_spec(11, bold = TRUE, color = jri_orange)
+  column_spec(11, bold = TRUE, color = jri_orange) %>% 
+  scroll_box(width = "100%")
 ```
 
 <br><br>
@@ -246,7 +251,7 @@ kable(medicaid_jail_percent_match_county_statewide_table,
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. 
 
-**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during  the study period
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during  the study period. All percentages reflect the % of the entire sample, not just the Medicaid sample
 
 **County-level CDC rural/urban county classification comes from https://www.cdc.gov/nchs/data_access/urban_rural.htm**
 
@@ -307,7 +312,8 @@ kable(medicaid_jail_percent_match_cdc_statewide_table,
   column_spec(5, bold = TRUE, color = jri_green) %>% 
   column_spec(7, bold = TRUE, color = jri_orange) %>% 
   column_spec(10, bold = TRUE, color = jri_green) %>% 
-  column_spec(12, bold = TRUE, color = jri_orange)
+  column_spec(12, bold = TRUE, color = jri_orange) %>% 
+  scroll_box(width = "100%")
 ```
 
 <br><br>
@@ -315,7 +321,7 @@ kable(medicaid_jail_percent_match_cdc_statewide_table,
 
 ### Table 4. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters": by timing of BH Encounter
 
-Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. 
+Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. All percentages reflect the % of the entire sample, not just the Medicaid sample
 
 **The following table is split out by timing of behavioral health Medicaid encounter: before, during, or after the study period. See logic below**
 
@@ -383,8 +389,9 @@ kable(medicaid_jail_percent_match_county_statewide_timing_table,
   column_spec(8, bold = TRUE) %>% 
   column_spec(10, bold = TRUE, color = jri_orange) %>% 
   column_spec(12, bold = TRUE) %>% 
-  column_spec(14, bold = TRUE)
-```
+  column_spec(14, bold = TRUE) %>% 
+  scroll_box(width = "100%")
+``` 
 
 <br>
 
@@ -518,7 +525,7 @@ Note: "Encounters" include any behavioral health-related medical/clinical or pha
 
 Grouping of individuals into 'high utilizer' percentile groups is based on statewide data, using the Medicaid match files from DHHS, as opposed to county-level data. 
 
-**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during  the study period
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during  the study period. All percentages reflect the % of the entire sample, not just the Medicaid sample
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
@@ -571,7 +578,8 @@ kable(medicaid_jail_percent_match_high_util_statewide_table,
                  row_label_position = "l") %>% 
   row_spec(5, bold = TRUE) %>% 
   column_spec(4, bold = TRUE, color = jri_green) %>% 
-  column_spec(6, bold = TRUE, color = jri_orange) 
+  column_spec(6, bold = TRUE, color = jri_orange) %>% 
+  scroll_box(width = "100%")
 ```
 
 <br><br>
