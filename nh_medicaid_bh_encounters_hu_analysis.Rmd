@@ -1,5 +1,5 @@
 ---
-title: "Medicaid Behaviorial Health Encounters, by High Jail Utilizer Grouping"
+title: "Medicaid Behavioral Health Encounters, by High Jail Utilizer Grouping"
 output: 
   distill::distill_article:
     toc: true
@@ -111,7 +111,7 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc <- left_join
                                                   by = "county") 
 ```         
 
-# DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behaviorial Health Encounters by High Jail Utilizer Grouping
+# DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behavioral Health Encounters by High Jail Utilizer Grouping
 
 <br>
 
@@ -411,8 +411,94 @@ kable(medicaid_jail_smi_opioid_hu_grouping_statewide_table,
 
 ## Visuals
 
-TBD
 
+### Visual 1: Distribution of ED Visits across New Hampshire
+
+Note: This plot explores the handful of outliers that appear in the Medicaid data (e.g., 100+ ED visits). For ease of interpretation, I've removed all individuals with 0 ED Visits (the vast majority at 6,000+) as well as extreme outliers (150+ visits; there are about 20 individuals with more than 150 visits recorded, though some counts seem erroneously high) 
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period
+
+```{r layout="l-body-outset", echo=FALSE,message=FALSE,warning=FALSE} 
+### create a new variable with the specified quantiles
+plot_ed_visits_statewide_distribution <- jail_medicaid_analytic_individual_booking_level_dedup_ed_visit_count_recode %>%
+  filter(pre_or_study_window_medicaid_match_flag_overall==1,
+         pre_or_study_ed_visit_or_service_encounter_count!=0,
+         pre_or_study_ed_visit_or_service_encounter_count<155) %>% 
+  mutate(county_name_short = paste0(stringr::str_extract(county, "^.{4}"),"."))
+  
+
+ggplot(data = plot_ed_visits_statewide_distribution,
+       aes(x=pre_or_study_ed_visit_or_service_encounter_count)) +
+    geom_histogram(binwidth=1, fill="#007392", color="#e9ecef", alpha=0.9) +
+    theme_minimal() +
+  theme(panel.grid.major = element_blank(),
+          # panel.grid.minor = element_blank(),
+          axis.line=element_blank(),
+          legend.position = "top",
+        legend.title.align=0.5,
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+    labs(y = "Number of Individuals", x = "Number of ED Visits",
+      caption = NULL,
+      title = NULL,
+      subtitle = NULL) 
+
+```
+
+<br><br>
+
+### Visual 2: Distribution of ED Visits by High Utilizer Grouping
+
+Note: This plot explores the handful of outliers that appear in the Medicaid data (e.g., 100+ ED visits). For ease of interpretation, I've removed all individuals with 0 ED Visits (the vast majority at 6,000+) as well as extreme outliers (150+ visits; there are about 20 individuals with more than 150 visits recorded, though some counts seem erroneously high) 
+
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period
+
+```{r layout="l-body-outset", echo=FALSE,message=FALSE,warning=FALSE} 
+ggplot(data = plot_ed_visits_statewide_distribution,
+       aes(x=pre_or_study_ed_visit_or_service_encounter_count)) +
+    geom_histogram(binwidth=1, fill="#007392", color="#e9ecef", alpha=0.9) +
+  facet_grid(hu_group_exclusive ~ ., scales = "free") +
+    theme_minimal() +
+  theme(panel.grid.major = element_blank(),
+          # panel.grid.minor = element_blank(),
+          axis.line=element_blank(),
+          legend.position = "top",
+        legend.title.align=0.5,
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+    labs(y = "Number of Individuals", x = "Number of ED Visits",
+      caption = NULL,
+      title = NULL,
+      subtitle = NULL) 
+
+```
+
+<br><br>
+
+### Visual 3: Distribution of ED Visits by County
+
+Note: This plot explores the handful of outliers that appear in the Medicaid data (e.g., 100+ ED visits). For ease of interpretation, I've removed all individuals with 0 ED Visits (the vast majority at 6,000+) as well as extreme outliers (150+ visits; there are about 20 individuals with more than 150 visits recorded, though some counts seem erroneously high) 
+
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period
+
+```{r layout="l-body-outset", echo=FALSE,message=FALSE,warning=FALSE} 
+ggplot(data = plot_ed_visits_statewide_distribution,
+       aes(x=pre_or_study_ed_visit_or_service_encounter_count)) +
+    geom_histogram(binwidth=1, fill="#007392", color="#e9ecef", alpha=0.9) +
+  facet_grid(county_name_short ~ ., scales = "free") +
+    theme_minimal() +
+  theme(panel.grid.major = element_blank(),
+          # panel.grid.minor = element_blank(),
+          axis.line=element_blank(),
+          legend.position = "top",
+        legend.title.align=0.5,
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank()) +
+    labs(y = "Number of Individuals", x = "Number of ED Visits",
+      caption = NULL,
+      title = NULL,
+      subtitle = NULL) 
+
+```
 
 <br><br>
 

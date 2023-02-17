@@ -1,5 +1,5 @@
 ---
-title: "Medicaid Behaviorial Health Encounters, County-Level"
+title: "Medicaid Behavioral Health Encounters, County-Level"
 output: 
   distill::distill_article:
     toc: true
@@ -111,7 +111,7 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc <- left_join
                                                   by = "county") 
 ```         
 
-# DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behaviorial Health Encounters by County
+# DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behavioral Health Encounters by County
 
 <br>
 
