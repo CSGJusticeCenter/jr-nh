@@ -12,10 +12,6 @@ output:
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
-
-
-# ### set path using csg_sp_path
-# sp_data_path <- csg_sp_path(file.path("JR_NH"))
 ```
 
 ```{r include=FALSE}
@@ -191,6 +187,9 @@ Note: "Encounters" include any behavioral health-related medical/clinical or pha
 
 # by county
 medicaid_jail_percent_match_county_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+                                                                         pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+                pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0)) %>% 
   dplyr::group_by(county) %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -208,6 +207,9 @@ medicaid_jail_percent_match_county_table <- jail_medicaid_analytic_individual_bo
 
 # statewide
 medicaid_jail_percent_match_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+                                                                       pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+              pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0)) %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
@@ -259,6 +261,9 @@ Note: "Encounters" include any behavioral health-related medical/clinical or pha
 
 # by county
 medicaid_jail_percent_match_cdc_table <- jail_medicaid_analytic_individual_booking_level_dedup_cdc %>% 
+  dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+                                                                       pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+                pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0)) %>% 
   dplyr::group_by(cdc_urban_rural_classification) %>% 
   dplyr::summarise(`Number of Counties (N)` = n_distinct(county,
                                                          na.rm = TRUE),
@@ -278,6 +283,9 @@ medicaid_jail_percent_match_cdc_table <- jail_medicaid_analytic_individual_booki
 
 # statewide
 medicaid_jail_percent_match_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_cdc %>% 
+  dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+                                                                       pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+              pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0)) %>% 
   dplyr::summarise(`Number of Counties (N)` = n_distinct(county,
                                                          na.rm = TRUE),
                    `Overall Individuals (N)` = n_distinct(unique_person_id),
@@ -334,6 +342,9 @@ Post-study period: Medicaid eligibility start date > 6/30/2021 (b/c this was a v
 
 # by county
 medicaid_jail_percent_match_county_timing_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+                                                                       pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+              pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0)) %>% 
   dplyr::group_by(county) %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
@@ -353,6 +364,9 @@ medicaid_jail_percent_match_county_timing_table <- jail_medicaid_analytic_indivi
 
 # statewide
 medicaid_jail_percent_match_overall_timing_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+                                                                       pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+              pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0)) %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[medicaid_match_flag==1]),
                    `Individuals w/ any Medicaid Match (%)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
@@ -398,6 +412,9 @@ kable(medicaid_jail_percent_match_county_statewide_timing_table,
 ```{r}
 # Calculate proportion of individuals that matched to Medicaid from 2014-2021
 df_medicaid_match <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+                                                                       pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+              pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0)) %>% 
   dplyr::group_by(county) %>% 
   dplyr::summarise(`Overall Individuals (N)`                  = n_distinct(unique_person_id),
                    
@@ -460,6 +477,9 @@ knitr::include_graphics("img/PRES_gg_medicaid_match.png")
 ```{r}
 # Calculate proportion of individuals that matched to Medicaid and had a BH history at any point from 2014-2021
 df_bh_match <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+                                                                     pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+            pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0)) %>% 
   dplyr::group_by(county) %>% 
   dplyr::summarise(`Overall Individuals (N)`                  = n_distinct(unique_person_id),
                    `Individuals w/ any BH Encounter (N)`      = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
@@ -528,6 +548,9 @@ Grouping of individuals into 'high utilizer' percentile groups is based on state
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
 jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+                                                                     pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+            pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0)) %>% 
   ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
   mutate(hu_group_exclusive = case_when(
     high_utilizer_10_pct=="No" ~ 4,
@@ -543,6 +566,9 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid
 
 # by county
 medicaid_jail_percent_match_high_util_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+                                                                     pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+            pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0)) %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
