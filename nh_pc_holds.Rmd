@@ -270,7 +270,7 @@ PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_i
                     na.value = "white",
                     labels = c("Non-PC      ","PC", " ")
                     ) +
-  geom_text(aes(label = ifelse(pct > 4, paste(pct, "%"), ""), 
+  geom_text(aes(label = ifelse(pct > 4, paste0(pct, "%"), ""), 
                 fontface = 'bold'),
             position = position_fill(vjust = 0.5),
             vjust = 0.8,
@@ -384,18 +384,22 @@ data1 <- bookings_entrances %>%
   summarise(total = n()) %>%
   filter(pc_hold_in_booking == "PC Hold") %>% 
   mutate(pct = round(total/sum(total)*100, 0)) %>% 
-  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")))
+  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")),
+         county = factor(county)) 
 
 # Stacked bar chart showing the proportion of HU PC holds out of all entrances
 PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = hu_group_exclusive )) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")) +
-  geom_text(aes(label = ifelse(pct > 4, paste(pct, "%"), ""),
+  geom_text(aes(label = ifelse(pct > 4, paste0(pct, "%"), ""),
                 fontface = 'bold'),
             position = position_fill(vjust = 0.5),
             vjust = 0.7,
+            color = ifelse(data1$hu_group_exclusive == "Non-HU", "black", "white"),
             size = 10, family = "Franklin Gothic Book") +
+  coord_flip() +
+  scale_x_discrete(limits = rev(levels(data1$county))) +
   theme_minimal() +
   theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
@@ -403,7 +407,7 @@ PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = hu_gro
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
+        axis.text.x = element_text(size = 28, color = "black"),
         axis.text.y = element_text(size = 28, color = "black"),
         legend.position = "right",
         legend.justification = c(1, 0.5),
@@ -414,7 +418,7 @@ PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = hu_gro
 **Belknap and Merrimack County had the most top 1% high utilizers who entered jail on a PC hold.**
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pchold_hu_prop, file="img/PRES_gg_pchold_hu_prop.png", width = 12,  height = 9, dpi = 100)
+ggsave(PRES_gg_pchold_hu_prop, file="img/PRES_gg_pchold_hu_prop.png", width = 15,  height = 9, dpi = 100)
 knitr::include_graphics("img/PRES_gg_pchold_hu_prop.png")
 ```
 
