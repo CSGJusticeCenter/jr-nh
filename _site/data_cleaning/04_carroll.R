@@ -149,6 +149,7 @@ carroll_adm <- carroll_adm %>%
     # SENTENCED
     str_detect("SENTENCED", sentence_status)                                         ~ "SENTENCED",
     str_detect("SENTENCED FINES", sentence_status)                                   ~ "SENTENCED",
+    str_detect("SENTENCED / DETAINER", sentence_status)                              ~ "SENTENCED",
 
     # NH STATE PRISONER
     str_detect("STATE PRISONER", sentence_status)                                    ~ "OTHER",
