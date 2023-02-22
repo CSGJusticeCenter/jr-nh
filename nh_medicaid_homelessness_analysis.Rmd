@@ -79,12 +79,12 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid
     TRUE ~ as.numeric(NA)),
     hu_group_exclusive = factor(hu_group_exclusive,
          levels = c(1,2,3,4),
-         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU"))) %>% 
-    dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
-                                                                           pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
-                  pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0),
-                  pre_or_study_homeless_on_eligibility_begin_flag = ifelse(study_homeless_on_eligibility_begin_flag == 1 |
-                                                                           pre_homeless_on_eligibility_begin_flag == 1, 1, 0)) 
+         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU"))) 
+    # dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
+    #                                                                        pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
+    #               pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0),
+    #               pre_or_study_homeless_on_eligibility_begin_flag = ifelse(study_homeless_on_eligibility_begin_flag == 1 |
+    #                                                                        pre_homeless_on_eligibility_begin_flag == 1, 1, 0)) 
 
 ### read in and merge cdc_county_rural_urban_crosswalk: https://www.cdc.gov/nchs/data_access/urban_rural.htm
 cdc_county_rural_urban_crosswalk <- openxlsx::read.xlsx(file.path(sp_data_path,"Data/US County Geo Data/CDC_NCHSURCodes2013.xlsx"), 
@@ -275,7 +275,7 @@ PRES_gg_homeless_county <- ggplot(df_homeless_by_county, aes(x = county, y = pct
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
 ```
 
-**From 2019 to 2021, 25% of people who were matched to Medicaid had experienced homelessness.**    
+**From 2019 to 2021, 26% of people who were matched to Medicaid had experienced homelessness.**    
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_homeless_county, file="img/PRES_gg_homeless_county.png", width = 12,  height = 6, dpi = 100)

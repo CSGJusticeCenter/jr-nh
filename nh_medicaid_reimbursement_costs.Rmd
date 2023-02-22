@@ -1,0 +1,28 @@
+---
+title: "Medicaid Reimbursement Costs"
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    theme: theme.css
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo=FALSE, 
+  message=FALSE, 
+  warning=FALSE,
+  dev = "ragg_png",
+  cache = FALSE
+  )
+
+# Load functions, packages, and data
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/rdas.R")
+```
+
+Coming soon.
+
+<br><br>

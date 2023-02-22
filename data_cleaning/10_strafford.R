@@ -135,7 +135,7 @@ strafford_adm <- strafford_adm %>%
 # Remove negatives because of data entry issues with booking and release dates
 # If release date is missing, then change los to NA instead of Inf
 # Create los categories
-strafford_adm <- strafford_adm %>%
+strafford_adm1 <- strafford_adm %>%
   mutate(los_max = ifelse(los_max == -Inf, NA, los_max)) %>%
   filter(los_max >= 0 | is.na(los_max)) %>%
   mutate(los_category =
