@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -785,6 +786,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1026,10 +1028,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1861,9 +1859,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1875,6 +1885,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1974,6 +2009,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1996,7 +2033,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2366,7 +2403,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2400,35 +2437,45 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <a href="index.html">Project Overview</a>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
-Overall Trends
+Jail Trends
  
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
 <a href="nh_incarceration_patterns.html">Incarceration Patterns</a>
 <a href="nh_pc_holds.html">Protective Custody Holds</a>
+<a href="nh_booking_types_analysis.html">Booking Types</a>
+<a href="nh_charge_type_analysis.html">Charge Types</a>
 <a href="nh_high_utilizers_analysis.html">High Utilizers</a>
-<a href="nh_demographics_analysis.html">Demographics</a>
-<a href="nh_medicaid_analysis.html">Medicaid</a>
+<a href="nh_homeless_analysis.html">Homeless</a>
+<a href="nh_los_analysis.html">Length of Stay</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
 </div>
 </div>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
-County Reports
+Medicaid Trends
  
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="county_report_Belknap.html">Belknap</a>
-<a href="county_report_Carroll.html">Carroll</a>
-<a href="county_report_Cheshire.html">Cheshire</a>
-<a href="county_report_Coos.html">Coos</a>
-<a href="county_report_Hillsborough.html">Hillsborough</a>
-<a href="county_report_Merrimack.html">Merrimack</a>
-<a href="county_report_Rockingham.html">Rockingham</a>
-<a href="county_report_Strafford.html">Strafford</a>
-<a href="county_report_Sullivan.html">Sullivan</a>
+<a href="nh_medicaid_match_bh_overview_analysis.html">Medicaid Match and BH Overview</a>
+<a href="nh_medicaid_bh_encounters_mh_sud.html">Behaviorial Health Encounters, MH and SUD</a>
+<a href="nh_medicaid_bh_encounters_visits.html">Behaviorial Health Encounters, CMHC and ED Visits</a>
+<a href="nh_medicaid_eligibility_jail_timing_analysis.html">End of Medicaid Eligibility and Jail Booking Analysis</a>
+<a href="nh_medicaid_reimbursement_costs.html">Medicaid Reimbursement Costs</a>
+<a href="nh_medicaid_homelessness_analysis.html">Homelessness</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Archive
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="archive_incarceration_patterns.html">Incarceration Patterns (Archive)</a>
+<a href="archive_high_utilizers_analysis.html">High Utilizers (Archive)</a>
 </div>
 </div>
 <div class="nav-dropdown">
@@ -2440,6 +2487,7 @@ Research
 <div class="nav-dropdown-content">
 <a href="nh_data_availability.html">Data Availability</a>
 <a href="nh_data_dictionary.html">Data Dictionaries</a>
+<a href="nh_medicaid_diagram_codebook.html">Medicaid Data Diagram and Codebook</a>
 </div>
 </div>
 <a href="https://github.com/CSGJusticeCenter/jr-nh">
@@ -2466,8 +2514,7 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#jail-data-availability"
-id="toc-jail-data-availability">Jail Data Availability</a></li>
+<li><a href="#jail-data-availability" id="toc-jail-data-availability">Jail Data Availability</a></li>
 </ul>
 </nav>
 </div>
@@ -2475,8 +2522,7 @@ id="toc-jail-data-availability">Jail Data Availability</a></li>
 
 </div>
 <h1 id="jail-data-availability">Jail Data Availability</h1>
-<p>NH is not on a unified system so data availability varied by
-county.</p>
+<p>NH is not on a unified system so data availability varied by county.</p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-condensed">
 <thead>
@@ -2510,357 +2556,384 @@ Sentence Status
 <tbody>
 <tr>
 <td style="text-align:left;">
-<span
-style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Belknap
+<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Belknap </span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
 </span>
 </td>
 <td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
 </span>
 </td>
 <td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
-</span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span
-style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Carroll
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
 </span>
 </td>
 <td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span
-style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Coos
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
 </span>
 </td>
 <td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
 </span>
 </td>
 <td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
 </span>
 </td>
 <td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span
-style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Hillsborough</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span
-style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Merrimack
-</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
-</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
-</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span
-style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Rockingham
-</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
-</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-<span
-style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Strafford
-</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
-</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
-</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
-</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
-</span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
 </span>
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-<span
-style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Sullivan
+<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Carroll </span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
 </span>
 </td>
 <td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
-</td>
-<td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i> No
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
 </span>
 </td>
 <td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
 </td>
 <td style="text-align:left;">
-<span
-style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i> Yes </span>
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Coos </span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Hillsborough</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Merrimack </span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Rockingham </span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Strafford </span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Sullivan </span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
+<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
+No
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
+</td>
+<td style="text-align:left;">
+<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
+<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
+Yes
+</span>
 </td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

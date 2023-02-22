@@ -16,9 +16,10 @@ knitr::opts_chunk$set(
   cache = FALSE
   )
 
-# Load packages, functions and Medicaid data
+# Load packages, functions, and data
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
+source("data_cleaning/rdas.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
 
 # Change HU variable to 1% = 1 percent, 5% = 2-5 percent, 10% = 6-10 percent

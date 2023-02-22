@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -785,6 +786,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1026,10 +1028,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1861,9 +1859,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1875,6 +1885,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1974,6 +2009,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1996,7 +2033,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2366,7 +2403,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
   <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
@@ -2413,6 +2450,7 @@ Jail Trends
 <a href="nh_charge_type_analysis.html">Charge Types</a>
 <a href="nh_high_utilizers_analysis.html">High Utilizers</a>
 <a href="nh_homeless_analysis.html">Homeless</a>
+<a href="nh_los_analysis.html">Length of Stay</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
 </div>
 </div>
@@ -2424,9 +2462,11 @@ Medicaid Trends
 </button>
 <div class="nav-dropdown-content">
 <a href="nh_medicaid_match_bh_overview_analysis.html">Medicaid Match and BH Overview</a>
-<a href="nh_medicaid_homelessness_analysis.html">Homelessness</a>
-<a href="nh_medicaid_bh_encounters_analysis.html">Behaviorial Health Encounters</a>
+<a href="nh_medicaid_bh_encounters_mh_sud.html">Behaviorial Health Encounters, MH and SUD</a>
+<a href="nh_medicaid_bh_encounters_visits.html">Behaviorial Health Encounters, CMHC and ED Visits</a>
 <a href="nh_medicaid_eligibility_jail_timing_analysis.html">End of Medicaid Eligibility and Jail Booking Analysis</a>
+<a href="nh_medicaid_reimbursement_costs.html">Medicaid Reimbursement Costs</a>
+<a href="nh_medicaid_homelessness_analysis.html">Homelessness</a>
 </div>
 </div>
 <div class="nav-dropdown">
@@ -2476,72 +2516,29 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a
-href="#dhhs-medicaid-match-and-jail-booking-descriptive-analysis-loss-of-medicaid-coverage-and-jail-bookings"
-id="toc-dhhs-medicaid-match-and-jail-booking-descriptive-analysis-loss-of-medicaid-coverage-and-jail-bookings">DHHS
-Medicaid Match and Jail Booking Descriptive Analysis: Loss of Medicaid
-Coverage and Jail Bookings</a>
+<li><a href="#dhhs-medicaid-match-and-jail-booking-descriptive-analysis-loss-of-medicaid-coverage-and-jail-bookings" id="toc-dhhs-medicaid-match-and-jail-booking-descriptive-analysis-loss-of-medicaid-coverage-and-jail-bookings">DHHS Medicaid Match and Jail Booking Descriptive Analysis: Loss of Medicaid Coverage and Jail Bookings</a>
 <ul>
 <li><a href="#tables" id="toc-tables">Tables</a>
 <ul>
-<li><a
-href="#table-1-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-enrollment-level"
-id="toc-table-1-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-enrollment-level">Table
-1: Timing of Medicaid Eligiblity End Dates and Jail Bookings
-(Enrollment-level)</a></li>
-<li><a
-href="#table-2-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-individual-level"
-id="toc-table-2-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-individual-level">Table
-2: Timing of Medicaid Eligiblity End Dates and Jail Bookings
-(Individual-level)</a></li>
-<li><a
-href="#table-3-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-by-hu-grouping-individual-level"
-id="toc-table-3-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-by-hu-grouping-individual-level">Table
-3: Timing of Medicaid Eligiblity End Dates and Jail Bookings by HU
-Grouping (Individual-level)</a></li>
-<li><a
-href="#table-4-how-long-does-medicaid-re-enrollment-take-enrollment-level"
-id="toc-table-4-how-long-does-medicaid-re-enrollment-take-enrollment-level">Table
-4: How long does Medicaid re-enrollment take?
-(Enrollment-level)</a></li>
-<li><a
-href="#table-5-average-jail-length-of-stay-when-medicaid-enrollmenteligibility-ends-enrollment-level"
-id="toc-table-5-average-jail-length-of-stay-when-medicaid-enrollmenteligibility-ends-enrollment-level">Table
-5: Average Jail Length of Stay when Medicaid Enrollment/Eligibility Ends
-(Enrollment-level)</a></li>
+<li><a href="#table-1-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-enrollment-level" id="toc-table-1-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-enrollment-level">Table 1: Timing of Medicaid Eligiblity End Dates and Jail Bookings (Enrollment-level)</a></li>
+<li><a href="#table-2-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-individual-level" id="toc-table-2-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-individual-level">Table 2: Timing of Medicaid Eligiblity End Dates and Jail Bookings (Individual-level)</a></li>
+<li><a href="#table-3-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-by-hu-grouping-individual-level" id="toc-table-3-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-by-hu-grouping-individual-level">Table 3: Timing of Medicaid Eligiblity End Dates and Jail Bookings by HU Grouping (Individual-level)</a></li>
+<li><a href="#table-4-how-long-does-medicaid-re-enrollment-take-enrollment-level" id="toc-table-4-how-long-does-medicaid-re-enrollment-take-enrollment-level">Table 4: How long does Medicaid re-enrollment take? (Enrollment-level)</a></li>
+<li><a href="#table-5-average-jail-length-of-stay-when-medicaid-enrollmenteligibility-ends-enrollment-level" id="toc-table-5-average-jail-length-of-stay-when-medicaid-enrollmenteligibility-ends-enrollment-level">Table 5: Average Jail Length of Stay when Medicaid Enrollment/Eligibility Ends (Enrollment-level)</a></li>
 </ul></li>
 <li><a href="#visuals" id="toc-visuals">Visuals</a></li>
 </ul></li>
 </ul>
 </nav>
 </div>
-<h1
-id="dhhs-medicaid-match-and-jail-booking-descriptive-analysis-loss-of-medicaid-coverage-and-jail-bookings">DHHS
-Medicaid Match and Jail Booking Descriptive Analysis: Loss of Medicaid
-Coverage and Jail Bookings</h1>
+<h1 id="dhhs-medicaid-match-and-jail-booking-descriptive-analysis-loss-of-medicaid-coverage-and-jail-bookings">DHHS Medicaid Match and Jail Booking Descriptive Analysis: Loss of Medicaid Coverage and Jail Bookings</h1>
 <p><br></p>
 <h2 id="tables">Tables</h2>
-<h3
-id="table-1-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-enrollment-level">Table
-1: Timing of Medicaid Eligiblity End Dates and Jail Bookings
-(Enrollment-level)</h3>
-<p><strong>The following three tables explore the question on slide 44 –
-Is Medicaid enrollment starting again when people are released from
-jail?</strong></p>
-<p><strong>NOTE: While these tables indicate loss of Medicaid
-enrollment/eligibility/coverage that occurs during or soon after
-incarceration in jail, we cannot definitively attribute the reason for
-the loss to be incarceration because we don’t have data on reasons for
-enrollment eligibility loss from DHHS. It will be important to
-acknowledge this if we present these data</strong></p>
-<p><strong>For definitions of each column/flag created in the analytic
-file, see full data dictionary here (Enrollment-level File tab): <a
-href="https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=JADcH8"
-class="uri">https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=JADcH8</a></strong></p>
-<p>This table explores the percentages of Medicaid enrollments (ONLY for
-individuals who matched to Medicaid data) where enrollment/eligibility
-ended during incarceration as well as within 20 days of release from
-jail</p>
+<h3 id="table-1-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-enrollment-level">Table 1: Timing of Medicaid Eligiblity End Dates and Jail Bookings (Enrollment-level)</h3>
+<p><strong>The following three tables explore the question on slide 44 – Is Medicaid enrollment starting again when people are released from jail?</strong></p>
+<p><strong>NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don’t have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data</strong></p>
+<p><strong>For definitions of each column/flag created in the analytic file, see full data dictionary here (Enrollment-level File tab): <a href="https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=JADcH8" class="uri">https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=JADcH8</a></strong></p>
+<p>This table explores the percentages of Medicaid enrollments (ONLY for individuals who matched to Medicaid data) where enrollment/eligibility ended during incarceration as well as within 20 days of release from jail</p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -2633,23 +2630,10 @@ Enrollments Ending 15-20 Days of Release from Jail (%)
 </table>
 </div>
 <p><br><br></p>
-<h3
-id="table-2-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-individual-level">Table
-2: Timing of Medicaid Eligiblity End Dates and Jail Bookings
-(Individual-level)</h3>
-<p><strong>NOTE: While these tables indicate loss of Medicaid
-enrollment/eligibility/coverage that occurs during or soon after
-incarceration in jail, we cannot definitively attribute the reason for
-the loss to be incarceration because we don’t have data on reasons for
-enrollment eligibility loss from DHHS. It will be important to
-acknowledge this if we present these data</strong></p>
-<p>This table explores the percentage of individuals (ONLY for
-individuals who matched to Medicaid data) who experienced Medicaid
-enrollments where eligibility ended during incarceration as well as
-within 20 days of release from jail</p>
-<p>We should probably think through the best way to talk about the
-enrollment-level versus individual-level analysis and why the numbers
-look so different</p>
+<h3 id="table-2-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-individual-level">Table 2: Timing of Medicaid Eligiblity End Dates and Jail Bookings (Individual-level)</h3>
+<p><strong>NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don’t have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data</strong></p>
+<p>This table explores the percentage of individuals (ONLY for individuals who matched to Medicaid data) who experienced Medicaid enrollments where eligibility ended during incarceration as well as within 20 days of release from jail</p>
+<p>We should probably think through the best way to talk about the enrollment-level versus individual-level analysis and why the numbers look so different</p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -2658,12 +2642,10 @@ look so different</p>
 Overall Individuals (N)
 </th>
 <th style="text-align:center;">
-Individuals w/ Enrollments Ending in or within 20 days of Release from
-Jail (N)
+Individuals w/ Enrollments Ending in or within 20 days of Release from Jail (N)
 </th>
 <th style="text-align:center;">
-Individuals w/ Enrollments Ending in or within 20 days of Release from
-Jail (%)
+Individuals w/ Enrollments Ending in or within 20 days of Release from Jail (%)
 </th>
 <th style="text-align:center;">
 Individuals w/ Enrollments Ending in Jail (N)
@@ -2743,23 +2725,10 @@ Individuals w/ Enrollments Ending 15-20 Days of Release from Jail (%)
 </table>
 </div>
 <p><br><br></p>
-<h3
-id="table-3-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-by-hu-grouping-individual-level">Table
-3: Timing of Medicaid Eligiblity End Dates and Jail Bookings by HU
-Grouping (Individual-level)</h3>
-<p><strong>NOTE: While these tables indicate loss of Medicaid
-enrollment/eligibility/coverage that occurs during or soon after
-incarceration in jail, we cannot definitively attribute the reason for
-the loss to be incarceration because we don’t have data on reasons for
-enrollment eligibility loss from DHHS. It will be important to
-acknowledge this if we present these data</strong></p>
-<p>This table explores the percentage of individuals (ONLY for
-individuals who matched to Medicaid data) who experienced Medicaid
-enrollments where eligibility ended during incarceration as well as
-within 20 days of release from jail</p>
-<p>We should probably think through the best way to talk about the
-enrollment-level versus individual-level analysis and why the numbers
-look so different</p>
+<h3 id="table-3-timing-of-medicaid-eligiblity-end-dates-and-jail-bookings-by-hu-grouping-individual-level">Table 3: Timing of Medicaid Eligiblity End Dates and Jail Bookings by HU Grouping (Individual-level)</h3>
+<p><strong>NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don’t have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data</strong></p>
+<p>This table explores the percentage of individuals (ONLY for individuals who matched to Medicaid data) who experienced Medicaid enrollments where eligibility ended during incarceration as well as within 20 days of release from jail</p>
+<p>We should probably think through the best way to talk about the enrollment-level versus individual-level analysis and why the numbers look so different</p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -2771,12 +2740,10 @@ High Utilizer Percentiles
 Overall Individuals (N)
 </th>
 <th style="text-align:center;">
-Individuals w/ Enrollments Ending in or within 20 days of Release from
-Jail (N)
+Individuals w/ Enrollments Ending in or within 20 days of Release from Jail (N)
 </th>
 <th style="text-align:center;">
-Individuals w/ Enrollments Ending in or within 20 days of Release from
-Jail (%)
+Individuals w/ Enrollments Ending in or within 20 days of Release from Jail (%)
 </th>
 <th style="text-align:center;">
 Individuals w/ Enrollments Ending in Jail (N)
@@ -3035,24 +3002,10 @@ Statewide
 </table>
 </div>
 <p><br><br></p>
-<h3
-id="table-4-how-long-does-medicaid-re-enrollment-take-enrollment-level">Table
-4: How long does Medicaid re-enrollment take? (Enrollment-level)</h3>
-<p><strong>NOTE: While these tables indicate loss of Medicaid
-enrollment/eligibility/coverage that occurs during or soon after
-incarceration in jail, we cannot definitively attribute the reason for
-the loss to be incarceration because we don’t have data on reasons for
-enrollment eligibility loss from DHHS. It will be important to
-acknowledge this if we present these data</strong></p>
-<p><strong>To do: how should we understand/treat overlapping enrollment
-periods? It is fairly rare, but does result in some weird calculations
-of time differences between the ending of one enrollment period and the
-beginning of the next. For now I’m filtering out differences of less
-than 0 days in calculations of mean and median</strong></p>
-<p>This table explores the average number of days from the end of
-Medicaid eligibility (when it occurs during or within 20 days after
-incarceration) to re-enrollment/the following Medicaid eligibility start
-date for an individual. Analysis is at the enrollment-level</p>
+<h3 id="table-4-how-long-does-medicaid-re-enrollment-take-enrollment-level">Table 4: How long does Medicaid re-enrollment take? (Enrollment-level)</h3>
+<p><strong>NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don’t have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data</strong></p>
+<p><strong>To do: how should we understand/treat overlapping enrollment periods? It is fairly rare, but does result in some weird calculations of time differences between the ending of one enrollment period and the beginning of the next. For now I’m filtering out differences of less than 0 days in calculations of mean and median</strong></p>
+<p>This table explores the average number of days from the end of Medicaid eligibility (when it occurs during or within 20 days after incarceration) to re-enrollment/the following Medicaid eligibility start date for an individual. Analysis is at the enrollment-level</p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -3061,8 +3014,7 @@ date for an individual. Analysis is at the enrollment-level</p>
 Overall Medicaid Enrollments (N)
 </th>
 <th style="text-align:center;">
-Enrollments Ending in or within 20 days of Release from Jail (% of all
-enrollments)
+Enrollments Ending in or within 20 days of Release from Jail (% of all enrollments)
 </th>
 <th style="text-align:center;">
 Mean Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)
@@ -3071,12 +3023,10 @@ Mean Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)
 Median Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)
 </th>
 <th style="text-align:center;">
-Enrollments Ending in or within 20 days of Release from Jail, No
-Re-enrollment Records (N)
+Enrollments Ending in or within 20 days of Release from Jail, No Re-enrollment Records (N)
 </th>
 <th style="text-align:center;">
-Enrollments Ending in or within 20 days of Release from Jail, No
-Re-enrollment Records (% of enrollments that ended)
+Enrollments Ending in or within 20 days of Release from Jail, No Re-enrollment Records (% of enrollments that ended)
 </th>
 </tr>
 </thead>
@@ -3105,19 +3055,9 @@ Re-enrollment Records (% of enrollments that ended)
 </table>
 </div>
 <p><br><br></p>
-<h3
-id="table-5-average-jail-length-of-stay-when-medicaid-enrollmenteligibility-ends-enrollment-level">Table
-5: Average Jail Length of Stay when Medicaid Enrollment/Eligibility Ends
-(Enrollment-level)</h3>
-<p><strong>NOTE: While these tables indicate loss of Medicaid
-enrollment/eligibility/coverage that occurs during or soon after
-incarceration in jail, we cannot definitively attribute the reason for
-the loss to be incarceration because we don’t have data on reasons for
-enrollment eligibility loss from DHHS. It will be important to
-acknowledge this if we present these data</strong></p>
-<p>This table explores the average number of days spent in jail when
-Medicaid enrollment/eligibility ends either during incarceration or
-within 20 days of release from jail</p>
+<h3 id="table-5-average-jail-length-of-stay-when-medicaid-enrollmenteligibility-ends-enrollment-level">Table 5: Average Jail Length of Stay when Medicaid Enrollment/Eligibility Ends (Enrollment-level)</h3>
+<p><strong>NOTE: While these tables indicate loss of Medicaid enrollment/eligibility/coverage that occurs during or soon after incarceration in jail, we cannot definitively attribute the reason for the loss to be incarceration because we don’t have data on reasons for enrollment eligibility loss from DHHS. It will be important to acknowledge this if we present these data</strong></p>
+<p>This table explores the average number of days spent in jail when Medicaid enrollment/eligibility ends either during incarceration or within 20 days of release from jail</p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -3129,8 +3069,7 @@ Overall Medicaid Enrollments (N)
 Enrollments Ending in or within 20 days of Release from Jail (N)
 </th>
 <th style="text-align:center;">
-Enrollments Ending in or within 20 days of Release from Jail (% of all
-enrollments)
+Enrollments Ending in or within 20 days of Release from Jail (% of all enrollments)
 </th>
 <th style="text-align:center;">
 Mean Jail Length of Stay (Days)
@@ -3165,8 +3104,7 @@ Median Jail Length of Stay (Days)
 <h2 id="visuals">Visuals</h2>
 <p>TBD</p>
 <p><br><br></p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

@@ -8,8 +8,10 @@ output:
 ---
 
 ```{r include=FALSE}
-# load packages
+# Load packages, functions, and data
 source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/rdas.R")
 ```
 
 ```{r include=FALSE}

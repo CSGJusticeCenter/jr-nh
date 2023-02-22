@@ -19,8 +19,10 @@ knitr::opts_chunk$set(
   cache = FALSE
   )
 
+# Load packages, functions, and data
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
+source("data_cleaning/rdas.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
 daily_pop_costs   <- read_rds("D:/Analytic/daily_pop_costs.rds") 
 

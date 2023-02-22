@@ -50,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -73,9 +74,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -785,6 +786,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1026,10 +1028,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1861,9 +1859,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          return "<p>" + $('#ref-' + ref).html() + "</p>";
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1875,6 +1885,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1974,6 +2009,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1996,7 +2033,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2366,7 +2403,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2401,7 +2438,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
 Jail Trends
-
+ 
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
@@ -2418,21 +2455,22 @@ Jail Trends
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
 Medicaid Trends
-
+ 
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
 <a href="nh_medicaid_match_bh_overview_analysis.html">Medicaid Match and BH Overview</a>
-<a href="nh_medicaid_homelessness_analysis.html">Homelessness</a>
-<a href="nh_medicaid_bh_encounters_county_analysis.html">Behaviorial Health Encounters, County-level</a>
-<a href="nh_medicaid_bh_encounters_hu_analysis.html">Behaviorial Health Encounters, HU-level</a>
+<a href="nh_medicaid_bh_encounters_mh_sud.html">Behaviorial Health Encounters, MH and SUD</a>
+<a href="nh_medicaid_bh_encounters_visits.html">Behaviorial Health Encounters, CMHC and ED Visits</a>
 <a href="nh_medicaid_eligibility_jail_timing_analysis.html">End of Medicaid Eligibility and Jail Booking Analysis</a>
+<a href="nh_medicaid_reimbursement_costs.html">Medicaid Reimbursement Costs</a>
+<a href="nh_medicaid_homelessness_analysis.html">Homelessness</a>
 </div>
 </div>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
 Archive
-
+ 
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
@@ -2443,7 +2481,7 @@ Archive
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
 Research
-
+ 
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
@@ -2475,26 +2513,13 @@ Research
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="img/csg-logo.png" width="70%" /></p>
 </div>
-<p>Welcome to the JRI New Hampshire project website. This is a private,
-password protected website that should not be shared externally. Use the
-navigation in the top right corner to view county reports and other
-analyses.</p>
+<p>Welcome to the JRI New Hampshire project website. This is a private, password protected website that should not be shared externally. Use the navigation in the top right corner to view county reports and other analyses.</p>
 <p><br></p>
 <p><strong>Project Purpose:</strong></p>
-<p>This project will focus on the prevalence of people with behavioral
-health needs moving through local county jails and the availability and
-impact of existing services and supports for this population
-statewide.</p>
-<p>Goal 1: Improve criminal justice and public health outcomes for
-people with behavioral health conditions who are high utilizers of the
-health and jail systems.</p>
-<p>Goal 2: Reduce gaps in the state’s data systems and information
-sharing capacity by working with agencies and staff to build data
-collection and analysis capacities.</p>
-<p>Matching data from all 10 counties’ jails with data from the
-Department of Health and Human Services (DHHS) would distinguish New
-Hampshire as the first state in the country to conduct a statewide jail
-to Medicaid data analysis.</p>
+<p>This project will focus on the prevalence of people with behavioral health needs moving through local county jails and the availability and impact of existing services and supports for this population statewide.</p>
+<p>Goal 1: Improve criminal justice and public health outcomes for people with behavioral health conditions who are high utilizers of the health and jail systems.</p>
+<p>Goal 2: Reduce gaps in the state’s data systems and information sharing capacity by working with agencies and staff to build data collection and analysis capacities.</p>
+<p>Matching data from all 10 counties’ jails with data from the Department of Health and Human Services (DHHS) would distinguish New Hampshire as the first state in the country to conduct a statewide jail to Medicaid data analysis.</p>
 <p><br></p>
 <div class="layout-chunk" data-layout="l-body">
 <p><img src="img/nh-jri-flow.png" width="100%" /></p>
@@ -2502,60 +2527,40 @@ to Medicaid data analysis.</p>
 <p><br></p>
 <p><strong>Scope of Work</strong></p>
 <ul>
-<li><p>Facilitating cross-system data match to analyze county jail and
-Medicaid claims data.</p></li>
-<li><p>Analyzing jail data on high utilizers with behavioral health
-needs.</p></li>
-<li><p>Analyzing racial disproportionalities in jail
-incarceration.</p></li>
-<li><p>Conducting focus groups with providers, stakeholders, and jail
-staff.</p></li>
-<li><p>Assessing behavioral health needs, demographic characteristics,
-and available resources.</p></li>
-<li><p>Assessing the collaboration between behavioral health and
-criminal justice agencies.</p></li>
-<li><p>Identifying gaps in data systems to support improved data
-collection and analysis capacities.</p></li>
-<li><p>Identifying alternatives to incarceration programs to provide an
-overview of local available services.</p></li>
+<li><p>Facilitating cross-system data match to analyze county jail and Medicaid claims data.</p></li>
+<li><p>Analyzing jail data on high utilizers with behavioral health needs.</p></li>
+<li><p>Analyzing racial disproportionalities in jail incarceration.</p></li>
+<li><p>Conducting focus groups with providers, stakeholders, and jail staff.</p></li>
+<li><p>Assessing behavioral health needs, demographic characteristics, and available resources.</p></li>
+<li><p>Assessing the collaboration between behavioral health and criminal justice agencies.</p></li>
+<li><p>Identifying gaps in data systems to support improved data collection and analysis capacities.</p></li>
+<li><p>Identifying alternatives to incarceration programs to provide an overview of local available services.</p></li>
 </ul>
 <p><strong>Key Questions</strong></p>
 <p><em>Jail admissions:</em></p>
 <ul>
-<li><p>How many people are booked into New Hampshire jails
-annually?</p></li>
-<li><p>What are the most common jail admission and release
-types?</p></li>
+<li><p>How many people are booked into New Hampshire jails annually?</p></li>
+<li><p>What are the most common jail admission and release types?</p></li>
 <li><p>What is the average length of incarceration in jail?</p></li>
-<li><p>How are protective custody holds factored into the jail
-population?</p></li>
+<li><p>How are protective custody holds factored into the jail population?</p></li>
 </ul>
 <p><em>High utilizers in jails:</em></p>
 <ul>
-<li><p>What percent of annual jail bookings are for people identified as
-high utilizers?</p></li>
-<li><p>Is this percentage different for protective custody
-bookings?</p></li>
-<li><p>What percent of the daily jail population do high utilizers
-account for?</p></li>
+<li><p>What percent of annual jail bookings are for people identified as high utilizers?</p></li>
+<li><p>Is this percentage different for protective custody bookings?</p></li>
+<li><p>What percent of the daily jail population do high utilizers account for?</p></li>
 </ul>
 <p><em>Demographics of the high utilizer population:</em></p>
 <ul>
-<li><p>How does the high utilizer jail population compare to others in
-jail in terms of gender, race, and ethnicity?</p></li>
-<li><p>What other indicators exist among the high utilizer population in
-jail including their Medicaid enrollment status or Medicaid eligibility,
-their housing status, and indicators of substance use and/or mental
-illness?</p></li>
+<li><p>How does the high utilizer jail population compare to others in jail in terms of gender, race, and ethnicity?</p></li>
+<li><p>What other indicators exist among the high utilizer population in jail including their Medicaid enrollment status or Medicaid eligibility, their housing status, and indicators of substance use and/or mental illness?</p></li>
 </ul>
 <p><strong>Project Links</strong></p>
 <ul>
-<li><a href="https://github.com/CSGJusticeCenter/jr-nh">Github
-repository</a></li>
+<li><a href="https://github.com/CSGJusticeCenter/jr-nh">Github repository</a></li>
 </ul>
 <p><br></p>
-<div class="sourceCode" id="cb1"><pre
-class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
