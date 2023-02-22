@@ -26,8 +26,8 @@ It appears that the best option, at this point, is to categorize the charges int
 
 ```{r include=FALSE}
 # ### call libraries
-# library(easypackages)
-# libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill")
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill")
 # Load packages, functions, and data
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
@@ -46,7 +46,7 @@ knitr::opts_chunk$set(
   )
 
 ### set sp_data_path for data viz output and data imports
-sp_data_path <- csg_sp_path(file.path("JR_NH"))
+# sp_data_path <- csg_sp_path(file.path("JR_NH"))
 
 sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
 
@@ -714,7 +714,7 @@ kable(table_fy_charge_type_summary_final,
 
 <br><br>
 
-### Table 3. Charge Type for Individuals who are High Utilizers (based on all three years of data) 
+### Table 3a. Charge Type for Individuals who are High Utilizers (based on all three years of data) 
 
 Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense?
 
@@ -805,6 +805,80 @@ kable(table_hu_charge_type_summary_final,
   row_spec(5, bold = TRUE)
 ```
 
+<br><br>
+
+### Table 3b. Public Order Charge Description for Individuals who are High Utilizers (based on all three years of data) 
+
+* **Top 1%:** individual is in top 1% of jail entrances for all 3 years of sample
+
+* **Top 5%:** individual is in top 5% of jail entrances for all 3 years of sample (really this is 1% to 5%)
+
+* **Top 10%:** individual is in top 10% of jail entrances for all 3 years of sample (really this is 5% to 10%)
+
+* **Non-HU:** individual is not in top 10% of jail entrances for all 3 years of sample
+
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### create denominators -- unique bookings for sub-sample
+unique_bookings_public_order_denom_top_1 <- n_distinct(nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$unique_booking_id_nh[nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$crime_type_lookup=="Public Order" & nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$hu_group_exclusive=="Top 1%"],
+                                                       na.rm = TRUE)
+
+unique_bookings_public_order_denom_top_5 <- n_distinct(nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$unique_booking_id_nh[nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$crime_type_lookup=="Public Order" & nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$hu_group_exclusive=="Top 5%"],
+                                                       na.rm = TRUE)
+
+unique_bookings_public_order_denom_top_10 <- n_distinct(nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$unique_booking_id_nh[nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$crime_type_lookup=="Public Order" & nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$hu_group_exclusive=="Top 10%"],
+                                                       na.rm = TRUE)
+
+unique_bookings_public_order_denom_non_hu <- n_distinct(nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$unique_booking_id_nh[nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$crime_type_lookup=="Public Order" & nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode$hu_group_exclusive=="Non-HU"],
+                                                       na.rm = TRUE)
+
+### unique bookings per charge type by HU grouping
+df_hu_public_order_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode %>% 
+  filter(crime_type_lookup=="Public Order") %>% 
+  dplyr::group_by(statute_title_lookup) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings for Top 1% HU (Column %)` = scales::percent(n_distinct(unique_booking_id_nh[hu_group_exclusive=="Top 1%"])/unique_bookings_public_order_denom_top_1,
+                                                                       accuracy = .1),
+                   `Bookings for Top 5% HU (Column %)` = scales::percent(n_distinct(unique_booking_id_nh[hu_group_exclusive=="Top 5%"])/unique_bookings_public_order_denom_top_5,
+                                                                       accuracy = .1),
+                   `Bookings for Top 10% HU (Column %)` = scales::percent(n_distinct(unique_booking_id_nh[hu_group_exclusive=="Top 10%"])/unique_bookings_public_order_denom_top_10,
+                                                                       accuracy = .1),
+                   `Bookings for Top Non-HU (Column %)` = scales::percent(n_distinct(unique_booking_id_nh[hu_group_exclusive=="Non-HU"])/unique_bookings_public_order_denom_non_hu,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>%
+  dplyr::rename(`Charge Description` = statute_title_lookup) 
+
+### overall bookings by charge type for nh
+df_hu_charge_type_summary_overall <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode %>% 
+  filter(crime_type_lookup=="Public Order") %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings for Top 1% HU (Column %)` = scales::percent(n_distinct(unique_booking_id_nh[hu_group_exclusive=="Top 1%"])/unique_bookings_public_order_denom_top_1,
+                                                                       accuracy = .1),
+                   `Bookings for Top 5% HU (Column %)` = scales::percent(n_distinct(unique_booking_id_nh[hu_group_exclusive=="Top 5%"])/unique_bookings_public_order_denom_top_5,
+                                                                       accuracy = .1),
+                   `Bookings for Top 10% HU (Column %)` = scales::percent(n_distinct(unique_booking_id_nh[hu_group_exclusive=="Top 10%"])/unique_bookings_public_order_denom_top_10,
+                                                                       accuracy = .1),
+                   `Bookings for Top Non-HU (Column %)` = scales::percent(n_distinct(unique_booking_id_nh[hu_group_exclusive=="Non-HU"])/unique_bookings_public_order_denom_non_hu,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Charge Description` = "Overall")
+
+### combine tables for kable
+df_hu_public_order_charge_type_summary_final <- rbind(df_hu_public_order_charge_type_summary,
+                                            df_hu_charge_type_summary_overall)
+
+### print table via kableextra
+kable(df_hu_public_order_charge_type_summary_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(15, bold = TRUE)
+```
+
+<br><br>
 
 ```{r eval=FALSE,include=FALSE,message=FALSE,warning=FALSE}
 ### Table 4. Charge Type for Individuals who are High Utilizers (based on single fiscal year calculations) 
@@ -1574,14 +1648,13 @@ ggplot(
   # add theme
   theme_map() +
   theme(
-    plot.margin = margin(),
+    # plot.margin = margin(),
     panel.grid = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     legend.position = "bottom",
     legend.justification = c(0.5, 0.5),
-    legend.text = element_text(size = 11),
-  ) 
+    legend.text = element_text(size = 11)) 
 
 
 ### write out
