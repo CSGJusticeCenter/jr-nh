@@ -88,27 +88,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>JRI New Hampshire Project: Medicaid Match Analysis: Homelessness</title>
+  <title>JRI New Hampshire Project: Medicaid Behavioral Health Encounters</title>
 
 
   <link rel="icon" type="image/png" href="img/favicon.png"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="JRI New Hampshire Project: Medicaid Match Analysis: Homelessness"/>
+  <meta property="og:title" content="JRI New Hampshire Project: Medicaid Behavioral Health Encounters"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="JRI New Hampshire Project"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="JRI New Hampshire Project: Medicaid Match Analysis: Homelessness"/>
+  <meta property="twitter:title" content="JRI New Hampshire Project: Medicaid Behavioral Health Encounters"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Medicaid Match Analysis: Homelessness"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","subtitle","output"]}},"value":[{"type":"character","attributes":{},"value":["Medicaid Behavioral Health Encounters"]},{"type":"character","attributes":{},"value":["Focusing on CMHC and ED Visits, Pharmacy Visits"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2425,7 +2425,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Medicaid Match Analysis: Homelessness","authors":[]}
+{"title":"Medicaid Behavioral Health Encounters","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2504,7 +2504,7 @@ Research
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Medicaid Match Analysis: Homelessness</h1>
+<h1>Medicaid Behavioral Health Encounters</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2516,260 +2516,153 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#dhhs-medicaid-match-and-jail-booking-descriptive-analysis-individuals-experiencing-homelessness" id="toc-dhhs-medicaid-match-and-jail-booking-descriptive-analysis-individuals-experiencing-homelessness">DHHS Medicaid Match and Jail Booking Descriptive Analysis: Individuals Experiencing Homelessness</a>
+<li><a href="#dhhs-medicaid-match-and-jail-booking-descriptive-analysis-behavioral-health-encounters-by-high-jail-utilizer-grouping" id="toc-dhhs-medicaid-match-and-jail-booking-descriptive-analysis-behavioral-health-encounters-by-high-jail-utilizer-grouping">DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behavioral Health Encounters by High Jail Utilizer Grouping</a>
 <ul>
 <li><a href="#tables" id="toc-tables">Tables</a>
 <ul>
-<li><a href="#table-1.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility" id="toc-table-1.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table 1. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility</a></li>
-<li><a href="#table-2.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-by-county-type-by-ruralurban-classification" id="toc-table-2.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-by-county-type-by-ruralurban-classification">Table 2. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility by County Type (by rural/urban classification)</a></li>
-<li><a href="#table-3.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility" id="toc-table-3.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table 3. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility</a></li>
-<li><a href="#table-4.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-study-period-only-for-comparison" id="toc-table-4.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-study-period-only-for-comparison">Table 4. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility (<strong>study period only for comparison</strong>)</a></li>
+<li><a href="#table-1a-mental-health-and-substance-use-disorder-service-medicaid-encounters-by-overall-high-utilizer-grouping" id="toc-table-1a-mental-health-and-substance-use-disorder-service-medicaid-encounters-by-overall-high-utilizer-grouping">Table 1a: Mental Health and Substance Use Disorder Service Medicaid Encounters by <strong>Overall</strong> High Utilizer Grouping</a></li>
+<li><a href="#table-1b-mental-health-and-substance-use-disorder-service-medicaid-encounters-by-high-utilizer-grouping" id="toc-table-1b-mental-health-and-substance-use-disorder-service-medicaid-encounters-by-high-utilizer-grouping">Table 1b: Mental Health and Substance Use Disorder Service Medicaid Encounters by High Utilizer Grouping</a></li>
+<li><a href="#table-2a-cmhc-and-ed-visits-by-overall-high-utilizer-grouping" id="toc-table-2a-cmhc-and-ed-visits-by-overall-high-utilizer-grouping">Table 2a: CMHC and ED Visits by <strong>Overall</strong> High Utilizer Grouping</a></li>
+<li><a href="#table-2b-cmhc-and-ed-visits-by-high-utilizer-grouping" id="toc-table-2b-cmhc-and-ed-visits-by-high-utilizer-grouping">Table 2b: CMHC and ED Visits by High Utilizer Grouping</a></li>
+<li><a href="#table-3a-pharmacy-visits-and-other-behavioral-health-services-by-overall-high-utilizer-grouping" id="toc-table-3a-pharmacy-visits-and-other-behavioral-health-services-by-overall-high-utilizer-grouping">Table 3a: Pharmacy Visits and Other Behavioral Health Services by <strong>Overall</strong> High Utilizer Grouping</a></li>
+<li><a href="#table-3b-pharmacy-visits-and-other-behavioral-health-services-by-high-utilizer-grouping" id="toc-table-3b-pharmacy-visits-and-other-behavioral-health-services-by-high-utilizer-grouping">Table 3b: Pharmacy Visits and Other Behavioral Health Services by High Utilizer Grouping</a></li>
+<li><a href="#table-4a-percentage-of-individuals-with-smi-or-opioid-related-primary-diagnoses-individual-level-by-overall-high-utilizer-grouping" id="toc-table-4a-percentage-of-individuals-with-smi-or-opioid-related-primary-diagnoses-individual-level-by-overall-high-utilizer-grouping">Table 4a: Percentage of Individuals with SMI or Opioid-related Primary Diagnoses (Individual-level) by <strong>Overall</strong> High Utilizer Grouping</a></li>
+<li><a href="#table-4b-percentage-of-individuals-with-smi-or-opioid-related-primary-diagnoses-individual-level" id="toc-table-4b-percentage-of-individuals-with-smi-or-opioid-related-primary-diagnoses-individual-level">Table 4b: Percentage of Individuals with SMI or Opioid-related Primary Diagnoses (Individual-level)</a></li>
+</ul></li>
+<li><a href="#visuals" id="toc-visuals">Visuals</a>
+<ul>
+<li><a href="#visual-1-distribution-of-ed-visits-across-new-hampshire" id="toc-visual-1-distribution-of-ed-visits-across-new-hampshire">Visual 1: Distribution of ED Visits across New Hampshire</a></li>
+<li><a href="#visual-2-distribution-of-ed-visits-by-high-utilizer-grouping" id="toc-visual-2-distribution-of-ed-visits-by-high-utilizer-grouping">Visual 2: Distribution of ED Visits by High Utilizer Grouping</a></li>
+<li><a href="#visual-3-distribution-of-ed-visits-by-county" id="toc-visual-3-distribution-of-ed-visits-by-county">Visual 3: Distribution of ED Visits by County</a></li>
 </ul></li>
 </ul></li>
 </ul>
 </nav>
 </div>
-<h1 id="dhhs-medicaid-match-and-jail-booking-descriptive-analysis-individuals-experiencing-homelessness">DHHS Medicaid Match and Jail Booking Descriptive Analysis: Individuals Experiencing Homelessness</h1>
+<h1 id="dhhs-medicaid-match-and-jail-booking-descriptive-analysis-behavioral-health-encounters-by-high-jail-utilizer-grouping">DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behavioral Health Encounters by High Jail Utilizer Grouping</h1>
 <p><br></p>
 <h2 id="tables">Tables</h2>
-<h3 id="table-1.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table 1. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility</h3>
-<p>Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn’t know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards).</p>
-<p><strong>Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count</strong></p>
-<p><strong>Update</strong>: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date &lt;= 6/30/2021). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”)</p>
+<h3 id="table-1a-mental-health-and-substance-use-disorder-service-medicaid-encounters-by-overall-high-utilizer-grouping">Table 1a: Mental Health and Substance Use Disorder Service Medicaid Encounters by <strong>Overall</strong> High Utilizer Grouping</h3>
+<p>Note: Co-Occurring Disorders indicates that individual had at least one Mental Health- and one Substance Use Disorder-related primary diagnoses in the Medicaid data.</p>
+<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date &lt;= 6/30/2021). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”)</p>
 <div class="layout-chunk" data-layout="l-body">
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:center;">
-Jail
+High Utilizer Status
 </th>
 <th style="text-align:center;">
-Individuals w/ Medicaid Match (N)
+Overall Individuals (N)
 </th>
 <th style="text-align:center;">
-Individuals w/ any experience of homelessness (N)
+Individuals w/ any Medicaid Match (% of Overall Sample)
 </th>
 <th style="text-align:center;">
-Individuals w/ any experience of homelessness (%)
+Individuals w/ BH Encounter (%)
 </th>
 <th style="text-align:center;">
-Bookings w/ Medicaid Match (N)
+Individuals w/ MH Service Encounter, Primary Diagnosis (N)
 </th>
 <th style="text-align:center;">
-Bookings w/ any experience of homelessness (N)
+Individuals w/ MH Service Encounter, Primary Diagnosis (%)
 </th>
 <th style="text-align:center;">
-Bookings w/ any experience of homelessness (%)
+Individuals w/ SUD Service Encounter, Primary Diagnosis (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ SUD Service Encounter, Primary Diagnosis (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:center;">
-Belknap
+High Utilizer
 </td>
 <td style="text-align:center;">
-1,434
+2,622
 </td>
 <td style="text-align:center;">
-394
+89%
 </td>
 <td style="text-align:center;font-weight: bold;">
-27%
-</td>
-<td style="text-align:center;">
-3,051
-</td>
-<td style="text-align:center;">
-1,093
-</td>
-<td style="text-align:center;font-weight: bold;">
-36%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Carroll
-</td>
-<td style="text-align:center;">
-1,048
-</td>
-<td style="text-align:center;">
-262
-</td>
-<td style="text-align:center;font-weight: bold;">
-25%
+93%
 </td>
 <td style="text-align:center;">
 1,703
 </td>
+<td style="text-align:center;font-weight: bold;">
+73%
+</td>
 <td style="text-align:center;">
-483
+1,974
 </td>
 <td style="text-align:center;font-weight: bold;">
-28%
+84%
+</td>
+<td style="text-align:center;">
+1,542
+</td>
+<td style="text-align:center;font-weight: bold;">
+66%
+</td>
+<td style="text-align:center;">
+1,994
+</td>
+<td style="text-align:center;font-weight: bold;">
+85%
 </td>
 </tr>
 <tr>
 <td style="text-align:center;">
-Cheshire
+Non-High Utilizer
 </td>
 <td style="text-align:center;">
-964
+25,275
 </td>
 <td style="text-align:center;">
-292
+42%
 </td>
 <td style="text-align:center;font-weight: bold;">
-30%
+80%
 </td>
 <td style="text-align:center;">
-2,025
-</td>
-<td style="text-align:center;">
-752
+6,331
 </td>
 <td style="text-align:center;font-weight: bold;">
-37%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Coos
+60%
 </td>
 <td style="text-align:center;">
-320
-</td>
-<td style="text-align:center;">
-81
+6,244
 </td>
 <td style="text-align:center;font-weight: bold;">
-25%
+59%
 </td>
 <td style="text-align:center;">
-506
-</td>
-<td style="text-align:center;">
-142
+4,588
 </td>
 <td style="text-align:center;font-weight: bold;">
-28%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Hillsborough
+43%
 </td>
 <td style="text-align:center;">
-4,031
-</td>
-<td style="text-align:center;">
-1,174
+8,207
 </td>
 <td style="text-align:center;font-weight: bold;">
-29%
-</td>
-<td style="text-align:center;">
-8,003
-</td>
-<td style="text-align:center;">
-2,755
-</td>
-<td style="text-align:center;font-weight: bold;">
-34%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Merrimack
-</td>
-<td style="text-align:center;">
-2,380
-</td>
-<td style="text-align:center;">
-707
-</td>
-<td style="text-align:center;font-weight: bold;">
-30%
-</td>
-<td style="text-align:center;">
-4,718
-</td>
-<td style="text-align:center;">
-1,692
-</td>
-<td style="text-align:center;font-weight: bold;">
-36%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Rockingham
-</td>
-<td style="text-align:center;">
-2,738
-</td>
-<td style="text-align:center;">
-672
-</td>
-<td style="text-align:center;font-weight: bold;">
-25%
-</td>
-<td style="text-align:center;">
-4,765
-</td>
-<td style="text-align:center;">
-1,207
-</td>
-<td style="text-align:center;font-weight: bold;">
-25%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Strafford
-</td>
-<td style="text-align:center;">
-2,258
-</td>
-<td style="text-align:center;">
-647
-</td>
-<td style="text-align:center;font-weight: bold;">
-29%
-</td>
-<td style="text-align:center;">
-5,416
-</td>
-<td style="text-align:center;">
-1,964
-</td>
-<td style="text-align:center;font-weight: bold;">
-36%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Sullivan
-</td>
-<td style="text-align:center;">
-687
-</td>
-<td style="text-align:center;">
-186
-</td>
-<td style="text-align:center;font-weight: bold;">
-27%
-</td>
-<td style="text-align:center;">
-1,321
-</td>
-<td style="text-align:center;">
-415
-</td>
-<td style="text-align:center;font-weight: bold;">
-31%
+78%
 </td>
 </tr>
 <tr>
@@ -2777,202 +2670,37 @@ Sullivan
 Statewide
 </td>
 <td style="text-align:center;font-weight: bold;">
-12,894
+27,897
 </td>
 <td style="text-align:center;font-weight: bold;">
-3,353
+46%
 </td>
 <td style="text-align:center;font-weight: bold;font-weight: bold;">
-26%
+82%
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,500
-</td>
-<td style="text-align:center;font-weight: bold;">
-10,495
+8,033
 </td>
 <td style="text-align:center;font-weight: bold;font-weight: bold;">
-33%
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<p><br></p>
-<div class="layout-chunk" data-layout="l-body">
-
-</div>
-<p><strong>From 2019 to 2021, 26% of people who were matched to Medicaid had experienced homelessness.</strong></p>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="img/PRES_gg_homeless_county.png" width="100%" /></p>
-</div>
-<p><br><br></p>
-<h3 id="table-2.-percentage-of-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-by-county-type-by-ruralurban-classification">Table 2. Percentage of Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility by County Type (by rural/urban classification)</h3>
-<p>Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn’t know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards).</p>
-<p><strong>Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count</strong></p>
-<p><strong>County-level CDC rural/urban county classification comes from <a href="https://www.cdc.gov/nchs/data_access/urban_rural.htm" class="uri">https://www.cdc.gov/nchs/data_access/urban_rural.htm</a></strong></p>
-<p><strong>Update</strong>: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date &lt;= 6/30/2021). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”)</p>
-<div class="layout-chunk" data-layout="l-body">
-<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:center;">
-CDC County Classification
-</th>
-<th style="text-align:center;">
-Number of Counties (N)
-</th>
-<th style="text-align:center;">
-Individuals w/ Medicaid Match (N)
-</th>
-<th style="text-align:center;">
-Individuals w/ any experience of homelessness (N)
-</th>
-<th style="text-align:center;">
-Individuals w/ any experience of homelessness (%)
-</th>
-<th style="text-align:center;">
-Bookings w/ Medicaid Match (N)
-</th>
-<th style="text-align:center;">
-Bookings w/ any experience of homelessness (N)
-</th>
-<th style="text-align:center;">
-Bookings w/ any experience of homelessness (%)
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-Medium City
-</td>
-<td style="text-align:center;">
-1
-</td>
-<td style="text-align:center;">
-4,031
-</td>
-<td style="text-align:center;">
-1,174
+62%
 </td>
 <td style="text-align:center;font-weight: bold;">
-29%
-</td>
-<td style="text-align:center;">
-8,003
-</td>
-<td style="text-align:center;">
-2,755
-</td>
-<td style="text-align:center;font-weight: bold;">
-34%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Rural Area
-</td>
-<td style="text-align:center;">
-1
-</td>
-<td style="text-align:center;">
-1,048
-</td>
-<td style="text-align:center;">
-262
-</td>
-<td style="text-align:center;font-weight: bold;">
-25%
-</td>
-<td style="text-align:center;">
-1,703
-</td>
-<td style="text-align:center;">
-483
-</td>
-<td style="text-align:center;font-weight: bold;">
-28%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Suburb
-</td>
-<td style="text-align:center;">
-2
-</td>
-<td style="text-align:center;">
-4,630
-</td>
-<td style="text-align:center;">
-1,199
-</td>
-<td style="text-align:center;font-weight: bold;">
-26%
-</td>
-<td style="text-align:center;">
-10,180
-</td>
-<td style="text-align:center;">
-3,170
-</td>
-<td style="text-align:center;font-weight: bold;">
-31%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Town
-</td>
-<td style="text-align:center;">
-5
-</td>
-<td style="text-align:center;">
-5,275
-</td>
-<td style="text-align:center;">
-1,458
-</td>
-<td style="text-align:center;font-weight: bold;">
-28%
-</td>
-<td style="text-align:center;">
-11,617
-</td>
-<td style="text-align:center;">
-4,090
-</td>
-<td style="text-align:center;font-weight: bold;">
-35%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;font-weight: bold;">
-Statewide
-</td>
-<td style="text-align:center;font-weight: bold;">
-9
-</td>
-<td style="text-align:center;font-weight: bold;">
-12,894
-</td>
-<td style="text-align:center;font-weight: bold;">
-3,353
+8,217
 </td>
 <td style="text-align:center;font-weight: bold;font-weight: bold;">
-26%
+64%
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,500
-</td>
-<td style="text-align:center;font-weight: bold;">
-10,495
+6,129
 </td>
 <td style="text-align:center;font-weight: bold;font-weight: bold;">
-33%
+48%
+</td>
+<td style="text-align:center;font-weight: bold;">
+10,200
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+79%
 </td>
 </tr>
 </tbody>
@@ -2980,11 +2708,9 @@ Statewide
 </div>
 </div>
 <p><br><br></p>
-<h3 id="table-3.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility">Table 3. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility</h3>
-<p>Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn’t know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards).</p>
-<p><strong>Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count</strong></p>
-<p><strong>Statistics for individuals who are high utilizers of jail are based on the top 10% percentile of statewide bookings.</strong></p>
-<p><strong>Update</strong>: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date &lt;= 6/30/2021). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”)</p>
+<h3 id="table-1b-mental-health-and-substance-use-disorder-service-medicaid-encounters-by-high-utilizer-grouping">Table 1b: Mental Health and Substance Use Disorder Service Medicaid Encounters by High Utilizer Grouping</h3>
+<p>Note: Co-Occurring Disorders indicates that individual had at least one Mental Health- and one Substance Use Disorder-related primary diagnoses in the Medicaid data.</p>
+<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date &lt;= 6/30/2021). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”)</p>
 <div class="layout-chunk" data-layout="l-body">
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
@@ -2994,22 +2720,37 @@ Statewide
 High Utilizer Percentiles
 </th>
 <th style="text-align:center;">
-Individuals w/ Medicaid Match (N)
+Overall Individuals (N)
 </th>
 <th style="text-align:center;">
-Individuals w/ any experience of homelessness (N)
+Individuals w/ any Medicaid Match (% of Overall Sample)
 </th>
 <th style="text-align:center;">
-Individuals w/ any experience of homelessness (%)
+Individuals w/ BH Encounter (%)
 </th>
 <th style="text-align:center;">
-Bookings w/ Medicaid Match (N)
+Individuals w/ MH Service Encounter, Primary Diagnosis (N)
 </th>
 <th style="text-align:center;">
-Bookings w/ any experience of homelessness (N)
+Individuals w/ MH Service Encounter, Primary Diagnosis (%)
 </th>
 <th style="text-align:center;">
-Bookings w/ any experience of homelessness (%)
+Individuals w/ SUD Service Encounter, Primary Diagnosis (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ SUD Service Encounter, Primary Diagnosis (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)
 </th>
 </tr>
 </thead>
@@ -3019,22 +2760,37 @@ Bookings w/ any experience of homelessness (%)
 Top 1%
 </td>
 <td style="text-align:center;">
-213
+218
 </td>
 <td style="text-align:center;">
-110
+98%
 </td>
 <td style="text-align:center;font-weight: bold;">
-52%
+99%
 </td>
 <td style="text-align:center;">
-3,489
-</td>
-<td style="text-align:center;">
-1,810
+174
 </td>
 <td style="text-align:center;font-weight: bold;">
-52%
+82%
+</td>
+<td style="text-align:center;">
+199
+</td>
+<td style="text-align:center;font-weight: bold;">
+93%
+</td>
+<td style="text-align:center;">
+166
+</td>
+<td style="text-align:center;font-weight: bold;">
+78%
+</td>
+<td style="text-align:center;">
+193
+</td>
+<td style="text-align:center;font-weight: bold;">
+91%
 </td>
 </tr>
 <tr>
@@ -3042,22 +2798,37 @@ Top 1%
 Top 5%
 </td>
 <td style="text-align:center;">
-932
+1,012
 </td>
 <td style="text-align:center;">
-368
+92%
 </td>
 <td style="text-align:center;font-weight: bold;">
-39%
+94%
 </td>
 <td style="text-align:center;">
-7,069
-</td>
-<td style="text-align:center;">
-2,789
+702
 </td>
 <td style="text-align:center;font-weight: bold;">
-39%
+75%
+</td>
+<td style="text-align:center;">
+809
+</td>
+<td style="text-align:center;font-weight: bold;">
+87%
+</td>
+<td style="text-align:center;">
+651
+</td>
+<td style="text-align:center;font-weight: bold;">
+70%
+</td>
+<td style="text-align:center;">
+810
+</td>
+<td style="text-align:center;font-weight: bold;">
+87%
 </td>
 </tr>
 <tr>
@@ -3065,22 +2836,37 @@ Top 5%
 Top 10%
 </td>
 <td style="text-align:center;">
-1,198
+1,392
 </td>
 <td style="text-align:center;">
-454
+86%
 </td>
 <td style="text-align:center;font-weight: bold;">
-38%
+91%
 </td>
 <td style="text-align:center;">
-5,239
-</td>
-<td style="text-align:center;">
-1,985
+829
 </td>
 <td style="text-align:center;font-weight: bold;">
-38%
+69%
+</td>
+<td style="text-align:center;">
+968
+</td>
+<td style="text-align:center;font-weight: bold;">
+81%
+</td>
+<td style="text-align:center;">
+727
+</td>
+<td style="text-align:center;font-weight: bold;">
+61%
+</td>
+<td style="text-align:center;">
+993
+</td>
+<td style="text-align:center;font-weight: bold;">
+83%
 </td>
 </tr>
 <tr>
@@ -3088,22 +2874,37 @@ Top 10%
 Non-HU
 </td>
 <td style="text-align:center;">
-10,554
+25,275
 </td>
 <td style="text-align:center;">
-2,424
+42%
 </td>
 <td style="text-align:center;font-weight: bold;">
-23%
+80%
 </td>
 <td style="text-align:center;">
-15,706
-</td>
-<td style="text-align:center;">
-3,914
+6,331
 </td>
 <td style="text-align:center;font-weight: bold;">
-25%
+60%
+</td>
+<td style="text-align:center;">
+6,244
+</td>
+<td style="text-align:center;font-weight: bold;">
+59%
+</td>
+<td style="text-align:center;">
+4,588
+</td>
+<td style="text-align:center;font-weight: bold;">
+43%
+</td>
+<td style="text-align:center;">
+8,207
+</td>
+<td style="text-align:center;font-weight: bold;">
+78%
 </td>
 </tr>
 <tr>
@@ -3111,22 +2912,37 @@ Non-HU
 Statewide
 </td>
 <td style="text-align:center;font-weight: bold;">
-12,894
+27,897
 </td>
 <td style="text-align:center;font-weight: bold;">
-3,353
+46%
 </td>
 <td style="text-align:center;font-weight: bold;font-weight: bold;">
-26%
+82%
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,500
-</td>
-<td style="text-align:center;font-weight: bold;">
-10,495
+8,033
 </td>
 <td style="text-align:center;font-weight: bold;font-weight: bold;">
-33%
+62%
+</td>
+<td style="text-align:center;font-weight: bold;">
+8,217
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+64%
+</td>
+<td style="text-align:center;font-weight: bold;">
+6,129
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+48%
+</td>
+<td style="text-align:center;font-weight: bold;">
+10,200
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+79%
 </td>
 </tr>
 </tbody>
@@ -3134,10 +2950,199 @@ Statewide
 </div>
 </div>
 <p><br><br></p>
-<h3 id="table-4.-percentage-of-high-utilizer-individualsbookings-who-were-experiencing-homelessness-at-time-of-medicaid-eligibility-study-period-only-for-comparison">Table 4. Percentage of High Utilizer Individuals/Bookings who were Experiencing Homelessness at time of Medicaid Eligibility (<strong>study period only for comparison</strong>)</h3>
-<p>Note: Since we only have homelessness data for individuals who matched to Medicaid enrollment data, our denominator for these metrics will be the sample of individuals who have at least one Medicaid enrollment during the study window (i.e., individuals who did not match to Medicaid data are excluded here). Because of this decision as well as the fact that the DHHS data notes whether an individual was experiencing homelessness at the beginning of a given Medicaid enrollment period. In other words, we wouldn’t know if someone had housing at the beginning of enrollment and then experienced homelessness afterwards). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”).</p>
-<p><strong>Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count</strong></p>
-<p><strong>Statistics for individuals who are high utilizers of jail are based on the top 10% percentile of statewide bookings.</strong></p>
+<h3 id="table-2a-cmhc-and-ed-visits-by-overall-high-utilizer-grouping">Table 2a: CMHC and ED Visits by <strong>Overall</strong> High Utilizer Grouping</h3>
+<p>Note: Need to think through substantial difference between mean and median ED visits and how to talk through each metric if we end up presenting them. Related to this, there seem to be a handful of outliers (e.g., 100+ ED visits) that I need to further explore.</p>
+<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”)</p>
+<div class="layout-chunk" data-layout="l-body">
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+High Utilizer Status
+</th>
+<th style="text-align:center;">
+Overall Individuals (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ any Medicaid Match (% of Overall Sample)
+</th>
+<th style="text-align:center;">
+Individuals w/ BH Service provided by CMHC (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ BH Service provided by CMHC (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ BH Service provided by ED (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ BH Service provided by ED (%)
+</th>
+<th style="text-align:center;">
+Total Encounters w/ BH Service provided by ED (N)
+</th>
+<th style="text-align:center;">
+Mean ED visits for BH Service per Individual (Medicaid match sample)
+</th>
+<th style="text-align:center;">
+Median ED visits for BH Service per Individual (Medicaid match sample)
+</th>
+<th style="text-align:center;">
+Mean ED visits for BH Service per Individual (BH encounter sample mean)
+</th>
+<th style="text-align:center;">
+Median ED visits for BH Service per Individual (BH encounter sample mean)
+</th>
+<th style="text-align:center;">
+Mean ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)
+</th>
+<th style="text-align:center;">
+Median ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+High Utilizer
+</td>
+<td style="text-align:center;">
+2,622
+</td>
+<td style="text-align:center;">
+89%
+</td>
+<td style="text-align:center;">
+1,142
+</td>
+<td style="text-align:center;font-weight: bold;">
+49%
+</td>
+<td style="text-align:center;">
+1,498
+</td>
+<td style="text-align:center;font-weight: bold;">
+64%
+</td>
+<td style="text-align:center;font-weight: bold;">
+26,086
+</td>
+<td style="text-align:center;font-weight: bold;">
+12.9
+</td>
+<td style="text-align:center;font-weight: bold;">
+2
+</td>
+<td style="text-align:center;font-weight: bold;">
+13.9
+</td>
+<td style="text-align:center;font-weight: bold;">
+2
+</td>
+<td style="text-align:center;font-weight: bold;">
+20.2
+</td>
+<td style="text-align:center;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Non-High Utilizer
+</td>
+<td style="text-align:center;">
+25,275
+</td>
+<td style="text-align:center;">
+42%
+</td>
+<td style="text-align:center;">
+3,832
+</td>
+<td style="text-align:center;font-weight: bold;">
+36%
+</td>
+<td style="text-align:center;">
+4,521
+</td>
+<td style="text-align:center;font-weight: bold;">
+43%
+</td>
+<td style="text-align:center;font-weight: bold;">
+66,269
+</td>
+<td style="text-align:center;font-weight: bold;">
+8.0
+</td>
+<td style="text-align:center;font-weight: bold;">
+0
+</td>
+<td style="text-align:center;font-weight: bold;">
+10.0
+</td>
+<td style="text-align:center;font-weight: bold;">
+1
+</td>
+<td style="text-align:center;font-weight: bold;">
+18.6
+</td>
+<td style="text-align:center;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Statewide
+</td>
+<td style="text-align:center;font-weight: bold;">
+27,897
+</td>
+<td style="text-align:center;font-weight: bold;">
+46%
+</td>
+<td style="text-align:center;font-weight: bold;">
+4,973
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+39%
+</td>
+<td style="text-align:center;font-weight: bold;">
+6,018
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+47%
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+92,355
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+8.9
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+0
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+10.8
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+1
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+19.0
+</td>
+<td style="text-align:center;font-weight: bold;">
+4
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br><br></p>
+<h3 id="table-2b-cmhc-and-ed-visits-by-high-utilizer-grouping">Table 2b: CMHC and ED Visits by High Utilizer Grouping</h3>
+<p>Note: Need to think through substantial difference between mean and median ED visits and how to talk through each metric if we end up presenting them. Related to this, there seem to be a handful of outliers (e.g., 100+ ED visits) that I need to further explore.</p>
+<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”)</p>
 <div class="layout-chunk" data-layout="l-body">
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
@@ -3147,22 +3152,43 @@ Statewide
 High Utilizer Percentiles
 </th>
 <th style="text-align:center;">
-Individuals w/ Medicaid Match (N)
+Overall Individuals (N)
 </th>
 <th style="text-align:center;">
-Individuals w/ any experience of homelessness (N)
+Individuals w/ any Medicaid Match (% of Overall Sample)
 </th>
 <th style="text-align:center;">
-Individuals w/ any experience of homelessness (%)
+Individuals w/ BH Service provided by CMHC (N)
 </th>
 <th style="text-align:center;">
-Bookings w/ Medicaid Match (N)
+Individuals w/ BH Service provided by CMHC (%)
 </th>
 <th style="text-align:center;">
-Bookings w/ any experience of homelessness (N)
+Individuals w/ BH Service provided by ED (N)
 </th>
 <th style="text-align:center;">
-Bookings w/ any experience of homelessness (%)
+Individuals w/ BH Service provided by ED (%)
+</th>
+<th style="text-align:center;">
+Total Encounters w/ BH Service provided by ED (N)
+</th>
+<th style="text-align:center;">
+Mean ED visits for BH Service per Individual (Medicaid match sample)
+</th>
+<th style="text-align:center;">
+Median ED visits for BH Service per Individual (Medicaid match sample)
+</th>
+<th style="text-align:center;">
+Mean ED visits for BH Service per Individual (BH encounter sample mean)
+</th>
+<th style="text-align:center;">
+Median ED visits for BH Service per Individual (BH encounter sample mean)
+</th>
+<th style="text-align:center;">
+Mean ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)
+</th>
+<th style="text-align:center;">
+Median ED visits for BH Service per Individual (mean for those w/ 1+ ED visit)
 </th>
 </tr>
 </thead>
@@ -3172,68 +3198,131 @@ Bookings w/ any experience of homelessness (%)
 Top 1%
 </td>
 <td style="text-align:center;">
-213
+218
 </td>
 <td style="text-align:center;">
-95
+98%
+</td>
+<td style="text-align:center;">
+129
+</td>
+<td style="text-align:center;font-weight: bold;">
+61%
+</td>
+<td style="text-align:center;">
+162
+</td>
+<td style="text-align:center;font-weight: bold;">
+76%
+</td>
+<td style="text-align:center;font-weight: bold;">
+4,360
+</td>
+<td style="text-align:center;font-weight: bold;">
+22.5
+</td>
+<td style="text-align:center;font-weight: bold;">
+4
+</td>
+<td style="text-align:center;font-weight: bold;">
+22.8
+</td>
+<td style="text-align:center;font-weight: bold;">
+4
+</td>
+<td style="text-align:center;font-weight: bold;">
+29.6
+</td>
+<td style="text-align:center;">
+8
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Top 5%
+</td>
+<td style="text-align:center;">
+1,012
+</td>
+<td style="text-align:center;">
+92%
+</td>
+<td style="text-align:center;">
+475
+</td>
+<td style="text-align:center;font-weight: bold;">
+51%
+</td>
+<td style="text-align:center;">
+613
+</td>
+<td style="text-align:center;font-weight: bold;">
+66%
+</td>
+<td style="text-align:center;font-weight: bold;">
+13,747
+</td>
+<td style="text-align:center;font-weight: bold;">
+17.1
+</td>
+<td style="text-align:center;font-weight: bold;">
+2
+</td>
+<td style="text-align:center;font-weight: bold;">
+18.3
+</td>
+<td style="text-align:center;font-weight: bold;">
+2
+</td>
+<td style="text-align:center;font-weight: bold;">
+26.1
+</td>
+<td style="text-align:center;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Top 10%
+</td>
+<td style="text-align:center;">
+1,392
+</td>
+<td style="text-align:center;">
+86%
+</td>
+<td style="text-align:center;">
+540
 </td>
 <td style="text-align:center;font-weight: bold;">
 45%
 </td>
 <td style="text-align:center;">
-3,489
-</td>
-<td style="text-align:center;">
-1,544
+725
 </td>
 <td style="text-align:center;font-weight: bold;">
-44%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Top 5%
-</td>
-<td style="text-align:center;">
-932
-</td>
-<td style="text-align:center;">
-319
+61%
 </td>
 <td style="text-align:center;font-weight: bold;">
-34%
-</td>
-<td style="text-align:center;">
-7,069
-</td>
-<td style="text-align:center;">
-2,404
+7,979
 </td>
 <td style="text-align:center;font-weight: bold;">
-34%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Top 10%
-</td>
-<td style="text-align:center;">
-1,198
-</td>
-<td style="text-align:center;">
-384
+7.9
 </td>
 <td style="text-align:center;font-weight: bold;">
-32%
-</td>
-<td style="text-align:center;">
-5,239
-</td>
-<td style="text-align:center;">
-1,681
+2
 </td>
 <td style="text-align:center;font-weight: bold;">
-32%
+8.7
+</td>
+<td style="text-align:center;font-weight: bold;">
+2
+</td>
+<td style="text-align:center;font-weight: bold;">
+13.1
+</td>
+<td style="text-align:center;">
+4
 </td>
 </tr>
 <tr>
@@ -3241,22 +3330,43 @@ Top 10%
 Non-HU
 </td>
 <td style="text-align:center;">
-10,554
+25,275
 </td>
 <td style="text-align:center;">
-1,973
+42%
+</td>
+<td style="text-align:center;">
+3,832
 </td>
 <td style="text-align:center;font-weight: bold;">
-19%
+36%
 </td>
 <td style="text-align:center;">
-15,706
-</td>
-<td style="text-align:center;">
-3,213
+4,521
 </td>
 <td style="text-align:center;font-weight: bold;">
-20%
+43%
+</td>
+<td style="text-align:center;font-weight: bold;">
+66,269
+</td>
+<td style="text-align:center;font-weight: bold;">
+8.0
+</td>
+<td style="text-align:center;font-weight: bold;">
+0
+</td>
+<td style="text-align:center;font-weight: bold;">
+10.0
+</td>
+<td style="text-align:center;font-weight: bold;">
+1
+</td>
+<td style="text-align:center;font-weight: bold;">
+18.6
+</td>
+<td style="text-align:center;">
+3
 </td>
 </tr>
 <tr>
@@ -3264,22 +3374,43 @@ Non-HU
 Statewide
 </td>
 <td style="text-align:center;font-weight: bold;">
-12,894
+27,897
 </td>
 <td style="text-align:center;font-weight: bold;">
-2,768
+46%
+</td>
+<td style="text-align:center;font-weight: bold;">
+4,973
 </td>
 <td style="text-align:center;font-weight: bold;font-weight: bold;">
-21%
+39%
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,500
-</td>
-<td style="text-align:center;font-weight: bold;">
-8,839
+6,018
 </td>
 <td style="text-align:center;font-weight: bold;font-weight: bold;">
-28%
+47%
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+92,355
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+8.9
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+0
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+10.8
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+1
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+19.0
+</td>
+<td style="text-align:center;font-weight: bold;">
+4
 </td>
 </tr>
 </tbody>
@@ -3287,17 +3418,754 @@ Statewide
 </div>
 </div>
 <p><br><br></p>
+<h3 id="table-3a-pharmacy-visits-and-other-behavioral-health-services-by-overall-high-utilizer-grouping">Table 3a: Pharmacy Visits and Other Behavioral Health Services by <strong>Overall</strong> High Utilizer Grouping</h3>
+<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”)</p>
 <div class="layout-chunk" data-layout="l-body">
-
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+High Utilizer Status
+</th>
+<th style="text-align:center;">
+Overall Individuals (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ any Medicaid Match (% of Overall Sample)
+</th>
+<th style="text-align:center;">
+Individuals w/ BH Encounter (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH Pharmacy Service (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH Pharmacy Service (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ SUD Pharmacy Service (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ SUD Pharmacy Service (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ Other BH Service (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Other BH Service (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+High Utilizer
+</td>
+<td style="text-align:center;">
+2,622
+</td>
+<td style="text-align:center;">
+89%
+</td>
+<td style="text-align:center;font-weight: bold;">
+93%
+</td>
+<td style="text-align:center;">
+1,536
+</td>
+<td style="text-align:center;font-weight: bold;">
+66%
+</td>
+<td style="text-align:center;">
+1,238
+</td>
+<td style="text-align:center;font-weight: bold;">
+53%
+</td>
+<td style="text-align:center;">
+315
+</td>
+<td style="text-align:center;font-weight: bold;">
+13%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Non-High Utilizer
+</td>
+<td style="text-align:center;">
+25,275
+</td>
+<td style="text-align:center;">
+42%
+</td>
+<td style="text-align:center;font-weight: bold;">
+80%
+</td>
+<td style="text-align:center;">
+5,475
+</td>
+<td style="text-align:center;font-weight: bold;">
+52%
+</td>
+<td style="text-align:center;">
+3,097
+</td>
+<td style="text-align:center;font-weight: bold;">
+29%
+</td>
+<td style="text-align:center;">
+981
+</td>
+<td style="text-align:center;font-weight: bold;">
+9%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Statewide
+</td>
+<td style="text-align:center;font-weight: bold;">
+27,897
+</td>
+<td style="text-align:center;font-weight: bold;">
+46%
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+82%
+</td>
+<td style="text-align:center;font-weight: bold;">
+7,010
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+54%
+</td>
+<td style="text-align:center;font-weight: bold;">
+4,334
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+34%
+</td>
+<td style="text-align:center;font-weight: bold;">
+1,295
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+10%
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div class="layout-chunk" data-layout="l-body">
-
 </div>
+<p><br><br></p>
+<h3 id="table-3b-pharmacy-visits-and-other-behavioral-health-services-by-high-utilizer-grouping">Table 3b: Pharmacy Visits and Other Behavioral Health Services by High Utilizer Grouping</h3>
+<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”)</p>
 <div class="layout-chunk" data-layout="l-body">
-
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+High Utilizer Percentiles
+</th>
+<th style="text-align:center;">
+Overall Individuals (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ any Medicaid Match (% of Overall Sample)
+</th>
+<th style="text-align:center;">
+Individuals w/ BH Encounter (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH Pharmacy Service (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ MH Pharmacy Service (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ SUD Pharmacy Service (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ SUD Pharmacy Service (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ Other BH Service (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Other BH Service (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Top 1%
+</td>
+<td style="text-align:center;">
+218
+</td>
+<td style="text-align:center;">
+98%
+</td>
+<td style="text-align:center;font-weight: bold;">
+99%
+</td>
+<td style="text-align:center;">
+164
+</td>
+<td style="text-align:center;font-weight: bold;">
+77%
+</td>
+<td style="text-align:center;">
+131
+</td>
+<td style="text-align:center;font-weight: bold;">
+62%
+</td>
+<td style="text-align:center;">
+24
+</td>
+<td style="text-align:center;font-weight: bold;">
+11%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Top 5%
+</td>
+<td style="text-align:center;">
+1,012
+</td>
+<td style="text-align:center;">
+92%
+</td>
+<td style="text-align:center;font-weight: bold;">
+94%
+</td>
+<td style="text-align:center;">
+655
+</td>
+<td style="text-align:center;font-weight: bold;">
+70%
+</td>
+<td style="text-align:center;">
+534
+</td>
+<td style="text-align:center;font-weight: bold;">
+57%
+</td>
+<td style="text-align:center;">
+130
+</td>
+<td style="text-align:center;font-weight: bold;">
+14%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Top 10%
+</td>
+<td style="text-align:center;">
+1,392
+</td>
+<td style="text-align:center;">
+86%
+</td>
+<td style="text-align:center;font-weight: bold;">
+91%
+</td>
+<td style="text-align:center;">
+719
+</td>
+<td style="text-align:center;font-weight: bold;">
+60%
+</td>
+<td style="text-align:center;">
+575
+</td>
+<td style="text-align:center;font-weight: bold;">
+48%
+</td>
+<td style="text-align:center;">
+163
+</td>
+<td style="text-align:center;font-weight: bold;">
+14%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Non-HU
+</td>
+<td style="text-align:center;">
+25,275
+</td>
+<td style="text-align:center;">
+42%
+</td>
+<td style="text-align:center;font-weight: bold;">
+80%
+</td>
+<td style="text-align:center;">
+5,475
+</td>
+<td style="text-align:center;font-weight: bold;">
+52%
+</td>
+<td style="text-align:center;">
+3,097
+</td>
+<td style="text-align:center;font-weight: bold;">
+29%
+</td>
+<td style="text-align:center;">
+981
+</td>
+<td style="text-align:center;font-weight: bold;">
+9%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Statewide
+</td>
+<td style="text-align:center;font-weight: bold;">
+27,897
+</td>
+<td style="text-align:center;font-weight: bold;">
+46%
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+82%
+</td>
+<td style="text-align:center;font-weight: bold;">
+7,010
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+54%
+</td>
+<td style="text-align:center;font-weight: bold;">
+4,334
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+34%
+</td>
+<td style="text-align:center;font-weight: bold;">
+1,295
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+10%
+</td>
+</tr>
+</tbody>
+</table>
 </div>
+</div>
+<p><br><br></p>
+<h3 id="table-4a-percentage-of-individuals-with-smi-or-opioid-related-primary-diagnoses-individual-level-by-overall-high-utilizer-grouping">Table 4a: Percentage of Individuals with SMI or Opioid-related Primary Diagnoses (Individual-level) by <strong>Overall</strong> High Utilizer Grouping</h3>
+<p>This table explores the percentage of individuals in the sample with SMI or Opioid-related primary diagnoses, based on the following slides in the powerpoint:</p>
+<ul>
+<li><p>Slide 38: A closer look at serious SMI’s (bipolar disorder, schizophrenia, etc.)</p></li>
+<li><p>Slide 40: HU’s ____% more likely to have an opioid use disorder</p></li>
+</ul>
+<p><strong>See full notes and business rules for variable creation in data dictionary for individual-level analytic file here: <a href="https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=zLytTB" class="uri">https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=zLytTB</a></strong></p>
+<p><strong>Update</strong>: Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”). I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. The following primary diagnoses are coded as “SMI” – based on National Alliance on Mental Illness New Hampshire’s definition (NAMI NH), which David shared:</p>
+<ul>
+<li><p>Schizophrenia (dx_prmry_clinical_classification = “Schizophrenia and other psychotic disorders”, “Schizophrenia spectrum and other psychotic disorders”)</p></li>
+<li><p>Bipolar Disorder (dx_prmry_clinical_classification = “Bipolar and related disorders”)</p></li>
+<li><p>Major Depression (dx_prmry_clinical_classification = “Depressive disorders”)</p></li>
+<li><p>Post-Traumatic Stress Disorder (dx_prmry_clinical_classification = “Trauma- and stressor-related disorders”)</p></li>
+<li><p>Borderline Personality Disorder (dx_prmry_clinical_classification = “Personality disorders”)</p></li>
+<li><p>Obsessive-Compulsive Disorder (dx_prmry_clinical_classification = “Obsessive-compulsive and related disorders”, “Disruptive, impulse-control and conduct disorder”)</p></li>
+<li><p>Panic Disorder (nothing coded)</p></li>
+<li><p>Phobias (nothing coded)</p></li>
+<li><p>Eating Disorders (nothing coded)</p></li>
+<li><p>I also included the following diagnoses because it seems like they fit within the definition: dx_prmry_clinical_classification = “Mood disorders” or “Other specified and unspecified mood disorders”</p></li>
+</ul>
 <div class="layout-chunk" data-layout="l-body">
-
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+High Utilizer Status
+</th>
+<th style="text-align:center;">
+Overall Individuals (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ any Medicaid Match (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ any Medicaid Match (% of Overall Sample)
+</th>
+<th style="text-align:center;">
+Individuals w/ BH Encounter (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ BH Encounter (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ SMI Primary Diagnosis (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ SMI Primary Diagnosis (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ Opioid-related Primary Diagnosis (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Opioid-related Primary Diagnosis (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+High Utilizer
+</td>
+<td style="text-align:center;">
+2,622
+</td>
+<td style="text-align:center;">
+2,341
+</td>
+<td style="text-align:center;">
+89%
+</td>
+<td style="text-align:center;">
+1,703
+</td>
+<td style="text-align:center;">
+73%
+</td>
+<td style="text-align:center;">
+1,337
+</td>
+<td style="text-align:center;font-weight: bold;">
+57%
+</td>
+<td style="text-align:center;">
+1,605
+</td>
+<td style="text-align:center;font-weight: bold;">
+69%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Non-High Utilizer
+</td>
+<td style="text-align:center;">
+25,275
+</td>
+<td style="text-align:center;">
+10,554
+</td>
+<td style="text-align:center;">
+42%
+</td>
+<td style="text-align:center;">
+6,331
+</td>
+<td style="text-align:center;">
+60%
+</td>
+<td style="text-align:center;">
+4,985
+</td>
+<td style="text-align:center;font-weight: bold;">
+47%
+</td>
+<td style="text-align:center;">
+4,341
+</td>
+<td style="text-align:center;font-weight: bold;">
+41%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Statewide
+</td>
+<td style="text-align:center;font-weight: bold;">
+27,897
+</td>
+<td style="text-align:center;font-weight: bold;">
+12,894
+</td>
+<td style="text-align:center;font-weight: bold;">
+46%
+</td>
+<td style="text-align:center;font-weight: bold;">
+8,033
+</td>
+<td style="text-align:center;font-weight: bold;">
+62%
+</td>
+<td style="text-align:center;font-weight: bold;">
+6,321
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+49%
+</td>
+<td style="text-align:center;font-weight: bold;">
+5,945
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+46%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br><br></p>
+<h3 id="table-4b-percentage-of-individuals-with-smi-or-opioid-related-primary-diagnoses-individual-level">Table 4b: Percentage of Individuals with SMI or Opioid-related Primary Diagnoses (Individual-level)</h3>
+<p>This table explores the percentage of individuals in the sample with SMI or Opioid-related primary diagnoses, based on the following slides in the powerpoint:</p>
+<ul>
+<li><p>Slide 38: A closer look at serious SMI’s (bipolar disorder, schizophrenia, etc.)</p></li>
+<li><p>Slide 40: HU’s ____% more likely to have an opioid use disorder</p></li>
+</ul>
+<p><strong>See full notes and business rules for variable creation in data dictionary for individual-level analytic file here: <a href="https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=zLytTB" class="uri">https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=zLytTB</a></strong></p>
+<p><strong>Update</strong>: Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. “% of Overall Sample”). I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. The following primary diagnoses are coded as “SMI” – based on National Alliance on Mental Illness New Hampshire’s definition (NAMI NH), which David shared:</p>
+<ul>
+<li><p>Schizophrenia (dx_prmry_clinical_classification = “Schizophrenia and other psychotic disorders”, “Schizophrenia spectrum and other psychotic disorders”)</p></li>
+<li><p>Bipolar Disorder (dx_prmry_clinical_classification = “Bipolar and related disorders”)</p></li>
+<li><p>Major Depression (dx_prmry_clinical_classification = “Depressive disorders”)</p></li>
+<li><p>Post-Traumatic Stress Disorder (dx_prmry_clinical_classification = “Trauma- and stressor-related disorders”)</p></li>
+<li><p>Borderline Personality Disorder (dx_prmry_clinical_classification = “Personality disorders”)</p></li>
+<li><p>Obsessive-Compulsive Disorder (dx_prmry_clinical_classification = “Obsessive-compulsive and related disorders”, “Disruptive, impulse-control and conduct disorder”)</p></li>
+<li><p>Panic Disorder (nothing coded)</p></li>
+<li><p>Phobias (nothing coded)</p></li>
+<li><p>Eating Disorders (nothing coded)</p></li>
+<li><p>I also included the following diagnoses because it seems like they fit within the definition: dx_prmry_clinical_classification = “Mood disorders” or “Other specified and unspecified mood disorders”</p></li>
+</ul>
+<div class="layout-chunk" data-layout="l-body">
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+High Utilizer Percentiles
+</th>
+<th style="text-align:center;">
+Overall Individuals (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ any Medicaid Match (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ any Medicaid Match (% of Overall Sample)
+</th>
+<th style="text-align:center;">
+Individuals w/ BH Encounter (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ BH Encounter (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ SMI Primary Diagnosis (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ SMI Primary Diagnosis (%)
+</th>
+<th style="text-align:center;">
+Individuals w/ Opioid-related Primary Diagnosis (N)
+</th>
+<th style="text-align:center;">
+Individuals w/ Opioid-related Primary Diagnosis (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Top 1%
+</td>
+<td style="text-align:center;">
+218
+</td>
+<td style="text-align:center;">
+213
+</td>
+<td style="text-align:center;">
+98%
+</td>
+<td style="text-align:center;">
+174
+</td>
+<td style="text-align:center;">
+82%
+</td>
+<td style="text-align:center;">
+144
+</td>
+<td style="text-align:center;font-weight: bold;">
+68%
+</td>
+<td style="text-align:center;">
+151
+</td>
+<td style="text-align:center;font-weight: bold;">
+71%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Top 5%
+</td>
+<td style="text-align:center;">
+1,012
+</td>
+<td style="text-align:center;">
+932
+</td>
+<td style="text-align:center;">
+92%
+</td>
+<td style="text-align:center;">
+702
+</td>
+<td style="text-align:center;">
+75%
+</td>
+<td style="text-align:center;">
+562
+</td>
+<td style="text-align:center;font-weight: bold;">
+60%
+</td>
+<td style="text-align:center;">
+678
+</td>
+<td style="text-align:center;font-weight: bold;">
+73%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Top 10%
+</td>
+<td style="text-align:center;">
+1,392
+</td>
+<td style="text-align:center;">
+1,198
+</td>
+<td style="text-align:center;">
+86%
+</td>
+<td style="text-align:center;">
+829
+</td>
+<td style="text-align:center;">
+69%
+</td>
+<td style="text-align:center;">
+633
+</td>
+<td style="text-align:center;font-weight: bold;">
+53%
+</td>
+<td style="text-align:center;">
+778
+</td>
+<td style="text-align:center;font-weight: bold;">
+65%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Non-HU
+</td>
+<td style="text-align:center;">
+25,275
+</td>
+<td style="text-align:center;">
+10,554
+</td>
+<td style="text-align:center;">
+42%
+</td>
+<td style="text-align:center;">
+6,331
+</td>
+<td style="text-align:center;">
+60%
+</td>
+<td style="text-align:center;">
+4,985
+</td>
+<td style="text-align:center;font-weight: bold;">
+47%
+</td>
+<td style="text-align:center;">
+4,341
+</td>
+<td style="text-align:center;font-weight: bold;">
+41%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Statewide
+</td>
+<td style="text-align:center;font-weight: bold;">
+27,897
+</td>
+<td style="text-align:center;font-weight: bold;">
+12,894
+</td>
+<td style="text-align:center;font-weight: bold;">
+46%
+</td>
+<td style="text-align:center;font-weight: bold;">
+8,033
+</td>
+<td style="text-align:center;font-weight: bold;">
+62%
+</td>
+<td style="text-align:center;font-weight: bold;">
+6,321
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+49%
+</td>
+<td style="text-align:center;font-weight: bold;">
+5,945
+</td>
+<td style="text-align:center;font-weight: bold;font-weight: bold;">
+46%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><br><br></p>
+<h2 id="visuals">Visuals</h2>
+<h3 id="visual-1-distribution-of-ed-visits-across-new-hampshire">Visual 1: Distribution of ED Visits across New Hampshire</h3>
+<p>Note: This plot explores the handful of outliers that appear in the Medicaid data (e.g., 100+ ED visits). For ease of interpretation, I’ve removed all individuals with 0 ED Visits (the vast majority at 6,000+) as well as extreme outliers (150+ visits; there are about 20 individuals with more than 105 visits recorded, though some counts seem erroneously high)</p>
+<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_medicaid_bh_encounters_mh_sud_files/figure-html5/unnamed-chunk-11-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h3 id="visual-2-distribution-of-ed-visits-by-high-utilizer-grouping">Visual 2: Distribution of ED Visits by High Utilizer Grouping</h3>
+<p>Note: This plot explores the handful of outliers that appear in the Medicaid data (e.g., 100+ ED visits). For ease of interpretation, I’ve removed all individuals with 0 ED Visits (the vast majority at 6,000+) as well as extreme outliers (150+ visits; there are about 20 individuals with more than 105 visits recorded, though some counts seem erroneously high)</p>
+<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_medicaid_bh_encounters_mh_sud_files/figure-html5/unnamed-chunk-12-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h3 id="visual-3-distribution-of-ed-visits-by-county">Visual 3: Distribution of ED Visits by County</h3>
+<p>Note: This plot explores the handful of outliers that appear in the Medicaid data (e.g., 100+ ED visits). For ease of interpretation, I’ve removed all individuals with 0 ED Visits (the vast majority at 6,000+) as well as extreme outliers (150+ visits; there are about 20 individuals with more than 105 visits recorded, though some counts seem erroneously high)</p>
+<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period</p>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_medicaid_bh_encounters_mh_sud_files/figure-html5/unnamed-chunk-13-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
