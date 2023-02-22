@@ -72,39 +72,39 @@ jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_
   mutate(unique_person_booking_id = paste0(unique_person_id,
                                     booking_id)) ### creating unique booking id with both individual and booking IDs
 
-### read in and merge cdc_county_rural_urban_crosswalk: https://www.cdc.gov/nchs/data_access/urban_rural.htm
-cdc_county_rural_urban_crosswalk <- openxlsx::read.xlsx(file.path(sp_data_path,"Data/US County Geo Data/CDC_NCHSURCodes2013.xlsx"), 
-                                                        sheet = "NCHSURCodes2013") %>%
-  clean_names() %>%
-  dplyr::filter(state_abr == "NH") %>%
-  mutate(cdc_urban_rural_classification = case_when(
-    x2013_code=="1" ~ "Urban Center",
-    x2013_code=="2" ~ "Suburb",
-    x2013_code=="3" ~ "Medium City",
-    x2013_code=="4" ~ "Small City",
-    x2013_code=="5" ~ "Town", 
-    x2013_code=="6" ~ "Rural Area",### see: https://www.cdc.gov/nchs/data/data_acces_files/NCHSUrbruralFileDocumentationInternet2.pd
-# from matt:
-# Large central metro > Urban centers
-# Large fringe metro > Suburbs
-# Medium metro > Medium cities
-# Small metro > Small cities
-# Micropolitan > Towns
-# Non-core > Rural areas
-    TRUE ~ as.character(NA))) %>% 
-  dplyr::select(county_name,cdc_urban_rural_classification) %>% 
-  mutate(county = str_remove(county_name,
-                             pattern = " County"))
+# ### read in and merge cdc_county_rural_urban_crosswalk: https://www.cdc.gov/nchs/data_access/urban_rural.htm
+# cdc_county_rural_urban_crosswalk <- openxlsx::read.xlsx(file.path(sp_data_path,"Data/US County Geo Data/CDC_NCHSURCodes2013.xlsx"), 
+#                                                         sheet = "NCHSURCodes2013") %>%
+#   clean_names() %>%
+#   dplyr::filter(state_abr == "NH") %>%
+#   mutate(cdc_urban_rural_classification = case_when(
+#     x2013_code=="1" ~ "Urban Center",
+#     x2013_code=="2" ~ "Suburb",
+#     x2013_code=="3" ~ "Medium City",
+#     x2013_code=="4" ~ "Small City",
+#     x2013_code=="5" ~ "Town", 
+#     x2013_code=="6" ~ "Rural Area",### see: https://www.cdc.gov/nchs/data/data_acces_files/NCHSUrbruralFileDocumentationInternet2.pd
+# # from matt:
+# # Large central metro > Urban centers
+# # Large fringe metro > Suburbs
+# # Medium metro > Medium cities
+# # Small metro > Small cities
+# # Micropolitan > Towns
+# # Non-core > Rural areas
+#     TRUE ~ as.character(NA))) %>% 
+#   dplyr::select(county_name,cdc_urban_rural_classification) %>% 
+#   mutate(county = str_remove(county_name,
+#                              pattern = " County"))
 
 ##########
-# Final Medicaid data with CDC urban vs rural - jail_medicaid_analytic_individual_booking_level_dedup_cdc
+# Update medicaid data with urban vs rural variable
+# Update: now using USDA classification for binary variable (either rural or urban): see https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx for county-level classification
 ##########
-
-### join cdc_county_rural_urban_crosswalk to jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
-jail_medicaid_analytic_individual_booking_level_dedup_cdc <- 
-  left_join(jail_medicaid_analytic_individual_booking_level_dedup,
-            cdc_county_rural_urban_crosswalk,
-            by = "county") 
+jail_medicaid_analytic_individual_booking_level_dedup_urban_rural <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  mutate(usda_urban_rural_classification = case_when(
+    county%in%c("Hillsborough","Strafford","Rockingham") ~ "Metro",
+    county%in%c("Belknap","Carroll","Cheshire","Coos","Merrimack","Sullivan") ~ "Non-Metro", 
+    TRUE ~ as.character(NA)))
 ```         
 
 # DHHS Medicaid Match and Jail Booking Descriptive Analysis: Medicaid Match and Behaviorial Health Overview
@@ -257,17 +257,17 @@ kable(medicaid_jail_percent_match_county_statewide_table,
 
 Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. 
 
-**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during  the study period. All percentages reflect the % of the entire sample, not just the Medicaid sample
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. All percentages reflect the % of the entire sample, not just the Medicaid sample
 
-**County-level CDC rural/urban county classification comes from https://www.cdc.gov/nchs/data_access/urban_rural.htm**
+**County-level USDA rural/urban county classification comes from https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx**
 
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file
 
 # by county
-medicaid_jail_percent_match_cdc_table <- jail_medicaid_analytic_individual_booking_level_dedup_cdc %>% 
-  dplyr::group_by(cdc_urban_rural_classification) %>% 
+medicaid_jail_percent_match_usda_table <- jail_medicaid_analytic_individual_booking_level_dedup_urban_rural %>% 
+  dplyr::group_by(usda_urban_rural_classification) %>% 
   dplyr::summarise(`Number of Counties (N)`            = n_distinct(county, na.rm = TRUE),
                    `Overall Individuals (N)`           = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -280,10 +280,10 @@ medicaid_jail_percent_match_cdc_table <- jail_medicaid_analytic_individual_booki
                    `Bookings w/ BH Encounter (N)`      = n_distinct(unique_person_booking_id[pre_or_study_bh_flag==1]),
                    `Bookings w/ BH Encounter (%)`      = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`))  %>% 
   ungroup() %>% 
-  dplyr::rename(`CDC County Classification` = cdc_urban_rural_classification) 
+  dplyr::rename(`USDA County Classification` = usda_urban_rural_classification) 
 
 # statewide
-medicaid_jail_percent_match_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_cdc %>% 
+medicaid_jail_percent_match_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_urban_rural %>% 
   dplyr::summarise(`Number of Counties (N)`            = n_distinct(county,na.rm = TRUE),
                    `Overall Individuals (N)`           = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -295,13 +295,13 @@ medicaid_jail_percent_match_overall_table <- jail_medicaid_analytic_individual_b
                    `Bookings w/ Medicaid Match (%)`    = scales::percent(`Bookings w/ Medicaid Match (N)`/`Overall Bookings (N)`),
                    `Bookings w/ BH Encounter (N)`      = n_distinct(unique_person_booking_id[pre_or_study_bh_flag==1]),
                    `Bookings w/ BH Encounter (%)`      = scales::percent(`Bookings w/ BH Encounter (N)`/`Overall Bookings (N)`))  %>% 
-  dplyr::mutate(`CDC County Classification` = "Statewide") 
+  dplyr::mutate(`USDA County Classification` = "Statewide") 
 
 # rbind county and statewide files 
-medicaid_jail_percent_match_cdc_statewide_table <- rbind(medicaid_jail_percent_match_cdc_table, medicaid_jail_percent_match_overall_table)
+medicaid_jail_percent_match_usda_statewide_table <- rbind(medicaid_jail_percent_match_usda_table, medicaid_jail_percent_match_overall_table)
 
 ### print table via kableextra
-kable(medicaid_jail_percent_match_cdc_statewide_table, 
+kable(medicaid_jail_percent_match_usda_statewide_table, 
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
   kable_styling(bootstrap_options = c("striped", 
@@ -309,7 +309,7 @@ kable(medicaid_jail_percent_match_cdc_statewide_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(5, bold = TRUE) %>% 
+  row_spec(3, bold = TRUE) %>% 
   column_spec(5, bold = TRUE, color = jri_green) %>% 
   column_spec(7, bold = TRUE, color = jri_orange) %>% 
   column_spec(10, bold = TRUE, color = jri_green) %>% 
@@ -529,7 +529,7 @@ Note: "Encounters" include any behavioral health-related medical/clinical or pha
 
 Grouping of individuals into 'high utilizer' percentile groups is based on statewide data, using the Medicaid match files from DHHS, as opposed to county-level data. 
 
-**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during  the study period. All percentages reflect the % of the entire sample, not just the Medicaid sample
+**Update**: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. All percentages reflect the % of the entire sample, not just the Medicaid sample
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning

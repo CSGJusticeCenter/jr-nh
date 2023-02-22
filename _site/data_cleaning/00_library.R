@@ -53,23 +53,16 @@ library(svDialogs)
 
 # Path to data on research div sharepoint
 # Make sure SP folder is synced locally
-# https://csgorg.sharepoint.com/:f:/s/Team-JC-Research/EhdvImKN2rdPnmHQ2TrKlooBdYqnnWc0SUXBNuh9C7d41g?e=NCsh8I
-# In your Renviron, set CSG_SP_PATH = "your sharepoint path here" and GITHUB_PAT = "your token here"
-# To generate a github token - usethis::create_github_token()
-# To edit Renviron - usethis::edit_r_environ()
-# sp_data_path <- csg_sp_path(file.path("JC Research - JR_NH"))
 
-# Change path depending on SP name ########################################
-# soft code initials for switch between us when setting sp_data_path (use pop-up dialog box from svDialogs)
-# sorry if this makes you now download svDialogs for it to work, Mari! and we may decide that it's too much lol
-FULL_JC_FOLDER <- svDialogs::dlg_input(message = "Enter initials (e.g. MR)", default = "")$res
-# FULL_JC_FOLDER <- "MR"
+# # Download CSGJCR package
+# # devtools::install_github("CSGJusticeCenter/csgjcr@DEVELOP")
 
-if (FULL_JC_FOLDER == "AB"){
-  sp_data_path <- csgjcr::csg_sp_path(file.path("JR_NH"))
-} else {
-  sp_data_path <- csgjcr::csg_sp_path(file.path("JC Research - JR_NH"))
-}
+# # Set project path for MAR
+# csg_set_project_path(project = "NH", sp_folder = "C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH", force = TRUE)
+# csg_set_project_path(project = "NH", sp_folder = "C:/Users/abyrum/The Council of State Governments/JC Research - Documents/JR_NH", force = TRUE)
+
+# Save path
+sp_data_path <- csg_get_project_path("NH")
 
 ###################
 # Fonts

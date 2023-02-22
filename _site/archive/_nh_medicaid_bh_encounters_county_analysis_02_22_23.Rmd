@@ -79,15 +79,7 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid
     TRUE ~ as.numeric(NA)),
     hu_group_exclusive = factor(hu_group_exclusive,
          levels = c(1,2,3,4),
-         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU"))) %>% 
-  ### now create overall hu grouping -- either yes or no
-  mutate(hu_group_overall = case_when(
-    high_utilizer_10_pct=="No" ~ 2,
-    high_utilizer_10_pct=="Yes" ~ 1,
-    TRUE ~ as.numeric(NA)),
-    hu_group_overall = factor(hu_group_overall,
-         levels = c(1,2),
-         labels = c("High Utilizer", "Non-High Utilizer")))
+         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
 
 ### read in and merge cdc_county_rural_urban_crosswalk: https://www.cdc.gov/nchs/data_access/urban_rural.htm
 cdc_county_rural_urban_crosswalk <- openxlsx::read.xlsx(file.path(sp_data_path,"Data/US County Geo Data/CDC_NCHSURCodes2013.xlsx"), 

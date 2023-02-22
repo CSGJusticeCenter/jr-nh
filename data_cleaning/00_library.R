@@ -59,6 +59,7 @@ library(svDialogs)
 
 # # Set project path for MAR
 # csg_set_project_path(project = "NH", sp_folder = "C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH", force = TRUE)
+# csg_set_project_path(project = "NH", sp_folder = "C:/Users/abyrum/The Council of State Governments/JC Research - Documents/JR_NH", force = TRUE)
 
 # Save path
 sp_data_path <- csg_get_project_path("NH")

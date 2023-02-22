@@ -86,34 +86,44 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid
     #               pre_or_study_homeless_on_eligibility_begin_flag = ifelse(study_homeless_on_eligibility_begin_flag == 1 |
     #                                                                        pre_homeless_on_eligibility_begin_flag == 1, 1, 0)) 
 
-### read in and merge cdc_county_rural_urban_crosswalk: https://www.cdc.gov/nchs/data_access/urban_rural.htm
-cdc_county_rural_urban_crosswalk <- openxlsx::read.xlsx(file.path(sp_data_path,"Data/US County Geo Data/CDC_NCHSURCodes2013.xlsx"), 
-                                                        sheet = "NCHSURCodes2013") %>%
-  clean_names() %>%
-  dplyr::filter(state_abr == "NH") %>%
-  mutate(cdc_urban_rural_classification = case_when(
-    x2013_code=="1" ~ "Urban Center",
-    x2013_code=="2" ~ "Suburb",
-    x2013_code=="3" ~ "Medium City",
-    x2013_code=="4" ~ "Small City",
-    x2013_code=="5" ~ "Town", 
-    x2013_code=="6" ~ "Rural Area",### see: https://www.cdc.gov/nchs/data/data_acces_files/NCHSUrbruralFileDocumentationInternet2.pd
-# from matt:
-# Large central metro > Urban centers
-# Large fringe metro > Suburbs
-# Medium metro > Medium cities
-# Small metro > Small cities
-# Micropolitan > Towns
-# Non-core > Rural areas
-    TRUE ~ as.character(NA))) %>% 
-  dplyr::select(county_name,cdc_urban_rural_classification) %>% 
-  mutate(county = str_remove(county_name,
-                             pattern = " County"))
+# ### read in and merge cdc_county_rural_urban_crosswalk: https://www.cdc.gov/nchs/data_access/urban_rural.htm
+# cdc_county_rural_urban_crosswalk <- openxlsx::read.xlsx(file.path(sp_data_path,"Data/US County Geo Data/CDC_NCHSURCodes2013.xlsx"), 
+#                                                         sheet = "NCHSURCodes2013") %>%
+#   clean_names() %>%
+#   dplyr::filter(state_abr == "NH") %>%
+#   mutate(cdc_urban_rural_classification = case_when(
+#     x2013_code=="1" ~ "Urban Center",
+#     x2013_code=="2" ~ "Suburb",
+#     x2013_code=="3" ~ "Medium City",
+#     x2013_code=="4" ~ "Small City",
+#     x2013_code=="5" ~ "Town", 
+#     x2013_code=="6" ~ "Rural Area",### see: https://www.cdc.gov/nchs/data/data_acces_files/NCHSUrbruralFileDocumentationInternet2.pd
+# # from matt:
+# # Large central metro > Urban centers
+# # Large fringe metro > Suburbs
+# # Medium metro > Medium cities
+# # Small metro > Small cities
+# # Micropolitan > Towns
+# # Non-core > Rural areas
+#     TRUE ~ as.character(NA))) %>% 
+#   dplyr::select(county_name,cdc_urban_rural_classification) %>% 
+#   mutate(county = str_remove(county_name,
+#                              pattern = " County"))
 
-### join cdc_county_rural_urban_crosswalk to jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
-jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc <- left_join(jail_medicaid_analytic_individual_booking_level_dedup_hu_recode,
-                                                  cdc_county_rural_urban_crosswalk,
-                                                  by = "county") 
+# ### join cdc_county_rural_urban_crosswalk to jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
+# jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc <- left_join(jail_medicaid_analytic_individual_booking_level_dedup_hu_recode,
+#                                                   cdc_county_rural_urban_crosswalk,
+#                                                   by = "county") 
+
+##########
+# Update medicaid data with urban vs rural variable
+# Update: now using USDA classification for binary variable (either rural or urban): see https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx for county-level classification
+##########
+jail_medicaid_analytic_individual_booking_level_dedup_urban_rural <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  mutate(usda_urban_rural_classification = case_when(
+    county%in%c("Hillsborough","Strafford","Rockingham") ~ "Metro",
+    county%in%c("Belknap","Carroll","Cheshire","Coos","Merrimack","Sullivan") ~ "Non-Metro", 
+    TRUE ~ as.character(NA)))
 ```         
 
 # DHHS Medicaid Match and Jail Booking Descriptive Analysis: Individuals Experiencing Homelessness
@@ -290,7 +300,7 @@ Note: Since we only have homelessness data for individuals who matched to Medica
 
 **Because of these factors, we should all discuss how we understand and explain this measure. At the very least, we probably want to acknowledge that this is likely an under count** 
 
-**County-level CDC rural/urban county classification comes from https://www.cdc.gov/nchs/data_access/urban_rural.htm**
+**County-level USDA rural/urban county classification comes from https://www.ers.usda.gov/data-products/rural-urban-continuum-codes.aspx**
 
 
 **Update**: I am currently using all homelessness data from the Medicaid Encounter file that occurred either before or during the study period (Medicaid eligibility start date <= 6/30/2021). Percentages reflect the percentage of the Medicaid sample unless otherwise stated (e.g. "% of Overall Sample")
@@ -300,8 +310,8 @@ Note: Since we only have homelessness data for individuals who matched to Medica
 ### create table of highlighting the percentage of the medicaid sample that experienced homelessness at the beginning of any medicaid enrollment period in DHHS pull
 
 # by county
-medicaid_jail_homelessness_cdc_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc %>% 
-  dplyr::group_by(cdc_urban_rural_classification) %>% 
+medicaid_jail_homelessness_usda_table <- jail_medicaid_analytic_individual_booking_level_dedup_urban_rural %>% 
+  dplyr::group_by(usda_urban_rural_classification) %>% 
   dplyr::summarise(`Number of Counties (N)` = n_distinct(county,
                                                          na.rm = TRUE),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -311,10 +321,10 @@ medicaid_jail_homelessness_cdc_table <- jail_medicaid_analytic_individual_bookin
                    `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                    `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
   ungroup() %>% 
-  dplyr::rename(`CDC County Classification` = cdc_urban_rural_classification) 
+  dplyr::rename(`USDA County Classification` = usda_urban_rural_classification) 
 
 # statewide
-medicaid_jail_homelessness_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc %>% 
+medicaid_jail_homelessness_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_urban_rural %>% 
    dplyr::summarise(`Number of Counties (N)` = n_distinct(county,
                                                          na.rm = TRUE),
                     `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -323,14 +333,14 @@ medicaid_jail_homelessness_overall_table <- jail_medicaid_analytic_individual_bo
                     `Bookings w/ Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                     `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
                     `Bookings w/ any experience of homelessness (%)` = scales::percent(`Bookings w/ any experience of homelessness (N)`/`Bookings w/ Medicaid Match (N)`))  %>% 
-  dplyr::mutate(`CDC County Classification` = "Statewide") 
+  dplyr::mutate(`USDA County Classification` = "Statewide") 
 
 # rbind county and statewide files 
-medicaid_jail_homelessness_cdc_statewide_table <- rbind(medicaid_jail_homelessness_cdc_table,
+medicaid_jail_homelessness_usda_statewide_table <- rbind(medicaid_jail_homelessness_usda_table,
                                                            medicaid_jail_homelessness_overall_table)
 
 ### print table via kableextra
-kable(medicaid_jail_homelessness_cdc_statewide_table, 
+kable(medicaid_jail_homelessness_usda_statewide_table, 
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
   kable_styling(bootstrap_options = c("striped", 
@@ -338,7 +348,7 @@ kable(medicaid_jail_homelessness_cdc_statewide_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") %>% 
-  row_spec(5, bold = TRUE) %>% 
+  row_spec(3, bold = TRUE) %>% 
   column_spec(5, bold = TRUE) %>% 
   column_spec(8, bold = TRUE) %>% 
   scroll_box(width = "130%")

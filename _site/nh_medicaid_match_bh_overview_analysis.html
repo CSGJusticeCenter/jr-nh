@@ -50,17 +50,16 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  { color: #00769e; background-color: #f1f3f5; }
+  {   }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #657422; } /* Attribute */
+code span.at { } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #00769e; } /* ControlFlow */
+code span.cf { color: #007ba5; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -74,9 +73,9 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #00769e; } /* Keyword */
+code span.kw { color: #007ba5; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #00769e; } /* Other */
+code span.ot { color: #007ba5; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
 code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
@@ -786,7 +785,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
-    font-size: 100%;
   }
 
   .html-widget {
@@ -1028,6 +1026,10 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
+  }
+
+  .figure img {
+    width: 100%;
   }
 
   .figure .caption {
@@ -1859,21 +1861,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        const citeChild = $(this).children()[0]
-        // Do not process if @xyz has been used without escaping and without bibliography activated
-        // https://github.com/rstudio/distill/issues/466
-        if (citeChild === undefined) return true
-
-        if (citeChild.nodeName == "D-FOOTNOTE") {
-          var fn = citeChild
-          $(this).html(fn.shadowRoot.querySelector("sup"))
-          $(this).id = fn.id
-          fn.remove()
-        }
         var refs = $(this).attr('data-cites').split(" ");
         var refHtml = refs.map(function(ref) {
-          // Could use CSS.escape too here, we insure backward compatibility in navigator
-          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
+          return "<p>" + $('#ref-' + ref).html() + "</p>";
         }).join("\n");
         window.tippy(this, {
           allowHTML: true,
@@ -1885,31 +1875,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
-
-      // fix footnotes in tables (#411)
-      // replacing broken distill.pub feature
-      $('table d-footnote').each(function() {
-        // we replace internal showAtNode methode which is triggered when hovering a footnote
-        this.hoverBox.showAtNode = function(node) {
-          // ported from https://github.com/distillpub/template/pull/105/files
-          calcOffset = function(elem) {
-              let x = elem.offsetLeft;
-              let y = elem.offsetTop;
-              // Traverse upwards until an `absolute` element is found or `elem`
-              // becomes null.
-              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
-                  x += elem.offsetLeft;
-                  y += elem.offsetTop;
-              }
-
-              return { left: x, top: y };
-          }
-          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
-          const bbox = node.getBoundingClientRect();
-          const offset = calcOffset(node);
-          this.show([offset.left + bbox.width, offset.top + bbox.height]);
-        }
-      })
 
       // clear polling timer
       clearInterval(tid);
@@ -2009,8 +1974,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
-      // ignore leaflet img layers (#106)
-      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -2033,7 +1996,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
+        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
       });
     }
 
@@ -2403,7 +2366,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
   <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
   <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
@@ -2516,27 +2479,63 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#dhhs-medicaid-match-and-jail-booking-descriptive-analysis-medicaid-match-and-behaviorial-health-overview" id="toc-dhhs-medicaid-match-and-jail-booking-descriptive-analysis-medicaid-match-and-behaviorial-health-overview">DHHS Medicaid Match and Jail Booking Descriptive Analysis: Medicaid Match and Behaviorial Health Overview</a>
+<li><a
+href="#dhhs-medicaid-match-and-jail-booking-descriptive-analysis-medicaid-match-and-behaviorial-health-overview"
+id="toc-dhhs-medicaid-match-and-jail-booking-descriptive-analysis-medicaid-match-and-behaviorial-health-overview">DHHS
+Medicaid Match and Jail Booking Descriptive Analysis: Medicaid Match and
+Behaviorial Health Overview</a>
 <ul>
 <li><a href="#tables" id="toc-tables">Tables</a>
 <ul>
-<li><a href="#table-1.-data-check-unique-individuals-and-bookings-in-administrative-jail-data-versus-medicaid-jail-data" id="toc-table-1.-data-check-unique-individuals-and-bookings-in-administrative-jail-data-versus-medicaid-jail-data">Table 1. Data Check: Unique Individuals and Bookings in Administrative Jail Data versus Medicaid Jail Data</a></li>
-<li><a href="#table-2.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters" id="toc-table-2.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters">Table 2. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health “Encounters”</a></li>
-<li><a href="#table-3.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-ruralurban-classification" id="toc-table-3.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-ruralurban-classification">Table 3. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health “Encounters” (by rural/urban classification)</a></li>
-<li><a href="#table-4.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-timing-of-bh-encounter" id="toc-table-4.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-timing-of-bh-encounter">Table 4. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health “Encounters”: by timing of BH Encounter</a></li>
-<li><a href="#table-5.-percentage-of-high-utilizer-individuals-with-medicaid-match-and-behavioral-health-encounters" id="toc-table-5.-percentage-of-high-utilizer-individuals-with-medicaid-match-and-behavioral-health-encounters">Table 5. Percentage of High Utilizer Individuals with Medicaid Match and Behavioral Health “Encounters”</a></li>
+<li><a
+href="#table-1.-data-check-unique-individuals-and-bookings-in-administrative-jail-data-versus-medicaid-jail-data"
+id="toc-table-1.-data-check-unique-individuals-and-bookings-in-administrative-jail-data-versus-medicaid-jail-data">Table
+1. Data Check: Unique Individuals and Bookings in Administrative Jail
+Data versus Medicaid Jail Data</a></li>
+<li><a
+href="#table-2.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters"
+id="toc-table-2.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters">Table
+2. Percentage of Individuals/Bookings with Medicaid Match and Behavioral
+Health “Encounters”</a></li>
+<li><a
+href="#table-3.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-ruralurban-classification"
+id="toc-table-3.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-ruralurban-classification">Table
+3. Percentage of Individuals/Bookings with Medicaid Match and Behavioral
+Health “Encounters” (by rural/urban classification)</a></li>
+<li><a
+href="#table-4.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-timing-of-bh-encounter"
+id="toc-table-4.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-timing-of-bh-encounter">Table
+4. Percentage of Individuals/Bookings with Medicaid Match and Behavioral
+Health “Encounters”: by timing of BH Encounter</a></li>
+<li><a
+href="#table-5.-percentage-of-high-utilizer-individuals-with-medicaid-match-and-behavioral-health-encounters"
+id="toc-table-5.-percentage-of-high-utilizer-individuals-with-medicaid-match-and-behavioral-health-encounters">Table
+5. Percentage of High Utilizer Individuals with Medicaid Match and
+Behavioral Health “Encounters”</a></li>
 </ul></li>
 </ul></li>
 </ul>
 </nav>
 </div>
-<h1 id="dhhs-medicaid-match-and-jail-booking-descriptive-analysis-medicaid-match-and-behaviorial-health-overview">DHHS Medicaid Match and Jail Booking Descriptive Analysis: Medicaid Match and Behaviorial Health Overview</h1>
+<h1
+id="dhhs-medicaid-match-and-jail-booking-descriptive-analysis-medicaid-match-and-behaviorial-health-overview">DHHS
+Medicaid Match and Jail Booking Descriptive Analysis: Medicaid Match and
+Behaviorial Health Overview</h1>
 <p><br></p>
 <h2 id="tables">Tables</h2>
-<h3 id="table-1.-data-check-unique-individuals-and-bookings-in-administrative-jail-data-versus-medicaid-jail-data">Table 1. Data Check: Unique Individuals and Bookings in Administrative Jail Data versus Medicaid Jail Data</h3>
-<p>Note: With Medicaid data, the count of unique individuals in each jail will not add up to the statewide total as some individuals were booked at multiple jails. Thus, they appear in multiple individual jail counts, but only once in the statewide count. For this reason, it is probably best to only compare differences in unique individuals at the jail-level.</p>
+<h3
+id="table-1.-data-check-unique-individuals-and-bookings-in-administrative-jail-data-versus-medicaid-jail-data">Table
+1. Data Check: Unique Individuals and Bookings in Administrative Jail
+Data versus Medicaid Jail Data</h3>
+<p>Note: With Medicaid data, the count of unique individuals in each
+jail will not add up to the statewide total as some individuals were
+booked at multiple jails. Thus, they appear in multiple individual jail
+counts, but only once in the statewide count. For this reason, it is
+probably best to only compare differences in unique individuals at the
+jail-level.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
+<div
+style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -2799,11 +2798,22 @@ Statewide
 </div>
 </div>
 <p><br><br></p>
-<h3 id="table-2.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters">Table 2. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health “Encounters”</h3>
-<p>Note: “Encounters” include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation.</p>
-<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. All percentages reflect the % of the entire sample, not just the Medicaid sample</p>
+<h3
+id="table-2.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters">Table
+2. Percentage of Individuals/Bookings with Medicaid Match and Behavioral
+Health “Encounters”</h3>
+<p>Note: “Encounters” include any behavioral health-related
+medical/clinical or pharmacy visitation. Examples include ED visits or
+pharmacy services linked to mental health or substance use disorder
+diagnoses. We should probably ask Uma for a DHHS definition for the
+presentation.</p>
+<p><strong>Update</strong>: I am currently using all behavioral health
+data from the Medicaid Encounter file that occurred either before or
+during the study period. All percentages reflect the % of the entire
+sample, not just the Medicaid sample</p>
 <div class="layout-chunk" data-layout="l-body">
-<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
+<div
+style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -3198,17 +3208,30 @@ Statewide
 </div>
 </div>
 <p><br><br></p>
-<h3 id="table-3.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-ruralurban-classification">Table 3. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health “Encounters” (by rural/urban classification)</h3>
-<p>Note: “Encounters” include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation.</p>
-<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. All percentages reflect the % of the entire sample, not just the Medicaid sample</p>
-<p><strong>County-level CDC rural/urban county classification comes from <a href="https://www.cdc.gov/nchs/data_access/urban_rural.htm" class="uri">https://www.cdc.gov/nchs/data_access/urban_rural.htm</a></strong></p>
+<h3
+id="table-3.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-ruralurban-classification">Table
+3. Percentage of Individuals/Bookings with Medicaid Match and Behavioral
+Health “Encounters” (by rural/urban classification)</h3>
+<p>Note: “Encounters” include any behavioral health-related
+medical/clinical or pharmacy visitation. Examples include ED visits or
+pharmacy services linked to mental health or substance use disorder
+diagnoses. We should probably ask Uma for a DHHS definition for the
+presentation.</p>
+<p><strong>Update</strong>: I am currently using all behavioral health
+data from the Medicaid Encounter file that occurred either before or
+during the study period. All percentages reflect the % of the entire
+sample, not just the Medicaid sample</p>
+<p><strong>County-level USDA rural/urban county classification comes
+from <a href="https://www.cdc.gov/nchs/data_access/urban_rural.htm"
+class="uri">https://www.cdc.gov/nchs/data_access/urban_rural.htm</a></strong></p>
 <div class="layout-chunk" data-layout="l-body">
-<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
+<div
+style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:center;">
-CDC County Classification
+USDA County Classification
 </th>
 <th style="text-align:center;">
 Number of Counties (N)
@@ -3248,154 +3271,78 @@ Bookings w/ BH Encounter (%)
 <tbody>
 <tr>
 <td style="text-align:center;">
-Medium City
+Metro
 </td>
 <td style="text-align:center;">
-1
+3
 </td>
 <td style="text-align:center;">
-6,051
+18,728
 </td>
 <td style="text-align:center;">
-4,031
+7,975
 </td>
 <td style="text-align:center;font-weight: bold;color: #61C280 !important;">
-67%
+43%
 </td>
 <td style="text-align:center;">
-3,399
+6,598
 </td>
 <td style="text-align:center;font-weight: bold;color: #E17619 !important;">
-56%
+35%
 </td>
 <td style="text-align:center;">
-10,628
+31,102
 </td>
 <td style="text-align:center;">
-8,003
-</td>
-<td style="text-align:center;font-weight: bold;color: #61C280 !important;">
-75%
-</td>
-<td style="text-align:center;">
-7,099
-</td>
-<td style="text-align:center;font-weight: bold;color: #E17619 !important;">
-67%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Rural Area
-</td>
-<td style="text-align:center;">
-1
-</td>
-<td style="text-align:center;">
-1,825
-</td>
-<td style="text-align:center;">
-1,048
-</td>
-<td style="text-align:center;font-weight: bold;color: #61C280 !important;">
-57%
-</td>
-<td style="text-align:center;">
-836
-</td>
-<td style="text-align:center;font-weight: bold;color: #E17619 !important;">
-46%
-</td>
-<td style="text-align:center;">
-2,646
-</td>
-<td style="text-align:center;">
-1,703
-</td>
-<td style="text-align:center;font-weight: bold;color: #61C280 !important;">
-64%
-</td>
-<td style="text-align:center;">
-1,397
-</td>
-<td style="text-align:center;font-weight: bold;color: #E17619 !important;">
-53%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Suburb
-</td>
-<td style="text-align:center;">
-2
-</td>
-<td style="text-align:center;">
-13,518
-</td>
-<td style="text-align:center;">
-4,630
-</td>
-<td style="text-align:center;font-weight: bold;color: #61C280 !important;">
-34%
-</td>
-<td style="text-align:center;">
-3,823
-</td>
-<td style="text-align:center;font-weight: bold;color: #E17619 !important;">
-28%
-</td>
-<td style="text-align:center;">
-20,474
-</td>
-<td style="text-align:center;">
-10,180
-</td>
-<td style="text-align:center;font-weight: bold;color: #61C280 !important;">
-50%
-</td>
-<td style="text-align:center;">
-8,928
-</td>
-<td style="text-align:center;font-weight: bold;color: #E17619 !important;">
-44%
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Town
-</td>
-<td style="text-align:center;">
-5
-</td>
-<td style="text-align:center;">
-9,157
-</td>
-<td style="text-align:center;">
-5,275
+18,182
 </td>
 <td style="text-align:center;font-weight: bold;color: #61C280 !important;">
 58%
 </td>
 <td style="text-align:center;">
-4,416
+16,026
 </td>
 <td style="text-align:center;font-weight: bold;color: #E17619 !important;">
-48%
+52%
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Non-Metro
 </td>
 <td style="text-align:center;">
-16,430
+6
 </td>
 <td style="text-align:center;">
-11,617
+10,807
+</td>
+<td style="text-align:center;">
+6,165
 </td>
 <td style="text-align:center;font-weight: bold;color: #61C280 !important;">
-71%
+57%
 </td>
 <td style="text-align:center;">
-10,306
+5,110
 </td>
 <td style="text-align:center;font-weight: bold;color: #E17619 !important;">
-63%
+47%
+</td>
+<td style="text-align:center;">
+19,076
+</td>
+<td style="text-align:center;">
+13,319
+</td>
+<td style="text-align:center;font-weight: bold;color: #61C280 !important;">
+70%
+</td>
+<td style="text-align:center;">
+11,702
+</td>
+<td style="text-align:center;font-weight: bold;color: #E17619 !important;">
+61%
 </td>
 </tr>
 <tr>
@@ -3441,14 +3388,29 @@ Statewide
 </div>
 </div>
 <p><br><br></p>
-<h3 id="table-4.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-timing-of-bh-encounter">Table 4. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health “Encounters”: by timing of BH Encounter</h3>
-<p>Note: “Encounters” include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. All percentages reflect the % of the entire sample, not just the Medicaid sample.</p>
-<p><strong>The following table is split out by timing of behavioral health Medicaid encounter: before, during, or after the study period. See logic below</strong></p>
+<h3
+id="table-4.-percentage-of-individualsbookings-with-medicaid-match-and-behavioral-health-encounters-by-timing-of-bh-encounter">Table
+4. Percentage of Individuals/Bookings with Medicaid Match and Behavioral
+Health “Encounters”: by timing of BH Encounter</h3>
+<p>Note: “Encounters” include any behavioral health-related
+medical/clinical or pharmacy visitation. Examples include ED visits or
+pharmacy services linked to mental health or substance use disorder
+diagnoses. We should probably ask Uma for a DHHS definition for the
+presentation. All percentages reflect the % of the entire sample, not
+just the Medicaid sample.</p>
+<p><strong>The following table is split out by timing of behavioral
+health Medicaid encounter: before, during, or after the study period.
+See logic below</strong></p>
 <p>Pre-study period: Medicaid eligibility end date &lt; 7/1/2018</p>
-<p>Study period: Medicaid eligibility end date &gt;= 7/1/2018 &amp; Medicaid eligibility start date &lt;= 6/30/2021</p>
-<p>Post-study period: Medicaid eligibility start date &gt; 6/30/2021 (b/c this was a very small sample, I have only presented pre- and study-window counts and percentages; this sample is also excluded from further analysis)</p>
+<p>Study period: Medicaid eligibility end date &gt;= 7/1/2018 &amp;
+Medicaid eligibility start date &lt;= 6/30/2021</p>
+<p>Post-study period: Medicaid eligibility start date &gt; 6/30/2021
+(b/c this was a very small sample, I have only presented pre- and
+study-window counts and percentages; this sample is also excluded from
+further analysis)</p>
 <div class="layout-chunk" data-layout="l-body">
-<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
+<div
+style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -3942,7 +3904,8 @@ Statewide
 </div>
 </div>
 <p><br></p>
-<p><strong>Statewide, 46% of individuals were matched to Medicaid services, with variation among counties.</strong></p>
+<p><strong>Statewide, 46% of individuals were matched to Medicaid
+services, with variation among counties.</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -3950,7 +3913,9 @@ Statewide
 <p><img src="img/PRES_gg_medicaid_match.png" width="100%" /></p>
 </div>
 <p><br></p>
-<p><strong>Statewide, 38% of individuals were matched to behavioral health-related Medicaid services, with variation among counties.</strong></p>
+<p><strong>Statewide, 38% of individuals were matched to behavioral
+health-related Medicaid services, with variation among
+counties.</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
@@ -3958,12 +3923,25 @@ Statewide
 <p><img src="img/PRES_gg_bh_match.png" width="100%" /></p>
 </div>
 <p><br><br></p>
-<h3 id="table-5.-percentage-of-high-utilizer-individuals-with-medicaid-match-and-behavioral-health-encounters">Table 5. Percentage of High Utilizer Individuals with Medicaid Match and Behavioral Health “Encounters”</h3>
-<p>Note: “Encounters” include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation.</p>
-<p>Grouping of individuals into ‘high utilizer’ percentile groups is based on statewide data, using the Medicaid match files from DHHS, as opposed to county-level data.</p>
-<p><strong>Update</strong>: I am currently using all behavioral health data from the Medicaid Encounter file that occurred either before or during the study period. All percentages reflect the % of the entire sample, not just the Medicaid sample</p>
+<h3
+id="table-5.-percentage-of-high-utilizer-individuals-with-medicaid-match-and-behavioral-health-encounters">Table
+5. Percentage of High Utilizer Individuals with Medicaid Match and
+Behavioral Health “Encounters”</h3>
+<p>Note: “Encounters” include any behavioral health-related
+medical/clinical or pharmacy visitation. Examples include ED visits or
+pharmacy services linked to mental health or substance use disorder
+diagnoses. We should probably ask Uma for a DHHS definition for the
+presentation.</p>
+<p>Grouping of individuals into ‘high utilizer’ percentile groups is
+based on statewide data, using the Medicaid match files from DHHS, as
+opposed to county-level data.</p>
+<p><strong>Update</strong>: I am currently using all behavioral health
+data from the Medicaid Encounter file that occurred either before or
+during the study period. All percentages reflect the % of the entire
+sample, not just the Medicaid sample</p>
 <div class="layout-chunk" data-layout="l-body">
-<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
+<div
+style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:130%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
@@ -4093,7 +4071,8 @@ Statewide
 </div>
 </div>
 <p><br><br></p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
+<div class="sourceCode" id="cb1"><pre
+class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
