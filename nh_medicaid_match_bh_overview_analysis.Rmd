@@ -322,7 +322,7 @@ kable(medicaid_jail_percent_match_cdc_statewide_table,
 
 ### Table 4. Percentage of Individuals/Bookings with Medicaid Match and Behavioral Health "Encounters": by timing of BH Encounter
 
-Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. All percentages reflect the % of the entire sample, not just the Medicaid sample
+Note: "Encounters" include any behavioral health-related medical/clinical or pharmacy visitation. Examples include ED visits or pharmacy services linked to mental health or substance use disorder diagnoses. We should probably ask Uma for a DHHS definition for the presentation. All percentages reflect the % of the entire sample, not just the Medicaid sample.
 
 **The following table is split out by timing of behavioral health Medicaid encounter: before, during, or after the study period. See logic below**
 
@@ -340,7 +340,7 @@ medicaid_jail_percent_match_county_timing_table <- jail_medicaid_analytic_indivi
 
   dplyr::group_by(county) %>% 
   dplyr::summarise(`Overall Individuals (N)`                         = n_distinct(unique_person_id),
-                   `Individuals w/ any Medicaid Match (N)`           = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any Medicaid Match (N)`           = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ any Medicaid Match (%)`           = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
                    `Individuals w/ Medicaid Match, Pre-Study (N)`    = n_distinct(unique_person_id[pre_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ Medicaid Match, Pre-Study (%)`    = scales::percent(`Individuals w/ Medicaid Match, Pre-Study (N)`/`Overall Individuals (N)`),
@@ -359,7 +359,7 @@ medicaid_jail_percent_match_county_timing_table <- jail_medicaid_analytic_indivi
 medicaid_jail_percent_match_overall_timing_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
 
   dplyr::summarise(`Overall Individuals (N)`                         = n_distinct(unique_person_id),
-                   `Individuals w/ any Medicaid Match (N)`           = n_distinct(unique_person_id[medicaid_match_flag==1]),
+                   `Individuals w/ any Medicaid Match (N)`           = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ any Medicaid Match (%)`           = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
                    `Individuals w/ Medicaid Match, Pre-Study (N)`    = n_distinct(unique_person_id[pre_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ Medicaid Match, Pre-Study (%)`    = scales::percent(`Individuals w/ Medicaid Match, Pre-Study (N)`/`Overall Individuals (N)`),
