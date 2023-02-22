@@ -1,6 +1,5 @@
 ---
-title: "Medicaid Behavioral Health Encounters"
-subtitle: "Focusing on CMHC and ED Visits, Pharmacy Visits"
+title: "Medicaid Behavioral Health Encounters, Focusing on MH and SUD"
 output: 
   distill::distill_article:
     toc: true
