@@ -52,9 +52,12 @@ PRES_gg_pie_pretrial <- ggplot(data1, aes(x = state, y = total, fill = sentence_
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c(jri_orange, jri_light_blue, jri_green, "gray")) +
-  geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
-            size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(data1$sentence_status_standard == "NA", "gray", "white")
+  geom_text(aes(label = pct, 
+                fontface = 'bold'), 
+                position = position_fill(vjust = 0.5),
+                size = 7.5,
+                family = "Franklin Gothic Book",
+                color = ifelse(data1$sentence_status_standard == "NA", "gray", "black")
             ) +
   theme_axes +
   theme(legend.position = "top",

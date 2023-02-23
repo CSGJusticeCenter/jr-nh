@@ -73,9 +73,10 @@ font_paths() # "C:\\Windows\\Fonts"
 
 # Add a custom font. You will need to run this code every time you restart R
 # Make sure you download the Franklin Gothic Book font to your computer
-font_add(family  = "Franklin Gothic Book", # Name you want to use
+font_add(family  = "Franklin Gothic Book",
          regular = "FRABK.ttf",
-         italic  = "FRABKIT.ttf") # Text of the 'General' tab plus the font extension
+         italic  = "FRABKIT.ttf",
+         bold    = "FRADM.ttf")
 showtext_auto()
 default_fonts <- c("Franklin Gothic Book")
 
