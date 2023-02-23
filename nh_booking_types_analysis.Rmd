@@ -234,7 +234,7 @@ PRES_gg_pretrial_prop <- ggplot(data1, aes(x = county, y = total, fill = sentenc
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
             color = case_when(data1$sentence_status_standard == "Not Pretrial" ~ "black",
-                              TRUE ~ "white")) +
+                              TRUE ~ "black")) +
   theme_minimal() +
   theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),

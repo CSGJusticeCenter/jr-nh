@@ -604,7 +604,7 @@ PRES_gg_pie_0_1_los_bookings <- ggplot(los_bookings_jail_0_1_day, aes(x = state,
   scale_fill_manual(values=c(jri_light_blue, jri_orange, jri_green, "gray")) +
   geom_text(aes(label = ifelse(total > 100, pct, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 8, family = "Franklin Gothic Book",
-            color = ifelse(los_bookings_jail_0_1_day$sentence_status_standard == "NA", "gray", "white")
+            color = ifelse(los_bookings_jail_0_1_day$sentence_status_standard == "NA", "gray", "black")
             ) +
   theme_axes +
   theme(legend.position = "top",
@@ -676,7 +676,7 @@ PRES_gg_pie_1_los_bookings <- ggplot(los_bookings_jail_1_day, aes(x = state, y =
   scale_fill_manual(values=c(jri_light_blue, jri_orange, jri_green, "gray")) +
   geom_text(aes(label = ifelse(total > 100, pct, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(los_bookings_jail_1_day$sentence_status_standard == "NA", "gray", "white")
+            color = ifelse(los_bookings_jail_1_day$sentence_status_standard == "NA", "gray", "black")
             ) +
   theme_axes +
   theme(legend.position = "top",
