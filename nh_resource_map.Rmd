@@ -1,0 +1,306 @@
+---
+title: "Mapping NH Resource Need and Availability"
+output: html_document
+output: 
+  distill::distill_article:
+    toc: true
+    toc_depth: 3
+    self_contained: false
+---
+
+
+Here is where we gathered location-level resource information: 
+
+*	Community mental health programs (CMHC): https://www.dhhs.nh.gov/sites/g/files/ehbemt476/files/documents/2021-12/bdas-list-map.pdf
+ 
+I then compiled individual resource locations from each listed organizations’ website
+
+
+*	Recovery Community Organizations (State-funded RCOs): https://www.dhhs.nh.gov/programs-services/health-care/recovery-support-services
+
+*	DHHS/Bureau of Homeless and Housing Services (BHHS) Cold Weather/Emergency Shelters: https://www.dhhs.nh.gov/programs-services/housing-services/homeless-assistance-prevention-services/shelter-services
+
+* Non-DHHS Funded Shelters/Housing: https://www.dhhs.nh.gov/sites/g/files/ehbemt476/files/documents2/non-dhhs-contracted-emergency-shelters.pdf
+
+* NH Coalition of Recovery Residences: https://www.dhhs.nh.gov/sites/g/files/ehbemt476/files/documents2/nhvregistry.pdf **and** https://www.nhcorr.org/certified-homes
+
+NOTE: NHCORR Certified Recovery Residences are often gender-specific 
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","highcharter","censusr")
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### set chunk output specifications
+knitr::opts_chunk$set(
+  echo = TRUE,
+  dev = "ragg_png",
+  cache = FALSE)
+
+### set theme
+theme_set(theme_minimal())
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+# Save path
+sp_data_path <- csg_get_project_path("NH")
+
+### pull in resource data
+nh_resource_locations_raw <- readxl::read_xlsx(file.path(sp_data_path,"Data","nh_resource_map_data.xlsx")) %>% 
+  clean_names() %>% 
+  mutate(unique_resource_id = paste0(resource_name,row_number())) 
+
+
+# ### pull idoc supervision level data (# of unique clients who were on supervision level 4 or 5 at some point in 2020 per 10,000 county residents/population)
+# 
+# ### write out supervision_level_4_5_county_for_map_supervision_race
+# supervision_level_4_5_county_for_map_supervision_race <- read_rds(file.path(sharepoint_idoc_resources, "supervision_level_4_5_county_for_map_supervision_race.rds")) %>% 
+#   mutate(fips_code = as.character(fips_code))
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### commenting out syntax below because we've already run it and simply need to pull in geocoded data to make knitting more efficient
+
+# ### geocode addresses in nh_resource_locations_raw 
+# 
+# ### clean address and prepare for geocoding format
+# nh_resource_locations_raw_addresses <- nh_resource_locations_raw %>%
+#   mutate(street =  gsub("Apt .*","",address)) %>%
+#   mutate(street =  gsub("apt .*","",street)) %>%
+#   mutate(street =  gsub("Fl .*","",street)) %>%
+#   mutate(street =  gsub("Unit .*","",street)) %>%
+#   mutate(street =  gsub("\\.","",street)) %>%
+#   mutate(zip = as.character(zip),
+#          state = "New Hampshire") %>%
+#   dplyr::select(unique_resource_id, street, city, state, zip)
+# 
+# ### obtain lat/lon from address via censusxy::cxy_geocode()
+# nh_resource_location_geo <- censusxy::cxy_geocode(nh_resource_locations_raw_addresses, 
+#                                                   street = "street", 
+#                                                   city = "city", 
+#                                                   state = "state", 
+#                                                   zip = "zip", 
+#                                                   return = "geographies", 
+#                                                   benchmark = "Public_AR_Census2020", 
+#                                                   vintage = "Census2020_Census2020", 
+#                                                   output = "full") %>% 
+#   dplyr::select(-c(cxy_address:cxy_tiger_side,cxy_tract_id,cxy_block_id))
+# 
+# ### seems like we have a pretty good match rate -- but might as well hard code the missing fields
+# ### export and then hard code lat/lon for records with missing data using google maps
+# 
+# ### write out iowa_idoc_resource_facility_geo
+# openxlsx::write.xlsx(nh_resource_location_geo,
+#           file.path(sp_data_path,"Data",
+#                     "nh_resource_location_geo_fix.xlsx"))
+
+## pull file back in now that i've manually geocoded the missing records
+nh_resource_location_geo_full <- openxlsx::read.xlsx(file.path(sp_data_path,"Data",
+                    "nh_resource_location_geo_fix_with_county.xlsx")) %>%
+  dplyr::select(unique_resource_id,lon=cxy_lon,lat=cxy_lat,street,cxy_county_id) %>% 
+  right_join(nh_resource_locations_raw, by = "unique_resource_id") %>%
+  mutate(resource_type = str_to_title(resource_type)) %>% 
+  dplyr::select(-address) %>% 
+  ### add county name to geocoded fips county number obtained
+  ### see codes here: https://tigerweb.geo.census.gov/tigerwebmain/Files/bas22/tigerweb_bas22_county_nh.html
+  mutate(county = case_when(
+    cxy_county_id == 1 ~ "Belknap",
+    cxy_county_id == 3 ~ "Carroll",
+    cxy_county_id == 5 ~ "Cheshire",
+    cxy_county_id == 7 ~ "Coos",
+    cxy_county_id == 9 ~ "Grafton", 
+    cxy_county_id == 11 ~ "Hillsborough", 
+    cxy_county_id == 13 ~ "Merrimack", 
+    cxy_county_id == 15 ~ "Rockingham", 
+    cxy_county_id == 17 ~ "Strafford", 
+    cxy_county_id == 19 ~ "Sullivan", 
+    TRUE ~ as.character(NA)))
+```
+
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### pull census/acs data via tidycensus package
+
+### read in census/acs api key from environmnent
+### this allows us to pull census/acs data via the tidycensus package
+readRenviron("~/.Renviron")
+
+### overall population by county from 2020 census
+nh_county_pop_2020 <- tidycensus::get_decennial(geography = "County", 
+                                           state = "NH",
+                                           variables = "P1_001N",
+                                           year = 2020,
+                                            geometry = FALSE) %>% 
+  clean_names() %>%
+  dplyr::select(geoid,name,county_total_pop = value) 
+
+### weighted estimate of percentage of county residents living below federal poverty threshold
+nh_poverty_status <- tidycensus::get_acs(geography = "County", 
+                                              state = "NH",
+                                              variables = "S1701_C03_001", 
+                                              geometry = FALSE) %>% 
+  clean_names() %>% 
+  dplyr::select(geoid,estimate) %>% 
+  dplyr::rename(estimate_below_poverty = estimate)
+
+### weighted estimate of income
+nh_median_income <- tidycensus::get_acs(geography = "County", 
+                                             state = "NH",
+                                             variables = "S1901_C01_012", 
+                                             geometry = FALSE) %>% 
+  clean_names() %>% 
+  dplyr::select(geoid,estimate) %>% 
+  dplyr::rename(estimate_income = estimate)
+
+### counts of race from 2020 census
+### these are the ids of race variables that we want to pull 
+race_vars = c(
+        all = "P2_001N",
+        hispanic = "P2_002N",
+        white = "P2_005N",
+        black = "P2_006N",
+        am_indian = "P2_007N",
+        asian = "P2_008N"
+        )
+
+iowa_race_2020 <- tidycensus::get_decennial(geography = "County", 
+                                               state = "NH",
+                                               variables = race_vars, ### use race vars that i've specified
+                                               summary_var = "P2_001N", ### summary column for % calculation
+                                               year = 2020,
+                                               geometry = FALSE) %>% 
+  clean_names() %>% 
+  mutate(percent = (value/summary_value)*100) ### create percent estimate from estimated counts
+
+### pivot race file to be wide and unique by census tract 
+nh_race_2020 %<>%
+  dplyr::select(geoid,variable,percent) %>% 
+  spread(variable,percent, fill = NA) 
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### join all acs variables together in one file
+nh_acs_census_county <- left_join(nh_poverty_status, nh_median_income, by="geoid")
+
+nh_acs_census_county <- left_join(nh_acs_census_county, nh_county_pop_2020, by="geoid")
+
+nh_acs_census_county <- left_join(nh_acs_census_county, nh_race_2020, by="geoid")
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### read in county-level iowa data to create county,state, geoid crosswalk with acs/census data 
+### this is the official iowa county shapefile, obtained here: https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html 
+### this is not used for mapping, however, hence we remove geography below; it's just a crosswalk across county name, geoid, and county fip code
+
+### read in nh county-level shape file    
+nh_county_shape <- read_sf("C:\\Users\\abyrum\\OneDrive - The Council of State Governments\\Geospatial_Mapping\\US County Geo Data\\tl_2019_us_county\\tl_2019_us_county.shp") %>%
+  clean_names() %>% 
+  filter(statefp=="33") %>% ### filter by state fip code 
+  dplyr::rename(county=name, 
+                county_fip=countyfp)
+
+### use group_by and st_union to create statewide polygon using the county-level geography
+### we'll use this shapefile for a state border when mapping
+nh_state_shape <- nh_county_shape %>%
+  group_by(statefp) %>% 
+  summarize(geometry = st_union(geometry)) %>% 
+  ungroup()
+
+### add county name to supervision_level_4_5_county_for_map_supervision_race
+supervision_level_4_5_county_for_map_supervision_race_geo <- left_join(supervision_level_4_5_county_for_map_supervision_race,iowa_geo_county,                                                                     by=c("fips_code"="geoid"))
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### merge county code/geoid crosswalk to acs data
+iowa_acs_census_county_crosswalk <- inner_join(iowa_acs_census_county,iowa_geo_county,by = "geoid")
+
+### county-level estimates
+
+### clean up acs/census estimates for eventual use as map labels
+iowa_acs_census_county_crosswalk_full <- iowa_acs_census_county_crosswalk %>%
+    group_by(county_name_short) %>%
+    summarize(county_total_pop = sum(county_total_pop, na.rm=TRUE),
+              estimate_below_poverty_mean = round(mean(estimate_below_poverty, na.rm=TRUE),digits = 1),
+              estimate_income_median = round(mean(estimate_income, na.rm=TRUE),digits = 1),
+              percent_asian = round(mean(asian, na.rm=TRUE),digits = 1),
+              percent_black = round(mean(black, na.rm=TRUE),digits = 1),
+              percent_hispanic = round(mean(hispanic, na.rm=TRUE),digits = 1),
+              percent_white = round(mean(white, na.rm=TRUE),digits = 1)) %>%
+    ungroup()
+
+### calculate rates using population estimates by county from 2019 American Community Survey
+iowa_acs_census_county_no_geo_rates <- iowa_acs_census_county_crosswalk_full %>%
+  left_join(supervision_level_4_5_county_for_map_supervision_race_geo, by = "county_name_short") %>%
+  group_by(county_name_short) %>%
+  mutate(supervision_4_5_2020_rate_per_10000 = round((supervision_4_5_count_2020/county_total_pop)*10000,digits = 4)) %>%
+  ungroup() 
+
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### read in iowa county-level shape file    
+iowa_county_shape <- read_sf("C:\\Users\\abyrum\\OneDrive - The Council of State Governments\\Geospatial_Mapping\\US County Geo Data\\tl_2019_us_county\\tl_2019_us_county.shp") %>%
+  clean_names() %>% 
+  filter(statefp=="19") %>% 
+  dplyr::rename(county_name_short=name, 
+                county_fip=countyfp)
+
+### add judicial district to iowa_geo_county based on county
+iowa_county_shape %<>%
+  mutate(judicial_district = case_when(
+    county_name_short %in% district_1 ~ 1,
+    county_name_short %in% district_2 ~ 2,
+    county_name_short %in% district_3 ~ 3,
+    county_name_short %in% district_4 ~ 4,
+    county_name_short %in% district_5 ~ 5, 
+    county_name_short %in% district_6 ~ 6, 
+    county_name_short %in% district_7 ~ 7, 
+    county_name_short %in% district_8 ~ 8, 
+    TRUE ~ as.numeric(NA)),
+    judicial_district = factor(judicial_district,
+         levels = c(1,2,3,4,5,6,7,8),
+         labels = c("District 1", "District 2", "District 3","District 4","District 5","District 6","District 7","District 8"))) %>% 
+  mutate(judicial_district = as.numeric(judicial_district))
+
+### use group_by and st_union to create district-level polygons using the county-level geography
+### we'll use this district-level geography for additional lines to delineate groups of counties
+iowa_district_shape <- iowa_county_shape %>%
+  group_by(judicial_district) %>% 
+  summarize(geometry = st_union(geometry))
+
+### merge county shapefile to acs, census, and iowa data to attach geography and render the file map-able
+### this will be the file we use to map
+iowa_acs_census_county_geo <- merge(iowa_county_shape, iowa_acs_census_county_no_geo_rates, by = "county_name_short") %>% 
+  mutate(percent_non_white = 100-percent_white,
+         cdc_urban_rural_classification = factor(cdc_urban_rural_classification,
+         levels = c("Rural Area","Town","Small City","Medium City")))  ### use factor function to assign labels to values
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### define color palettes for each layer in interactive map
+
+### define palette for supervision_4_5_count_2020
+pal_supervision_level_rate <- colorQuantile(palette = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"), domain = iowa_acs_census_county_geo$supervision_4_5_2020_rate_per_10000, n = 4, reverse = TRUE, na.color = "#808080") ### use reverse to invert colors 
+
+### define palette for percent_non_white
+pal_percent_race_non_white <- colorQuantile(palette = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"), domain = iowa_acs_census_county_geo$percent_non_white, n = 4, reverse = TRUE, na.color = "#808080") ### use reverse to invert colors 
+
+### define palette for percent_black
+pal_percent_race_black <- colorQuantile(palette = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"), domain = iowa_acs_census_county_geo$percent_black, n = 4, reverse = TRUE, na.color = "#808080") ### use reverse to invert colors 
+
+### define palette for percent_black
+pal_percent_race_white <- colorQuantile(palette = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"), domain = iowa_acs_census_county_geo$percent_white, n = 4, reverse = TRUE, na.color = "#808080") ### use reverse to invert colors 
+
+### define palette for cdc_urban_rural_classification
+pal_cdc_rural_urban <- colorFactor(palette = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"), domain = iowa_acs_census_county_geo$cdc_urban_rural_classification, reverse = TRUE, na.color = "#808080") ### use reverse to invert colors
+
+# ### define palette for pre_to_post_covid_rate_change
+# pal_revocation_rate <- colorQuantile(palette = c("#00475d","#007392","#0db4e4","#9ed4ef"), domain = iowa_acs_census_county_geo$pre_to_post_covid_rate_change, n = 4, reverse = TRUE) ### use reverse to invert colors
+```
+
+
+
+
+<br><br>
