@@ -26,8 +26,12 @@ It appears that the best option, at this point, is to categorize the charges int
 
 ```{r include=FALSE}
 # ### call libraries
-library(easypackages)
-libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill")
+# library(easypackages)
+# libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","gtsummary")
+
+### set sp_data_path
+# sp_data_path <- csg_sp_path(file.path("JR_NH"))
+
 # Load packages, functions, and data
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
@@ -35,6 +39,9 @@ source("data_cleaning/rdas.R")
 ```
 
 ```{r setup, include=FALSE}
+### set path for viz output
+sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
+
 ### set theme
 theme_set(theme_minimal())
 
@@ -44,22 +51,6 @@ knitr::opts_chunk$set(
   dev = "ragg_png",
   cache = FALSE
   )
-
-### set sp_data_path for data viz output and data imports
-# sp_data_path <- csg_sp_path(file.path("JR_NH"))
-
-sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
-
-
-### call libraries and functions
-# source("data_cleaning/00_library.R")
-# source("data_cleaning/01_functions.R")
-# source("data_cleaning/01_functions_visuals.R")
-# source("data_cleaning/00_library_ab_path.R")
-
-# ### call additional geo-specific libraries needed for mapping
-# library(easypackages)
-# libraries("sf","acs","tigris","mapview","rgeos","raster")
 
 ### import cleaned charge analytic file (for all eight counties with charge data)
 load(paste0(sp_data_path, "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda", sep = ""))
@@ -1251,14 +1242,16 @@ df_county_level_charge_type_summary <- nh_eight_county_charge_clean_final_crime_
 df_county_level_charge_type_summary_long <- df_county_level_charge_type_summary %>%
   gather(charge_type, percent, `Violent`:`Probation/Parole Violation`) %>% 
   mutate(percent_label = scales::percent(percent, 
-                                         accuracy = 1))
+                                         accuracy = 1)) %>% 
+  mutate(charge_type_factor =  factor(charge_type,
+                                      levels = c("Violent","Property","Drug/Alcohol","Public Order","Probation/Parole Violation")))
 
 
 ### ggplot
 ggplot(data = df_county_level_charge_type_summary_long, 
        aes(y = percent, 
            x = `County`, 
-           fill = forcats::fct_rev(charge_type))) + 
+           fill = forcats::fct_rev(charge_type_factor))) + 
   geom_bar(stat = "identity", 
            color = "gray80") +
   scale_x_discrete(limits = rev) +
@@ -1584,27 +1577,27 @@ ggplot(
   # use thin white stroke for municipality borders
   geom_sf(
     mapping = aes(
-      fill = `Bookings with any Drug/Alcohol Charge (%)`
+      fill = percent_drug_alcohol_quartile
       ),
     color = "white",
     size = 0.1
   ) +
-    scale_fill_distiller(
-    labels = scales::percent_format(accuracy=1),
-    direction = 1,
-    name = "% Bookings with Drug/Alcohol\n Charges"
-  ) +
+  #   scale_fill_distiller(
+  #   labels = scales::percent_format(accuracy=1),
+  #   direction = 1,
+  #   name = "% Bookings with Drug/Alcohol\n Charges"
+  # ) +
   ### use jr palette here
-    scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
- # scale_fill_manual(
- #    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
- #    name = "% Bookings with Drug/Alcohol\n Charges",
- #    na.value = "grey50",
- #    guide = guide_legend(
- #     keyheight = unit(5, units = "mm"),
- #     title.position = "top",
- #     reverse = F # display highest on top
- #  )) +
+    # scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
+ scale_fill_manual(
+    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+    name = "% Bookings with Drug/Alcohol\n Charges",
+    na.value = "grey50",
+    guide = guide_legend(
+     keyheight = unit(7.5, units = "mm"),
+     title.position = "top",
+     reverse = F # display highest on top
+  )) +
   # use white stroke borders for county boundaries
   geom_sf(
     data = df_county_level_charge_type_summary_geo_to_map,
@@ -1623,20 +1616,22 @@ ggplot(
      data = df_county_level_charge_type_summary_geo_to_map, 
      aes(geometry = geometry, 
          label = county),
+     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
+    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
     family = "Franklin Gothic Demi",
     color = "gray25",
-    size = 2.75,
+    size = 3,
     fontface = "bold",
     stat = "sf_coordinates") +
-  guides(fill = guide_colorbar(barwidth = 8),
-           direction = "horizontal",
-      barheight = unit(2, units = "mm"),
-      barwidth = unit(50, units = "mm"),
-      draw.ulim = F,
-      title.position = 'top',
-      # some shifting around
-      title.hjust = 0.5,
-      label.hjust = 0.5) +
+  # guides(fill = guide_colorbar(barwidth = 8),
+  #          direction = "horizontal",
+  #     barheight = unit(2, units = "mm"),
+  #     barwidth = unit(50, units = "mm"),
+  #     draw.ulim = F,
+  #     title.position = 'top',
+  #     # some shifting around
+  #     title.hjust = 0.5,
+  #     label.hjust = 0.5) +
   labs(
     title = NULL,
     subtitle = NULL,
@@ -1646,15 +1641,16 @@ ggplot(
     caption = NULL
   ) +
   # add theme
-  theme_map() +
-  theme(
-    # plot.margin = margin(),
-    panel.grid = element_blank(),
-    axis.text.x = element_blank(),
-    axis.text.y = element_blank(),
-    legend.position = "bottom",
-    legend.justification = c(0.5, 0.5),
-    legend.text = element_text(size = 11)) 
+  theme_map() 
+# +
+#   theme(
+#     # plot.margin = margin(),
+#     panel.grid = element_blank(),
+#     axis.text.x = element_blank(),
+#     axis.text.y = element_blank(),
+#     legend.position = "bottom",
+#     legend.justification = c(0.5, 0.5),
+#     legend.text = element_text(size = 11)) 
 
 
 ### write out
@@ -1782,7 +1778,7 @@ ggsave(
 
 <br><br>
 
-### Figure 7. Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
+### Figure 7a. Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
 
 Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense? Analysis excludes FTA/Bail, temporary hold, and unclassified charges (i.e., "other").
 
@@ -1811,7 +1807,12 @@ nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode <- nh_eigh
     TRUE ~ as.numeric(NA)),
     hu_group_exclusive = factor(hu_group_exclusive,
          levels = c(1,2,3,4),
-         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
+         labels = c("Top 1% HU", "Top 5% HU", "Top 10% HU", "Non-HU"))) 
+
+# %>% 
+#   mutate(hu_group_exclusive_to_plot = paste0(
+#       "<span style = 'font-size:12pt'>", hu_group_exclusive, "</span><br><br>",
+#       "<span style = 'font-size:12pt'>", "High Utilizer ","</span>")) 
     
 
 ### unique bookings per charge type by HU grouping
@@ -1834,14 +1835,15 @@ df_hu_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recod
 df_hu_charge_type_summary_long <- df_hu_charge_type_summary %>%
   gather(charge_type, percent, `Violent`:`Probation/Parole Violation`) %>% 
   mutate(percent_label = scales::percent(percent, 
-                                         accuracy = 1))
-
+                                         accuracy = 1)) %>% 
+  mutate(charge_type_factor =  factor(charge_type,
+                                      levels = c("Violent","Property","Drug/Alcohol","Public Order","Probation/Parole Violation")))
 
 ### ggplot
 ggplot(data = df_hu_charge_type_summary_long, 
        aes(y = percent, 
            x = `High Utilizer Percentiles`, 
-           fill = forcats::fct_rev(charge_type))) + 
+           fill = forcats::fct_rev(charge_type_factor))) + 
   geom_bar(stat = "identity", 
            color = "gray80") +
   scale_x_discrete(limits = rev) +
@@ -1884,6 +1886,111 @@ ggplot(data = df_hu_charge_type_summary_long,
 ### write out
 ggsave(
     filename = file.path(sp_viz_output_path, "charge_type_by_hu_percentiles_statewide_non_pc.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+
+<br><br>
+
+### Figure 7b. Public Order Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
+
+Note: This output excludes charge type analysis for PC bookings, as no charge information exists, but the high utilizer percentile grouping (developed by Mari) does include PC bookings -- does this make sense? Analysis excludes FTA/Bail, temporary hold, and unclassified charges (i.e., "other").
+
+Below is the preliminary grouping I am using to confirm with the team. With this approach, this is not overlap of groups -- one individual is in one of the four groups (i.e., someone in the top 1% of jail entrances is only included in the 1% grouping, not the 5% and 10% grouping). I'm thinking that this may help us better see any differences between groupings of high utilizers, if they exist. Open to suggestions, though!
+
+* **Top 1%:** individual is in top 1% of jail entrances for all 3 years of sample
+
+* **Top 5%:** individual is in top 5% of jail entrances for all 3 years of sample (really this is 1% to 5%)
+
+* **Top 10%:** individual is in top 10% of jail entrances for all 3 years of sample (really this is 5% to 10%)
+
+* **Non-HU:** individual is not in top 10% of jail entrances for all 3 years of sample
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### unique bookings per charge type by HU grouping
+nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_public_order <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode %>% 
+  filter(crime_type_lookup=="Public Order") %>% 
+  mutate(public_order_charge_description = ifelse(statute_title_lookup%in%c("Criminal Mischief", "Criminal Trespass", "Disorderly Conduct", "Resisting Arrest Or Detention"),
+                                            statute_title_lookup,"Other"))
+
+
+### unique bookings per charge type by HU grouping
+df_hu_public_order_charge_type_summary_to_plot <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode_public_order %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Total Bookings` = n_distinct(unique_booking_id_nh),
+                   `Criminal Mischief` = n_distinct(unique_booking_id_nh[public_order_charge_description=="Criminal Mischief"])/`Total Bookings`,
+                   `Criminal Trespass` = n_distinct(unique_booking_id_nh[public_order_charge_description=="Criminal Trespass"])/`Total Bookings`,
+                   `Disorderly Conduct` = n_distinct(unique_booking_id_nh[public_order_charge_description=="Disorderly Conduct"])/`Total Bookings`,
+                   `Resisting Arrest Or Detention` = n_distinct(unique_booking_id_nh[public_order_charge_description=="Resisting Arrest Or Detention"])/`Total Bookings`,
+                   `Other` = n_distinct(unique_booking_id_nh[public_order_charge_description=="Other"])/`Total Bookings`) %>% 
+  ungroup() %>% 
+  dplyr::select(-`Total Bookings`)
+
+
+### pivot df long for ggplot 
+df_hu_public_order_charge_type_summary_long <- df_hu_public_order_charge_type_summary_to_plot %>%
+  gather(charge_type, percent, `Criminal Mischief`:`Other`) %>% 
+  mutate(percent_label = scales::percent(percent, 
+                                         accuracy = 1)) %>% 
+  mutate(charge_type_factor =  factor(charge_type,
+                                      levels = c("Criminal Trespass","Criminal Mischief", "Disorderly Conduct", "Resisting Arrest Or Detention","Other")))
+
+ 
+
+### ggplot
+ggplot(data = df_hu_public_order_charge_type_summary_long, 
+       aes(y = percent, 
+           x = hu_group_exclusive, 
+           fill = forcats::fct_rev(charge_type_factor))) + 
+  geom_bar(stat = "identity", 
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = c("#2F7084",
+                               "#1F4A58",
+                               "#E17619",
+                               "#87C2D4",
+                               "#61C280")) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  geom_label(aes(y = percent,
+      label = percent_label,
+      fontface = "bold"),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = "Charge Type",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "public_order_charge_type_by_hu_percentiles_non_pc.png"),
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 300,
