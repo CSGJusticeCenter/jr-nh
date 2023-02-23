@@ -1,5 +1,5 @@
 ---
-title: "Booking Types Analysis"
+title: "Sentence Statuses Analysis"
 output: 
   distill::distill_article:
     toc: true
@@ -25,11 +25,11 @@ source("data_cleaning/rdas.R")
 
 **Redo when Carroll submits data**
 
-## Booking Types
+## Sentence Statuses
 
-The following booking patterns were found using jail administrative data submitted directly to CSG. DHHS matched data does not have information on booking types. The "other" category includes federal holds, holds for other agencies, 24 hour and 72 hour holds, other holds, dual satus, bail set, bond denied, dismissed, and sentence suspended.  
+The following booking patterns were found using jail administrative data submitted directly to CSG. DHHS matched data does not have information on sentence statuses. The "other" category includes federal holds, holds for other agencies, 24 hour and 72 hour holds, other holds, dual satus, bail set, bond denied, dismissed, and sentence suspended.  
 
-### Booking Types State-wide
+### Sentence Statuses State-wide
 
 ```{r}
 # Count number of people on different sentence statuses for pie chart
@@ -92,7 +92,7 @@ data1 <- bookings_entrances %>%
 # Get frequencies for different sentence statuses
 data1 <- data.frame(summarytools::freq(data1$sentence_status_standard, order = "freq", cum.percent = FALSE))
 data1 <- data1 %>% tibble::rownames_to_column("sentence_status_standard") %>%
-  dplyr::select(`Booking Type` = sentence_status_standard,
+  dplyr::select(`Sentence Status` = sentence_status_standard,
                 `Unique Bookings (N)` = Freq,
                 `Proportion of Bookings (%)` = X..Valid) %>% 
   mutate(`Proportion of Bookings (%)` = percent(`Proportion of Bookings (%)`/100))
@@ -110,7 +110,7 @@ kable(data1,
   row_spec(6, bold = TRUE)
 ```
 
-### Booking Types by County (N)
+### Sentence Statuses by County (N)
 
 ```{r}
 # Df of total number of entrances by county
@@ -159,7 +159,7 @@ kable(df_sentence_statuses_county,
 
 <br>
 
-### Booking Types by County (%)
+### Sentence Statuses by County (%)
 
 ```{r}
 # Calculate proportion of sentence statuses out of all entrances
@@ -264,7 +264,7 @@ knitr::include_graphics("img/PRES_gg_pretrial_prop.png")
 
 ## Carroll County 
 
-This is how we standardized booking types in Carroll County. It's possible that some of the booking types should be in "Pretrial" instead of "Other."
+This is how we standardized sentence statuses in Carroll County. It's possible that some of the sentence statuses should be in "Pretrial" instead of "Other."
 
 ```{r}
 # Select Carroll data to understand their sentence statuses
@@ -273,8 +273,8 @@ data1 <- adm_all %>%
   group_by(sentence_status, sentence_status_standard) %>% 
   summarise(total = n()) %>% 
   arrange(sentence_status_standard) %>% 
-  select(`Booking Type (Raw)` = sentence_status,
-         `Booking Type (Standardized)` = sentence_status_standard,
+  select(`Sentence Status (Raw)` = sentence_status,
+         `Sentence Status (Standardized)` = sentence_status_standard,
          `Total Bookings (N)` = total)
 
 # Create kable table
@@ -302,12 +302,12 @@ kable(data1,
 
 <br>
 
-## Booking Types and Charge Types
+## Sentence Statuses and Charge Types
 
-### Charge Type by Booking Type (Row Sums)
+### Charge Type by Sentence Status (Row Sums)
 
 ```{r}
-# Get proportion of charge types by booking types
+# Get proportion of charge types by Sentence Statuses
 data1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
 table1 <- prop.table(data1, 1)
 table1 <- as.data.frame(cbind(data1, table1))
@@ -396,10 +396,10 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-### Charge Type by Booking Type (Column Sums)
+### Charge Type by Sentence Status (Column Sums)
 
 ```{r}
-# Get proportion of charge types by booking types
+# Get proportion of charge types by Sentence Statuses
 data1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
 table1 <- prop.table(data1, 1)
 table1 <- as.data.frame(cbind(data1, table1))
@@ -490,7 +490,7 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 <br>
 
 
-### High Utilizers and Booking Types (Row sums)
+### High Utilizers and Sentence Statuses (Row sums)
 
 ```{r}
 # Select HU entrances
@@ -551,7 +551,7 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-### High Utilizers and Booking Types (Column sums)
+### High Utilizers and Sentence Statuses (Column sums)
 
 ```{r}
 # Get proportion of sentence statuses by HU type
