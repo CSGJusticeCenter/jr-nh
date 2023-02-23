@@ -537,40 +537,39 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid
 
   ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
   mutate(hu_group_exclusive = case_when(
-    high_utilizer_10_pct=="No" ~ 4,
-    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
-    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
-    high_utilizer_1_pct=="Yes" ~ 1,
+    high_utilizer_10_pct =="No"  ~ 4,
+    high_utilizer_10_pct =="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct  =="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct  =="Yes" ~ 1,
     TRUE ~ as.numeric(NA)),
     hu_group_exclusive = factor(hu_group_exclusive,
          levels = c(1,2,3,4),
-         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
+         labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU")))
 
 ### create table of highlighting the percentage of the medicaid sample that is matched to medicaid data (using medicaid_match_flag) by county using the medicaid_jail_all file
 
 # by county
 medicaid_jail_percent_match_high_util_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+  dplyr::summarise(`Overall Individuals (N)`           = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
-                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`))  %>% 
+                   `Individuals w/ BH Encounter (N)`   = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
+                   `Individuals w/ BH Encounter (%)`   = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`))  %>% 
   ungroup() %>% 
   dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
 
 # statewide
 medicaid_jail_percent_match_high_util_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+   dplyr::summarise(`Overall Individuals (N)`          = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
-                   `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`))  %>% 
+                   `Individuals w/ BH Encounter (N)`   = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
+                   `Individuals w/ BH Encounter (%)`   = scales::percent(`Individuals w/ BH Encounter (N)`/`Overall Individuals (N)`))  %>% 
   dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
 
 # rbind county and statewide files 
-medicaid_jail_percent_match_high_util_statewide_table <- rbind(medicaid_jail_percent_match_high_util_table,
-                                                               medicaid_jail_percent_match_high_util_overall_table)
+medicaid_jail_percent_match_high_util_statewide_table <- rbind(medicaid_jail_percent_match_high_util_table, medicaid_jail_percent_match_high_util_overall_table)
 
 ### print table via kableextra
 kable(medicaid_jail_percent_match_high_util_statewide_table, 
@@ -585,6 +584,69 @@ kable(medicaid_jail_percent_match_high_util_statewide_table,
   column_spec(4, bold = TRUE, color = jri_green) %>% 
   column_spec(6, bold = TRUE, color = jri_orange) %>% 
   scroll_box(width = "130%")
+```
+
+<br>
+
+```{r}
+# Calculate proportion of individuals that matched to Medicaid from 2014-2021
+df_medicaid_match <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Overall Individuals (N)`                  = n_distinct(unique_person_id),
+                   
+                   `Individuals w/ any Medicaid Match (N)`    = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any Medicaid Match`        = `Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`,
+                   
+                   `Individuals w/out any Medicaid Match (N)` = `Overall Individuals (N)` - `Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out any Medicaid Match`     = `Individuals w/out any Medicaid Match (N)`/`Overall Individuals (N)`)  %>% 
+  ungroup() %>% 
+  select(hu_group_exclusive,
+         `Individuals w/ any Medicaid Match`,
+         `Individuals w/out any Medicaid Match`)
+
+# Change from wide to long format
+df_medicaid_match <- gather(df_medicaid_match, population, pct, `Individuals w/ any Medicaid Match`:`Individuals w/out any Medicaid Match`, factor_key=TRUE) 
+df_medicaid_match <- df_medicaid_match %>% 
+  mutate(population = factor(population, 
+                             levels = c("Individuals w/out any Medicaid Match",
+                                        "Individuals w/ any Medicaid Match"))) %>% 
+  mutate(pct1 = round(pct*100, 0))
+  
+# Stacked bar chart showing the proportion of people matched to Medicaid by hu_group_exclusive
+PRES_gg_medicaid_match_hu <- ggplot(df_medicaid_match, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
+  geom_col(colour = "white", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_green),
+                    na.value = "white") +
+  geom_text(aes(label = ifelse(pct > .03, paste(round(pct*100, 0), "%", sep = ""), ""), 
+                fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.8,
+            size = 10, family = "Franklin Gothic Book",
+            color = case_when(df_medicaid_match$population == "Individuals w/ any Medicaid Match" ~ "white",
+                              TRUE ~ "black")) +
+  theme_minimal() +
+  coord_flip() +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(size = 28, color = "black"),
+        axis.text.y = element_text(size = 28, color = "black"),
+        legend.position = "right",
+        legend.justification = c(1, 0.5),
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
+  #geom_hline(yintercept = mean(df_medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_medicaid_match_hu, file="img/PRES_gg_medicaid_match_hu.png", width = 15,  height = 5, dpi = 100)
+knitr::include_graphics("img/PRES_gg_medicaid_match_hu.png")
 ```
 
 <br><br>
