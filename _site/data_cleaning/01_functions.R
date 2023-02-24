@@ -327,38 +327,8 @@ fnc_row_totals <- function(df){
 
 ###################################################################################################################
 
-# ggplot theme with axes
-theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
-  theme(
-    plot.title = element_text(
-      family = "Franklin Gothic Book",
-      face = "bold",
-      size = 24, # 18,
-      color = "black",
-      margin = margin(0, 0, 15, 0)
-    ),
-    plot.subtitle = element_text(
-      family = "Franklin Gothic Book",
-      size = 22, #15,
-      color = "black",
-      margin = margin(-10, 0, 15, 0)
-    ),
-    axis.text.x = element_text(size = 22, color = "black"),
-    axis.text.y = element_text(size = 22, color = "black"),
-    axis.title = element_text(color = "black"),
-    axis.title.y = element_text(size = 22, color = "black"),
-    axis.title.x = element_text(size = 22, color = "black"),
-
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    legend.position = "top",
-    legend.justification = c(0, 0),
-    legend.title=element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
-  )
-
-# ggplot theme without axes
-theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
+# ggplot theme no grid or labels for axis
+theme_no_grid_no_labels <- theme_minimal(base_family = "Franklin Gothic Book") +
   theme(
     plot.title = element_text(
       family = "Franklin Gothic Book",
@@ -373,23 +343,28 @@ theme_no_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
       color = "black",
       margin = margin(-10, 0, 15, 0)
     ),
-    #axis.text = element_text(size = 22),
-    axis.title = element_text(color = "black"),
-    axis.title.y = element_text(size = 22, color = "black"),
-    axis.title.x = element_text(size = 22, color = "black"),
-    axis.text.y = element_text(size = 22, color = "black"),
-    axis.text.x = element_text(size = 22, color = "black"),
+
+    axis.text    = element_text(size = 22),
+    axis.title   = element_text(size = 22, color = "black"),
+    # axis.title.y = element_text(size = 22, color = "black"),
+    # axis.title.x = element_text(size = 22, color = "black"),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    axis.text.y  = element_text(size = 22, color = "black"),
+    axis.text.x  = element_text(size = 22, color = "black"),
 
     panel.grid.minor = element_blank(),
     panel.grid.major = element_blank(),
     panel.border = element_blank(),
-    legend.position = "top",
-    legend.justification = c(0, 0),
+
+    legend.position = "right",
+    legend.title=element_blank(),
+    legend.justification = c(0, 0.5),
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
 
-# ggplot theme with axes
-theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
+# ggplot theme no grid but with axis labels
+theme_no_grid_with_labels <- theme_minimal(base_family = "Franklin Gothic Book") +
   theme(
     plot.title = element_text(
       family = "Franklin Gothic Book",
@@ -399,57 +374,61 @@ theme_axes <- theme_minimal(base_family = "Franklin Gothic Book") +
       margin = margin(0, 0, 15, 0)
     ),
     plot.subtitle = element_text(
-      family = "Franklin Gothic Book",
+      family = "Arial",
       size = 22, #15,
       color = "black",
       margin = margin(-10, 0, 15, 0)
     ),
-    axis.text.x = element_text(size = 22, color = "black"),
-    axis.text.y = element_text(size = 22, color = "black"),
-    axis.title = element_text(color = "black"),
+
+    axis.text    = element_text(size = 22),
+    axis.title   = element_text(size = 22, color = "black"),
     axis.title.y = element_text(size = 22, color = "black"),
     axis.title.x = element_text(size = 22, color = "black"),
-
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    legend.position = "top",
-    legend.justification = c(0, 0),
-    legend.title=element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
-  )
-
-# ggplot theme without axes or labels
-theme_no_axes_labels <- theme_minimal(base_family = "Franklin Gothic Book") +
-  theme(
-    plot.title = element_text(
-      family   = "Franklin Gothic Book",
-      face     = "bold",
-      size     = 24, # 18,
-      color    = "black",
-      margin   = margin(0, 0, 15, 0)),
-
-    plot.subtitle = element_text(
-      family      = "Arial",
-      size        = 22, #15,
-      color       = "black",
-      margin      = margin(-10, 0, 15, 0)),
-
-    #axis.text   = element_text(size = 22),
-    axis.title   = element_text(color = "black"),
-    axis.title.y = element_blank(),
-    axis.title.x = element_blank(),
-    axis.text.y  = element_blank(),
+    axis.text.y  = element_text(size = 22, color = "black"),
     axis.text.x  = element_text(size = 22, color = "black"),
 
     panel.grid.minor = element_blank(),
     panel.grid.major = element_blank(),
-    panel.border     = element_blank(),
+    panel.border = element_blank(),
 
-    legend.position  = "top",
-    legend.justification = c(0, 0),
-    legend.text      = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
+    legend.position = "right",
+    legend.title=element_blank(),
+    legend.justification = c(0, 0.5),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
 
+# ggplot theme with grid and labels for axis
+theme_with_grid_with_labels <- theme_minimal(base_family = "Franklin Gothic Book") +
+  theme(
+    plot.title = element_text(
+      family = "Franklin Gothic Book",
+      face = "bold",
+      size = 24, # 18,
+      color = "black",
+      margin = margin(0, 0, 15, 0)
+    ),
+    plot.subtitle = element_text(
+      family = "Arial",
+      size = 22, #15,
+      color = "black",
+      margin = margin(-10, 0, 15, 0)
+    ),
+
+    axis.text    = element_text(size = 22),
+    axis.title   = element_text(size = 22, color = "black"),
+    axis.title.y = element_text(size = 22, color = "black"),
+    axis.title.x = element_text(size = 22, color = "black"),
+    axis.text.y  = element_text(size = 22, color = "black"),
+    axis.text.x  = element_text(size = 22, color = "black"),
+
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor.x = element_blank(),
+
+    legend.position = "right",
+    legend.justification = c(0, 0.5),
+    legend.title=element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
+  )
 
 # Set up highcharts download buttons
 hc_setup <- function(x) {

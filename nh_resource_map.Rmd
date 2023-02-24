@@ -1,5 +1,5 @@
 ---
-title: "Mapping NH Resource Need and Availability"
+title: "Mapping NH Resource Availability"
 output: 
   distill::distill_article:
     toc: true
@@ -15,6 +15,11 @@ I then compiled individual resource locations from each listed organizations’ 
 
 
 *	Recovery Community Organizations (State-funded RCOs): https://www.dhhs.nh.gov/programs-services/health-care/recovery-support-services
+
+* SUD Treatment: https://findtreatment.gov/locator
+
+I filtered on “Substance Use” and “Opioid Treatment Programs” for NH
+
 
 *	DHHS/Bureau of Homeless and Housing Services (BHHS) Cold Weather/Emergency Shelters: https://www.dhhs.nh.gov/programs-services/housing-services/homeless-assistance-prevention-services/shelter-services
 
@@ -39,6 +44,12 @@ knitr::opts_chunk$set(
 
 ### set theme
 theme_set(theme_minimal())
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### set constants for mapping
+default_font_color <- "#4e4d47"
+default_font_family <- "Arial"
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
@@ -95,12 +106,11 @@ nh_resource_locations_raw <- readxl::read_xlsx(file.path(sp_data_path,"Data","nh
 #                     "nh_resource_location_geo_fix.xlsx"))
 
 ## pull file back in now that i've manually geocoded the missing records
-nh_resource_location_geo_full <- openxlsx::read.xlsx(file.path(sp_data_path,"Data",
+nh_resource_location_prelim_geo_clean <- openxlsx::read.xlsx(file.path(sp_data_path,"Data",
                     "nh_resource_location_geo_fix_with_county.xlsx")) %>%
   dplyr::select(unique_resource_id,lon=cxy_lon,lat=cxy_lat,street,cxy_county_id) %>% 
   right_join(nh_resource_locations_raw, by = "unique_resource_id") %>%
-  mutate(resource_type = str_to_title(resource_type)) %>% 
-  dplyr::select(-address) %>% 
+  dplyr::select(-c(address,unique_resource_id)) %>% 
   ### add county name to geocoded fips county number obtained
   ### see codes here: https://tigerweb.geo.census.gov/tigerwebmain/Files/bas22/tigerweb_bas22_county_nh.html
   mutate(county = case_when(
@@ -114,7 +124,32 @@ nh_resource_location_geo_full <- openxlsx::read.xlsx(file.path(sp_data_path,"Dat
     cxy_county_id == 15 ~ "Rockingham", 
     cxy_county_id == 17 ~ "Strafford", 
     cxy_county_id == 19 ~ "Sullivan", 
-    TRUE ~ as.character(NA)))
+    TRUE ~ as.character(NA))) %>% 
+  dplyr::select(resource_type,resource_name,organization,county,lat,lon)
+
+## now import sud treatment file (already has lat/lon and county) and append to nh_resource_location_geo_full
+nh_sud_treatment_resources <- openxlsx::read.xlsx(file.path(sp_data_path,"Data",
+                    "nh_sud_treatment_resources.xlsx")) %>% 
+  dplyr::select(resource_type,resource_name,organization,county,lat,lon)
+
+## append both files to create final resource file with lat, lon, and county
+nh_resource_location_geo_full <- rbind(nh_resource_location_prelim_geo_clean,
+                                               nh_sud_treatment_resources) %>% 
+  ### create unique id for counts
+  mutate(unique_resource_id = paste0(resource_name,row_number()))
+
+### create county-level file with counts of resources by type
+nh_resource_location_county_level <- nh_resource_location_geo_full %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(overall_resource_count = n_distinct(unique_resource_id),
+            cmhc_resource_count = n_distinct(unique_resource_id[resource_type=="CMHC"]),
+            rco_resource_count = n_distinct(unique_resource_id[resource_type=="RCO"]),
+            bhhs_shelter_resource_count = n_distinct(unique_resource_id[resource_type=="Cold Weather/Emergency Shelter (DHHS-funded)"]),
+            non_bhhs_shelter_resource_count = n_distinct(unique_resource_id[resource_type=="Non-DHHS Funded Shelters/Housing"]),
+            nhcorr_recovery_resource_count = n_distinct(unique_resource_id[resource_type=="NHCORR Certified Recovery Residences"]),
+            sud_treatment_resource_count = n_distinct(unique_resource_id[resource_type=="SUD Treatment"])) %>% 
+  ungroup()
+
 ```
 
 
@@ -163,17 +198,16 @@ race_vars = c(
         asian = "P2_008N"
         )
 
-iowa_race_2020 <- tidycensus::get_decennial(geography = "County", 
+nh_race_2020 <- tidycensus::get_decennial(geography = "County", 
                                                state = "NH",
                                                variables = race_vars, ### use race vars that i've specified
                                                summary_var = "P2_001N", ### summary column for % calculation
                                                year = 2020,
                                                geometry = FALSE) %>% 
   clean_names() %>% 
-  mutate(percent = (value/summary_value)*100) ### create percent estimate from estimated counts
-
-### pivot race file to be wide and unique by census tract 
-nh_race_2020 %<>%
+  ### create percent estimate from estimated counts
+  mutate(percent = (value/summary_value)*100) %>% 
+  ### pivot race file to be wide and unique by census tract 
   dplyr::select(geoid,variable,percent) %>% 
   spread(variable,percent, fill = NA) 
 ```
@@ -184,12 +218,31 @@ nh_acs_census_county <- left_join(nh_poverty_status, nh_median_income, by="geoid
 
 nh_acs_census_county <- left_join(nh_acs_census_county, nh_county_pop_2020, by="geoid")
 
-nh_acs_census_county <- left_join(nh_acs_census_county, nh_race_2020, by="geoid")
+nh_acs_census_county <- left_join(nh_acs_census_county, nh_race_2020, by="geoid") %>% 
+  mutate(county = stringr::word(name, 1))
+
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
-### read in county-level iowa data to create county,state, geoid crosswalk with acs/census data 
-### this is the official iowa county shapefile, obtained here: https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html 
+nh_resource_location_geo_full_acs_census <- left_join(nh_resource_location_county_level, 
+                                                      nh_acs_census_county,
+                                                      by = "county") %>% 
+  group_by(county) %>% 
+  ### create resource rate -- resources per 10,000 county residents 
+  mutate(overall_resources_rate = overall_resource_count/county_total_pop*100000,
+         cmhc_resource_rate = cmhc_resource_count/county_total_pop*100000,
+         rco_resource_rate = rco_resource_count/county_total_pop*100000,
+         bhhs_shelter_resource_rate = bhhs_shelter_resource_count/county_total_pop*100000,
+         non_bhhs_shelter_resource_rate = non_bhhs_shelter_resource_count/county_total_pop*100000,
+         nhcorr_recovery_resource_rate = nhcorr_recovery_resource_count/county_total_pop*100000,
+         sud_treatment_resource_rate = sud_treatment_resource_count/county_total_pop*100000) %>% 
+  ungroup()
+
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### read in county-level nh data to create county,state, geoid crosswalk with acs/census data 
+### this is the official nh county shapefile, obtained here: https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html 
 ### this is not used for mapping, however, hence we remove geography below; it's just a crosswalk across county name, geoid, and county fip code
 
 ### read in nh county-level shape file    
@@ -206,99 +259,730 @@ nh_state_shape <- nh_county_shape %>%
   summarize(geometry = st_union(geometry)) %>% 
   ungroup()
 
-### add county name to supervision_level_4_5_county_for_map_supervision_race
-supervision_level_4_5_county_for_map_supervision_race_geo <- left_join(supervision_level_4_5_county_for_map_supervision_race,iowa_geo_county,                                                                     by=c("fips_code"="geoid"))
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
-### merge county code/geoid crosswalk to acs data
-iowa_acs_census_county_crosswalk <- inner_join(iowa_acs_census_county,iowa_geo_county,by = "geoid")
+### import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
+### file is unique by individual/booking
+### this file lives on the external hard drive (created and exported in `14_medicaid.R`)
+jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
 
-### county-level estimates
+### de-dup (there are a few duplicate bookings) and create booking id for analysis
+jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_individual_booking_level %>% 
+  distinct(unique_person_id, 
+           booking_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id,
+                                    booking_id)) ### creating unique booking id with both individual and booking IDs
 
-### clean up acs/census estimates for eventual use as map labels
-iowa_acs_census_county_crosswalk_full <- iowa_acs_census_county_crosswalk %>%
-    group_by(county_name_short) %>%
-    summarize(county_total_pop = sum(county_total_pop, na.rm=TRUE),
-              estimate_below_poverty_mean = round(mean(estimate_below_poverty, na.rm=TRUE),digits = 1),
-              estimate_income_median = round(mean(estimate_income, na.rm=TRUE),digits = 1),
-              percent_asian = round(mean(asian, na.rm=TRUE),digits = 1),
-              percent_black = round(mean(black, na.rm=TRUE),digits = 1),
-              percent_hispanic = round(mean(hispanic, na.rm=TRUE),digits = 1),
-              percent_white = round(mean(white, na.rm=TRUE),digits = 1)) %>%
-    ungroup()
-
-### calculate rates using population estimates by county from 2019 American Community Survey
-iowa_acs_census_county_no_geo_rates <- iowa_acs_census_county_crosswalk_full %>%
-  left_join(supervision_level_4_5_county_for_map_supervision_race_geo, by = "county_name_short") %>%
-  group_by(county_name_short) %>%
-  mutate(supervision_4_5_2020_rate_per_10000 = round((supervision_4_5_count_2020/county_total_pop)*10000,digits = 4)) %>%
-  ungroup() 
-
-```
-
-```{r include=FALSE,message=FALSE,warning=FALSE}
-### read in iowa county-level shape file    
-iowa_county_shape <- read_sf("C:\\Users\\abyrum\\OneDrive - The Council of State Governments\\Geospatial_Mapping\\US County Geo Data\\tl_2019_us_county\\tl_2019_us_county.shp") %>%
-  clean_names() %>% 
-  filter(statefp=="19") %>% 
-  dplyr::rename(county_name_short=name, 
-                county_fip=countyfp)
-
-### add judicial district to iowa_geo_county based on county
-iowa_county_shape %<>%
-  mutate(judicial_district = case_when(
-    county_name_short %in% district_1 ~ 1,
-    county_name_short %in% district_2 ~ 2,
-    county_name_short %in% district_3 ~ 3,
-    county_name_short %in% district_4 ~ 4,
-    county_name_short %in% district_5 ~ 5, 
-    county_name_short %in% district_6 ~ 6, 
-    county_name_short %in% district_7 ~ 7, 
-    county_name_short %in% district_8 ~ 8, 
+### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when(
+    high_utilizer_10_pct=="No" ~ 4,
+    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct=="Yes" ~ 1,
     TRUE ~ as.numeric(NA)),
-    judicial_district = factor(judicial_district,
-         levels = c(1,2,3,4,5,6,7,8),
-         labels = c("District 1", "District 2", "District 3","District 4","District 5","District 6","District 7","District 8"))) %>% 
-  mutate(judicial_district = as.numeric(judicial_district))
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
 
-### use group_by and st_union to create district-level polygons using the county-level geography
-### we'll use this district-level geography for additional lines to delineate groups of counties
-iowa_district_shape <- iowa_county_shape %>%
-  group_by(judicial_district) %>% 
-  summarize(geometry = st_union(geometry))
+### group by county and create the following measures
+# % of bookings w/ BH match
+# % of bookings w/ co-occurring disorders
+# % of bookings w/ homelessness history
+# % of bookings w/ ED BH visits 
+# % of bookings w/ ED CMHC visits 
 
+jail_medicaid_analytic_county_level_to_map <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Overall Bookings (N)` = n_distinct(unique_person_booking_id),
+                   `Bookings w/ any Medicaid Match (N)` = n_distinct(unique_person_booking_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Bookings w/ any Medicaid Match (%)` = `Bookings w/ any Medicaid Match (N)`/`Overall Bookings (N)`,
+                   `Bookings w/ BH Encounter (N)` = n_distinct(unique_person_booking_id[pre_or_study_bh_flag==1]),
+                   `Bookings w/ BH Encounter (%)` = `Bookings w/ BH Encounter (N)`/`Bookings w/ any Medicaid Match (N)`,
+                   `Bookings w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_booking_id[pre_or_study_mh_service_primary_dx_flag==1 & pre_or_study_sud_service_primary_dx_flag==1]),
+                   `Bookings w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = `Bookings w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/`Bookings w/ any Medicaid Match (N)`,
+                   `Bookings w/ BH Service provided by CMHC (N)` = n_distinct(unique_person_booking_id[pre_or_study_service_provided_by_cmhc_provider_flag==1]),
+                   `Bookings w/ BH Service provided by CMHC (%)` = `Bookings w/ BH Service provided by CMHC (N)`/`Bookings w/ any Medicaid Match (N)`,
+                   `Bookings w/ BH Service provided by ED (N)` = n_distinct(unique_person_booking_id[pre_or_study_ed_visit_or_service_flag==1]),
+                   `Bookings w/ BH Service provided by ED (%)` = `Bookings w/ BH Service provided by ED (N)`/`Bookings w/ any Medicaid Match (N)`,
+                    `Bookings w/ any experience of homelessness (N)` = n_distinct(unique_person_booking_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
+                   
+                   `Bookings w/ any experience of homelessness (%)` = `Bookings w/ any experience of homelessness (N)`/`Bookings w/ any Medicaid Match (N)`) %>% 
+  ungroup() %>% 
+  dplyr::select(county,`Bookings w/ any Medicaid Match (%)`,`Bookings w/ BH Encounter (%)`,`Bookings w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)`,`Bookings w/ BH Service provided by CMHC (%)`,`Bookings w/ BH Service provided by ED (%)`,`Bookings w/ any experience of homelessness (%)`)
+
+### join in other county information
+nh_resource_location_acs_census_medicaid <- left_join(nh_resource_location_geo_full_acs_census,
+                                                      jail_medicaid_analytic_county_level_to_map,
+                                                      by = "county")
+
+
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+source("data_cleaning/rdas.R")
+
+# Proportion of PC holds by county
+county_level_pc_holds <- df_pch %>%
+  group_by(county, pc_hold_in_booking) %>% summarise(total = n()) %>% 
+  group_by(county) %>% 
+  mutate(pc_hold_percent = total/sum(total)) %>% 
+  ungroup() %>% 
+  filter(pc_hold_in_booking=="PC Hold") %>% 
+  dplyr::select(county,pc_hold_percent)
+
+### now join in other county information again
+nh_resource_location_acs_census_medicaid_pc_holds <- left_join(nh_resource_location_acs_census_medicaid,
+                                                      county_level_pc_holds,
+                                                      by = "county")
+
+```
+
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
 ### merge county shapefile to acs, census, and iowa data to attach geography and render the file map-able
 ### this will be the file we use to map
-iowa_acs_census_county_geo <- merge(iowa_county_shape, iowa_acs_census_county_no_geo_rates, by = "county_name_short") %>% 
-  mutate(percent_non_white = 100-percent_white,
-         cdc_urban_rural_classification = factor(cdc_urban_rural_classification,
-         levels = c("Rural Area","Town","Small City","Medium City")))  ### use factor function to assign labels to values
+nh_acs_census_county_geo <- merge(nh_county_shape, 
+                                    nh_resource_location_acs_census_medicaid_pc_holds,
+                                    by = "county") 
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
-### define color palettes for each layer in interactive map
-
-### define palette for supervision_4_5_count_2020
-pal_supervision_level_rate <- colorQuantile(palette = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"), domain = iowa_acs_census_county_geo$supervision_4_5_2020_rate_per_10000, n = 4, reverse = TRUE, na.color = "#808080") ### use reverse to invert colors 
-
-### define palette for percent_non_white
-pal_percent_race_non_white <- colorQuantile(palette = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"), domain = iowa_acs_census_county_geo$percent_non_white, n = 4, reverse = TRUE, na.color = "#808080") ### use reverse to invert colors 
-
-### define palette for percent_black
-pal_percent_race_black <- colorQuantile(palette = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"), domain = iowa_acs_census_county_geo$percent_black, n = 4, reverse = TRUE, na.color = "#808080") ### use reverse to invert colors 
-
-### define palette for percent_black
-pal_percent_race_white <- colorQuantile(palette = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"), domain = iowa_acs_census_county_geo$percent_white, n = 4, reverse = TRUE, na.color = "#808080") ### use reverse to invert colors 
-
-### define palette for cdc_urban_rural_classification
-pal_cdc_rural_urban <- colorFactor(palette = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"), domain = iowa_acs_census_county_geo$cdc_urban_rural_classification, reverse = TRUE, na.color = "#808080") ### use reverse to invert colors
-
-# ### define palette for pre_to_post_covid_rate_change
-# pal_revocation_rate <- colorQuantile(palette = c("#00475d","#007392","#0db4e4","#9ed4ef"), domain = iowa_acs_census_county_geo$pre_to_post_covid_rate_change, n = 4, reverse = TRUE) ### use reverse to invert colors
+### create static map theme (based on https://timogrossenbacher.ch/2019/04/bivariate-maps-with-ggplot2-and-sf/)
+theme_map <- function(...) {
+  theme_minimal() +
+  theme(
+    text = element_text(family = default_font_family,
+                        color = default_font_color),
+    # remove all axes
+    axis.line = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    axis.ticks = element_blank(),
+    # add a subtle grid
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    # borders and margins
+    plot.margin = unit(c(.5, .5, .2, .5), "cm"),
+    panel.border = element_blank(),
+    panel.spacing = unit(c(-.1, 0.2, .2, 0.2), "cm"),
+    # titles
+    legend.title = element_text(size = 11),
+    legend.text = element_text(size = 9, hjust = 0,
+                               color = default_font_color),
+    plot.title = element_text(size = 15, hjust = 0.5,
+                              color = default_font_color),
+    # plot.subtitle = element_text(size = 10, hjust = 0.5,
+    #                              color = default_font_color,
+    #                              margin = margin(b = -0.1,
+    #                                              t = -0.1,
+    #                                              l = 2,
+    #                                              unit = "cm"),
+    #                              debug = F),
+    # # captions
+    # plot.caption = element_text(size = 7,
+    #                             hjust = .5,
+    #                             margin = margin(t = 0.2,
+    #                                             b = 0,
+    #                                             unit = "cm"),
+    #                             color = default_font_color),
+    ...
+  )
+}
 ```
 
+<br>
+
+### Map of all BH and Housing Resources by County (locations per 100k residents)
+
+There isn't a lot of variation here, interestingly. Though we should keep in mind our data collection may not be 100% complete. 
+
+```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
+### create quantiles object
+no_classes <- 4
+
+### extract quantiles from var we're mapping
+quantiles <- nh_acs_census_county_geo %>%
+  pull(overall_resources_rate) %>%
+  quantile(probs = seq(0, 1, length.out = no_classes + 1), na.rm=TRUE) %>%
+  as.vector() 
+
+### make labels for map's legend
+label_resource_rate <- c("16 per 100k and Greater","14 to 16 per 100k","12 to 14 per 100k","12 per 100k and Lower")
+
+### create a new variable with the specified quantiles
+nh_acs_census_county_geo_to_map <- nh_acs_census_county_geo %>%
+  mutate(resource_rate_quartile = cut(-overall_resources_rate,
+                               breaks = -quantiles,
+                               right = TRUE,
+                               labels = label_resource_rate,
+                               include.lowest = T)) 
 
 
+### map via ggplot 
+ggplot(
+  # define main data source
+  data = nh_acs_census_county_geo_to_map
+) +
+  scale_alpha(name = "",
+              range = c(0.6, 0),
+              guide = F) + # suppress legend
+  # add main fill aesthetic
+  # use thin white stroke for municipality borders
+  geom_sf(
+    mapping = aes(
+      fill = resource_rate_quartile
+      ),
+    color = "white",
+    size = 0.1
+  ) +
+  #   scale_fill_distiller(
+  #   labels = scales::percent_format(accuracy=1),
+  #   direction = 1,
+  #   name = "% Bookings with Drug/Alcohol\n Charges"
+  # ) +
+  ### use jr palette here
+    # scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
+ scale_fill_manual(
+    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+    name = "Overall BH and Housing Resources\nper 100k Residents",
+    na.value = "grey50",
+    guide = guide_legend(
+     keyheight = unit(7.5, units = "mm"),
+     title.position = "top",
+     reverse = F # display highest on top
+  )) +
+  # use white stroke borders for county boundaries
+  geom_sf(
+    data = nh_acs_census_county_geo_to_map,
+    fill = "transparent",
+    color = "white",
+    size = 1
+  )  +
+  # # use additional state-level shapefile for state border
+  # geom_sf(
+  #   data = nh_state_shape,
+  #   fill = "transparent",
+  #   color = "black",
+  #   size = .3
+  # )  +
+  geom_label(
+     data = nh_acs_census_county_geo_to_map, 
+     aes(geometry = geometry, 
+         label = county),
+     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
+    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 3,
+    fontface = "bold",
+    stat = "sf_coordinates") +
+  # guides(fill = guide_colorbar(barwidth = 8),
+  #          direction = "horizontal",
+  #     barheight = unit(2, units = "mm"),
+  #     barwidth = unit(50, units = "mm"),
+  #     draw.ulim = F,
+  #     title.position = 'top',
+  #     # some shifting around
+  #     title.hjust = 0.5,
+  #     label.hjust = 0.5) +
+  labs(
+    title = NULL,
+    subtitle = NULL,
+    x = NULL,
+    y = NULL,
+    fill = NULL,
+    caption = NULL
+  ) +
+  # add theme
+  theme_map() 
+# +
+#   theme(
+#     # plot.margin = margin(),
+#     panel.grid = element_blank(),
+#     axis.text.x = element_blank(),
+#     axis.text.y = element_blank(),
+#     legend.position = "bottom",
+#     legend.justification = c(0.5, 0.5),
+#     legend.text = element_text(size = 11)) 
+
+
+# ### write out
+# ggsave(
+#     filename = file.path(sp_viz_output_path, "nh_resource_availability_overall.png"),
+#     plot = last_plot(),
+#     device = ragg::agg_png,
+#     dpi = 300,
+#     height = 5.25,
+#     width = 10,
+#     units = "in",
+#     bg = "transparent"
+#   )
+```
+
+<br><br>
+
+### Map of all Community Mental Health Center (CMHC) Resources by County (locations per 100k residents)
+
+```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
+# ### create quantiles object
+# no_classes <- 4
+# 
+# ### extract quantiles from var we're mapping
+# quantiles <- nh_acs_census_county_geo %>%
+#   pull(cmhc_resource_rate) %>%
+#   quantile(probs = seq(0, 1, length.out = no_classes + 1), na.rm=TRUE) %>%
+#   as.vector() 
+# 
+# ### make labels for map's legend
+# label_resource_rate <- c("5 per 100k and Greater","4 to 5 per 100k","2 to 4 per 100k","2 per 100k and Lower")
+# 
+# ### create a new variable with the specified quantiles
+# nh_acs_census_county_geo_to_map <- nh_acs_census_county_geo %>%
+#   mutate(resource_rate_quartile = cut(-cmhc_resource_rate,
+#                                breaks = -quantiles,
+#                                right = TRUE,
+#                                labels = label_resource_rate,
+#                                include.lowest = T)) 
+
+
+### map via ggplot 
+ggplot(
+  # define main data source
+  data = nh_acs_census_county_geo
+) +
+  scale_alpha(name = "",
+              range = c(0.6, 0),
+              guide = F) + # suppress legend
+  # add main fill aesthetic
+  # use thin white stroke for municipality borders
+  geom_sf(
+    mapping = aes(
+      fill = cmhc_resource_rate
+      ),
+    color = "white",
+    size = 0.3
+  ) +
+    scale_fill_distiller(
+    labels = scales::number_format(accuracy=1),
+    direction = 1,
+    name = "CMHC Resources\nper 100k Residents"
+  ) +
+  ### use jr palette here
+    scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
+ # scale_fill_manual(
+ #    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+ #    name = "CMHC Resources\nper 100k Residents",
+ #    na.value = "grey50",
+ #    guide = guide_legend(
+ #     keyheight = unit(7.5, units = "mm"),
+ #     title.position = "top",
+ #     reverse = F # display highest on top
+ #  )) +
+  # use white stroke borders for county boundaries
+  geom_sf(
+    data = nh_acs_census_county_geo,
+    fill = "transparent",
+    color = "white",
+    size = 1
+  )  +
+  # use additional state-level shapefile for state border
+  geom_sf(
+    data = nh_state_shape,
+    fill = "transparent",
+    color = "grey40",
+    size = .05
+  )  +
+  geom_label(
+     data = nh_acs_census_county_geo, 
+     aes(geometry = geometry, 
+         label = county),
+     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
+    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 3,
+    fontface = "bold",
+    stat = "sf_coordinates") +
+  guides(fill = guide_colorbar(barwidth = 8),
+           direction = "horizontal",
+      barheight = unit(2, units = "mm"),
+      barwidth = unit(50, units = "mm"),
+      draw.ulim = F,
+      title.position = 'top',
+      # some shifting around
+      title.hjust = 0.5,
+      label.hjust = 0.5) +
+  labs(
+    title = NULL,
+    subtitle = NULL,
+    x = NULL,
+    y = NULL,
+    fill = NULL,
+    caption = NULL
+  ) +
+  # add theme
+  theme_map() +
+  theme(
+    # plot.margin = margin(),
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    legend.position = "bottom",
+    legend.justification = c(0.5, 0.5),
+    legend.text = element_text(size = 11))
+
+
+# ### write out
+# ggsave(
+#     filename = file.path(sp_viz_output_path, "nh_resource_availability_overall.png"),
+#     plot = last_plot(),
+#     device = ragg::agg_png,
+#     dpi = 300,
+#     height = 5.25,
+#     width = 10,
+#     units = "in",
+#     bg = "transparent"
+#   )
+```
+
+<br><br>
+
+### Map of all Substance Use Disorder (SUD) Resources by County (locations per 100k residents)
+
+```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
+# ### create quantiles object
+# no_classes <- 4
+# 
+# ### extract quantiles from var we're mapping
+# quantiles <- nh_acs_census_county_geo %>%
+#   pull(sud_treatment_resource_rate) %>%
+#   quantile(probs = seq(0, 1, length.out = no_classes + 1), na.rm=TRUE) %>%
+#   as.vector() 
+# 
+# ### make labels for map's legend
+# label_resource_rate <- c("5 per 100k and Greater","4 to 5 per 100k","2 to 4 per 100k","2 per 100k and Lower")
+# 
+# ### create a new variable with the specified quantiles
+# nh_acs_census_county_geo_to_map <- nh_acs_census_county_geo %>%
+#   mutate(resource_rate_quartile = cut(-cmhc_resource_rate,
+#                                breaks = -quantiles,
+#                                right = TRUE,
+#                                labels = label_resource_rate,
+#                                include.lowest = T)) 
+
+
+### map via ggplot 
+ggplot(
+  # define main data source
+  data = nh_acs_census_county_geo
+) +
+  scale_alpha(name = "",
+              range = c(0.6, 0),
+              guide = F) + # suppress legend
+  # add main fill aesthetic
+  # use thin white stroke for municipality borders
+  geom_sf(
+    mapping = aes(
+      fill = sud_treatment_resource_rate
+      ),
+    color = "white",
+    size = 0.3
+  ) +
+    scale_fill_distiller(
+    labels = scales::number_format(accuracy=1),
+    direction = 1,
+    name = "SUD Resources\nper 100k Residents"
+  ) +
+  ### use jr palette here
+    scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
+ # scale_fill_manual(
+ #    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+ #    name = "CMHC Resources\nper 100k Residents",
+ #    na.value = "grey50",
+ #    guide = guide_legend(
+ #     keyheight = unit(7.5, units = "mm"),
+ #     title.position = "top",
+ #     reverse = F # display highest on top
+ #  )) +
+  # use white stroke borders for county boundaries
+  geom_sf(
+    data = nh_acs_census_county_geo,
+    fill = "transparent",
+    color = "white",
+    size = 1
+  )  +
+  # use additional state-level shapefile for state border
+  geom_sf(
+    data = nh_state_shape,
+    fill = "transparent",
+    color = "grey40",
+    size = .05
+  )  +
+  geom_label(
+     data = nh_acs_census_county_geo, 
+     aes(geometry = geometry, 
+         label = county),
+     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
+    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 3,
+    fontface = "bold",
+    stat = "sf_coordinates") +
+  guides(fill = guide_colorbar(barwidth = 8),
+           direction = "horizontal",
+      barheight = unit(2, units = "mm"),
+      barwidth = unit(50, units = "mm"),
+      draw.ulim = F,
+      title.position = 'top',
+      # some shifting around
+      title.hjust = 0.5,
+      label.hjust = 0.5) +
+  labs(
+    title = NULL,
+    subtitle = NULL,
+    x = NULL,
+    y = NULL,
+    fill = NULL,
+    caption = NULL
+  ) +
+  # add theme
+  theme_map() +
+  theme(
+    # plot.margin = margin(),
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    legend.position = "bottom",
+    legend.justification = c(0.5, 0.5),
+    legend.text = element_text(size = 11))
+
+
+# ### write out
+# ggsave(
+#     filename = file.path(sp_viz_output_path, "nh_resource_availability_overall.png"),
+#     plot = last_plot(),
+#     device = ragg::agg_png,
+#     dpi = 300,
+#     height = 5.25,
+#     width = 10,
+#     units = "in",
+#     bg = "transparent"
+#   )
+```
+
+<br><br>
+
+### Map of all Recovery Community Organizations (RCO) Resources by County (locations per 100k residents)
+
+```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
+### map via ggplot 
+ggplot(
+  # define main data source
+  data = nh_acs_census_county_geo
+) +
+  scale_alpha(name = "",
+              range = c(0.6, 0),
+              guide = F) + # suppress legend
+  # add main fill aesthetic
+  # use thin white stroke for municipality borders
+  geom_sf(
+    mapping = aes(
+      fill = rco_resource_rate
+      ),
+    color = "white",
+    size = 0.3
+  ) +
+    scale_fill_distiller(
+    labels = scales::number_format(accuracy=1),
+    direction = 1,
+    name = "RCO Resources\nper 100k Residents"
+  ) +
+  ### use jr palette here
+    scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
+ # scale_fill_manual(
+ #    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+ #    name = "CMHC Resources\nper 100k Residents",
+ #    na.value = "grey50",
+ #    guide = guide_legend(
+ #     keyheight = unit(7.5, units = "mm"),
+ #     title.position = "top",
+ #     reverse = F # display highest on top
+ #  )) +
+  # use white stroke borders for county boundaries
+  geom_sf(
+    data = nh_acs_census_county_geo,
+    fill = "transparent",
+    color = "white",
+    size = 1
+  )  +
+  # use additional state-level shapefile for state border
+  geom_sf(
+    data = nh_state_shape,
+    fill = "transparent",
+    color = "grey40",
+    size = .05
+  )  +
+  geom_label(
+     data = nh_acs_census_county_geo, 
+     aes(geometry = geometry, 
+         label = county),
+     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
+    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 3,
+    fontface = "bold",
+    stat = "sf_coordinates") +
+  guides(fill = guide_colorbar(barwidth = 8),
+           direction = "horizontal",
+      barheight = unit(2, units = "mm"),
+      barwidth = unit(50, units = "mm"),
+      draw.ulim = F,
+      title.position = 'top',
+      # some shifting around
+      title.hjust = 0.5,
+      label.hjust = 0.5) +
+  labs(
+    title = NULL,
+    subtitle = NULL,
+    x = NULL,
+    y = NULL,
+    fill = NULL,
+    caption = NULL
+  ) +
+  # add theme
+  theme_map() +
+  theme(
+    # plot.margin = margin(),
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    legend.position = "bottom",
+    legend.justification = c(0.5, 0.5),
+    legend.text = element_text(size = 11))
+
+
+# ### write out
+# ggsave(
+#     filename = file.path(sp_viz_output_path, "nh_resource_availability_overall.png"),
+#     plot = last_plot(),
+#     device = ragg::agg_png,
+#     dpi = 300,
+#     height = 5.25,
+#     width = 10,
+#     units = "in",
+#     bg = "transparent"
+#   )
+```
+
+<br><br>
+
+### Map of all New Hampshire Coaliton of Recovery Residences (NHCORR) by County (locations per 100k residents)
+
+```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
+### map via ggplot 
+ggplot(
+  # define main data source
+  data = nh_acs_census_county_geo
+) +
+  scale_alpha(name = "",
+              range = c(0.6, 0),
+              guide = F) + # suppress legend
+  # add main fill aesthetic
+  # use thin white stroke for municipality borders
+  geom_sf(
+    mapping = aes(
+      fill = nhcorr_recovery_resource_rate
+      ),
+    color = "white",
+    size = 0.3
+  ) +
+    scale_fill_distiller(
+    labels = scales::number_format(accuracy=1),
+    direction = 1,
+    name = "NHCORR-Certified Locations\nper 100k Residents"
+  ) +
+  ### use jr palette here
+    scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
+ # scale_fill_manual(
+ #    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+ #    name = "CMHC Resources\nper 100k Residents",
+ #    na.value = "grey50",
+ #    guide = guide_legend(
+ #     keyheight = unit(7.5, units = "mm"),
+ #     title.position = "top",
+ #     reverse = F # display highest on top
+ #  )) +
+  # use white stroke borders for county boundaries
+  geom_sf(
+    data = nh_acs_census_county_geo,
+    fill = "transparent",
+    color = "white",
+    size = 1
+  )  +
+  # use additional state-level shapefile for state border
+  geom_sf(
+    data = nh_state_shape,
+    fill = "transparent",
+    color = "grey40",
+    size = .05
+  )  +
+  geom_label(
+     data = nh_acs_census_county_geo, 
+     aes(geometry = geometry, 
+         label = county),
+     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
+    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 3,
+    fontface = "bold",
+    stat = "sf_coordinates") +
+  guides(fill = guide_colorbar(barwidth = 8),
+           direction = "horizontal",
+      barheight = unit(2, units = "mm"),
+      barwidth = unit(50, units = "mm"),
+      draw.ulim = F,
+      title.position = 'top',
+      # some shifting around
+      title.hjust = 0.5,
+      label.hjust = 0.5) +
+  labs(
+    title = NULL,
+    subtitle = NULL,
+    x = NULL,
+    y = NULL,
+    fill = NULL,
+    caption = NULL
+  ) +
+  # add theme
+  theme_map() +
+  theme(
+    # plot.margin = margin(),
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    legend.position = "bottom",
+    legend.justification = c(0.5, 0.5),
+    legend.text = element_text(size = 11))
+
+
+# ### write out
+# ggsave(
+#     filename = file.path(sp_viz_output_path, "nh_resource_availability_overall.png"),
+#     plot = last_plot(),
+#     device = ragg::agg_png,
+#     dpi = 300,
+#     height = 5.25,
+#     width = 10,
+#     units = "in",
+#     bg = "transparent"
+#   )
+```
 
 <br><br>

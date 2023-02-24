@@ -181,9 +181,9 @@ kable(nh_race_2020_table,
 
 <br><br>
 
-### Race/Ethnicity of Jail Booking Population
+### Race/Ethnicity of Jail Booking Population (Unknown/Missing included)
 
-Note: This table is unique by individual, not booking. These data do not allow for analysis of individuals across jails, but we can use the DHHS-provided Medicaid data for that. Percentages are column percentages, not row percentages
+Note: This table is unique by individual, not booking. **All counties are included.**
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### recode 'Black Hispanic' as 'Black' for now -- the sample size is too small for analysis; discuss with Mari in light of recent research-wide conversation
@@ -254,11 +254,85 @@ kable(nh_eight_county_charge_clean_final_race_table_final,
 
 <br><br>
 
+### Race/Ethnicity of Jail Booking Population (Unknown/Missing excluded)
+
+Note: This table is unique by individual, not booking. **Hillsborough and Carroll are excluded because they did not include race/ethnicity data for Hispanic individuals**
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### recode 'Black Hispanic' as 'Black' for now -- the sample size is too small for analysis; discuss with Mari in light of recent research-wide conversation
+### also recode 'American Indian Alaska Native' to align with census data
+nh_eight_county_medicaid_match_final_race <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  mutate(race = ifelse(jail_race=="Black Hispanic",
+                       "Black",
+                       jail_race),
+         race= ifelse(jail_race=="American Indian/Alaskan Native",
+                                 "American Indian/Alaska Native",
+                                 jail_race),
+         race = ifelse(is.na(jail_race)==TRUE,
+                       "Missing",
+                       jail_race)) %>% 
+  filter(!race%in%c("Missing","Unknown"),
+         !county%in%c("Carroll","Hillsborough"))
+
+### create ungrouped denominators for grouped descriptives below
+all_ind_denom <- n_distinct(nh_eight_county_medicaid_match_final_race$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_race$race)==TRUE & !is.na(nh_eight_county_medicaid_match_final_race$unique_person_id)==TRUE])
+
+hu_top_10_denom <- n_distinct(nh_eight_county_medicaid_match_final_race$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_race$race)==TRUE & nh_eight_county_medicaid_match_final_race$high_utilizer_10_pct=="Yes"])
+
+hu_top_5_denom <- n_distinct(nh_eight_county_medicaid_match_final_race$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_race$race)==TRUE & nh_eight_county_medicaid_match_final_race$high_utilizer_5_pct=="Yes"])
+
+hu_top_1_denom <- n_distinct(nh_eight_county_medicaid_match_final_race$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_race$race)==TRUE & nh_eight_county_medicaid_match_final_race$high_utilizer_1_pct=="Yes"])
+
+
+### unique individuals booked into jail in study sample -- grouped by race/ethnicity
+nh_eight_county_medicaid_match_final_race_table <- nh_eight_county_medicaid_match_final_race %>% 
+  distinct(unique_person_id,
+           .keep_all = TRUE) %>% 
+  dplyr::filter(!is.na(race)==TRUE) %>% 
+  group_by(race) %>% 
+  summarise(`Individuals Booked into Jail (N)` = n_distinct(unique_person_id),
+            `Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id)/all_ind_denom*100, digits = 2),
+            `High Jail Utilizer, top 10% (N)` = n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"]),
+            `High Jail Utilizer, top 10% (%)` = round(n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"])/hu_top_10_denom*100, digits = 2),
+            `High Jail Utilizer, top 5% (N)` = n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"]),
+            `High Jail Utilizer, top 5% (%)` = round(n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"])/hu_top_5_denom*100, digits = 2),
+            `High Jail Utilizer, top 1% (N)` = n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"]),
+            `High Jail Utilizer, top 1% (%)` = round(n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"])/hu_top_1_denom*100, digits = 2)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race)
+
+### all -- overall for race/ethnicity
+nh_eight_county_charge_clean_final_race_table_overall <- nh_eight_county_medicaid_match_final_race %>% 
+  distinct(unique_person_id,
+           .keep_all = TRUE) %>% 
+  filter(!is.na(race)==TRUE) %>% 
+  summarise(`Individuals Booked into Jail (N)` = n_distinct(unique_person_id),
+            `Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id)/all_ind_denom*100, digits = 2),
+            `High Jail Utilizer, top 10% (N)` = n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"]),
+            `High Jail Utilizer, top 10% (%)` = round(n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"])/hu_top_10_denom*100, digits = 2),
+            `High Jail Utilizer, top 5% (N)` = n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"]),
+            `High Jail Utilizer, top 5% (%)` = round(n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"])/hu_top_5_denom*100, digits = 2),
+            `High Jail Utilizer, top 1% (N)` = n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"]),
+            `High Jail Utilizer, top 1% (%)` = round(n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"])/hu_top_1_denom*100, digits = 2)) %>% 
+  dplyr::mutate(`Race/Ethnicity` = "Overall") 
+
+### combine tables for kable
+nh_eight_county_charge_clean_final_race_table_final <- rbind(nh_eight_county_medicaid_match_final_race_table,nh_eight_county_charge_clean_final_race_table_overall)
+
+### print table via kableextra
+kable(nh_eight_county_charge_clean_final_race_table_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
+
+```{r eval=FALSE,include=FALSE,message=FALSE,warning=FALSE}
 ### Race/Ethnicity of Jail Booking Population: PC-Hold versus non-PC Hold
 
 Note: Unlike most of the other analysis, this table is unique by booking, not individual given that we are exploring booking type here. Percentages are column percentages, not row percentages. Bookings with missing PC Hold information are excluded from this analysis
 
-```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### create ungrouped denominators for grouped descriptives below
 all_ind_denom <- n_distinct(nh_eight_county_charge_clean_final$booking_id[!is.na(nh_eight_county_charge_clean_final$race)==TRUE & !is.na(nh_eight_county_charge_clean_final$pc_hold)==TRUE])
 

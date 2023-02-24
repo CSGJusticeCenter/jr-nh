@@ -46,6 +46,12 @@ navbar:
           href: archive_incarceration_patterns.html
         - text: "High Utilizers (Archive)"
           href: archive_high_utilizers_analysis.html
+    - text: "BH Resources"
+      menu:
+        - text: "Static Maps"
+          href: nh_resource_map.html
+        - text: "Interactive Map"
+          href: nh_interactive_resource_map.html
     - text: "Research"
       menu:
         - text: "Data Availability"
