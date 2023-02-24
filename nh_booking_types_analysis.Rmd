@@ -21,6 +21,10 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
+
+# Add HU variables
+bookings_entrances <- fnc_hu_group_exclusive(bookings_entrances) 
+adm_all            <- fnc_hu_group_exclusive(adm_all) 
 ```
 
 **Redo when Carroll submits data**
@@ -57,7 +61,7 @@ PRES_gg_pie_pretrial <- ggplot(data1, aes(x = state, y = total, fill = sentence_
                 position = position_fill(vjust = 0.5),
                 size = 7.5,
                 family = "Franklin Gothic Book",
-                color = ifelse(data1$sentence_status_standard == "NA", "gray", "black")
+                color = ifelse(data1$sentence_status_standard == "Other", "black", "white")
             ) +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
@@ -224,7 +228,7 @@ PRES_gg_pretrial_prop <- ggplot(data1, aes(x = county, y = total, fill = sentenc
             vjust = 0.8,
             size = 7.5, family = "Franklin Gothic Book",
             color = case_when(data1$sentence_status_standard == "Not Pretrial" ~ "black",
-                              TRUE ~ "black")) +
+                              TRUE ~ "white")) +
   theme_no_grid_no_labels +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
@@ -519,14 +523,14 @@ reactable(table1,
           fullWidth = FALSE,
           columns = list(
             `Entrance Type` = colDef(name = "", minWidth = 200, style = list(fontWeight = "bold")),
-            `Top 1%`        = colDef(name = "Top 1% (N)",  minWidth = 100),
-            `Top 5%`        = colDef(name = "Top 5% (N)",  minWidth = 100),
-            `Top 10%`       = colDef(name = "Top 10% (N)", minWidth = 100),
+            `Tier 1 HU`        = colDef(name = "Tier 1 HU (N)",  minWidth = 100),
+            `Tier 2 HU`        = colDef(name = "Tier 2 HU (N)",  minWidth = 100),
+            `Tier 3 HU`       = colDef(name = "Tier 3 HU (N)", minWidth = 100),
             `Non-HU%`       = colDef(name = "Non-HU (N)",  minWidth = 100),
 
-            `Top 1%.1`      = colDef(name = "Top 1% (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
-            `Top 5%.1`      = colDef(name = "Top 5% (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
-            `Top 10%.1`     = colDef(name = "Top 10% (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            `Tier 1 HU.1`      = colDef(name = "Tier 1 HU (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            `Tier 2 HU.1`      = colDef(name = "Tier 2 HU (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            `Tier 3 HU.1`     = colDef(name = "Tier 3 HU (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
             `Non-HU.1`      = colDef(name = "Non-HU (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
             )
           ) %>%
@@ -568,14 +572,14 @@ reactable(table1,
           fullWidth = FALSE,
           columns = list(
             `Entrance Type` = colDef(name = "", minWidth = 200, style = list(fontWeight = "bold")),
-            `Top 1%`        = colDef(name = "Top 1% (N)",  minWidth = 100),
-            `Top 5%`        = colDef(name = "Top 5% (N)",  minWidth = 100),
-            `Top 10%`       = colDef(name = "Top 10% (N)", minWidth = 100),
+            `Tier 1 HU`        = colDef(name = "Tier 1 HU (N)",  minWidth = 100),
+            `Tier 2 HU`        = colDef(name = "Tier 2 HU (N)",  minWidth = 100),
+            `Tier 3 HU`       = colDef(name = "Tier 3 HU (N)", minWidth = 100),
             `Non-HU%`       = colDef(name = "Non-HU (N)",  minWidth = 100),
 
-            `Top 1%.1`      = colDef(name = "Top 1% (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
-            `Top 5%.1`      = colDef(name = "Top 5% (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
-            `Top 10%.1`     = colDef(name = "Top 10% (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            `Tier 1 HU.1`      = colDef(name = "Tier 1 HU (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            `Tier 2 HU.1`      = colDef(name = "Tier 2 HU (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
+            `Tier 3 HU.1`     = colDef(name = "Tier 3 HU (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 0)),
             `Non-HU.1`      = colDef(name = "Non-HU (%)",  minWidth = 100, format = colFormat(percent = TRUE, digits = 0))
             )
           ) %>%
@@ -740,15 +744,17 @@ data1 <- df_drug_courts %>%
   mutate(pct = round(pct, 0))
 data1 <- as.data.frame(data1)
 data1 <- data1 %>% mutate(pct = paste0(pct, "%")) %>% 
-  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")))
+  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")))
 
 # One stacked barplot for all three years and then make it a pie chart
 PRES_gg_pie_drug_court_bookings <- ggplot(data1, aes(x = drug_court, y = total, fill = hu_group_exclusive )) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")) +
+  scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
-            size = 7.5, family = "Franklin Gothic Book") +
+            size = 7.5, family = "Franklin Gothic Book",
+            color = case_when(data1$hu_group_exclusive == "Non-HU" ~ "black",
+                  TRUE ~ "white")) +
   coord_polar("y", start=0) +
   theme_no_grid_no_labels +
   theme(axis.ticks = element_blank(),

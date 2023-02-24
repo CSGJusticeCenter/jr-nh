@@ -22,7 +22,7 @@ source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
 
-# Change HU variable to 1% = 1 percent, 5% = 2-5 percent, 10% = 6-10 percent
+# Change HU variable to Tier 1 = 1 percent, Tier 2 = 2-5 percent, Tier 3 = 6-10 percent
 medicaid_jail_all <- fnc_hu_group_exclusive(medicaid_jail_all)
 ```
 
@@ -187,50 +187,16 @@ PRES_gg_los_category <- data1 %>%
     axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
     axis.text.y = element_blank(),
     axis.title.x = element_text(size = 18, color = "black"),
-    axis.title.y = element_text(size = 18, color = "black"),
+    axis.title.y = element_text(angle = 90, size = 18, color = "black"),
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank(),
-    legend.position = "none",
-    legend.title=element_blank()
+    legend.position = "none"
   )
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_los_category, file="img/PRES_gg_los_category.png", width = 10,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_los_category.png")
-```
-
-```{r}
-# Filter to LOS for all HU's
-data1 <- df_jail_los_entrances %>% 
-  filter(hu_group_exclusive != "Non-HU") %>% 
-  group_by(hu_group_exclusive,los_category) %>% 
-  summarise(total = n()) 
-
-gg_los_category <- ggplot(data1, aes(los_category, total)) +
-  geom_bar(aes(fill = hu_group_exclusive), position = "dodge", stat="identity", width = 0.75) +
-  scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange),
-                    labels = c("Top 1%      ","Top 5%      ", "Top 10%")) +
-  scale_y_continuous(labels = label_number(big.mark = ",")) +
-  xlab("Length of Stay (Days)") + ylab("Number of Entrances") +
-  theme_no_grid_with_labels +
-  theme(
-    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
-    axis.text.y = element_text(size = 18, color = "black"),
-    axis.title.x = element_text(size = 18, color = "black"),
-    axis.title.y = element_text(size = 18, color = "black"),
-    panel.grid.major.x = element_blank(),
-    panel.grid.minor.x = element_blank(),
-    legend.position = "top",
-    legend.justification = c(0, 0),
-    legend.title=element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 18, color = "black")
-  )
-```
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(gg_los_category, file="img/gg_los_category.png", width = 12,  height = 5, dpi = 100)
-knitr::include_graphics("img/gg_los_category.png")
 ```
 
 **Average and Median Length of Stay for High Utilizers**
@@ -280,7 +246,7 @@ gg_hu_los_category <- ggplot(data1) +
                                    hjust=1),
         axis.text.y = element_text(size = 22, color = "black"),
         axis.title = element_text(color = "black"),
-        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
         axis.title.x = element_text(size = 22, color = "black"),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
@@ -322,7 +288,7 @@ PRES_gg_los_prop <- ggplot(hu_los_prop, aes(x = los_category, y = pct, fill = jr
   theme(axis.text.x = element_text(angle = 45,size = 22, color = "black",
                                    hjust=1),
         axis.text.y = element_blank(),
-        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
         axis.title.x = element_text(size = 22, color = "black"),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
@@ -364,7 +330,7 @@ PRES_gg_nonhu_los_prop <- ggplot(non_hu_los_prop, aes(x = los_category, y = pct,
   theme(axis.text.x = element_text(angle = 45,size = 22, color = "black",
                                    hjust=1),
         axis.text.y = element_blank(),
-        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
         axis.title.x = element_text(size = 22, color = "black"),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
@@ -378,95 +344,15 @@ knitr::include_graphics("img/PRES_gg_nonhu_los_prop.png")
 ```
 
 ```{r}
-los_prop <- rbind(non_hu_los_prop, hu_los_prop)
-los_prop <- los_prop %>%
-  mutate(los_category = factor(los_category,
-                   levels = c("Over 180",
-                              "101-180",
-                              "50-100",
-                              "31-50",
-                              "11-30",
-                              "6-10",
-                              "5",
-                              "4",
-                              "3",
-                              "2",
-                              "1",
-                              "0")))
-# 
-# PRES_gg_nonhu_hu_los_prop <- ggplot(los_prop, aes(x = los_category, y = pct, fill = hu_group_exclusive)) +
-# 
-#   geom_bar(position="dodge", stat="identity", width = 0.75) +
-#   labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
-#   
-#   geom_text(aes(label = pct_label, fontface = 'bold'), 
-#             position = position_dodge(width = .9),
-#             hjust = -.3,
-#             size = 7.5, family = "Franklin Gothic Book",
-#             color = ifelse(los_prop$hu_group_exclusive == "Non-High Utilizer", jri_dark_blue, jri_orange)) +
-#   
-#   scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
-#   scale_y_continuous(labels = scales::percent, limits = c(0, .4)) +
-#   theme_no_grid_no_labels +
-#   coord_flip() +
-#   theme(axis.text.x = element_blank(),
-#         #axis.text.y = element_blank(),
-#         axis.title.y = element_text(size = 22, color = "black"),
-#         axis.title.x = element_text(size = 22, color = "black"),
-#         panel.grid.major.x = element_blank(),
-#         panel.grid.minor.x = element_blank(),
-#         legend.position = "top",
-#         legend.justification = c(0, 0),
-#         legend.title=element_blank())
-```
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_nonhu_hu_los_prop, file="img/PRES_gg_nonhu_hu_los_prop.png", width = 8,  height = 10, dpi = 100)
-# knitr::include_graphics("img/PRES_gg_nonhu_hu_los_prop.png")
-```
-
-```{r}
-PRES_gg_diverge_nonhu_hu_los_prop <- los_prop %>%
-  mutate(pct = ifelse(hu_group_exclusive == "High Utilizer",
-                                 pct,
-                                 -1*pct)) %>% 
-  ggplot(aes(x = los_category, y = pct, fill = hu_group_exclusive))+
-  geom_bar(stat = "identity") +
-  labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
-  geom_text(aes(label = pct_label),
-           size = 7.5, family = "Franklin Gothic Book",
-           position = position_stack(vjust = 0.5),
-           color = "white",
-           fontface = "bold") + 
-  
-  scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
-  theme_no_grid_no_labels +
-  coord_flip() +
-  theme(axis.text.x = element_blank(),
-        #axis.text.y = element_blank(),
-        axis.title.y = element_text(size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        legend.position = "top",
-        legend.justification = c(0, 0),
-        legend.title=element_blank())
-```
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diverge_nonhu_hu_los_prop, file="img/PRES_gg_diverge_nonhu_hu_los_prop.png", width = 9,  height = 8, dpi = 100)
-knitr::include_graphics("img/PRES_gg_diverge_nonhu_hu_los_prop.png")
-```
-```{r}
 # Filter to LOS for all HU's and calculate number of entrances/prop of entrances with los category
 hu_1pct_los_prop <- df_jail_los_entrances %>% 
-  filter(hu_group_exclusive == "Top 1%") %>% 
+  filter(hu_group_exclusive == "Tier 1 HU") %>% 
   group_by(los_category) %>% 
   summarise(total = n()) %>% 
   mutate(pct = total/sum(total)) %>%
   mutate(pct = round(pct, 2),
          pct_label = paste0(round(pct*100,0), "%"),
-         hu_group_exclusive = "Top 1%")
+         hu_group_exclusive = "Tier 1 HU")
 
 hu_1pct_los_prop <- rbind(non_hu_los_prop, hu_1pct_los_prop)
 hu_1pct_los_prop <- hu_1pct_los_prop %>%
@@ -485,7 +371,7 @@ hu_1pct_los_prop <- hu_1pct_los_prop %>%
                               "0"))) 
 
 PRES_gg_diverge_nonhu_1pct_hu_los_prop <- hu_1pct_los_prop %>%
-  mutate(pct = ifelse(hu_group_exclusive == "Top 1%", pct, -1*pct)) %>% 
+  mutate(pct = ifelse(hu_group_exclusive == "Tier 1 HU", pct, -1*pct)) %>% 
   ggplot(aes(x = los_category, y = pct, fill = hu_group_exclusive))+
   geom_bar(stat = "identity") +
   labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
@@ -499,7 +385,7 @@ PRES_gg_diverge_nonhu_1pct_hu_los_prop <- hu_1pct_los_prop %>%
   coord_flip() +
   theme(axis.text.x = element_blank(),
         #axis.text.y = element_blank(),
-        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
         axis.title.x = element_text(size = 22, color = "black"),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
@@ -598,9 +484,9 @@ PRES_gg_pie_0_1_los_bookings <- ggplot(los_bookings_jail_0_1_day, aes(x = state,
   scale_fill_manual(values=c(jri_light_blue, jri_orange, jri_green, "gray")) +
   geom_text(aes(label = ifelse(total > 100, pct, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 8, family = "Franklin Gothic Book",
-            color = ifelse(los_bookings_jail_0_1_day$sentence_status_standard == "NA", "gray", "black")
+            color = ifelse(los_bookings_jail_0_1_day$sentence_status_standard == "NA", "gray", "white")
             ) +
-  theme_axes +
+  
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
@@ -635,7 +521,7 @@ PRES_gg_pie_0_los_bookings <- ggplot(los_bookings_jail_0_day, aes(x = state, y =
             size = 7.5, family = "Franklin Gothic Book",
             color = ifelse(los_bookings_jail_0_day$sentence_status_standard == "NA", "gray", "white")
             ) +
-  theme_axes +
+  
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
@@ -668,9 +554,9 @@ PRES_gg_pie_1_los_bookings <- ggplot(los_bookings_jail_1_day, aes(x = state, y =
   scale_fill_manual(values=c(jri_light_blue, jri_orange, jri_green, "gray")) +
   geom_text(aes(label = ifelse(total > 100, pct, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(los_bookings_jail_1_day$sentence_status_standard == "NA", "gray", "black")
+            color = ifelse(los_bookings_jail_1_day$sentence_status_standard == "NA", "gray", "white")
             ) +
-  theme_axes +
+  
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),

@@ -22,6 +22,27 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
+
+bookings_entrances <- bookings_entrances %>% 
+    # Recoded HU variable
+  mutate(hu_group_exclusive = case_when(high_utilizer_10_pct =="No"     ~ 4,
+                                        high_utilizer_10_pct =="Yes" & 
+                                          high_utilizer_5_pct=="No" & 
+                                          high_utilizer_1_pct=="No"     ~ 3,
+                                        high_utilizer_5_pct  =="Yes" & 
+                                          high_utilizer_1_pct=="No"     ~ 2,
+                                        high_utilizer_1_pct  =="Yes"    ~ 1,
+                                        TRUE ~ as.numeric(NA)),
+         hu_group_exclusive = factor(hu_group_exclusive, 
+                                     levels = c(1,2,3,4),
+                                     labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>% 
+  # Overall HU variable
+  mutate(hu_group_overall = case_when(high_utilizer_10_pct == "No"  ~ 2,
+                                      high_utilizer_10_pct == "Yes" ~ 1,
+                                      TRUE ~ as.numeric(NA)),
+         hu_group_overall = factor(hu_group_overall,
+                                   levels = c(1,2),
+                                   labels = c("High Utilizer", "Non-High Utilizer")))
 ```
 
 # Protective Custody Holds
@@ -70,7 +91,7 @@ PRES_gg_pch_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = pc_hold_
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
             color = ifelse(data1$pc_hold_in_booking == "Non-PC Hold", "black", "white")) +
-  theme_axes +
+  theme_no_grid_no_labels +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
@@ -123,7 +144,7 @@ df_pc_people_fy_county <- df_pch %>%
   select(id, county) %>%
   distinct() %>%
   group_by(county) %>%
-  summarise(total_people = n()) %>%
+  summarise(total_people = n_distinct(id)) %>%
   adorn_totals("row") %>%
   mutate(county = case_when(county == "Total" ~ "State", TRUE ~ county)) %>%
   arrange(county %in% "State")
@@ -277,7 +298,7 @@ PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_i
             size = 10, family = "Franklin Gothic Book",
             color = case_when(data1$pc_hold_in_booking == "Non-PC Hold" ~ "black",
                               TRUE ~ "white")) +
-  theme_minimal() +
+  theme_no_grid_no_labels +
   theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
         panel.grid.major.x = element_blank(),
@@ -287,9 +308,7 @@ PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_i
         axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
         axis.text.y = element_text(size = 28, color = "black"),
         legend.position = "right",
-        legend.justification = c(1, 0.5),
-        legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+        legend.justification = c(1, 0.5))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -332,23 +351,24 @@ data1 <- bookings_entrances %>%
   mutate(pct = total/sum(total)*100) %>%
   mutate(pct = round(pct, 0)) %>% 
   mutate(pct = paste0(pct, "%")) %>% 
-  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")))
+  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")))
 
 # One stacked barplot for all three years then create a pie chart
 PRES_gg_pie_hu_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, fill = hu_group_exclusive )) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")) +
+  scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU"),
+                    guide = guide_legend(reverse = TRUE) ) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
-            size = 7.5, family = "Franklin Gothic Book") +
-  theme_axes +
+            size = 7.5, family = "Franklin Gothic Book",
+            color = case_when(data1$hu_group_exclusive == "Non-HU" ~ "black",
+                              TRUE ~ "white")) +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
         axis.title.y = element_blank()) +
   coord_polar("y", start=0) +
-  theme_no_axes +
-  theme_minimal()+
+  theme_no_grid_no_labels +
   theme(
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
@@ -384,22 +404,22 @@ data1 <- bookings_entrances %>%
   summarise(total = n()) %>%
   filter(pc_hold_in_booking == "PC Hold") %>% 
   mutate(pct = round(total/sum(total)*100, 0)) %>% 
-  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")),
+  mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")),
          county = factor(county)) 
 
 # Stacked bar chart showing the proportion of HU PC holds out of all entrances
 PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = hu_group_exclusive )) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")) +
+  scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")) +
   geom_text(aes(label = ifelse(pct > 4, paste0(pct, "%"), ""),
                 fontface = 'bold'),
             position = position_fill(vjust = 0.5),
             vjust = 0.7,
-            color = ifelse(data1$hu_group_exclusive == "Non-HU", "black", "black"),
+            color = ifelse(data1$hu_group_exclusive == "Non-HU", "black", "white"),
             size = 10, family = "Franklin Gothic Book") +
-  coord_flip() +
-  scale_x_discrete(limits = rev(levels(data1$county))) +
+  # coord_flip() +
+  # scale_x_discrete(limits = rev(levels(data1$county))) +
   theme_minimal() +
   theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
@@ -407,7 +427,7 @@ PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = hu_gro
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(angle = 45, size = 28, color = "black", hjust = 0.75),
         axis.text.y = element_text(size = 28, color = "black"),
         legend.position = "right",
         legend.justification = c(1, 0.5),
@@ -415,11 +435,25 @@ PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = hu_gro
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
   # geom_hline(aes(yintercept=0.20), size = 1)
 ```
-**Belknap and Merrimack County had the most top 1% high utilizers who entered jail on a PC hold.**
+
+**Belknap and Merrimack County had the most Tier 1 high utilizers who entered jail on a PC hold.**
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_pchold_hu_prop, file="img/PRES_gg_pchold_hu_prop.png", width = 15,  height = 9, dpi = 100)
 knitr::include_graphics("img/PRES_gg_pchold_hu_prop.png")
 ```
 
+**High utilizers are booked into jail for the following reasons:**
+
+```{r}
+# Select variables and count number of pc holds by HU group and county
+data1 <- bookings_entrances %>%
+  filter(hu_group_overall == "High Utilizer") %>% 
+  group_by(sentence_status_standard) %>%
+  filter(sentence_status_standard != "UNKNOWN") %>% 
+  summarise(total = n_distinct(id)) %>%
+  mutate(pct = round(total/sum(total)*100, 0))
+  # mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")))
+data1
+```
 

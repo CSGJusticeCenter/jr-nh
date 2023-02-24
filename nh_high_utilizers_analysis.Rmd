@@ -316,8 +316,79 @@ ggsave(PRES_gg_pie_beddays, file="img/PRES_gg_pie_beddays.png", width = 5,  heig
 knitr::include_graphics("img/PRES_gg_pie_beddays.png")
 ```
 
-
 <br>
+
+## Jail Daily Encounters
+
+Essentially bed days but includes people entering jail for less than one day. Looks similar to bed days.
+
+```{r}
+# Add one day to those with zero days so that they are counted
+daily_encounters <- entrances_dhhs %>% 
+  ungroup() %>% 
+  mutate(jail_los = ifelse(jail_los == 0, jail_los + 1, jail_los)) %>% 
+  select(id, booking_id, hu_group_exclusive, jail_los) %>% 
+  distinct() %>% 
+  group_by(hu_group_exclusive) %>% 
+  summarise(encounter_days = sum(jail_los, na.rm = TRUE)) %>%
+  mutate(total = sum(encounter_days),
+         pct = encounter_days/total,
+         pct_label = paste(round(pct*100, 0), "%", sep = ""),
+         state = "NH") %>% 
+  select(-total)
+
+# Create reactable table
+reactable(daily_encounters,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu_group_exclusive = colDef(show = T, minWidth = 100, name = ""),
+            state = colDef(show = F),
+            pct_label = colDef(show = F),
+            encounter_days     = colDef(show = T, minWidth = 100, name = "Number of Bed Days"),
+            pct                = colDef(show = T, minWidth = 130, name = "Proportion of Bed Days", format = colFormat(percent = TRUE, digits = 1))
+          )
+)
+```
+
+```{r}
+# One stacked barplot for all three years and then make it a pie chart
+PRES_gg_pie_daily_encounters <- 
+  ggplot(daily_encounters, aes(x = state, y = encounter_days, fill = hu_group_exclusive )) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray")) +
+  geom_text(aes(label = ifelse(pct > .04, pct_label, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
+            size = 7.5, family = "Franklin Gothic Book",
+            color = ifelse(daily_encounters$hu_group_exclusive == "Non-HU", "black", "white")) +
+  theme(legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank(),
+        axis.title.y = element_blank()) +
+  coord_polar("y", start=0) +
+  theme_no_grid_no_labels +
+  theme(
+    axis.ticks = element_blank(),
+    axis.text.x=element_blank(),
+    axis.text.y=element_blank())
+```
+
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_pie_daily_encounters, file="img/PRES_gg_pie_daily_encounters.png", width = 5,  height = 5, dpi = 100, bg='transparent')
+knitr::include_graphics("img/PRES_gg_pie_daily_encounters.png")
+```
+
+<br><br>
 
 ## Tier 1
 

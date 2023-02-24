@@ -268,23 +268,24 @@ fnc_investigate_booking_recordings <- function(df){
 # Create exclusive HU variable
 fnc_hu_group_exclusive <- function(df){
   df <- df %>%
-    mutate(hu_group_exclusive = case_when(
-      high_utilizer_10_pct=="No" ~ 4,
-      high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
-      high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
-      high_utilizer_1_pct=="Yes" ~ 1,
-      TRUE ~ as.numeric(NA)),
-      hu_group_exclusive = factor(hu_group_exclusive,
-                                  levels = c(1,2,3,4),
-                                  labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU")))
-  # df <- df %>%
-  #   mutate(hu_group_exclusive = case_when(
-  #     high_utilizer_10_pct=="No" ~ "Non-HU",
-  #     high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ "Top 10%",
-  #     high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ "Top 5%",
-  #     high_utilizer_1_pct=="Yes" ~ "Top 1%",
-  #     TRUE ~ "Unknown"),
-  #     hu_group_exclusive = ifelse(hu_group_exclusive == "Unknown", NA, hu_group_exclusive))
+    mutate(hu_group_exclusive = case_when(high_utilizer_10_pct =="No"     ~ 4,
+                                          high_utilizer_10_pct =="Yes" &
+                                            high_utilizer_5_pct=="No" &
+                                            high_utilizer_1_pct=="No"     ~ 3,
+                                          high_utilizer_5_pct  =="Yes" &
+                                            high_utilizer_1_pct=="No"     ~ 2,
+                                          high_utilizer_1_pct  =="Yes"    ~ 1,
+                                          TRUE ~ as.numeric(NA)),
+           hu_group_exclusive = factor(hu_group_exclusive,
+                                       levels = c(1,2,3,4),
+                                       labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>%
+    # Overall HU variable
+    mutate(hu_group_overall = case_when(high_utilizer_10_pct == "No"  ~ 2,
+                                        high_utilizer_10_pct == "Yes" ~ 1,
+                                        TRUE ~ as.numeric(NA)),
+           hu_group_overall = factor(hu_group_overall,
+                                     levels = c(1,2),
+                                     labels = c("High Utilizer", "Non-High Utilizer")))
 }
 
 # Get prop of variable
