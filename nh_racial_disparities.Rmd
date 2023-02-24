@@ -8,13 +8,45 @@ output:
 ---
 
 ```{r include=FALSE}
-# ### call libraries
-# library(easypackages)
-# libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","gtsummary")
+### call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","gtsummary")
 # Load packages, functions, and data
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/rdas.R")
+# source("data_cleaning/00_library.R")
+# source("data_cleaning/01_functions.R")
+# source("data_cleaning/rdas.R")
+
+# Load medicaid data
+jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
+
+# De-dup (there are a few duplicate bookings) and create booking unique_person_id for analysis
+jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_individual_booking_level %>% 
+  distinct(unique_person_id, booking_id, .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id, booking_id)) 
+
+# Recode high utilize percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  
+  # Recoded HU variable
+  mutate(hu_group_exclusive = case_when(high_utilizer_10_pct =="No"     ~ 4,
+                                        high_utilizer_10_pct =="Yes" & 
+                                          high_utilizer_5_pct=="No" & 
+                                          high_utilizer_1_pct=="No"     ~ 3,
+                                        high_utilizer_5_pct  =="Yes" & 
+                                          high_utilizer_1_pct=="No"     ~ 2,
+                                        high_utilizer_1_pct  =="Yes"    ~ 1,
+                                        TRUE ~ as.numeric(NA)),
+         hu_group_exclusive = factor(hu_group_exclusive, 
+                                     levels = c(1,2,3,4),
+                                     labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>% 
+  # Overall HU variable
+  mutate(hu_group_overall = case_when(high_utilizer_10_pct == "No"  ~ 2,
+                                      high_utilizer_10_pct == "Yes" ~ 1,
+                                      TRUE ~ as.numeric(NA)),
+         hu_group_overall = factor(hu_group_overall,
+                                   levels = c(1,2),
+                                   labels = c("High Utilizer", "Non-High Utilizer")))
+
 ```
 
 # Descriptive Analysis of Racial/Ethnic Disproportionality
@@ -69,9 +101,9 @@ sp_data_path <- csg_sp_path(file.path("JR_NH"))
 
 sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
 
-### import cleaned charge analytic file (for all eight counties with charge data)
-load(paste0(sp_data_path, 
-            "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda", 
+# ### import cleaned charge analytic file (for all eight counties with charge data)
+load(paste0(sp_data_path,
+            "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda",
             sep = ""))
 ```
 
@@ -156,68 +188,68 @@ Note: This table is unique by individual, not booking. These data do not allow f
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### recode 'Black Hispanic' as 'Black' for now -- the sample size is too small for analysis; discuss with Mari in light of recent research-wide conversation
 ### also recode 'American Indian Alaska Native' to align with census data
-nh_eight_county_charge_clean_final_race <- nh_eight_county_charge_clean_final %>% 
-  mutate(race = ifelse(race=="Black Hispanic",
+nh_eight_county_medicaid_match_final_race <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  mutate(race = ifelse(jail_race=="Black Hispanic",
                        "Black",
-                       race),
-         race= ifelse(race=="American Indian/Alaskan Native",
+                       jail_race),
+         race= ifelse(jail_race=="American Indian/Alaskan Native",
                                  "American Indian/Alaska Native",
-                                 race),
-         race = ifelse(is.na(race)==TRUE,
+                                 jail_race),
+         race = ifelse(is.na(jail_race)==TRUE,
                        "Missing",
-                       race))
+                       jail_race))
 
 ### create ungrouped denominators for grouped descriptives below
-all_ind_denom <- n_distinct(nh_eight_county_charge_clean_final_race$id[!is.na(nh_eight_county_charge_clean_final_race$race)==TRUE & !is.na(nh_eight_county_charge_clean_final_race$id)==TRUE])
+all_ind_denom <- n_distinct(nh_eight_county_medicaid_match_final_race$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_race$race)==TRUE & !is.na(nh_eight_county_medicaid_match_final_race$unique_person_id)==TRUE])
 
-hu_top_10_denom <- n_distinct(nh_eight_county_charge_clean_final_race$id[!is.na(nh_eight_county_charge_clean_final_race$race)==TRUE & nh_eight_county_charge_clean_final_race$high_utilizer_10_pct=="Yes"])
+hu_top_10_denom <- n_distinct(nh_eight_county_medicaid_match_final_race$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_race$race)==TRUE & nh_eight_county_medicaid_match_final_race$high_utilizer_10_pct=="Yes"])
 
-hu_top_5_denom <- n_distinct(nh_eight_county_charge_clean_final_race$id[!is.na(nh_eight_county_charge_clean_final_race$race)==TRUE & nh_eight_county_charge_clean_final_race$high_utilizer_5_pct=="Yes"])
+hu_top_5_denom <- n_distinct(nh_eight_county_medicaid_match_final_race$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_race$race)==TRUE & nh_eight_county_medicaid_match_final_race$high_utilizer_5_pct=="Yes"])
 
-hu_top_1_denom <- n_distinct(nh_eight_county_charge_clean_final_race$id[!is.na(nh_eight_county_charge_clean_final_race$race)==TRUE & nh_eight_county_charge_clean_final_race$high_utilizer_1_pct=="Yes"])
+hu_top_1_denom <- n_distinct(nh_eight_county_medicaid_match_final_race$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_race$race)==TRUE & nh_eight_county_medicaid_match_final_race$high_utilizer_1_pct=="Yes"])
 
 
 ### unique individuals booked into jail in study sample -- grouped by race/ethnicity
-nh_eight_county_charge_clean_final_race_table <- nh_eight_county_charge_clean_final_race %>% 
-  distinct(id,
+nh_eight_county_medicaid_match_final_race_table <- nh_eight_county_medicaid_match_final_race %>% 
+  distinct(unique_person_id,
            .keep_all = TRUE) %>% 
-  filter(!is.na(race)==TRUE) %>% 
+  dplyr::filter(!is.na(race)==TRUE) %>% 
   group_by(race) %>% 
-  summarise(`Individuals Booked into Jail (N)` = n_distinct(id),
-            `Individuals Booked into Jail (%)` = round(n_distinct(id)/all_ind_denom*100, digits = 2),
-            `High Jail Utilizer, top 10% (N)` = n_distinct(id[high_utilizer_10_pct=="Yes"]),
-            `High Jail Utilizer, top 10% (%)` = round(n_distinct(id[high_utilizer_10_pct=="Yes"])/hu_top_10_denom*100, digits = 2),
-            `High Jail Utilizer, top 5% (N)` = n_distinct(id[high_utilizer_5_pct=="Yes"]),
-            `High Jail Utilizer, top 5% (%)` = round(n_distinct(id[high_utilizer_5_pct=="Yes"])/hu_top_5_denom*100, digits = 2),
-            `High Jail Utilizer, top 1% (N)` = n_distinct(id[high_utilizer_1_pct=="Yes"]),
-            `High Jail Utilizer, top 1% (%)` = round(n_distinct(id[high_utilizer_1_pct=="Yes"])/hu_top_1_denom*100, digits = 2)) %>% 
+  summarise(`Individuals Booked into Jail (N)` = n_distinct(unique_person_id),
+            `Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id)/all_ind_denom*100, digits = 2),
+            `High Jail Utilizer, top 10% (N)` = n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"]),
+            `High Jail Utilizer, top 10% (%)` = round(n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"])/hu_top_10_denom*100, digits = 2),
+            `High Jail Utilizer, top 5% (N)` = n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"]),
+            `High Jail Utilizer, top 5% (%)` = round(n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"])/hu_top_5_denom*100, digits = 2),
+            `High Jail Utilizer, top 1% (N)` = n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"]),
+            `High Jail Utilizer, top 1% (%)` = round(n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"])/hu_top_1_denom*100, digits = 2)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race)
 
 ### all -- overall for race/ethnicity
-nh_eight_county_charge_clean_final_race_table_overall <- nh_eight_county_charge_clean_final_race %>% 
-  distinct(id,
+nh_eight_county_charge_clean_final_race_table_overall <- nh_eight_county_medicaid_match_final_race %>% 
+  distinct(unique_person_id,
            .keep_all = TRUE) %>% 
   filter(!is.na(race)==TRUE) %>% 
-  summarise(`Individuals Booked into Jail (N)` = n_distinct(id),
-            `Individuals Booked into Jail (%)` = round(n_distinct(id)/all_ind_denom*100, digits = 2),
-            `High Jail Utilizer, top 10% (N)` = n_distinct(id[high_utilizer_10_pct=="Yes"]),
-            `High Jail Utilizer, top 10% (%)` = round(n_distinct(id[high_utilizer_10_pct=="Yes"])/hu_top_10_denom*100, digits = 2),
-            `High Jail Utilizer, top 5% (N)` = n_distinct(id[high_utilizer_5_pct=="Yes"]),
-            `High Jail Utilizer, top 5% (%)` = round(n_distinct(id[high_utilizer_5_pct=="Yes"])/hu_top_5_denom*100, digits = 2),
-            `High Jail Utilizer, top 1% (N)` = n_distinct(id[high_utilizer_1_pct=="Yes"]),
-            `High Jail Utilizer, top 1% (%)` = round(n_distinct(id[high_utilizer_1_pct=="Yes"])/hu_top_1_denom*100, digits = 2)) %>% 
+  summarise(`Individuals Booked into Jail (N)` = n_distinct(unique_person_id),
+            `Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id)/all_ind_denom*100, digits = 2),
+            `High Jail Utilizer, top 10% (N)` = n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"]),
+            `High Jail Utilizer, top 10% (%)` = round(n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"])/hu_top_10_denom*100, digits = 2),
+            `High Jail Utilizer, top 5% (N)` = n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"]),
+            `High Jail Utilizer, top 5% (%)` = round(n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"])/hu_top_5_denom*100, digits = 2),
+            `High Jail Utilizer, top 1% (N)` = n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"]),
+            `High Jail Utilizer, top 1% (%)` = round(n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"])/hu_top_1_denom*100, digits = 2)) %>% 
   dplyr::mutate(`Race/Ethnicity` = "Overall") 
 
 ### combine tables for kable
-nh_eight_county_charge_clean_final_race_table_final <- rbind(nh_eight_county_charge_clean_final_race_table,nh_eight_county_charge_clean_final_race_table_overall)
+nh_eight_county_charge_clean_final_race_table_final <- rbind(nh_eight_county_medicaid_match_final_race_table,nh_eight_county_charge_clean_final_race_table_overall)
 
 ### print table via kableextra
 kable(nh_eight_county_charge_clean_final_race_table_final, 
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") %>% 
-  row_spec(7, bold = TRUE)
+  row_spec(8, bold = TRUE)
 ```
 
 <br><br>
@@ -228,14 +260,14 @@ Note: Unlike most of the other analysis, this table is unique by booking, not in
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### create ungrouped denominators for grouped descriptives below
-all_ind_denom <- n_distinct(nh_eight_county_charge_clean_final_race$booking_id[!is.na(nh_eight_county_charge_clean_final_race$race)==TRUE & !is.na(nh_eight_county_charge_clean_final_race$pc_hold)==TRUE])
+all_ind_denom <- n_distinct(nh_eight_county_charge_clean_final$booking_id[!is.na(nh_eight_county_charge_clean_final$race)==TRUE & !is.na(nh_eight_county_charge_clean_final$pc_hold)==TRUE])
 
-pc_denom <- n_distinct(nh_eight_county_charge_clean_final_race$booking_id[!is.na(nh_eight_county_charge_clean_final_race$race)==TRUE & nh_eight_county_charge_clean_final_race$pc_hold=="PC Hold" & !is.na(nh_eight_county_charge_clean_final_race$pc_hold)==TRUE])
+pc_denom <- n_distinct(nh_eight_county_charge_clean_final$booking_id[!is.na(nh_eight_county_charge_clean_final$race)==TRUE & nh_eight_county_charge_clean_final$pc_hold=="PC Hold" & !is.na(nh_eight_county_charge_clean_final$pc_hold)==TRUE])
 
-non_pc_denom <- n_distinct(nh_eight_county_charge_clean_final_race$booking_id[!is.na(nh_eight_county_charge_clean_final_race$race)==TRUE & nh_eight_county_charge_clean_final_race$pc_hold=="Non-PC Hold" & !is.na(nh_eight_county_charge_clean_final_race$pc_hold)==TRUE])
+non_pc_denom <- n_distinct(nh_eight_county_charge_clean_final$booking_id[!is.na(nh_eight_county_charge_clean_final$race)==TRUE & nh_eight_county_charge_clean_final$pc_hold=="Non-PC Hold" & !is.na(nh_eight_county_charge_clean_final$pc_hold)==TRUE])
 
 ### unique individuals booked into jail in study sample -- grouped by race/ethnicity and pc/non-pc hold booking status
-nh_eight_county_pc_non_pc_clean_final_race_table <- nh_eight_county_charge_clean_final_race %>% 
+nh_eight_county_pc_non_pc_clean_final_race_table <- nh_eight_county_charge_clean_final %>% 
   distinct(booking_id,
            .keep_all = TRUE) %>% 
   filter(!is.na(race)==TRUE,
@@ -251,7 +283,7 @@ nh_eight_county_pc_non_pc_clean_final_race_table <- nh_eight_county_charge_clean
   dplyr::rename(`Race/Ethnicity` = race)
 
 ### all -- overall for race/ethnicity
-nh_eight_county_pc_non_pc_clean_final_race_table_overall <- nh_eight_county_charge_clean_final_race %>% 
+nh_eight_county_pc_non_pc_clean_final_race_table_overall <- nh_eight_county_charge_clean_final %>% 
   distinct(booking_id,
            .keep_all = TRUE) %>% 
   filter(!is.na(race)==TRUE,
@@ -273,7 +305,7 @@ kable(nh_eight_county_pc_non_pc_clean_final_race_table_final,
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") %>% 
-  row_spec(7, bold = TRUE)
+  row_spec(6, bold = TRUE)
 ```
 
 <br><br>
@@ -380,14 +412,14 @@ nh_race_2020 %<>%
   ungroup() %>% 
   dplyr::select(race_csg_4,race_eth_pop)
 
-nh_eight_county_charge_clean_final_race %<>%
+nh_eight_county_medicaid_match_final_race %<>%
   ungroup() %>% 
-  distinct(id,
+  distinct(unique_person_id,
            .keep_all = TRUE) %>% 
   mutate(race_csg_4 = race)
 
 ### join two files 
-nh_eight_county_charge_clean_final_race_prelim_rri <- left_join(nh_eight_county_charge_clean_final_race,
+nh_eight_county_charge_clean_final_race_prelim_rri <- left_join(nh_eight_county_medicaid_match_final_race,
                                                                 nh_race_2020, 
                                                                 by = "race_csg_4") 
 
@@ -395,9 +427,9 @@ nh_eight_county_charge_clean_final_race_prelim_rri <- left_join(nh_eight_county_
 df_nh_race_eth_rri_analytic_white <- nh_eight_county_charge_clean_final_race_prelim_rri %>% 
   filter(!is.na(race_csg_4)==TRUE,
          race_csg_4=="White") %>% 
-  summarise(`Individuals Booked into Jail (per 10k NH adults)` = round(n_distinct(id)/mean(race_eth_pop)*10000, digits = 1),
+  summarise(`Individuals Booked into Jail (per 10k NH adults)` = round(n_distinct(unique_person_id)/mean(race_eth_pop)*10000, digits = 1),
             `Individuals Booked into Jail RRI (to White individuals)` = NA,
-            `High Jail Utilizer, top 10% (per 10k NH adults)` = round(n_distinct(id[high_utilizer_10_pct=="Yes"])/mean(race_eth_pop)*10000, digits = 1),
+            `High Jail Utilizer, top 10% (per 10k NH adults)` = round(n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"])/mean(race_eth_pop)*10000, digits = 1),
             `High Jail Utilizer, top 10% RRI (to White individuals)` = NA) %>% 
   dplyr::mutate(`Race/Ethnicity` = "White")
 
@@ -409,9 +441,9 @@ df_nh_race_eth_rri_analytic <- nh_eight_county_charge_clean_final_race_prelim_rr
                            "Hispanic",
                            "American Indian/Alaska Native")) %>% 
   group_by(race_csg_4) %>% 
-  summarize(`Individuals Booked into Jail (per 10k NH adults)` = round(n_distinct(id)/mean(race_eth_pop)*10000, digits = 1),
+  summarize(`Individuals Booked into Jail (per 10k NH adults)` = round(n_distinct(unique_person_id)/mean(race_eth_pop)*10000, digits = 1),
             `Individuals Booked into Jail RRI (to White individuals)` = round(`Individuals Booked into Jail (per 10k NH adults)`/df_nh_race_eth_rri_analytic_white$`Individuals Booked into Jail (per 10k NH adults)`, digits = 2),
-            `High Jail Utilizer, top 10% (per 10k NH adults)` = round(n_distinct(id[high_utilizer_10_pct=="Yes"])/mean(race_eth_pop)*10000, digits = 1),
+            `High Jail Utilizer, top 10% (per 10k NH adults)` = round(n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"])/mean(race_eth_pop)*10000, digits = 1),
             `High Jail Utilizer, top 10% RRI (to White individuals)` = round(`High Jail Utilizer, top 10% (per 10k NH adults)`/df_nh_race_eth_rri_analytic_white$`High Jail Utilizer, top 10% (per 10k NH adults)`, digits = 2)) %>% 
   ungroup() %>% 
   dplyr::rename(`Race/Ethnicity` = race_csg_4)
@@ -548,7 +580,7 @@ ggsave(
 
 ```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
 ### group by race and calculate both mean and median length of stays using los_max
-nh_eight_county_charge_clean_final_race_los <- nh_eight_county_charge_clean_final_race %>% 
+nh_eight_county_charge_clean_final_race_los <- nh_eight_county_medicaid_match_final_race %>% 
   distinct(booking_id,
            .keep_all = TRUE) %>% 
   filter(!is.na(race)==TRUE) %>% 

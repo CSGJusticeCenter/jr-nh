@@ -1,13 +1,11 @@
 ---
 title: "Mapping NH Resource Need and Availability"
-output: html_document
 output: 
   distill::distill_article:
     toc: true
     toc_depth: 3
     self_contained: false
 ---
-
 
 Here is where we gathered location-level resource information: 
 
