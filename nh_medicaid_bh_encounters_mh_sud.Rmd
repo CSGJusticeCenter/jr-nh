@@ -404,15 +404,17 @@ PRES_gg_medicaid_match_bh <- ggplot(df_medicaid_match_bh, aes(x = reorder(hu_gro
         axis.title.x = element_blank(),
         axis.text.x = element_text(size = 28, color = "black"),
         axis.text.y = element_text(size = 28, color = "black"),
-        legend.position = "right",
-        legend.justification = c(1, 0.5),
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.position = "bottom",
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
   #geom_hline(yintercept = mean(df_medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match_bh, file="img/PRES_gg_medicaid_match_bh.png", width = 15,  height = 5, dpi = 100)
+ggsave(PRES_gg_medicaid_match_bh, file="img/PRES_gg_medicaid_match_bh.png", width = 12,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_match_bh.png")
 ```
 <br>
@@ -469,7 +471,7 @@ PRES_gg_medicaid_match_cooccurring <- ggplot(df_medicaid_match_cooccurring, aes(
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match_cooccurring, file="img/PRES_gg_medicaid_match_cooccurring.png", width = 9,  height = 6, dpi = 100)
+ggsave(PRES_gg_medicaid_match_cooccurring, file="img/PRES_gg_medicaid_match_cooccurring.png", width = 12,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_match_cooccurring.png")
 ```
 
