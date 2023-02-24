@@ -182,8 +182,7 @@ PRES_gg_los_category <- data1 %>%
   # scale_fill_manual(values=c(jri_green)) +
   scale_fill_manual(name = "area", values=c(jri_orange,"grey50")) +
   scale_y_continuous(limits = c(0,0.3)) +
-  theme_minimal() +
-  theme_no_axes +
+  theme_no_grid_no_labels +
   theme(
     axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
     axis.text.y = element_blank(),
@@ -214,7 +213,7 @@ gg_los_category <- ggplot(data1, aes(los_category, total)) +
                     labels = c("Top 1%      ","Top 5%      ", "Top 10%")) +
   scale_y_continuous(labels = label_number(big.mark = ",")) +
   xlab("Length of Stay (Days)") + ylab("Number of Entrances") +
-  theme_minimal(base_family = "Franklin Gothic Book") +
+  theme_no_grid_with_labels +
   theme(
     axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
     axis.text.y = element_text(size = 18, color = "black"),
@@ -276,7 +275,7 @@ gg_hu_los_category <- ggplot(data1) +
   
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ",")) +
 
-  theme_minimal() +
+  theme_no_grid_no_labels +
   theme(axis.text.x = element_text(angle = 45,size = 22, color = "black",
                                    hjust=1),
         axis.text.y = element_text(size = 22, color = "black"),
@@ -319,8 +318,7 @@ PRES_gg_los_prop <- ggplot(hu_los_prop, aes(x = los_category, y = pct, fill = jr
   
   scale_fill_manual(values=c(jri_orange)) +
   scale_y_continuous(labels = scales::percent, limits = c(0, .4)) +
-  theme_minimal() +
-  theme_no_axes +
+  theme_no_grid_no_labels +
   theme(axis.text.x = element_text(angle = 45,size = 22, color = "black",
                                    hjust=1),
         axis.text.y = element_blank(),
@@ -362,8 +360,7 @@ PRES_gg_nonhu_los_prop <- ggplot(non_hu_los_prop, aes(x = los_category, y = pct,
   
   scale_fill_manual(values=c(jri_dark_blue)) +
   scale_y_continuous(labels = scales::percent, limits = c(0, .4)) +
-  theme_minimal() +
-  theme_no_axes +
+  theme_no_grid_no_labels +
   theme(axis.text.x = element_text(angle = 45,size = 22, color = "black",
                                    hjust=1),
         axis.text.y = element_blank(),
@@ -410,8 +407,7 @@ los_prop <- los_prop %>%
 #   
 #   scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
 #   scale_y_continuous(labels = scales::percent, limits = c(0, .4)) +
-#   theme_minimal() +
-#   theme_no_axes +
+#   theme_no_grid_no_labels +
 #   coord_flip() +
 #   theme(axis.text.x = element_blank(),
 #         #axis.text.y = element_blank(),
@@ -444,8 +440,7 @@ PRES_gg_diverge_nonhu_hu_los_prop <- los_prop %>%
            fontface = "bold") + 
   
   scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
-  theme_minimal() +
-  theme_no_axes +
+  theme_no_grid_no_labels +
   coord_flip() +
   theme(axis.text.x = element_blank(),
         #axis.text.y = element_blank(),
@@ -500,8 +495,7 @@ PRES_gg_diverge_nonhu_1pct_hu_los_prop <- hu_1pct_los_prop %>%
            color = "white",
            fontface = "bold") + 
   scale_fill_manual(values=c(jri_dark_blue, jri_light_blue)) +
-  theme_minimal() +
-  theme_no_axes +
+  theme_no_grid_no_labels +
   coord_flip() +
   theme(axis.text.x = element_blank(),
         #axis.text.y = element_blank(),
@@ -612,8 +606,7 @@ PRES_gg_pie_0_1_los_bookings <- ggplot(los_bookings_jail_0_1_day, aes(x = state,
         legend.title=element_blank(),
         axis.title.y = element_blank()) +
   coord_polar("y", start=0) +
-  theme_no_axes +
-  theme_minimal()+
+  theme_no_grid_no_labels +
   theme(
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
@@ -648,8 +641,7 @@ PRES_gg_pie_0_los_bookings <- ggplot(los_bookings_jail_0_day, aes(x = state, y =
         legend.title=element_blank(),
         axis.title.y = element_blank()) +
   coord_polar("y", start=0) +
-  theme_no_axes +
-  theme_minimal()+
+  theme_no_grid_no_labels +
   theme(
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),
@@ -684,8 +676,7 @@ PRES_gg_pie_1_los_bookings <- ggplot(los_bookings_jail_1_day, aes(x = state, y =
         legend.title=element_blank(),
         axis.title.y = element_blank()) +
   coord_polar("y", start=0) +
-  theme_no_axes +
-  theme_minimal()+
+  theme_no_grid_no_labels +
   theme(
     axis.title.x = element_blank(),
     axis.title.y = element_blank(),

@@ -22,7 +22,7 @@ source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
 
-# Change HU variable to 1% = 1 percent, 5% = 2-5 percent, 10% = 6-10 percent
+# Change HU variable to Tier 1 = 1 percent, Tier 2 = 2-5 percent, Tier 3 = 6-10 percent
 medicaid_jail_all <- fnc_hu_group_exclusive(medicaid_jail_all)
 
 # DHHS data
@@ -37,12 +37,22 @@ entrances_dhhs <- medicaid_jail_all %>%
          release_date = ymd(as_date(release_date)), 
          jail_los = as.numeric(difftime(release_date,
                                         booking_date,
-                                        units="days")))
+                                        units="days"))) %>% 
+  # to ensure each individual/booking is in correct grouping, start with Non-HU, then Tier 3 and move down to Tier 1
+  mutate(hu_group_exclusive = case_when(
+    high_utilizer_10_pct =="No"  ~ 4,
+    high_utilizer_10_pct =="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct  =="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct  =="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU")))
 ```
 
 ## How we define people who are high utilizers of the jail system
 
-We defined people who are high utilizers of the jail system as the top 1%, 5%, or 10% of people entering jails from FY2019 to FY2021. De-identified jail administrative data was provided by DHHS, which includes a unique id for each person to account for entrances at more than one jail.   
+We defined people who are high utilizers of the jail system as the tier 1, tier 2, or tier 3 of people entering jails from FY2019 to FY2021. De-identified jail administrative data was provided by DHHS, which includes a unique id for each person to account for entrances at more than one jail.   
 
 ```{r}
 ########################################
@@ -119,7 +129,6 @@ df_avg_entrances_total <- entrances_dhhs %>%
 
 # Add county and state info together
 df_avg_entrances_county <- rbind(df_avg_entrances_county, df_avg_entrances_total)
-
 # Rename variables and add data together
 df_entrances_county <- df_entrances_county %>% rename_with(~paste0("entrances_", .), -c("county")) 
 df_entrances_people_county <- df_people_entered_county %>% rename_with(~paste0("people_entered_", .), -c("county"))
@@ -139,7 +148,7 @@ hu_people_county <- entrances_dhhs %>%
          hu_group_exclusive) %>%
   distinct() %>%
   group_by(county, hu_group_exclusive) %>%
-  summarise(total_hu_people  = n()) 
+  summarise(total_hu_people  = n_distinct(id)) 
 
 # Count number of people by state
 hu_people_state <- entrances_dhhs %>%
@@ -150,7 +159,7 @@ hu_people_state <- entrances_dhhs %>%
          hu_group_exclusive) %>%
   distinct() %>%
   group_by(hu_group_exclusive) %>% 
-  summarise(total_hu_people  = n()) %>%
+  summarise(total_hu_people  = n_distinct(id)) %>%
   mutate(county = "State")
 
 # Add data together
@@ -289,26 +298,17 @@ PRES_gg_pie_beddays <-
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray")) +
   geom_text(aes(label = ifelse(pct > .04, pct_label, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(bed_days$hu_group_exclusive == "Non-HU", "black", "black")) +
-  theme_axes +
+            color = ifelse(bed_days$hu_group_exclusive == "Non-HU", "black", "white")) +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
         axis.title.y = element_blank()) +
   coord_polar("y", start=0) +
-  theme_no_axes +
-  theme_minimal()+
+  theme_no_grid_no_labels +
   theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.border = element_blank(),
-    panel.grid=element_blank(),
     axis.ticks = element_blank(),
-    plot.title=element_text(size=14, face="bold"),
     axis.text.x=element_blank(),
-    axis.text.y=element_blank(),
-    legend.title = element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+    axis.text.y=element_blank())
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
@@ -319,11 +319,11 @@ knitr::include_graphics("img/PRES_gg_pie_beddays.png")
 
 <br>
 
-## Top 1%
+## Tier 1
 
 ```{r}
-# Filter to top 1%
-hu_1_pct <- hu_table %>% filter(hu_group_exclusive == "Top 1%") %>% select(-hu_group_exclusive)
+# Filter to Tier 1
+hu_1_pct <- hu_table %>% filter(hu_group_exclusive == "Tier 1 HU") %>% select(-hu_group_exclusive)
 
 # Create reactable table
 reactable(hu_1_pct,
@@ -357,11 +357,11 @@ reactable(hu_1_pct,
 )
 ```
 
-## Top 5%
+## Tier 2
 
 ```{r}
-# Filter to top 5%
-hu_5_pct <- hu_table %>% filter(hu_group_exclusive == "Top 5%") %>% select(-hu_group_exclusive)
+# Filter to Tier 2
+hu_5_pct <- hu_table %>% filter(hu_group_exclusive == "Tier 2 HU") %>% select(-hu_group_exclusive)
 
 # Create reactable table
 reactable(hu_5_pct,
@@ -395,11 +395,11 @@ reactable(hu_5_pct,
 )
 ```
 
-## Top 10%
+## Tier 3
 
 ```{r}
-# Filter to top 10%
-hu_10_pct <- hu_table %>% filter(hu_group_exclusive == "Top 10%") %>% select(-hu_group_exclusive)
+# Filter to Tier 3
+hu_10_pct <- hu_table %>% filter(hu_group_exclusive == "Tier 3 HU") %>% select(-hu_group_exclusive)
 
 # Create reactable table
 reactable(hu_10_pct,
@@ -436,7 +436,7 @@ reactable(hu_10_pct,
 ## Non-High Utilizer
 
 ```{r}
-# Filter to top 1%
+# Filter to Tier 1
 hu_nonhu_pct <- hu_table %>% filter(hu_group_exclusive == "Non-HU") %>% select(-hu_group_exclusive)
 
 # Create reactable table
@@ -481,37 +481,30 @@ data1 <- hu_table %>%
          pct = freq) %>%
   mutate(pct = paste(round(pct*100, 0), "%", sep = "")) %>% 
   distinct() %>%
-  # mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")))
-    mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Top 1%","Top 5%", "Top 10%", "Non-HU")))
+  # mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Tier 3","Tier 2", "Tier 1")))
+    mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")))
 
 
 # One stacked barplot for all three years then create a pie chart
 PRES_gg_hu_pct_barchart <- ggplot(data1, aes(x = county, y = total_hu_entrances, fill = hu_group_exclusive)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray"), labels = c("Top 1%","Top 5%", "Top 10%", "Non-HU")) +
+  scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray"), labels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(data1$hu_group_exclusive == "Non-HU", "black", "black")) +
-  theme_axes +
+            color = ifelse(data1$hu_group_exclusive == "Non-HU", "black", "white")) +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
         axis.title.y = element_blank()) +
   coord_polar("y", start=0) +
-  theme_no_axes +
-  theme_minimal()+
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.border = element_blank(),
-    panel.grid=element_blank(),
-    axis.ticks = element_blank(),
-    plot.title=element_text(size=14, face="bold"),
-    axis.text.x=element_blank(),
-    axis.text.y=element_blank(),
-    legend.title = element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+  theme_no_grid_no_labels +
+  theme(axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.position = "bottom")
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}

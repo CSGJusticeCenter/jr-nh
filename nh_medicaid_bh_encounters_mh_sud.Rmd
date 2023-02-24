@@ -138,7 +138,7 @@ kable(medicaid_jail_county_statewide_bh_service_type_hu_table,
 
 ```{r}
 # By HU group
-df_medicaid_match_mh_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+medicaid_match_mh_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_overall) %>% 
   summarise(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
             `Individuals w/ MH Service Encounter, Primary Diagnosis` = `Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -147,7 +147,7 @@ df_medicaid_match_mh_hu <- jail_medicaid_analytic_individual_booking_level_dedup
             )
 
 # By state
-df_medicaid_match_mh_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+medicaid_match_mh_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   summarise(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
             `Individuals w/ MH Service Encounter, Primary Diagnosis` = `Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
             `Individuals w/out MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==0]),
@@ -156,17 +156,17 @@ df_medicaid_match_mh_state <- jail_medicaid_analytic_individual_booking_level_de
   mutate(hu_group_overall = "Statewide") 
 
 # Rbind HU group and state
-df_medicaid_match_mh_all <- rbind(df_medicaid_match_mh_hu, df_medicaid_match_mh_state)
+medicaid_match_mh_all <- rbind(medicaid_match_mh_hu, medicaid_match_mh_state)
 
 # Change from wide to long format
-df_medicaid_match_mh_all <- df_medicaid_match_mh_all %>% 
+medicaid_match_mh_all <- medicaid_match_mh_all %>% 
   select(hu_group_overall,
          `Individuals w/ MH Service Encounter, Primary Diagnosis`,
          `Individuals w/out MH Service Encounter, Primary Diagnosis`) 
-df_medicaid_match_mh_all <- gather(df_medicaid_match_mh_all, population, pct, `Individuals w/ MH Service Encounter, Primary Diagnosis`:`Individuals w/out MH Service Encounter, Primary Diagnosis`, factor_key=TRUE)
+medicaid_match_mh_all <- gather(medicaid_match_mh_all, population, pct, `Individuals w/ MH Service Encounter, Primary Diagnosis`:`Individuals w/out MH Service Encounter, Primary Diagnosis`, factor_key=TRUE)
 
 # Change from wide to long format
-df_medicaid_match_mh_all <- df_medicaid_match_mh_all %>% 
+medicaid_match_mh_all <- medicaid_match_mh_all %>% 
   mutate(population = factor(population, 
                              levels = c("Individuals w/out MH Service Encounter, Primary Diagnosis",
                                         "Individuals w/ MH Service Encounter, Primary Diagnosis"),
@@ -176,7 +176,7 @@ df_medicaid_match_mh_all <- df_medicaid_match_mh_all %>%
 ```
 
 ```{r}
-PRES_gg_medicaid_mh <- ggplot(df_medicaid_match_mh_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
+PRES_gg_medicaid_mh <- ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_light_blue),
@@ -186,7 +186,7 @@ PRES_gg_medicaid_mh <- ggplot(df_medicaid_match_mh_all, aes(x = reorder(hu_group
             position = position_fill(vjust = 0.5),
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
-            color = case_when(df_medicaid_match_mh_all$population == "Individuals w/ MH Service Encounter" ~ "white",
+            color = case_when(medicaid_match_mh_all$population == "Individuals w/ MH Service Encounter" ~ "white",
                               TRUE ~ "black")) +
   theme_minimal() +
   coord_flip() +
@@ -219,7 +219,7 @@ knitr::include_graphics("img/PRES_gg_medicaid_mh.png")
 
 ```{r}
 # By HU group
-df_medicaid_match_sud_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+medicaid_match_sud_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_overall) %>% 
   summarise(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==1]),
             `Individuals w/ SUD Service Encounter, Primary Diagnosis` = `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -228,7 +228,7 @@ df_medicaid_match_sud_hu <- jail_medicaid_analytic_individual_booking_level_dedu
   )
 
 # By state
-df_medicaid_match_sud_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+medicaid_match_sud_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   summarise(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==1]),
             `Individuals w/ SUD Service Encounter, Primary Diagnosis` = `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
             `Individuals w/out SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==0]),
@@ -237,17 +237,17 @@ df_medicaid_match_sud_state <- jail_medicaid_analytic_individual_booking_level_d
   mutate(hu_group_overall = "Statewide") 
 
 # Rbind HU group and state
-df_medicaid_match_sud_all <- rbind(df_medicaid_match_sud_hu, df_medicaid_match_sud_state)
+medicaid_match_sud_all <- rbind(medicaid_match_sud_hu, medicaid_match_sud_state)
 
 # Change from wide to long format
-df_medicaid_match_sud_all <- df_medicaid_match_sud_all %>% 
+medicaid_match_sud_all <- medicaid_match_sud_all %>% 
   select(hu_group_overall,
          `Individuals w/ SUD Service Encounter, Primary Diagnosis`,
          `Individuals w/out SUD Service Encounter, Primary Diagnosis`) 
-df_medicaid_match_sud_all <- gather(df_medicaid_match_sud_all, population, pct, `Individuals w/ SUD Service Encounter, Primary Diagnosis`:`Individuals w/out SUD Service Encounter, Primary Diagnosis`, factor_key=TRUE)
+medicaid_match_sud_all <- gather(medicaid_match_sud_all, population, pct, `Individuals w/ SUD Service Encounter, Primary Diagnosis`:`Individuals w/out SUD Service Encounter, Primary Diagnosis`, factor_key=TRUE)
 
 # Change from wide to long format
-df_medicaid_match_sud_all <- df_medicaid_match_sud_all %>% 
+medicaid_match_sud_all <- medicaid_match_sud_all %>% 
   mutate(population = factor(population, 
                              levels = c("Individuals w/out SUD Service Encounter, Primary Diagnosis",
                                         "Individuals w/ SUD Service Encounter, Primary Diagnosis"),
@@ -257,7 +257,7 @@ df_medicaid_match_sud_all <- df_medicaid_match_sud_all %>%
 ```
 
 ```{r}
-PRES_gg_medicaid_sud <- ggplot(df_medicaid_match_sud_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
+PRES_gg_medicaid_sud <- ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_green),
@@ -267,7 +267,7 @@ PRES_gg_medicaid_sud <- ggplot(df_medicaid_match_sud_all, aes(x = reorder(hu_gro
             position = position_fill(vjust = 0.5),
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
-            color = case_when(df_medicaid_match_sud_all$population == "Individuals w/ SUD Service Encounter" ~ "white",
+            color = case_when(medicaid_match_sud_all$population == "Individuals w/ SUD Service Encounter" ~ "white",
                               TRUE ~ "black")) +
   theme_minimal() +
   coord_flip() +
@@ -363,7 +363,7 @@ kable(medicaid_jail_county_statewide_bh_service_type_hu_table,
 
 ```{r}
 # Calculate proportion of individuals that matched to Medicaid from 2014-2021
-df_medicaid_match_bh <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+medicaid_match_bh <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
 
   dplyr::group_by(hu_group_exclusive) %>% 
   dplyr::summarise(`Individuals w/ BH Encounter`    = n_distinct(unique_person_id[pre_or_study_bh_flag==1])/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -374,14 +374,14 @@ df_medicaid_match_bh <- jail_medicaid_analytic_individual_booking_level_dedup_hu
          `Individuals w/out BH Encounter`)
 
 # Change from wide to long format
-df_medicaid_match_bh <- gather(df_medicaid_match_bh, population, pct, `Individuals w/ BH Encounter`:`Individuals w/out BH Encounter`, factor_key=TRUE) 
-df_medicaid_match_bh <- df_medicaid_match_bh %>% 
+medicaid_match_bh <- gather(medicaid_match_bh, population, pct, `Individuals w/ BH Encounter`:`Individuals w/out BH Encounter`, factor_key=TRUE) 
+medicaid_match_bh <- medicaid_match_bh %>% 
   mutate(population = factor(population, 
                              levels = c("Individuals w/out BH Encounter",
                                         "Individuals w/ BH Encounter")))
   
 # Stacked bar chart showing the proportion of people matched to Medicaid by hu_group_exclusive
-PRES_gg_medicaid_match_bh <- ggplot(df_medicaid_match_bh, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
+PRES_gg_medicaid_match_bh <- ggplot(medicaid_match_bh, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_orange),
@@ -391,7 +391,7 @@ PRES_gg_medicaid_match_bh <- ggplot(df_medicaid_match_bh, aes(x = reorder(hu_gro
             position = position_fill(vjust = 0.5),
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
-            color = case_when(df_medicaid_match_bh$population == "Individuals w/ BH Encounter" ~ "white",
+            color = case_when(medicaid_match_bh$population == "Individuals w/ BH Encounter" ~ "white",
                               TRUE ~ "black")) +
   theme_minimal() +
   coord_flip() +
@@ -410,7 +410,7 @@ PRES_gg_medicaid_match_bh <- ggplot(df_medicaid_match_bh, aes(x = reorder(hu_gro
         legend.position = "bottom",
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
-  #geom_hline(yintercept = mean(df_medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
+  #geom_hline(yintercept = mean(medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -421,7 +421,7 @@ knitr::include_graphics("img/PRES_gg_medicaid_match_bh.png")
 
 ```{r}
 # by hu_group_exclusive
-df_medicaid_match_cooccurring <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+medicaid_match_cooccurring <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
   dplyr::summarise(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1 & pre_or_study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders` = `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -430,8 +430,8 @@ df_medicaid_match_cooccurring <- jail_medicaid_analytic_individual_booking_level
   select(-`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`)
 
 # change from wide to long format
-df_medicaid_match_cooccurring <- gather(df_medicaid_match_cooccurring, population, pct, `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders`:`Individuals w/out MH and SUD Service Encounters, Co-Occurring Disorders`, factor_key=TRUE) 
-df_medicaid_match_cooccurring <- df_medicaid_match_cooccurring %>% 
+medicaid_match_cooccurring <- gather(medicaid_match_cooccurring, population, pct, `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders`:`Individuals w/out MH and SUD Service Encounters, Co-Occurring Disorders`, factor_key=TRUE) 
+medicaid_match_cooccurring <- medicaid_match_cooccurring %>% 
   mutate(population = factor(population, 
                              levels = c("Individuals w/out MH and SUD Service Encounters, Co-Occurring Disorders",
                                         "Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders"),
@@ -439,7 +439,7 @@ df_medicaid_match_cooccurring <- df_medicaid_match_cooccurring %>%
                                         "Individuals w/ Co-Occurring Disorders")))
 
 # Stacked bar chart showing the proportion of people matched to Medicaid by hu_group_exclusive
-PRES_gg_medicaid_match_cooccurring <- ggplot(df_medicaid_match_cooccurring, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
+PRES_gg_medicaid_match_cooccurring <- ggplot(medicaid_match_cooccurring, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_dark_blue),
@@ -449,7 +449,7 @@ PRES_gg_medicaid_match_cooccurring <- ggplot(df_medicaid_match_cooccurring, aes(
             position = position_fill(vjust = 0.5),
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
-            color = case_when(df_medicaid_match_cooccurring$population == "Individuals w/ Co-Occurring Disorders" ~ "white",
+            color = case_when(medicaid_match_cooccurring$population == "Individuals w/ Co-Occurring Disorders" ~ "white",
                               TRUE ~ "black")) +
   theme_minimal() +
   coord_flip() +
@@ -682,7 +682,58 @@ kable(medicaid_jail_smi_opioid_hu_grouping_statewide_table,
 
 ```
 
-<br><br>
+<br>
+
+```{r}
+# by hu_group_exclusive
+medicaid_jail_smi_hu_grouping <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ SMI Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
+                   `Individuals w/out SMI Primary Diagnosis` = `Individuals w/ any Medicaid Match`-`Individuals w/ SMI Primary Diagnosis`,
+                   pct = `Individuals w/ SMI Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
+  ungroup() %>% 
+  select(-`Individuals w/ any Medicaid Match`) %>% 
+  filter(hu_group_exclusive != "Non-HU")
+
+# change from wide to long format
+medicaid_jail_smi_hu_grouping <- gather(medicaid_jail_smi_hu_grouping, population, total, `Individuals w/ SMI Primary Diagnosis`:`Individuals w/out SMI Primary Diagnosis`, factor_key=TRUE) 
+medicaid_jail_smi_hu_grouping <- medicaid_jail_smi_hu_grouping %>% 
+  mutate(population = factor(population, 
+                             levels = c("Individuals w/out SMI Primary Diagnosis",
+                                        "Individuals w/ SMI Primary Diagnosis"),
+                             labels = c("Individuals w/out SMI Primary Diagnosis",
+                                        "Individuals w/ SMI Primary Diagnosis")))
+
+PRES_gg_medicaid_jail_smi_hu_grouping <- ggplot(medicaid_jail_smi_hu_grouping, aes(fill=population, y=total, x=hu_group_exclusive)) + 
+    geom_bar(position="stack", stat="identity") +
+    geom_text(aes(label = ifelse(medicaid_jail_smi_hu_grouping$population == "Individuals w/ SMI Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
+              # position=position_dodge(width=0.2), vjust=-0.25,
+              position = position_stack(vjust = .5),
+              size = 7.5, family = "Franklin Gothic Book",
+              color = "black",
+              fontface = "bold") + 
+    scale_fill_manual(values=c("gray",jri_orange),
+                    na.value = "white") +
+    # expand_limits(y = 1400) +
+    scale_y_continuous(labels = label_number(big.mark = ",")) +
+    xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
+    theme_with_grid_with_labels +
+    theme(legend.justification = c(0.5, 0.5),
+          legend.direction = "vertical",
+          legend.box = "horizontal",
+          legend.position = "bottom",
+          legend.title=element_blank(),
+          legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_medicaid_jail_smi_hu_grouping, file="img/PRES_gg_medicaid_jail_smi_hu_grouping.png", width = 7,  height = 6, dpi = 100)
+knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_hu_grouping.png")
+```
+
+
+<br>
 
 **See full notes and business rules for variable creation in data dictionary for individual-level analytic file here: https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=zLytTB**
 

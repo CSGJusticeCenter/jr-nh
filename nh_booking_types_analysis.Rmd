@@ -59,25 +59,15 @@ PRES_gg_pie_pretrial <- ggplot(data1, aes(x = state, y = total, fill = sentence_
                 family = "Franklin Gothic Book",
                 color = ifelse(data1$sentence_status_standard == "NA", "gray", "black")
             ) +
-  theme_axes +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
         axis.title.y = element_blank()) +
   coord_polar("y", start=0) +
-  theme_no_axes +
-  theme_minimal()+
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.border = element_blank(),
-    panel.grid=element_blank(),
-    axis.ticks = element_blank(),
-    plot.title=element_text(size=14, face="bold"),
-    axis.text.x=element_blank(),
-    axis.text.y=element_blank(),
-    legend.title = element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+  theme_no_grid_no_labels +
+  theme(axis.ticks = element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank())
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
@@ -86,7 +76,7 @@ knitr::include_graphics("img/PRES_gg_pie_pretrial.png")
 ```
 
 ```{r}
-# Select data
+# If sentence status is unknown, make NA
 data1 <- bookings_entrances %>% 
   select(sentence_status_standard, booking_id) %>% 
   distinct() %>% 
@@ -232,22 +222,13 @@ PRES_gg_pretrial_prop <- ggplot(data1, aes(x = county, y = total, fill = sentenc
                 fontface = 'bold'),
             position = position_fill(vjust = 0.5),
             vjust = 0.8,
-            size = 10, family = "Franklin Gothic Book",
+            size = 7.5, family = "Franklin Gothic Book",
             color = case_when(data1$sentence_status_standard == "Not Pretrial" ~ "black",
                               TRUE ~ "black")) +
-  theme_minimal() +
-  theme(panel.grid.minor.y = element_blank(),
-        panel.grid.major.y = element_blank(),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        axis.title.y = element_blank(),
+  theme_no_grid_no_labels +
+  theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
-        axis.text.y = element_text(size = 28, color = "black"),
-        legend.position = "right",
-        legend.justification = c(1, 0.5),
-        legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+        axis.text.x = element_text(angle = 45, hjust = 0.85, color = "black"))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -310,7 +291,7 @@ kable(data1,
 ### Charge Type by Sentence Status (Row Sums)
 
 ```{r}
-# Get proportion of charge types by Sentence Statuses
+# Get proportion of charge types by sentence status
 data1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
 table1 <- prop.table(data1, 1)
 table1 <- as.data.frame(cbind(data1, table1))
@@ -402,7 +383,7 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 ### Charge Type by Sentence Status (Column Sums)
 
 ```{r}
-# Get proportion of charge types by Sentence Statuses
+# Get proportion of charge types by sentence status
 data1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
 table1 <- prop.table(data1, 1)
 table1 <- as.data.frame(cbind(data1, table1))
@@ -768,25 +749,11 @@ PRES_gg_pie_drug_court_bookings <- ggplot(data1, aes(x = drug_court, y = total, 
   scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Top 10%","Top 5%", "Top 1%")) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book") +
-  theme_axes +
-  theme(legend.position = "top",
-        legend.justification = c(0, 0),
-        legend.title=element_blank(),
-        axis.title.y = element_blank()) +
   coord_polar("y", start=0) +
-  theme_no_axes +
-  theme_minimal()+
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.border = element_blank(),
-    panel.grid=element_blank(),
-    axis.ticks = element_blank(),
-    plot.title=element_text(size=14, face="bold"),
-    axis.text.x=element_blank(),
-    axis.text.y=element_blank(),
-    legend.title = element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+  theme_no_grid_no_labels +
+  theme(axis.ticks = element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank())
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}

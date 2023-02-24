@@ -110,7 +110,7 @@ PRES_gg_dhhs_entrances <-
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
                      limits = c(0,24000)) +
-  theme_no_axes_labels
+  theme_no_grid_no_labels
 
 # Save and output graph
 ggsave(PRES_gg_dhhs_entrances, file= "img/PRES_gg_dhhs_entrances.png", width = 6, height = 5, dpi = 100)
@@ -170,7 +170,7 @@ PRES_gg_entrances_change_county <-
             hjust = 1.2,
             family = "Franklin Gothic Book",
             color = "black") +
-  theme_no_axes +
+  theme_no_grid_no_labels +
   theme(legend.position = "none",
         axis.title.y = element_blank(),
         axis.text.x = element_blank(),
@@ -341,12 +341,16 @@ PRES_gg_num_entrances <-
                      expand = c(0.05,0),
                      limits = c(0,20000)) +
   geom_hline(yintercept=20) +
-  geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7, family = "Franklin Gothic Book") +
-  theme_no_axes +
-  xlab("\nNumber of Entrances") + ylab("Number of People\n")
+  geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 10, family = "Franklin Gothic Book") +
+  theme_no_grid_with_labels +
+  xlab("\nNumber of Entrances (2019 - 2021)") + ylab("Number of People\n") +
+  theme(axis.text.y  = element_blank(),
+        axis.title.y = element_text(size = 28, color = "black"),
+        axis.title.x = element_text(size = 28, color = "black"),
+        axis.text.x  = element_text(size = 28, color = "black"))
 
 # Save and output graph
-ggsave(PRES_gg_num_entrances, file= "img/PRES_gg_num_entrances.png", width = 16, height = 8, dpi = 100)
+ggsave(PRES_gg_num_entrances, file= "img/PRES_gg_num_entrances.png", width = 19, height = 9, dpi = 100)
 knitr::include_graphics("img/PRES_gg_num_entrances.png")
 ```
 
