@@ -477,7 +477,7 @@ ggplot(
     # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
     family = "Franklin Gothic Demi",
     color = "gray25",
-    size = 3,
+    size = 2,
     fontface = "bold",
     stat = "sf_coordinates") +
   # guides(fill = guide_colorbar(barwidth = 8),
@@ -596,17 +596,17 @@ ggplot(
     color = "grey40",
     size = .05
   )  +
-  geom_label(
-     data = nh_acs_census_county_geo, 
-     aes(geometry = geometry, 
-         label = county),
-     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
-    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
-    family = "Franklin Gothic Demi",
-    color = "gray25",
-    size = 3,
-    fontface = "bold",
-    stat = "sf_coordinates") +
+  # geom_label(
+  #    data = nh_acs_census_county_geo, 
+  #    aes(geometry = geometry, 
+  #        label = county),
+  #    # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
+  #   # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+  #   family = "Franklin Gothic Demi",
+  #   color = "gray25",
+  #   size = 3,
+  #   fontface = "bold",
+  #   stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
            direction = "horizontal",
       barheight = unit(2, units = "mm"),
@@ -722,17 +722,17 @@ ggplot(
     color = "grey40",
     size = .05
   )  +
-  geom_label(
-     data = nh_acs_census_county_geo, 
-     aes(geometry = geometry, 
-         label = county),
-     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
-    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
-    family = "Franklin Gothic Demi",
-    color = "gray25",
-    size = 3,
-    fontface = "bold",
-    stat = "sf_coordinates") +
+  # geom_label(
+  #    data = nh_acs_census_county_geo, 
+  #    aes(geometry = geometry, 
+  #        label = county),
+  #    # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
+  #   # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+  #   family = "Franklin Gothic Demi",
+  #   color = "gray25",
+  #   size = 3,
+  #   fontface = "bold",
+  #   stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
            direction = "horizontal",
       barheight = unit(2, units = "mm"),
@@ -827,17 +827,17 @@ ggplot(
     color = "grey40",
     size = .05
   )  +
-  geom_label(
-     data = nh_acs_census_county_geo, 
-     aes(geometry = geometry, 
-         label = county),
-     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
-    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
-    family = "Franklin Gothic Demi",
-    color = "gray25",
-    size = 3,
-    fontface = "bold",
-    stat = "sf_coordinates") +
+  # geom_label(
+  #    data = nh_acs_census_county_geo, 
+  #    aes(geometry = geometry, 
+  #        label = county),
+  #    # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
+  #   # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+  #   family = "Franklin Gothic Demi",
+  #   color = "gray25",
+  #   size = 3,
+  #   fontface = "bold",
+  #   stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
            direction = "horizontal",
       barheight = unit(2, units = "mm"),
@@ -932,17 +932,17 @@ ggplot(
     color = "grey40",
     size = .05
   )  +
-  geom_label(
-     data = nh_acs_census_county_geo, 
-     aes(geometry = geometry, 
-         label = county),
-     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
-    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
-    family = "Franklin Gothic Demi",
-    color = "gray25",
-    size = 3,
-    fontface = "bold",
-    stat = "sf_coordinates") +
+  # geom_label(
+  #    data = nh_acs_census_county_geo, 
+  #    aes(geometry = geometry, 
+  #        label = county),
+  #    # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
+  #   # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+  #   family = "Franklin Gothic Demi",
+  #   color = "gray25",
+  #   size = 3,
+  #   fontface = "bold",
+  #   stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
            direction = "horizontal",
       barheight = unit(2, units = "mm"),
