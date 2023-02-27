@@ -27,22 +27,20 @@ bookings_entrances <- fnc_hu_group_exclusive(bookings_entrances)
 adm_all            <- fnc_hu_group_exclusive(adm_all) 
 ```
 
-**Redo when Carroll submits data**
-
 ## Sentence Statuses
 
-The following booking patterns were found using jail administrative data submitted directly to CSG. DHHS matched data does not have information on sentence statuses. The "other" category includes federal holds, holds for other agencies, 24 hour and 72 hour holds, other holds, dual satus, bail set, bond denied, dismissed, and sentence suspended.  
+The following booking patterns were found using jail administrative data submitted directly to CSG. DHHS matched data does not have information on sentence statuses. The "other" category includes federal holds, holds for other agencies, 24 hour and 72 hour holds, other holds, dual status, bail set, bond denied, dismissed, and sentence suspended.  
 
 ### Sentence Statuses State-wide
 
 ```{r}
-# Count number of people on different sentence statuses for pie chart
+# Count number of bookings on different sentence statuses for pie chart
 data1 <- bookings_entrances %>% 
   select(sentence_status_standard, booking_id) %>% 
   distinct() %>% 
   mutate(sentence_status_standard = ifelse(sentence_status_standard == "UNKNOWN", NA, sentence_status_standard)) %>% 
   group_by(sentence_status_standard) %>% 
-  summarise(total = n()) %>% 
+  summarise(total = n_distinct(booking_id)) %>% 
   filter(!is.na(sentence_status_standard)) %>% 
   mutate(state = "New Hampshire",
          sentence_status_standard = str_to_title(sentence_status_standard)) %>%
@@ -116,7 +114,7 @@ df_entrances_county <- bookings_entrances %>%
   dplyr::select(booking_id, county) %>%
   dplyr::distinct() %>%
   dplyr::group_by(county) %>%
-  dplyr::summarise(total = n())
+  dplyr::summarise(total = n_distinct(booking_id))
 
 # Number of sentence types by county for all three years
 # Reshape table for viewing
@@ -125,7 +123,7 @@ df_sentence_statuses_county <- bookings_entrances %>%
   dplyr::select(booking_id, county, sentence_status_standard) %>%
   dplyr::distinct() %>%
   dplyr::group_by(county, sentence_status_standard) %>%
-  dplyr::summarise(total = n()) %>% 
+  dplyr::summarise(total = n_distinct(booking_id)) %>% 
   spread(sentence_status_standard, total) %>% clean_names() %>% 
   select(County                   = county,
          `Pretrial (N)`           = pretrial,
@@ -618,6 +616,7 @@ df_drug_courts <- adm_all %>%
   filter(county == "Cheshire" |
          county == "Hillsborough" |
          county == "Rockingham") %>% 
+  filter(pc_hold == "Non-PC Hold") %>% 
   select(id, 
          booking_id, 
          sentence_status_standard,
@@ -638,7 +637,7 @@ df_drug_courts <- adm_all %>%
 ### Drug court-related bookings by county
 
 ```{r}
-# Get proportion of bookings that were drug court related
+# Get proportion of bookings that were drug court-related
 data1 <- table(df_drug_courts$county, df_drug_courts$drug_court)
 table1 <- prop.table(data1, 1)
 table1 <- as.data.frame(cbind(data1, table1))
@@ -680,6 +679,8 @@ reactable(table1,
           ) %>%
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
+
+<br>
 
 ### Drug court-related bookings by high utilizers (Row sums)
 
@@ -757,6 +758,7 @@ PRES_gg_pie_drug_court_bookings <- ggplot(data1, aes(x = drug_court, y = total, 
                   TRUE ~ "white")) +
   coord_polar("y", start=0) +
   theme_no_grid_no_labels +
+  guides(fill = guide_legend(reverse = TRUE)) +
   theme(axis.ticks = element_blank(),
         axis.text.x=element_blank(),
         axis.text.y=element_blank())

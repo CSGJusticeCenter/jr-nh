@@ -45,10 +45,7 @@ entrances_dhhs <- medicaid_jail_all %>%
 ```{r, results='asis'}
 # Total number of people entered (no duplicates for counting by FY)
 amt_people_entered <- entrances_dhhs %>%
-  dplyr::ungroup() %>%
-  dplyr::select(id) %>%
-  dplyr::distinct() %>%
-  dplyr::summarise(total = n()) %>%
+  dplyr::summarise(total = n_distinct(id)) %>%
   dplyr::mutate(label = formatC(total, format="d", big.mark=","))
 amt_people_entered <- amt_people_entered$total
 
@@ -67,11 +64,8 @@ Please Note: This section reflects the number of entrances per fiscal year, not 
 ```{r, results='asis'}
 # Calculate number of entrances events per fy
 df_entrances_events <- entrances_dhhs %>%
-  select(id, booking_id, fy) %>%
-  distinct() %>%
-  distinct() %>%
   group_by(fy) %>%
-  dplyr::summarise(total = n()) %>%
+  dplyr::summarise(total = n_distinct(booking_id)) %>%
   mutate(label = formatC(total, format="d", big.mark=","))
 
 # Df showing number of entrances by FY
@@ -122,11 +116,8 @@ Counties saw variations in the number of entrances but they all saw a decrease i
 ```{r}
 # Number of entrances by county for all three years
 amt_entrances_county <- entrances_dhhs %>%
-  dplyr::ungroup() %>%
-  dplyr::select(booking_id, county) %>%
-  dplyr::distinct() %>%
   dplyr::group_by(county) %>%
-  dplyr::summarise(total = n())
+  dplyr::summarise(total = n_distinct(booking_id))
 
 # Df of total number of entrances by FY
 df_entrances_county <- entrances_dhhs %>%
@@ -134,7 +125,7 @@ df_entrances_county <- entrances_dhhs %>%
   dplyr::select(booking_id, fy, county) %>%
   dplyr::distinct() %>%
   dplyr::group_by(fy, county) %>%
-  dplyr::summarise(total = n()) %>%
+  dplyr::summarise(total = n_distinct(booking_id)) %>%
   spread(fy, total) %>%
   mutate(`2019` = as.numeric(`2019`),
          `2020` = as.numeric(`2020`),
@@ -212,19 +203,13 @@ df_avg_entrances_county <- rbind(df_avg_entrances_county, df_avg_entrances_total
 
 # Number of people entered by county for all three years
 amt_people_entered_county <- entrances_dhhs %>%
-  dplyr::ungroup() %>%
-  dplyr::select(id, county) %>%
-  dplyr::distinct() %>%
   dplyr::group_by(county) %>%
-  dplyr::summarise(total = n())
+  dplyr::summarise(total = n_distinct(id))
 
 # Df of total number of people entered by FY by county
 df_people_entered_county <- entrances_dhhs %>%
-  dplyr::ungroup() %>%
-  dplyr::select(id, fy, county) %>%
-  dplyr::distinct() %>%
   dplyr::group_by(fy, county) %>%
-  dplyr::summarise(total = n()) %>%
+  dplyr::summarise(total = n_distinct(id)) %>%
   spread(fy, total) %>%
   mutate(`2019` = as.numeric(`2019`),
          `2020` = as.numeric(`2020`),
@@ -363,6 +348,7 @@ knitr::include_graphics("img/PRES_gg_num_entrances.png")
 The average cost per person per year was calculated by dividing each county department of correction's 2021 budget by the average daily jail population in that county.  
 
 ```{r}
+# Reactable table shoing the cost per person per year and per day
 df1 <- daily_pop_costs %>% mutate(avg_pop_fy21 = round(avg_pop_fy21, digits = 0))
 reactable(df1,
           pagination = FALSE,

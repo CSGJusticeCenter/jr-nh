@@ -37,17 +37,10 @@ entrances_dhhs <- medicaid_jail_all %>%
          release_date = ymd(as_date(release_date)), 
          jail_los = as.numeric(difftime(release_date,
                                         booking_date,
-                                        units="days"))) %>% 
-  # to ensure each individual/booking is in correct grouping, start with Non-HU, then Tier 3 and move down to Tier 1
-  mutate(hu_group_exclusive = case_when(
-    high_utilizer_10_pct =="No"  ~ 4,
-    high_utilizer_10_pct =="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
-    high_utilizer_5_pct  =="Yes" & high_utilizer_1_pct=="No" ~ 2,
-    high_utilizer_1_pct  =="Yes" ~ 1,
-    TRUE ~ as.numeric(NA)),
-    hu_group_exclusive = factor(hu_group_exclusive,
-         levels = c(1,2,3,4),
-         labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU")))
+                                        units="days"))) 
+
+# Change HU variable to Tier 1 = 1 percent, Tier 2 = 2-5 percent, Tier 3 = 6-10 percent
+entrances_dhhs <- fnc_hu_group_exclusive(entrances_dhhs)
 ```
 
 ## How we define people who are high utilizers of the jail system
@@ -59,21 +52,19 @@ We defined people who are high utilizers of the jail system as the tier 1, tier 
 # Entrances overview
 ########################################
 
+##########
+# People by county
+##########
+
 # Number of people entered by county for all three years
 amt_people_entered_county <- entrances_dhhs %>%
-  dplyr::ungroup() %>%
-  dplyr::select(id, county) %>%
-  dplyr::distinct() %>%
   dplyr::group_by(county) %>%
-  dplyr::summarise(total = n())
+  dplyr::summarise(total = n_distinct(id))
 
 # Number of people entered by FY by county
 df_people_entered_county <- entrances_dhhs %>%
-  dplyr::ungroup() %>%
-  dplyr::select(id, fy, county) %>%
-  dplyr::distinct() %>%
   dplyr::group_by(fy, county) %>%
-  dplyr::summarise(total = n()) %>%
+  dplyr::summarise(total = n_distinct(id)) %>%
   spread(fy, total) %>%
   mutate(`2019` = as.numeric(`2019`),
          `2020` = as.numeric(`2020`),
@@ -83,6 +74,10 @@ df_people_entered_county <- entrances_dhhs %>%
   mutate(change_19_21 = (`2021`-`2019`)/`2019`) %>%
   mutate(county = case_when(county == "Total" ~ "State",
                             TRUE ~ county))
+
+##########
+# Entrances by county
+##########
 
 # Number of entrances by county for all three years
 amt_entrances_county <- entrances_dhhs %>%
@@ -108,6 +103,10 @@ df_entrances_county <- entrances_dhhs %>%
   mutate(change_19_21 = (`2021`-`2019`)/`2019`) %>%
   mutate(county = case_when(county == "Total" ~ "State",
                             TRUE ~ county))
+
+##########
+# Average entrances per person by county
+##########
 
 # Average number of entrances/fy by county
 df_avg_entrances_county <- entrances_dhhs %>%
@@ -543,7 +542,7 @@ reactable(hu_nonhu_pct,
 ```
 
 ```{r}
-# Count number of pc holds by HU group
+# Get number of entrances by HU group
 data1 <- hu_table %>%
   filter(county == "State") %>%
   select(county,
@@ -552,12 +551,10 @@ data1 <- hu_table %>%
          pct = freq) %>%
   mutate(pct = paste(round(pct*100, 0), "%", sep = "")) %>% 
   distinct() %>%
-  # mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Tier 3","Tier 2", "Tier 1")))
     mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")))
 
-
 # One stacked barplot for all three years then create a pie chart
-PRES_gg_hu_pct_barchart <- ggplot(data1, aes(x = county, y = total_hu_entrances, fill = hu_group_exclusive)) +
+PRES_gg_hu_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_entrances, fill = hu_group_exclusive)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray"), labels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")) +
@@ -572,15 +569,50 @@ PRES_gg_hu_pct_barchart <- ggplot(data1, aes(x = county, y = total_hu_entrances,
   theme_no_grid_no_labels +
   theme(axis.text.x=element_blank(),
         axis.text.y=element_blank(),
-        legend.justification = c(0.5, 0.5),
-        legend.direction = "vertical",
-        legend.box = "horizontal",
-        legend.position = "bottom")
+        # legend.justification = c(0.5, 0.5),
+        # legend.direction = "vertical",
+        # legend.box = "horizontal",
+        legend.position = "right")
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_hu_pct_barchart, file="img/PRES_gg_hu_pct_barchart.png", width = 6,  height = 5, dpi = 100, bg='transparent')
-knitr::include_graphics("img/PRES_gg_hu_pct_barchart.png")
+ggsave(PRES_gg_hu_pct_piechart, file="img/PRES_gg_hu_pct_piechart.png", width = 6,  height = 5, dpi = 100, bg='transparent')
+knitr::include_graphics("img/PRES_gg_hu_pct_piechart.png")
 ```
 
 <br>
+
+
+```{r}
+# Get number of people by HU group and proportion out of all people entering NJ jails
+data1 <- hu_people_state %>%
+  mutate(pct = total_hu_people/sum(total_hu_people , na.rm = TRUE)) %>% 
+  mutate(pct = paste(round(pct*100, 0), "%", sep = "")) %>% 
+  distinct() %>%
+    mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")))
+
+# One stacked barplot for all three years then create a pie chart
+PRES_gg_hu_people_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_people, fill = hu_group_exclusive)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray"), labels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")) +
+  # geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
+  #           size = 7.5, family = "Franklin Gothic Book",
+  #           color = ifelse(data1$hu_group_exclusive == "Non-HU", "black", "white")) +
+  theme(legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank(),
+        axis.title.y = element_blank()) +
+  coord_polar("y", start=0) +
+  theme_no_grid_no_labels +
+  theme(axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        legend.position = "right")
+```
+
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_hu_people_pct_piechart, file="img/PRES_gg_hu_people_pct_piechart.png", width = 6,  height = 5, dpi = 100, bg='transparent')
+knitr::include_graphics("img/PRES_gg_hu_people_pct_piechart.png")
+```
+
+<br><br>

@@ -23,26 +23,8 @@ source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
 
-bookings_entrances <- bookings_entrances %>% 
-    # Recoded HU variable
-  mutate(hu_group_exclusive = case_when(high_utilizer_10_pct =="No"     ~ 4,
-                                        high_utilizer_10_pct =="Yes" & 
-                                          high_utilizer_5_pct=="No" & 
-                                          high_utilizer_1_pct=="No"     ~ 3,
-                                        high_utilizer_5_pct  =="Yes" & 
-                                          high_utilizer_1_pct=="No"     ~ 2,
-                                        high_utilizer_1_pct  =="Yes"    ~ 1,
-                                        TRUE ~ as.numeric(NA)),
-         hu_group_exclusive = factor(hu_group_exclusive, 
-                                     levels = c(1,2,3,4),
-                                     labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>% 
-  # Overall HU variable
-  mutate(hu_group_overall = case_when(high_utilizer_10_pct == "No"  ~ 2,
-                                      high_utilizer_10_pct == "Yes" ~ 1,
-                                      TRUE ~ as.numeric(NA)),
-         hu_group_overall = factor(hu_group_overall,
-                                   levels = c(1,2),
-                                   labels = c("High Utilizer", "Non-High Utilizer")))
+# Create HU variables
+bookings_entrances <- fnc_hu_group_exclusive(bookings_entrances) 
 ```
 
 # Protective Custody Holds
@@ -73,7 +55,8 @@ cat("**Protective custody holds accounted for ", amt_pch_pct, "% of bookings fro
 **Although the number of entrances has been decreasing, the proportion of PC holds has remained the same.**
 
 ```{r}
-# Data for ggplots showing the number of entrances and proportion of PC holds by FY
+# Data for ggplot showing the number of entrances and proportion of PC holds by FY
+# Remove Coos and Stafford because they don't have PC data
 data1 <- df_pch %>%
   filter(county != "Coos" | county != "Strafford") %>%
   group_by(fy, pc_hold_in_booking) %>% 
@@ -87,7 +70,7 @@ data1 <- df_pch %>%
 PRES_gg_pch_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = pc_hold_in_booking)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c("gray",jri_red), labels = c("Non-PC      ","PC")) +
+  scale_fill_manual(values=c("gray",jri_light_blue), labels = c("Non-PC      ","PC")) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
             color = ifelse(data1$pc_hold_in_booking == "Non-PC Hold", "black", "white")) +
@@ -141,8 +124,6 @@ The proportion of entrances that were protective custody holds varied greatly by
 df_pc_people_fy_county <- df_pch %>%
   ungroup() %>%
   filter(pc_hold_in_booking == "PC Hold" & county != "Strafford" & county != "Coos") %>%
-  select(id, county) %>%
-  distinct() %>%
   group_by(county) %>%
   summarise(total_people = n_distinct(id)) %>%
   adorn_totals("row") %>%
@@ -158,7 +139,7 @@ df_pc_holds_fy_county <- df_pch %>%
   select(id, booking_id, fy, county, pc_hold_in_booking) %>%
   distinct() %>%
   group_by(fy, county, pc_hold_in_booking) %>%
-  dplyr::summarise(total = n())
+  dplyr::summarise(total = n_distinct(booking_id))
 
 # Reshape table for viewing
 df_pc_holds_fy_county <- df_pc_holds_fy_county %>% spread(pc_hold_in_booking, total) %>% clean_names()
@@ -191,7 +172,7 @@ df_entrances_county <- bookings_entrances %>%
   select(id, booking_id, fy, county) %>%
   distinct() %>%
   group_by(fy, county) %>%
-  dplyr::summarise(total = n()) %>%
+  dplyr::summarise(total = n_distinct(booking_id)) %>%
   spread(fy, total) %>%
   mutate(`2019` = as.numeric(`2019`),
          `2020` = as.numeric(`2020`),
@@ -287,7 +268,7 @@ data1 <- df_pch %>%
 PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_in_booking)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c("gray",jri_red),
+  scale_fill_manual(values=c("gray",jri_light_blue),
                     na.value = "white",
                     labels = c("Non-PC      ","PC", " ")
                     ) +
@@ -399,9 +380,8 @@ data1 <- bookings_entrances %>%
          hu_group_exclusive,
          pc_hold_in_booking) %>%
   distinct() %>%
-  #filter(!is.na(pc_hold_in_booking)) %>%
   group_by(county, pc_hold_in_booking, hu_group_exclusive) %>%
-  summarise(total = n()) %>%
+  summarise(total = n_distinct(booking_id)) %>%
   filter(pc_hold_in_booking == "PC Hold") %>% 
   mutate(pct = round(total/sum(total)*100, 0)) %>% 
   mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")),
@@ -443,17 +423,54 @@ ggsave(PRES_gg_pchold_hu_prop, file="img/PRES_gg_pchold_hu_prop.png", width = 15
 knitr::include_graphics("img/PRES_gg_pchold_hu_prop.png")
 ```
 
-**High utilizers are booked into jail for the following reasons:**
-
 ```{r}
 # Select variables and count number of pc holds by HU group and county
 data1 <- bookings_entrances %>%
-  filter(hu_group_overall == "High Utilizer") %>% 
-  group_by(sentence_status_standard) %>%
-  filter(sentence_status_standard != "UNKNOWN") %>% 
-  summarise(total = n_distinct(id)) %>%
-  mutate(pct = round(total/sum(total)*100, 0))
-  # mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")))
-data1
+  select(county,
+         fy,
+         id,
+         booking_id,
+         hu_group_overall,
+         pc_hold_in_booking) %>%
+  distinct() %>%
+  group_by(county, pc_hold_in_booking, hu_group_overall) %>%
+  summarise(total = n_distinct(booking_id)) %>%
+  filter(pc_hold_in_booking == "PC Hold") %>% 
+  mutate(pct = round(total/sum(total)*100, 0)) %>% 
+  mutate(hu_group_overall = factor(hu_group_overall, levels = c("Non-High Utilizer", "High Utilizer")),
+         county = factor(county)) 
+
+# Stacked bar chart showing the proportion of HU PC holds out of all entrances
+PRES_gg_pchold_hu_prop_overall <- ggplot(data1, aes(x = county, y = total, fill = hu_group_overall)) +
+  geom_col(colour = "white", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray", jri_orange), labels = c("Non-High Utilizer", "High Utilizer")) +
+  geom_text(aes(label = ifelse(pct > 4, paste0(pct, "%"), ""),
+                fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.7,
+            color = ifelse(data1$hu_group_overall == "Non-High Utilizer", "black", "white"),
+            size = 10, family = "Franklin Gothic Book") +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, size = 28, color = "black", hjust = 0.75),
+        axis.text.y = element_text(size = 28, color = "black"),
+        legend.position = "right",
+        legend.justification = c(1, 0.5),
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
 ```
 
+**Belknap and Merrimack County had the most high utilizers who entered jail on a PC hold.**
+
+```{r, out.width="75%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_pchold_hu_prop_overall, file="img/PRES_gg_pchold_hu_prop_overall.png", width = 15,  height = 9, dpi = 100)
+knitr::include_graphics("img/PRES_gg_pchold_hu_prop_overall.png")
+```
+
+<br><br>
