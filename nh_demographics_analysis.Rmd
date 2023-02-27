@@ -20,6 +20,8 @@ source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
+
+
 ```
 
 The following demographic trends were found using jail administrative data from DHHS, which has unique ids to account for people booked at more than one jail.
@@ -56,7 +58,7 @@ reactable(table1,
           fullWidth = FALSE,
           columns = list(
             Race          = colDef(name = "Race", minWidth = 250, style = list(fontWeight = "bold")),
-            
+
             Female      = colDef(name = "Female (N)", minWidth = 100),
             Male        = colDef(name = "Male (N)", minWidth = 100),
             Transgender = colDef(name = "Transgender (N)", minWidth = 100),
@@ -65,7 +67,472 @@ reactable(table1,
             Male.1        = colDef(name = "Male (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 1)),
             Transgender.1 = colDef(name = "Transgender (%)", minWidth = 100, format = colFormat(percent = TRUE, digits = 1))
             )
-          ) %>%
-add_source(paste(""), font_style = "italic", font_size = 14)
+          )
+# %>%
+# add_source(paste(""), font_style = "italic", font_size = 14)
 ```
 
+```{r include=FALSE}
+# ### set sp_data_path
+# sp_data_path <- csg_sp_path(file.path("JR_NH"))
+# 
+sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
+
+# Load medicaid data
+jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
+
+# De-dup (there are a few duplicate bookings) and create booking unique_person_id for analysis
+jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_individual_booking_level %>% 
+  distinct(unique_person_id, booking_id, .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id, booking_id)) 
+
+# Recode high utilize percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  
+  # Recoded HU variable
+  mutate(hu_group_exclusive = case_when(high_utilizer_10_pct =="No"     ~ 4,
+                                        high_utilizer_10_pct =="Yes" & 
+                                          high_utilizer_5_pct=="No" & 
+                                          high_utilizer_1_pct=="No"     ~ 3,
+                                        high_utilizer_5_pct  =="Yes" & 
+                                          high_utilizer_1_pct=="No"     ~ 2,
+                                        high_utilizer_1_pct  =="Yes"    ~ 1,
+                                        TRUE ~ as.numeric(NA)),
+         hu_group_exclusive = factor(hu_group_exclusive, 
+                                     levels = c(1,2,3,4),
+                                     labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>% 
+  # Overall HU variable
+  mutate(hu_group_overall = case_when(high_utilizer_10_pct == "No"  ~ 2,
+                                      high_utilizer_10_pct == "Yes" ~ 1,
+                                      TRUE ~ as.numeric(NA)),
+         hu_group_overall = factor(hu_group_overall,
+                                   levels = c(1,2),
+                                   labels = c("High Utilizer", "Non-High Utilizer")))
+
+```
+
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+### set theme
+theme_set(theme_minimal())
+
+### set chunk output
+knitr::opts_chunk$set(
+  echo = TRUE,
+  dev = "ragg_png",
+  cache = FALSE
+  )
+
+
+
+```
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+census_2020_var_options_pl <- load_variables(2020, "pl", cache = TRUE)
+
+### pull list of acs vars that are availabe to pull
+### it may be helpful to cross-reference this list with tables from american factfinder to ensure you are pulling exactly what you want, not subsetted data (note: var numbers don't align between this list and american factfinder)
+acs_2020_vars <- tidycensus::load_variables(2020, "acs5/subject", cache = TRUE)
+
+### pull census/acs data via tidycensus package
+readRenviron("~/.Renviron")
+
+
+### weighted estimate of percentage of county residents living below federal poverty threshold
+nh_gender_total_pop <- tidycensus::get_acs(geography = "state", 
+                                              state = "NH",
+                                              variables = "S0101_C01_001", 
+                                              geometry = FALSE,
+                                      year = 2020) %>% 
+  clean_names() %>% 
+  dplyr::rename(estimate_total_pop = estimate)
+
+
+### weighted estimate of percentage of county residents living below federal poverty threshold
+nh_gender_male <- tidycensus::get_acs(geography = "state", 
+                                              state = "NH",
+                                              variables = "S0101_C03_001", 
+                                              geometry = FALSE,
+                                      year = 2020) %>% 
+  clean_names() %>% 
+  mutate(Male = round(estimate/nh_gender_total_pop$estimate_total_pop*100, digits = 2))
+
+### weighted estimate of percentage of county residents living below federal poverty threshold
+nh_gender_female <- tidycensus::get_acs(geography = "state", 
+                                              state = "NH",
+                                              variables = "S0101_C05_001", 
+                                              geometry = FALSE,
+                                      year = 2020) %>% 
+  clean_names() %>% 
+  mutate(Female = round(estimate/nh_gender_total_pop$estimate_total_pop*100, digits = 2))
+
+### combine nh_gender_male and nh_gender_female
+nh_gender_acs <- left_join(nh_gender_male,
+                           nh_gender_female,
+                           by = "geoid") %>% 
+  dplyr::select(name=name.x,Male,Female) %>% 
+  gather(gender, percentage, `Male`:`Female`) 
+
+  
+
+### weighted estimate of percentage of race from 2020 census
+### pulled estimated counts and construct percent estimate
+### these are the ids of race variables that we want to pull 
+race_vars <- c(estimate_white = "P3_003N",
+               estimate_black = "P3_004N",
+               estimate_asian = "P3_006N",
+               estimate_native_hawaiian_pi = "P3_007N",
+               estimate_hispanic = "P4_002N",
+               estimate_american_indian = "P1_005N")
+
+nh_race_2020 <- tidycensus::get_decennial(geography = "state", 
+                                               state = "NH",
+                                               variables = race_vars,
+                                               summary_var = "P3_001N", ### total population for 18+ population from race table
+                                               year = 2020,
+                                               geometry = FALSE) %>% 
+  clean_names() %>% 
+  dplyr::select(-geoid) %>% 
+  mutate(race_csg_4 = case_when(
+    variable == "estimate_american_indian" ~ "American Indian/Alaska Native",
+    variable %in% c("estimate_asian","estimate_native_hawaiian_pi") ~ "Asian/Pacific Islander",
+    variable == "estimate_black" ~ "Black",
+    variable == "estimate_hispanic" ~ "Hispanic",
+    variable == "estimate_white" ~ "White",
+    TRUE ~ "NA")) %>% 
+  dplyr::group_by(race_csg_4) %>% 
+  mutate(overall_value = sum(value),
+         estimate = (overall_value/summary_value)*100) %>% ###create percent estimate from estimated counts
+  ungroup() %>% 
+  dplyr::rename(race_eth_pop = overall_value,
+                total_pop = summary_value,
+                race_eth_pop_percent = estimate) %>% 
+  dplyr::select(-c(variable,value)) %>% 
+  distinct()
+
+```
+
+<br><br>
+
+### Average Age (binned) of Jail Booking Population 
+
+Note: This table is unique by booking, not individual. **All counties are included.**
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+nh_eight_county_medicaid_match_final_age <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  filter(!is.na(jail_dob_year),
+         !is.na(booking_date)) %>% 
+  mutate(jail_dob_age_clean = as.numeric(jail_dob_year),
+         jail_booking_age_clean = year(ymd(as_date(booking_date))),
+         age_at_booking_years = jail_booking_age_clean-jail_dob_age_clean) %>% 
+  mutate(age_at_booking_bin = case_when(
+    age_at_booking_years<25 ~ 1,
+    age_at_booking_years>=25 & age_at_booking_years<=34 ~ 2,
+    age_at_booking_years>34 & age_at_booking_years<=45 ~ 3,
+    age_at_booking_years>45 ~ 4,
+    TRUE ~ as.numeric(NA)),
+    age_at_booking_bin = factor(age_at_booking_bin,
+         levels = c(1,2,3,4),
+         labels = c("18 to 24", "25 to 34", "35 to 45", "46+"))) %>%  ### use factor function to assign labels to values
+    dplyr::filter(!is.na(age_at_booking_bin)==TRUE,
+                  age_at_booking_years<100) %>% 
+  mutate(unique_booking_id = paste0(unique_person_id,booking_id))
+
+# ### create ungrouped denominators for grouped descriptives below
+# all_ind_denom <- n_distinct(nh_eight_county_medicaid_match_final_age$unique_booking_id[!is.na(nh_eight_county_medicaid_match_final_age$age_at_booking_bin)==TRUE & !is.na(nh_eight_county_medicaid_match_final_age$unique_person_id)==TRUE])
+# 
+# hu_top_10_denom <- n_distinct(nh_eight_county_medicaid_match_final_age$unique_booking_id[!is.na(nh_eight_county_medicaid_match_final_age$age_at_booking_bin)==TRUE & nh_eight_county_medicaid_match_final_age$high_utilizer_10_pct=="Yes"])
+# 
+# hu_top_5_denom <- n_distinct(nh_eight_county_medicaid_match_final_age$unique_booking_id[!is.na(nh_eight_county_medicaid_match_final_age$age_at_booking_bin)==TRUE & nh_eight_county_medicaid_match_final_age$high_utilizer_5_pct=="Yes"])
+# 
+# hu_top_1_denom <- n_distinct(nh_eight_county_medicaid_match_final_age$unique_booking_id[!is.na(nh_eight_county_medicaid_match_final_age$age_at_booking_bin)==TRUE & nh_eight_county_medicaid_match_final_age$high_utilizer_1_pct=="Yes"])
+
+
+### unique individuals booked into jail in study sample -- grouped by race/ethnicity
+nh_eight_county_medicaid_match_final_age_table <- nh_eight_county_medicaid_match_final_age %>% 
+  distinct(unique_booking_id,
+           .keep_all = TRUE) %>% 
+  group_by(hu_group_exclusive) %>% 
+ summarise(`Overall Jail Bookings (N)` = n_distinct(unique_booking_id),
+            `18 to 24 (%)` = round(n_distinct(unique_booking_id[age_at_booking_bin=="18 to 24"])/`Overall Jail Bookings (N)`*100, digits = 2),
+            `25 to 34 (%)` = round(n_distinct(unique_booking_id[age_at_booking_bin=="25 to 34"])/`Overall Jail Bookings (N)`*100, digits = 2),
+           `35 to 45 (%)` = round(n_distinct(unique_booking_id[age_at_booking_bin=="35 to 45"])/`Overall Jail Bookings (N)`*100, digits = 2),
+           `46+ (%)` = round(n_distinct(unique_booking_id[age_at_booking_bin=="46+"])/`Overall Jail Bookings (N)`*100, digits = 2)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`HU Grouping` = hu_group_exclusive)
+
+### all -- overall for race/ethnicity
+nh_eight_county_charge_clean_final_age_table_overall <- nh_eight_county_medicaid_match_final_age %>% 
+  distinct(unique_booking_id,
+           .keep_all = TRUE) %>% 
+ summarise(`Overall Jail Bookings (N)` = n_distinct(unique_booking_id),
+            `18 to 24 (%)` = round(n_distinct(unique_booking_id[age_at_booking_bin=="18 to 24"])/`Overall Jail Bookings (N)`*100, digits = 2),
+            `25 to 34 (%)` = round(n_distinct(unique_booking_id[age_at_booking_bin=="25 to 34"])/`Overall Jail Bookings (N)`*100, digits = 2),
+           `35 to 45 (%)` = round(n_distinct(unique_booking_id[age_at_booking_bin=="35 to 45"])/`Overall Jail Bookings (N)`*100, digits = 2),
+           `46+ (%)` = round(n_distinct(unique_booking_id[age_at_booking_bin=="46+"])/`Overall Jail Bookings (N)`*100, digits = 2)) %>% 
+  dplyr::mutate(`HU Grouping` = "Overall Jail Population") 
+
+### combine tables for kable
+nh_eight_county_charge_clean_final_age_table_final <- rbind(nh_eight_county_medicaid_match_final_age_table,nh_eight_county_charge_clean_final_age_table_overall)
+
+### print table via kableextra
+kable(nh_eight_county_charge_clean_final_age_table_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+### Average Age (binned) of New Hampshire Overall Adult Population, Jail Population, and High Jail Utilizer Population
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+
+### pivot wide to long for geom_bar
+df_nh_sample_state_age_compare_bar <- nh_eight_county_medicaid_match_final_age_table %>%
+  dplyr::select(-`Overall Jail Bookings (N)`) %>%
+  gather(`sample_state`, percentage, `18 to 24 (%)`:`46+ (%)`) %>% 
+  mutate(percentage=percentage/100) ### convert percentage to decimal for ggplot
+
+### plot
+ggplot(data = df_nh_sample_state_age_compare_bar, aes(y = percentage, x = sample_state, fill = forcats::fct_rev(sample_state))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy=1),
+                     limits=c(min(0), 
+                                           max(.97))) +
+  scale_fill_manual(values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2")) +
+  scale_color_manual(values = rev(c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"))) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = "New Hampshire jail population reflects unique jail bookings from 2019 through 2021",
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+ theme(axis.text.x = element_text(size = 10.5, face="bold"),
+       axis.ticks.length = unit(0, "cm"),
+       plot.caption = element_text(hjust = 0.5),
+        strip.placement="outside",
+        strip.text.x=element_text(angle=180, hjust=1, face="bold", size=11.5,
+                              margin=margin(r=10))) +
+  coord_flip() + 
+  facet_grid(`HU Grouping` ~ ., scales="free_y", space="free_y", switch="y") +
+  guides(fill = FALSE) + 
+  geom_label_repel(aes(label = scales::percent(as.numeric(percentage),
+                                               accuracy = 0.1),
+                   color = sample_state),
+                   hjust = -.35,
+                   fill = "white",
+                   label.padding = 0.18,
+                   box.padding = 0.18,
+                   size = 3,
+                   segment.color = NA,
+                   fontface = "bold",
+                   na.rm = TRUE,
+                   show.legend = FALSE)
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "age_bins_overall_comparison_descriptive.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+<br><br>
+
+
+### Mean and Median Age of Jail Booking Population 
+
+Note: This table is unique by booking, not individual. **All counties are included.**
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique individuals booked into jail in study sample -- grouped by race/ethnicity
+nh_eight_county_medicaid_match_final_age_table <- nh_eight_county_medicaid_match_final_age %>% 
+  distinct(unique_booking_id,
+           .keep_all = TRUE) %>% 
+  group_by(hu_group_exclusive) %>% 
+ summarise(`Overall Jail Bookings (N)` = n_distinct(unique_booking_id),
+            `Mean Age` = round(mean(age_at_booking_years), digits = 2),
+            `Median Age` = round(median(age_at_booking_years), digits = 2)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`HU Grouping` = hu_group_exclusive)
+
+### all -- overall for race/ethnicity
+nh_eight_county_charge_clean_final_age_table_overall <- nh_eight_county_medicaid_match_final_age %>% 
+  distinct(unique_booking_id,
+           .keep_all = TRUE) %>% 
+ summarise(`Overall Jail Bookings (N)` = n_distinct(unique_booking_id),
+            `Mean Age` = round(mean(age_at_booking_years), digits = 2),
+            `Median Age` = round(median(age_at_booking_years), digits = 2)) %>%  
+  dplyr::mutate(`HU Grouping` = "Overall Jail Population") 
+
+### combine tables for kable
+nh_eight_county_charge_clean_final_age_table_final <- rbind(nh_eight_county_medicaid_match_final_age_table,nh_eight_county_charge_clean_final_age_table_overall)
+
+### print table via kableextra
+kable(nh_eight_county_charge_clean_final_age_table_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(5, bold = TRUE)
+```
+
+<br><br>
+
+### Gender of Jail Booking Population 
+
+Note: This table is unique by individual, not booking. **All counties are included.**
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+nh_eight_county_medicaid_match_final_gender <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  filter(!is.na(gender)) %>% 
+  mutate(gender_clean = ifelse(gender=="F",
+                               "Female",
+                               "Male"))
+
+### create ungrouped denominators for grouped descriptives below
+all_ind_denom <- n_distinct(nh_eight_county_medicaid_match_final_gender$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_gender$gender_clean)==TRUE & !is.na(nh_eight_county_medicaid_match_final_gender$unique_person_id)==TRUE])
+
+hu_top_10_denom <- n_distinct(nh_eight_county_medicaid_match_final_gender$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_gender$gender_clean)==TRUE & nh_eight_county_medicaid_match_final_gender$high_utilizer_10_pct=="Yes"])
+
+hu_top_5_denom <- n_distinct(nh_eight_county_medicaid_match_final_gender$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_gender$gender_clean)==TRUE & nh_eight_county_medicaid_match_final_gender$high_utilizer_5_pct=="Yes"])
+
+hu_top_1_denom <- n_distinct(nh_eight_county_medicaid_match_final_gender$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_gender$gender_clean)==TRUE & nh_eight_county_medicaid_match_final_gender$high_utilizer_1_pct=="Yes"])
+
+
+### unique individuals booked into jail in study sample -- grouped by race/ethnicity
+nh_eight_county_medicaid_match_final_gender_table <- nh_eight_county_medicaid_match_final_gender %>% 
+  distinct(unique_person_id,
+           .keep_all = TRUE) %>% 
+  dplyr::filter(!is.na(gender_clean)==TRUE) %>% 
+  group_by(gender_clean) %>% 
+  summarise(`Individuals Booked into Jail (N)` = n_distinct(unique_person_id),
+            `Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id)/all_ind_denom*100, digits = 2),
+            `High Jail Utilizer, top 10% (N)` = n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"]),
+            `High Jail Utilizer, top 10% (%)` = round(n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"])/hu_top_10_denom*100, digits = 2),
+            `High Jail Utilizer, top 5% (N)` = n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"]),
+            `High Jail Utilizer, top 5% (%)` = round(n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"])/hu_top_5_denom*100, digits = 2),
+            `High Jail Utilizer, top 1% (N)` = n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"]),
+            `High Jail Utilizer, top 1% (%)` = round(n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"])/hu_top_1_denom*100, digits = 2)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender_clean)
+
+### all -- overall for race/ethnicity
+nh_eight_county_charge_clean_final_gender_table_overall <- nh_eight_county_medicaid_match_final_gender %>% 
+  distinct(unique_person_id,
+           .keep_all = TRUE) %>% 
+  filter(!is.na(gender_clean)==TRUE) %>% 
+  summarise(`Individuals Booked into Jail (N)` = n_distinct(unique_person_id),
+            `Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id)/all_ind_denom*100, digits = 2),
+            `High Jail Utilizer, top 10% (N)` = n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"]),
+            `High Jail Utilizer, top 10% (%)` = round(n_distinct(unique_person_id[high_utilizer_10_pct=="Yes"])/hu_top_10_denom*100, digits = 2),
+            `High Jail Utilizer, top 5% (N)` = n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"]),
+            `High Jail Utilizer, top 5% (%)` = round(n_distinct(unique_person_id[high_utilizer_5_pct=="Yes"])/hu_top_5_denom*100, digits = 2),
+            `High Jail Utilizer, top 1% (N)` = n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"]),
+            `High Jail Utilizer, top 1% (%)` = round(n_distinct(unique_person_id[high_utilizer_1_pct=="Yes"])/hu_top_1_denom*100, digits = 2)) %>% 
+  dplyr::mutate(`Gender` = "Overall") 
+
+### combine tables for kable
+nh_eight_county_charge_clean_final_gender_table_final <- rbind(nh_eight_county_medicaid_match_final_gender_table,nh_eight_county_charge_clean_final_gender_table_overall)
+
+### print table via kableextra
+kable(nh_eight_county_charge_clean_final_gender_table_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(3, bold = TRUE)
+```
+
+<br><br>
+
+### Gender of New Hampshire Overall Adult Population, Jail Population, and High Jail Utilizer Population (top 10% threshold)
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### prep both dataframes for ggplot
+nh_eight_county_charge_clean_final_gender_table_final_to_join <- nh_eight_county_charge_clean_final_gender_table_final %>% 
+  dplyr::select(`Gender`,
+                `Individuals Booked into Jail (%)`,
+                `High Jail Utilizer, top 10% (%)`)
+
+nh_gender_acs_to_join <- nh_gender_acs %>% 
+  dplyr::select(`Gender` = gender,
+                `State Population Estimate (%)` = percentage)
+
+### join df_iowa_prelim_exploration_raw_invidual_supervision_race_table_to_join and iowa_race_2020_table_viz
+df_nh_sample_state_gender_compare <- inner_join(nh_gender_acs_to_join,
+                                                  nh_eight_county_charge_clean_final_gender_table_final_to_join,
+                                                    by= "Gender") 
+
+### pivot wide to long for geom_bar
+df_nh_sample_state_gender_compare_bar <- df_nh_sample_state_gender_compare %>%
+  dplyr::select(`Gender`,`State Population Estimate (%)`,`Individuals Booked into Jail (%)`,`High Jail Utilizer, top 10% (%)`) %>%
+  gather(`sample_state`, percentage, `State Population Estimate (%)`:`High Jail Utilizer, top 10% (%)`) %>% 
+  mutate(`sample_state` = case_when(`sample_state`=="State Population Estimate (%)"~"NH Adult Population",
+                                    `sample_state`=="Individuals Booked into Jail (%)"~"Overall Jail Population",
+                                    `sample_state`=="High Jail Utilizer, top 10% (%)"~"High Jail Utilizer Population",
+         TRUE ~ as.character(NA))) %>% 
+  mutate(`sample_state` = factor(`sample_state`,
+                                levels = c("NH Adult Population","Overall Jail Population","High Jail Utilizer Population"))) %>% 
+  mutate(percentage=percentage/100) ### convert percentage to decimal for ggplot
+
+### plot
+ggplot(data = df_nh_sample_state_gender_compare_bar, aes(y = percentage, x = sample_state, fill = forcats::fct_rev(sample_state))) + 
+  geom_bar(stat = "identity", position = "dodge", color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy=1),
+                     limits=c(min(0), 
+                                           max(.97))) +
+  scale_fill_manual(values = c("#4095B1","#273C4C","#61C280")) +
+  scale_color_manual(values = rev(c("#4095B1","#273C4C","#61C280"))) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = "New Hampshire adult population data comes from the 2020 Census\nNew Hampshire jail population reflects unique individuals booked into jail from 2019 through 2021",
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+ theme(axis.text.x = element_text(size = 10.5, face="bold"),
+       axis.ticks.length = unit(0, "cm"),
+       plot.caption = element_text(hjust = 0.5),
+        strip.placement="outside",
+        strip.text.x=element_text(angle=180, hjust=1, face="bold", size=11.5,
+                              margin=margin(r=10))) +
+  coord_flip() + 
+  facet_grid(`Gender` ~ ., scales="free_y", space="free_y", switch="y") +
+  guides(fill = FALSE) + 
+  geom_label_repel(aes(label = scales::percent(as.numeric(percentage),
+                                               accuracy = 0.1),
+                   color = sample_state),
+                   hjust = -0.25,
+                   fill = "white",
+                   label.padding = 0.25,
+                   box.padding = 0.25,
+                   size = 5,
+                   segment.color = NA,
+                   fontface = "bold",
+                   na.rm = TRUE,
+                   show.legend = FALSE)
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "gender_overall_comparison_descriptive.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+<br><br>
