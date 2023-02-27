@@ -9,12 +9,12 @@ output:
 
 ```{r include=FALSE}
 ### call libraries
-library(easypackages)
-libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","gtsummary")
-# Load packages, functions, and data
-# source("data_cleaning/00_library.R")
-# source("data_cleaning/01_functions.R")
-# source("data_cleaning/rdas.R")
+# library(easypackages)
+# libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","gtsummary")
+Load packages, functions, and data
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/rdas.R")
 
 # Load medicaid data
 jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
@@ -97,7 +97,7 @@ knitr::opts_chunk$set(
   )
 
 ### set sp_data_path
-sp_data_path <- csg_sp_path(file.path("JR_NH"))
+# sp_data_path <- csg_sp_path(file.path("JR_NH"))
 
 sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
 
@@ -115,113 +115,9 @@ knitr::include_graphics("img/nh_rri_example_viz.png")
 
 <br><br>
 
-## Frequency Tables, Race/Ethnicity
-
-<br>
-
-### Race/Ethnicity, New Hampshire Adult Population (2020 Census)
-
-```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
-census_2020_var_options_pl <- load_variables(2020, "pl", cache = TRUE)
-
-### pull list of acs vars that are availabe to pull
-### it may be helpful to cross-reference this list with tables from american factfinder to ensure you are pulling exactly what you want, not subsetted data (note: var numbers don't align between this list and american factfinder)
-acs_2020_vars <- tidycensus::load_variables(2020, "acs5/subject", cache = TRUE)
-
-### pull census/acs data via tidycensus package
-readRenviron("~/.Renviron")
+## Demographic Overview, Gender and Age
 
 
-### weighted estimate of percentage of county residents living below federal poverty threshold
-nh_gender_total_pop <- tidycensus::get_acs(geography = "state", 
-                                              state = "NH",
-                                              variables = "S0101_C01_001", 
-                                              geometry = FALSE,
-                                      year = 2020) %>% 
-  clean_names() %>% 
-  dplyr::rename(estimate_total_pop = estimate)
-
-
-### weighted estimate of percentage of county residents living below federal poverty threshold
-nh_gender_male <- tidycensus::get_acs(geography = "state", 
-                                              state = "NH",
-                                              variables = "S0101_C03_001", 
-                                              geometry = FALSE,
-                                      year = 2020) %>% 
-  clean_names() %>% 
-  mutate(Male = round(estimate/nh_gender_total_pop$estimate_total_pop*100, digits = 2))
-
-### weighted estimate of percentage of county residents living below federal poverty threshold
-nh_gender_female <- tidycensus::get_acs(geography = "state", 
-                                              state = "NH",
-                                              variables = "S0101_C05_001", 
-                                              geometry = FALSE,
-                                      year = 2020) %>% 
-  clean_names() %>% 
-  mutate(Female = round(estimate/nh_gender_total_pop$estimate_total_pop*100, digits = 2))
-
-### combine nh_gender_male and nh_gender_female
-nh_gender_acs <- left_join(nh_gender_male,
-                           nh_gender_female,
-                           by = "geoid") %>% 
-  dplyr::select(name=name.x,Male,Female) %>% 
-  gather(gender, percentage, `Male`:`Female`) 
-
-  
-
-### weighted estimate of percentage of race from 2020 census
-### pulled estimated counts and construct percent estimate
-### these are the ids of race variables that we want to pull 
-race_vars <- c(estimate_white = "P3_003N",
-               estimate_black = "P3_004N",
-               estimate_asian = "P3_006N",
-               estimate_native_hawaiian_pi = "P3_007N",
-               estimate_hispanic = "P4_002N",
-               estimate_american_indian = "P1_005N")
-
-nh_race_2020 <- tidycensus::get_decennial(geography = "state", 
-                                               state = "NH",
-                                               variables = race_vars,
-                                               summary_var = "P3_001N", ### total population for 18+ population from race table
-                                               year = 2020,
-                                               geometry = FALSE) %>% 
-  clean_names() %>% 
-  dplyr::select(-geoid) %>% 
-  mutate(race_csg_4 = case_when(
-    variable == "estimate_american_indian" ~ "American Indian/Alaska Native",
-    variable %in% c("estimate_asian","estimate_native_hawaiian_pi") ~ "Asian/Pacific Islander",
-    variable == "estimate_black" ~ "Black",
-    variable == "estimate_hispanic" ~ "Hispanic",
-    variable == "estimate_white" ~ "White",
-    TRUE ~ "NA")) %>% 
-  dplyr::group_by(race_csg_4) %>% 
-  mutate(overall_value = sum(value),
-         estimate = (overall_value/summary_value)*100) %>% ###create percent estimate from estimated counts
-  ungroup() %>% 
-  dplyr::rename(race_eth_pop = overall_value,
-                total_pop = summary_value,
-                race_eth_pop_percent = estimate) %>% 
-  dplyr::select(-c(variable,value)) %>% 
-  distinct()
-
-### prep dataframe for table
-nh_race_2020_table <- nh_race_2020 %>% 
-  mutate(race_eth_pop_percent = round(race_eth_pop_percent, digits = 1)) %>% 
-  dplyr::select(`Race/Ethnicity` = race_csg_4,`State Population Estimate (n)`=race_eth_pop,`State Population Estimate (%)` = race_eth_pop_percent) %>% 
-  arrange(`Race/Ethnicity`)
-
-### print table via kableextra
-kable(nh_race_2020_table, 
-      format.args=list(big.mark = ","), 
-      align=rep('c')) %>%
-   kable_styling(bootstrap_options = c("striped", 
-                                       "hover", 
-                                       "condensed", 
-                                       "responsive"), 
-                 row_label_position = "l") 
-```
-
-<br><br>
 
 ### Average Age (binned) of Jail Booking Population 
 
@@ -402,6 +298,41 @@ kable(nh_eight_county_charge_clean_final_age_table_final,
 Note: This table is unique by individual, not booking. **All counties are included.**
 
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
+### weighted estimate of percentage of county residents living below federal poverty threshold
+nh_gender_total_pop <- tidycensus::get_acs(geography = "state", 
+                                              state = "NH",
+                                              variables = "S0101_C01_001", 
+                                              geometry = FALSE,
+                                      year = 2020) %>% 
+  clean_names() %>% 
+  dplyr::rename(estimate_total_pop = estimate)
+
+
+### weighted estimate of percentage of county residents living below federal poverty threshold
+nh_gender_male <- tidycensus::get_acs(geography = "state", 
+                                              state = "NH",
+                                              variables = "S0101_C03_001", 
+                                              geometry = FALSE,
+                                      year = 2020) %>% 
+  clean_names() %>% 
+  mutate(Male = round(estimate/nh_gender_total_pop$estimate_total_pop*100, digits = 2))
+
+### weighted estimate of percentage of county residents living below federal poverty threshold
+nh_gender_female <- tidycensus::get_acs(geography = "state", 
+                                              state = "NH",
+                                              variables = "S0101_C05_001", 
+                                              geometry = FALSE,
+                                      year = 2020) %>% 
+  clean_names() %>% 
+  mutate(Female = round(estimate/nh_gender_total_pop$estimate_total_pop*100, digits = 2))
+
+### combine nh_gender_male and nh_gender_female
+nh_gender_acs <- left_join(nh_gender_male,
+                           nh_gender_female,
+                           by = "geoid") %>% 
+  dplyr::select(name=name.x,Male,Female) %>% 
+  gather(gender, percentage, `Male`:`Female`)
+
 nh_eight_county_medicaid_match_final_gender <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   filter(!is.na(gender)) %>% 
   mutate(gender_clean = ifelse(gender=="F",
@@ -545,6 +476,76 @@ ggsave(
 ```
 
 <br><br>
+
+## Frequency Tables, Race/Ethnicity
+
+<br>
+
+### Race/Ethnicity, New Hampshire Adult Population (2020 Census)
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+census_2020_var_options_pl <- load_variables(2020, "pl", cache = TRUE)
+
+### pull list of acs vars that are availabe to pull
+### it may be helpful to cross-reference this list with tables from american factfinder to ensure you are pulling exactly what you want, not subsetted data (note: var numbers don't align between this list and american factfinder)
+acs_2020_vars <- tidycensus::load_variables(2020, "acs5/subject", cache = TRUE)
+
+### pull census/acs data via tidycensus package
+readRenviron("~/.Renviron")
+
+### weighted estimate of percentage of race from 2020 census
+### pulled estimated counts and construct percent estimate
+### these are the ids of race variables that we want to pull 
+race_vars <- c(estimate_white = "P3_003N",
+               estimate_black = "P3_004N",
+               estimate_asian = "P3_006N",
+               estimate_native_hawaiian_pi = "P3_007N",
+               estimate_hispanic = "P4_002N",
+               estimate_american_indian = "P1_005N")
+
+nh_race_2020 <- tidycensus::get_decennial(geography = "state", 
+                                               state = "NH",
+                                               variables = race_vars,
+                                               summary_var = "P3_001N", ### total population for 18+ population from race table
+                                               year = 2020,
+                                               geometry = FALSE) %>% 
+  clean_names() %>% 
+  dplyr::select(-geoid) %>% 
+  mutate(race_csg_4 = case_when(
+    variable == "estimate_american_indian" ~ "American Indian/Alaska Native",
+    variable %in% c("estimate_asian","estimate_native_hawaiian_pi") ~ "Asian/Pacific Islander",
+    variable == "estimate_black" ~ "Black",
+    variable == "estimate_hispanic" ~ "Hispanic",
+    variable == "estimate_white" ~ "White",
+    TRUE ~ "NA")) %>% 
+  dplyr::group_by(race_csg_4) %>% 
+  mutate(overall_value = sum(value),
+         estimate = (overall_value/summary_value)*100) %>% ###create percent estimate from estimated counts
+  ungroup() %>% 
+  dplyr::rename(race_eth_pop = overall_value,
+                total_pop = summary_value,
+                race_eth_pop_percent = estimate) %>% 
+  dplyr::select(-c(variable,value)) %>% 
+  distinct()
+
+### prep dataframe for table
+nh_race_2020_table <- nh_race_2020 %>% 
+  mutate(race_eth_pop_percent = round(race_eth_pop_percent, digits = 1)) %>% 
+  dplyr::select(`Race/Ethnicity` = race_csg_4,`State Population Estimate (n)`=race_eth_pop,`State Population Estimate (%)` = race_eth_pop_percent) %>% 
+  arrange(`Race/Ethnicity`)
+
+### print table via kableextra
+kable(nh_race_2020_table, 
+      format.args=list(big.mark = ","), 
+      align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+
 
 ### Race/Ethnicity of Jail Booking Population (Unknown/Missing included)
 
@@ -1017,9 +1018,9 @@ ggsave(
 
 **Question: Should we only use median? A small number of very large length of stays (e.g. 2+ years) are pulling up the mean**
 
-```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+```{r layout="l-body-outset",eval=FALSE,message=FALSE,warning=FALSE}
 ### group by race and calculate both mean and median length of stays using los_max
-nh_eight_county_charge_clean_final_race_los <- nh_eight_county_medicaid_match_final_race %>% 
+nh_eight_county_charge_clean_final_race_los <- nh_eight_county_medicaid_match_final_race$ %>% 
   distinct(booking_id,
            .keep_all = TRUE) %>% 
   filter(!is.na(race)==TRUE) %>% 

@@ -2402,7 +2402,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <a href="index.html">Project Overview</a>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
-Overall Trends
+Jail Trends
  
 <span class="down-arrow">&#x25BE;</span>
 </button>
@@ -2412,8 +2412,24 @@ Overall Trends
 <a href="nh_booking_types_analysis.html">Booking Types</a>
 <a href="nh_charge_type_analysis.html">Charge Types</a>
 <a href="nh_high_utilizers_analysis.html">High Utilizers</a>
-<a href="nh_medicaid_analysis.html">Medicaid</a>
+<a href="nh_homeless_analysis.html">Homeless</a>
+<a href="nh_los_analysis.html">Length of Stay</a>
 <a href="nh_racial_disparities.html">Racial Disparities</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+Medicaid Trends
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="nh_medicaid_match_bh_overview_analysis.html">Medicaid Match and BH Overview</a>
+<a href="nh_medicaid_bh_encounters_mh_sud.html">Behaviorial Health Encounters, MH and SUD</a>
+<a href="nh_medicaid_bh_encounters_visits.html">Behaviorial Health Encounters, CMHC and ED Visits</a>
+<a href="nh_medicaid_eligibility_jail_timing_analysis.html">End of Medicaid Eligibility and Jail Booking Analysis</a>
+<a href="nh_medicaid_reimbursement_costs.html">Medicaid Reimbursement Costs</a>
+<a href="nh_medicaid_homelessness_analysis.html">Homelessness</a>
 </div>
 </div>
 <div class="nav-dropdown">
@@ -2425,6 +2441,17 @@ Archive
 <div class="nav-dropdown-content">
 <a href="archive_incarceration_patterns.html">Incarceration Patterns (Archive)</a>
 <a href="archive_high_utilizers_analysis.html">High Utilizers (Archive)</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+BH Resources
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="nh_resource_map.html">Static Maps</a>
+<a href="nh_interactive_resource_map.html">Interactive Map</a>
 </div>
 </div>
 <div class="nav-dropdown">
@@ -2467,6 +2494,30 @@ Research
 id="toc-descriptive-analysis-of-racialethnic-disproportionality">Descriptive
 Analysis of Racial/Ethnic Disproportionality</a>
 <ul>
+<li><a href="#demographic-overview-gender-and-age"
+id="toc-demographic-overview-gender-and-age">Demographic Overview,
+Gender and Age</a>
+<ul>
+<li><a href="#average-age-binned-of-jail-booking-population"
+id="toc-average-age-binned-of-jail-booking-population">Average Age
+(binned) of Jail Booking Population</a></li>
+<li><a
+href="#average-age-binned-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population"
+id="toc-average-age-binned-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population">Average
+Age (binned) of New Hampshire Overall Adult Population, Jail Population,
+and High Jail Utilizer Population</a></li>
+<li><a href="#mean-and-median-age-of-jail-booking-population"
+id="toc-mean-and-median-age-of-jail-booking-population">Mean and Median
+Age of Jail Booking Population</a></li>
+<li><a href="#gender-of-jail-booking-population"
+id="toc-gender-of-jail-booking-population">Gender of Jail Booking
+Population</a></li>
+<li><a
+href="#gender-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population-top-10-threshold"
+id="toc-gender-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population-top-10-threshold">Gender
+of New Hampshire Overall Adult Population, Jail Population, and High
+Jail Utilizer Population (top 10% threshold)</a></li>
+</ul></li>
 <li><a href="#frequency-tables-raceethnicity"
 id="toc-frequency-tables-raceethnicity">Frequency Tables,
 Race/Ethnicity</a>
@@ -2474,13 +2525,14 @@ Race/Ethnicity</a>
 <li><a href="#raceethnicity-new-hampshire-adult-population-2020-census"
 id="toc-raceethnicity-new-hampshire-adult-population-2020-census">Race/Ethnicity,
 New Hampshire Adult Population (2020 Census)</a></li>
-<li><a href="#raceethnicity-of-jail-booking-population"
-id="toc-raceethnicity-of-jail-booking-population">Race/Ethnicity of Jail
-Booking Population</a></li>
 <li><a
-href="#raceethnicity-of-jail-booking-population-pc-hold-versus-non-pc-hold"
-id="toc-raceethnicity-of-jail-booking-population-pc-hold-versus-non-pc-hold">Race/Ethnicity
-of Jail Booking Population: PC-Hold versus non-PC Hold</a></li>
+href="#raceethnicity-of-jail-booking-population-unknownmissing-included"
+id="toc-raceethnicity-of-jail-booking-population-unknownmissing-included">Race/Ethnicity
+of Jail Booking Population (Unknown/Missing included)</a></li>
+<li><a
+href="#raceethnicity-of-jail-booking-population-unknownmissing-excluded"
+id="toc-raceethnicity-of-jail-booking-population-unknownmissing-excluded">Race/Ethnicity
+of Jail Booking Population (Unknown/Missing excluded)</a></li>
 <li><a
 href="#raceethnicity-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population-top-10-threshold"
 id="toc-raceethnicity-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population-top-10-threshold">Race/Ethnicity
@@ -2572,6 +2624,383 @@ presented later because we have rounded in this example.</p>
 <p><img src="img/nh_rri_example_viz.PNG" width="908" /></p>
 </div>
 <p><br><br></p>
+<h2 id="demographic-overview-gender-and-age">Demographic Overview,
+Gender and Age</h2>
+<h3 id="average-age-binned-of-jail-booking-population">Average Age
+(binned) of Jail Booking Population</h3>
+<p>Note: This table is unique by booking, not individual. <strong>All
+counties are included.</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+HU Grouping
+</th>
+<th style="text-align:center;">
+Overall Jail Bookings (N)
+</th>
+<th style="text-align:center;">
+18 to 24 (%)
+</th>
+<th style="text-align:center;">
+25 to 34 (%)
+</th>
+<th style="text-align:center;">
+35 to 45 (%)
+</th>
+<th style="text-align:center;">
+46+ (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Tier 1 HU
+</td>
+<td style="text-align:center;">
+3,604
+</td>
+<td style="text-align:center;">
+7.63
+</td>
+<td style="text-align:center;">
+41.07
+</td>
+<td style="text-align:center;">
+24.25
+</td>
+<td style="text-align:center;">
+27.05
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Tier 2 HU
+</td>
+<td style="text-align:center;">
+7,691
+</td>
+<td style="text-align:center;">
+11.49
+</td>
+<td style="text-align:center;">
+42.57
+</td>
+<td style="text-align:center;">
+34.30
+</td>
+<td style="text-align:center;">
+11.64
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Tier 3 HU
+</td>
+<td style="text-align:center;">
+6,089
+</td>
+<td style="text-align:center;">
+10.51
+</td>
+<td style="text-align:center;">
+42.24
+</td>
+<td style="text-align:center;">
+30.79
+</td>
+<td style="text-align:center;">
+16.46
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Non-HU
+</td>
+<td style="text-align:center;">
+32,783
+</td>
+<td style="text-align:center;">
+14.18
+</td>
+<td style="text-align:center;">
+34.26
+</td>
+<td style="text-align:center;">
+28.99
+</td>
+<td style="text-align:center;">
+22.56
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall Jail Population
+</td>
+<td style="text-align:center;font-weight: bold;">
+50,167
+</td>
+<td style="text-align:center;font-weight: bold;">
+12.85
+</td>
+<td style="text-align:center;font-weight: bold;">
+36.99
+</td>
+<td style="text-align:center;font-weight: bold;">
+29.68
+</td>
+<td style="text-align:center;font-weight: bold;">
+20.47
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h3
+id="average-age-binned-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population">Average
+Age (binned) of New Hampshire Overall Adult Population, Jail Population,
+and High Jail Utilizer Population</h3>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_racial_disparities_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h3 id="mean-and-median-age-of-jail-booking-population">Mean and Median
+Age of Jail Booking Population</h3>
+<p>Note: This table is unique by booking, not individual. <strong>All
+counties are included.</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+HU Grouping
+</th>
+<th style="text-align:center;">
+Overall Jail Bookings (N)
+</th>
+<th style="text-align:center;">
+Mean Age
+</th>
+<th style="text-align:center;">
+Median Age
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Tier 1 HU
+</td>
+<td style="text-align:center;">
+3,604
+</td>
+<td style="text-align:center;">
+38.20
+</td>
+<td style="text-align:center;">
+35
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Tier 2 HU
+</td>
+<td style="text-align:center;">
+7,691
+</td>
+<td style="text-align:center;">
+34.77
+</td>
+<td style="text-align:center;">
+34
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Tier 3 HU
+</td>
+<td style="text-align:center;">
+6,089
+</td>
+<td style="text-align:center;">
+35.71
+</td>
+<td style="text-align:center;">
+34
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Non-HU
+</td>
+<td style="text-align:center;">
+32,783
+</td>
+<td style="text-align:center;">
+36.82
+</td>
+<td style="text-align:center;">
+35
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall Jail Population
+</td>
+<td style="text-align:center;font-weight: bold;">
+50,167
+</td>
+<td style="text-align:center;font-weight: bold;">
+36.47
+</td>
+<td style="text-align:center;font-weight: bold;">
+35
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h3 id="gender-of-jail-booking-population">Gender of Jail Booking
+Population</h3>
+<p>Note: This table is unique by individual, not booking. <strong>All
+counties are included.</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Gender
+</th>
+<th style="text-align:center;">
+Individuals Booked into Jail (N)
+</th>
+<th style="text-align:center;">
+Individuals Booked into Jail (%)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 10% (N)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 10% (%)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 5% (N)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 5% (%)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 1% (N)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 1% (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+Female
+</td>
+<td style="text-align:center;">
+3,627
+</td>
+<td style="text-align:center;">
+27.39
+</td>
+<td style="text-align:center;">
+630
+</td>
+<td style="text-align:center;">
+26.73
+</td>
+<td style="text-align:center;">
+333
+</td>
+<td style="text-align:center;">
+29.03
+</td>
+<td style="text-align:center;">
+55
+</td>
+<td style="text-align:center;">
+25.94
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Male
+</td>
+<td style="text-align:center;">
+9,614
+</td>
+<td style="text-align:center;">
+72.61
+</td>
+<td style="text-align:center;">
+1,727
+</td>
+<td style="text-align:center;">
+73.27
+</td>
+<td style="text-align:center;">
+814
+</td>
+<td style="text-align:center;">
+70.97
+</td>
+<td style="text-align:center;">
+157
+</td>
+<td style="text-align:center;">
+74.06
+</td>
+</tr>
+<tr>
+<td style="text-align:center;font-weight: bold;">
+Overall
+</td>
+<td style="text-align:center;font-weight: bold;">
+13,241
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+<td style="text-align:center;font-weight: bold;">
+2,357
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+<td style="text-align:center;font-weight: bold;">
+1,147
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+<td style="text-align:center;font-weight: bold;">
+212
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br><br></p>
+<h3
+id="gender-of-new-hampshire-overall-adult-population-jail-population-and-high-jail-utilizer-population-top-10-threshold">Gender
+of New Hampshire Overall Adult Population, Jail Population, and High
+Jail Utilizer Population (top 10% threshold)</h3>
+<div class="layout-chunk" data-layout="l-body-outset">
+<p><img src="nh_racial_disparities_files/figure-html5/unnamed-chunk-8-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
 <h2 id="frequency-tables-raceethnicity">Frequency Tables,
 Race/Ethnicity</h2>
 <p><br></p>
@@ -2652,13 +3081,11 @@ White
 </tbody>
 </table>
 </div>
-<p><br><br></p>
-<h3 id="raceethnicity-of-jail-booking-population">Race/Ethnicity of Jail
-Booking Population</h3>
-<p>Note: This table is unique by individual, not booking. These data do
-not allow for analysis of individuals across jails, but we can use the
-DHHS-provided Medicaid data for that. Percentages are column
-percentages, not row percentages</p>
+<h3
+id="raceethnicity-of-jail-booking-population-unknownmissing-included">Race/Ethnicity
+of Jail Booking Population (Unknown/Missing included)</h3>
+<p>Note: This table is unique by individual, not booking. <strong>All
+counties are included.</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -2695,31 +3122,31 @@ High Jail Utilizer, top 1% (%)
 <tbody>
 <tr>
 <td style="text-align:center;">
-American Indian/Alaska Native
+American Indian/Alaskan Native
 </td>
 <td style="text-align:center;">
 61
 </td>
 <td style="text-align:center;">
-0.26
+0.22
 </td>
 <td style="text-align:center;">
-5
+7
 </td>
 <td style="text-align:center;">
-0.24
+0.27
 </td>
 <td style="text-align:center;">
-1
+4
 </td>
 <td style="text-align:center;">
-0.10
+0.33
 </td>
 <td style="text-align:center;">
-0
+2
 </td>
 <td style="text-align:center;">
-0.00
+0.92
 </td>
 </tr>
 <tr>
@@ -2727,22 +3154,22 @@ American Indian/Alaska Native
 Asian/Pacific Islander
 </td>
 <td style="text-align:center;">
-136
+182
 </td>
 <td style="text-align:center;">
-0.57
+0.65
+</td>
+<td style="text-align:center;">
+8
+</td>
+<td style="text-align:center;">
+0.31
 </td>
 <td style="text-align:center;">
 6
 </td>
 <td style="text-align:center;">
-0.28
-</td>
-<td style="text-align:center;">
-3
-</td>
-<td style="text-align:center;">
-0.30
+0.49
 </td>
 <td style="text-align:center;">
 0
@@ -2756,28 +3183,28 @@ Asian/Pacific Islander
 Black
 </td>
 <td style="text-align:center;">
-1,485
+1,976
 </td>
 <td style="text-align:center;">
-6.26
+7.08
 </td>
 <td style="text-align:center;">
-102
+137
 </td>
 <td style="text-align:center;">
-4.84
+5.23
 </td>
 <td style="text-align:center;">
-36
+52
 </td>
 <td style="text-align:center;">
-3.63
+4.23
 </td>
 <td style="text-align:center;">
-6
+7
 </td>
 <td style="text-align:center;">
-3.33
+3.21
 </td>
 </tr>
 <tr>
@@ -2785,28 +3212,28 @@ Black
 Hispanic
 </td>
 <td style="text-align:center;">
-623
+3,645
 </td>
 <td style="text-align:center;">
-2.63
+13.07
 </td>
 <td style="text-align:center;">
-23
+35
 </td>
 <td style="text-align:center;">
-1.09
+1.33
 </td>
 <td style="text-align:center;">
 10
 </td>
 <td style="text-align:center;">
-1.01
+0.81
 </td>
 <td style="text-align:center;">
-1
+0
 </td>
 <td style="text-align:center;">
-0.56
+0.00
 </td>
 </tr>
 <tr>
@@ -2814,28 +3241,57 @@ Hispanic
 Missing
 </td>
 <td style="text-align:center;">
-520
+468
 </td>
 <td style="text-align:center;">
-2.19
+1.68
 </td>
 <td style="text-align:center;">
-40
+1
 </td>
 <td style="text-align:center;">
-1.90
+0.04
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.00
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.00
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+Unknown
+</td>
+<td style="text-align:center;">
+710
+</td>
+<td style="text-align:center;">
+2.55
+</td>
+<td style="text-align:center;">
+34
+</td>
+<td style="text-align:center;">
+1.30
 </td>
 <td style="text-align:center;">
 19
 </td>
 <td style="text-align:center;">
-1.92
+1.54
 </td>
 <td style="text-align:center;">
-2
+1
 </td>
 <td style="text-align:center;">
-1.11
+0.46
 </td>
 </tr>
 <tr>
@@ -2843,28 +3299,28 @@ Missing
 White
 </td>
 <td style="text-align:center;">
-20,903
+20,855
 </td>
 <td style="text-align:center;">
-88.09
+74.76
 </td>
 <td style="text-align:center;">
-1,932
+2,400
 </td>
 <td style="text-align:center;">
-91.65
+91.53
 </td>
 <td style="text-align:center;">
-922
+1,139
 </td>
 <td style="text-align:center;">
-93.04
+92.60
 </td>
 <td style="text-align:center;">
-171
+208
 </td>
 <td style="text-align:center;">
-95.00
+95.41
 </td>
 </tr>
 <tr>
@@ -2872,25 +3328,25 @@ White
 Overall
 </td>
 <td style="text-align:center;font-weight: bold;">
-23,728
+27,897
 </td>
 <td style="text-align:center;font-weight: bold;">
 100.00
 </td>
 <td style="text-align:center;font-weight: bold;">
-2,108
+2,622
 </td>
 <td style="text-align:center;font-weight: bold;">
 100.00
 </td>
 <td style="text-align:center;font-weight: bold;">
-991
+1,230
 </td>
 <td style="text-align:center;font-weight: bold;">
 100.00
 </td>
 <td style="text-align:center;font-weight: bold;">
-180
+218
 </td>
 <td style="text-align:center;font-weight: bold;">
 100.00
@@ -2901,12 +3357,12 @@ Overall
 </div>
 <p><br><br></p>
 <h3
-id="raceethnicity-of-jail-booking-population-pc-hold-versus-non-pc-hold">Race/Ethnicity
-of Jail Booking Population: PC-Hold versus non-PC Hold</h3>
-<p>Note: Unlike most of the other analysis, this table is unique by
-booking, not individual given that we are exploring booking type here.
-Percentages are column percentages, not row percentages. Bookings with
-missing PC Hold information are excluded from this analysis</p>
+id="raceethnicity-of-jail-booking-population-unknownmissing-excluded">Race/Ethnicity
+of Jail Booking Population (Unknown/Missing excluded)</h3>
+<p>Note: This table is unique by individual, not booking.
+<strong>Hillsborough and Carroll are excluded because they did not
+include race/ethnicity data for Hispanic individuals. Use this table for
+actual interpretations/findings</strong></p>
 <div class="layout-chunk" data-layout="l-body">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
@@ -2915,47 +3371,59 @@ missing PC Hold information are excluded from this analysis</p>
 Race/Ethnicity
 </th>
 <th style="text-align:center;">
-Overall Jail Bookings (N)
+Individuals Booked into Jail (N)
 </th>
 <th style="text-align:center;">
-Overall Jail Bookings (%)
+Individuals Booked into Jail (%)
 </th>
 <th style="text-align:center;">
-PC Hold Bookings (N)
+High Jail Utilizer, top 10% (N)
 </th>
 <th style="text-align:center;">
-PC Hold Bookings (%)
+High Jail Utilizer, top 10% (%)
 </th>
 <th style="text-align:center;">
-Non-PC Hold Bookings (N)
+High Jail Utilizer, top 5% (N)
 </th>
 <th style="text-align:center;">
-Non-PC Hold Bookings (%)
+High Jail Utilizer, top 5% (%)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 1% (N)
+</th>
+<th style="text-align:center;">
+High Jail Utilizer, top 1% (%)
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td style="text-align:center;">
-American Indian/Alaska Native
+American Indian/Alaskan Native
 </td>
 <td style="text-align:center;">
-93
+47
 </td>
 <td style="text-align:center;">
-0.24
+0.22
 </td>
 <td style="text-align:center;">
-28
+8
 </td>
 <td style="text-align:center;">
-0.38
+0.37
 </td>
 <td style="text-align:center;">
-65
+4
 </td>
 <td style="text-align:center;">
-0.20
+0.39
+</td>
+<td style="text-align:center;">
+2
+</td>
+<td style="text-align:center;">
+1.04
 </td>
 </tr>
 <tr>
@@ -2963,22 +3431,28 @@ American Indian/Alaska Native
 Asian/Pacific Islander
 </td>
 <td style="text-align:center;">
-191
+141
 </td>
 <td style="text-align:center;">
-0.49
+0.67
 </td>
 <td style="text-align:center;">
-34
+8
 </td>
 <td style="text-align:center;">
-0.46
+0.37
 </td>
 <td style="text-align:center;">
-157
+7
 </td>
 <td style="text-align:center;">
-0.49
+0.68
+</td>
+<td style="text-align:center;">
+0
+</td>
+<td style="text-align:center;">
+0.00
 </td>
 </tr>
 <tr>
@@ -2986,22 +3460,28 @@ Asian/Pacific Islander
 Black
 </td>
 <td style="text-align:center;">
-2,266
+1,427
 </td>
 <td style="text-align:center;">
-5.76
+6.77
 </td>
 <td style="text-align:center;">
-217
+87
 </td>
 <td style="text-align:center;">
-2.95
+4.04
 </td>
 <td style="text-align:center;">
-2,049
+36
 </td>
 <td style="text-align:center;">
-6.41
+3.48
+</td>
+<td style="text-align:center;">
+7
+</td>
+<td style="text-align:center;">
+3.65
 </td>
 </tr>
 <tr>
@@ -3009,45 +3489,28 @@ Black
 Hispanic
 </td>
 <td style="text-align:center;">
-774
+3,719
 </td>
 <td style="text-align:center;">
-1.97
+17.64
 </td>
 <td style="text-align:center;">
-126
+48
 </td>
 <td style="text-align:center;">
-1.71
+2.23
 </td>
 <td style="text-align:center;">
-648
+14
 </td>
 <td style="text-align:center;">
-2.03
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Missing
+1.35
 </td>
 <td style="text-align:center;">
-784
+0
 </td>
 <td style="text-align:center;">
-1.99
-</td>
-<td style="text-align:center;">
-119
-</td>
-<td style="text-align:center;">
-1.62
-</td>
-<td style="text-align:center;">
-665
-</td>
-<td style="text-align:center;">
-2.08
+0.00
 </td>
 </tr>
 <tr>
@@ -3055,22 +3518,28 @@ Missing
 White
 </td>
 <td style="text-align:center;">
-35,204
+15,753
 </td>
 <td style="text-align:center;">
-89.55
+74.70
 </td>
 <td style="text-align:center;">
-6,835
+2,002
 </td>
 <td style="text-align:center;">
-92.88
+92.99
 </td>
 <td style="text-align:center;">
-28,369
+974
 </td>
 <td style="text-align:center;">
-88.78
+94.11
+</td>
+<td style="text-align:center;">
+183
+</td>
+<td style="text-align:center;">
+95.31
 </td>
 </tr>
 <tr>
@@ -3078,19 +3547,25 @@ White
 Overall
 </td>
 <td style="text-align:center;font-weight: bold;">
-39,312
+21,087
 </td>
 <td style="text-align:center;font-weight: bold;">
 100.00
 </td>
 <td style="text-align:center;font-weight: bold;">
-7,359
+2,153
 </td>
 <td style="text-align:center;font-weight: bold;">
 100.00
 </td>
 <td style="text-align:center;font-weight: bold;">
-31,953
+1,035
+</td>
+<td style="text-align:center;font-weight: bold;">
+100.00
+</td>
+<td style="text-align:center;font-weight: bold;">
+192
 </td>
 <td style="text-align:center;font-weight: bold;">
 100.00
@@ -3105,7 +3580,7 @@ id="raceethnicity-of-new-hampshire-overall-adult-population-jail-population-and-
 of New Hampshire Overall Adult Population, Jail Population, and High
 Jail Utilizer Population (top 10% threshold)</h3>
 <div class="layout-chunk" data-layout="l-body-outset">
-<p><img src="nh_racial_disparities_files/figure-html5/unnamed-chunk-7-1.png" width="624" /></p>
+<p><img src="nh_racial_disparities_files/figure-html5/unnamed-chunk-13-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <h2 id="relative-rate-index-rri">Relative Rate Index (RRI)</h2>
@@ -3146,36 +3621,19 @@ High Jail Utilizer, top 10% RRI (to White individuals)
 <tbody>
 <tr>
 <td style="text-align:center;">
-American Indian/Alaska Native
-</td>
-<td style="text-align:center;">
-201.3
-</td>
-<td style="text-align:center;">
-0.97
-</td>
-<td style="text-align:center;">
-16.5
-</td>
-<td style="text-align:center;">
-0.86
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
 Asian/Pacific Islander
 </td>
 <td style="text-align:center;">
-47.7
+49.4
 </td>
 <td style="text-align:center;">
-0.23
+0.32
 </td>
 <td style="text-align:center;">
-2.1
+2.8
 </td>
 <td style="text-align:center;">
-0.11
+0.14
 </td>
 </tr>
 <tr>
@@ -3183,16 +3641,16 @@ Asian/Pacific Islander
 Black
 </td>
 <td style="text-align:center;">
-1,000.6
+961.5
 </td>
 <td style="text-align:center;">
-4.81
+6.14
 </td>
 <td style="text-align:center;">
-68.7
+58.6
 </td>
 <td style="text-align:center;">
-3.58
+2.94
 </td>
 </tr>
 <tr>
@@ -3200,16 +3658,16 @@ Black
 Hispanic
 </td>
 <td style="text-align:center;">
-156.5
+934.4
 </td>
 <td style="text-align:center;">
-0.75
+5.96
 </td>
 <td style="text-align:center;">
-5.8
+12.1
 </td>
 <td style="text-align:center;">
-0.30
+0.61
 </td>
 </tr>
 <tr>
@@ -3217,13 +3675,13 @@ Hispanic
 White
 </td>
 <td style="text-align:center;">
-207.9
+156.7
 </td>
 <td style="text-align:center;">
 NA
 </td>
 <td style="text-align:center;">
-19.2
+19.9
 </td>
 <td style="text-align:center;">
 NA
@@ -3256,7 +3714,7 @@ offense or criminal history. We could expand this analysis to account
 for offense type.</p></li>
 </ul>
 <div class="layout-chunk" data-layout="l-body-outset">
-<p><img src="nh_racial_disparities_files/figure-html5/unnamed-chunk-9-1.png" width="624" /></p>
+<p><img src="nh_racial_disparities_files/figure-html5/unnamed-chunk-15-1.png" width="624" /></p>
 </div>
 <p><br><br></p>
 <h2 id="length-of-stay">Length of Stay</h2>
@@ -3266,113 +3724,33 @@ Lengths of Stay, Statewide</h3>
 large length of stays (e.g. 2+ years) are pulling up the
 mean</strong></p>
 <div class="layout-chunk" data-layout="l-body-outset">
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:center;">
-Race/Ethnicity
-</th>
-<th style="text-align:center;">
-Overall Jail Bookings (N)
-</th>
-<th style="text-align:center;">
-Mean Length of Stay (Days)
-</th>
-<th style="text-align:center;">
-Median Length of Stay (Days)
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-American Indian/Alaska Native
-</td>
-<td style="text-align:center;">
-61
-</td>
-<td style="text-align:center;">
-23.8
-</td>
-<td style="text-align:center;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Asian/Pacific Islander
-</td>
-<td style="text-align:center;">
-136
-</td>
-<td style="text-align:center;">
-33.2
-</td>
-<td style="text-align:center;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Black
-</td>
-<td style="text-align:center;">
-1,485
-</td>
-<td style="text-align:center;">
-36.7
-</td>
-<td style="text-align:center;">
-2
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Hispanic
-</td>
-<td style="text-align:center;">
-623
-</td>
-<td style="text-align:center;">
-27.7
-</td>
-<td style="text-align:center;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-Missing
-</td>
-<td style="text-align:center;">
-520
-</td>
-<td style="text-align:center;">
-19.8
-</td>
-<td style="text-align:center;">
-1
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-White
-</td>
-<td style="text-align:center;">
-20,903
-</td>
-<td style="text-align:center;">
-24.1
-</td>
-<td style="text-align:center;">
-1
-</td>
-</tr>
-</tbody>
-</table>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">### group by race and calculate both mean and median length of stays using los_max</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>nh_eight_county_charge_clean_final_race_los <span class="ot">&lt;-</span> nh_eight_county_medicaid_match_final_race<span class="sc">$</span> <span class="sc">%&gt;%</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(booking_id,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">.keep_all =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(race)<span class="sc">==</span><span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(race) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="st">`</span><span class="at">Overall Jail Bookings (N)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">n_distinct</span>(booking_id),</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">Mean Length of Stay (Days)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">round</span>(<span class="fu">mean</span>(los_max,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>                                                <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                                                <span class="at">digits =</span> <span class="dv">1</span>),</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>            <span class="st">`</span><span class="at">Median Length of Stay (Days)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">median</span>(los_max,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>                                                <span class="at">na.rm =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span> </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">%&gt;%</span> </span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="st">`</span><span class="at">Race/Ethnicity</span><span class="st">`</span> <span class="ot">=</span> race)  </span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a><span class="do">### print table via kableextra</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a><span class="fu">kable</span>(nh_eight_county_charge_clean_final_race_los, </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>      <span class="at">format.args =</span> <span class="fu">list</span>(<span class="at">big.mark =</span> <span class="st">&quot;,&quot;</span>), </span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>      <span class="at">align=</span><span class="fu">rep</span>(<span class="st">&#39;c&#39;</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>   <span class="fu">kable_styling</span>(<span class="at">bootstrap_options =</span> <span class="fu">c</span>(<span class="st">&quot;striped&quot;</span>, </span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">&quot;hover&quot;</span>, </span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">&quot;condensed&quot;</span>, </span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>                                       <span class="st">&quot;responsive&quot;</span>), </span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>                 <span class="at">row_label_position =</span> <span class="st">&quot;l&quot;</span>) </span></code></pre></div>
 </div>
 <p><br><br></p>
-<div class="sourceCode" id="cb1"><pre
+<div class="sourceCode" id="cb2"><pre
 class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
