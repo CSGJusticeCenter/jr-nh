@@ -23,6 +23,34 @@ source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
 ```
 
-Coming soon.
+```{r include=FALSE}
+# Import medicaid encounters
+medicaid_encounters_all <- read_rds("D:/Analytic/medicaid_enrollment_categories_encounters_2018_2021_individual_level_all.rds") 
+
+# De-dup (there are a few duplicate bookings) and create booking id for analysis
+# Create unique booking id with both individual and booking IDs
+medicaid_encounters <- medicaid_encounters_all %>% 
+  distinct(unique_person_id, 
+           booking_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id,
+                                    booking_id)) 
+```  
+
+# Reimbursement to Providers
+
+Service providers were reimbursed an average of $X per claim for claims by people who matched to Medicaid and were incarcerated in NH jails between 2019 and 2021.  
+
+
+
+
+
+
+
+
+
+
+
+
 
 <br><br>

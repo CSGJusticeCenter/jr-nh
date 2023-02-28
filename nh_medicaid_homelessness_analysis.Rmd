@@ -69,51 +69,7 @@ jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_
                                     booking_id)) ### creating unique booking id with both individual and booking IDs
 
 ### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
-jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
-  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
-  mutate(hu_group_exclusive = case_when(
-    high_utilizer_10_pct=="No" ~ 4,
-    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
-    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
-    high_utilizer_1_pct=="Yes" ~ 1,
-    TRUE ~ as.numeric(NA)),
-    hu_group_exclusive = factor(hu_group_exclusive,
-         levels = c(1,2,3,4),
-         labels = c("Top 1%", "Top 5%", "Top 10%", "Non-HU"))) 
-    # dplyr::mutate(pre_or_study_window_medicaid_match_flag_overall = ifelse(study_window_medicaid_match_flag_overall == 1 |
-    #                                                                        pre_study_window_medicaid_match_flag_overall == 1, 1, 0),
-    #               pre_or_study_bh_flag = ifelse(study_bh_flag == 1 | pre_bh_flag == 1, 1, 0),
-    #               pre_or_study_homeless_on_eligibility_begin_flag = ifelse(study_homeless_on_eligibility_begin_flag == 1 |
-    #                                                                        pre_homeless_on_eligibility_begin_flag == 1, 1, 0)) 
-
-# ### read in and merge cdc_county_rural_urban_crosswalk: https://www.cdc.gov/nchs/data_access/urban_rural.htm
-# cdc_county_rural_urban_crosswalk <- openxlsx::read.xlsx(file.path(sp_data_path,"Data/US County Geo Data/CDC_NCHSURCodes2013.xlsx"), 
-#                                                         sheet = "NCHSURCodes2013") %>%
-#   clean_names() %>%
-#   dplyr::filter(state_abr == "NH") %>%
-#   mutate(cdc_urban_rural_classification = case_when(
-#     x2013_code=="1" ~ "Urban Center",
-#     x2013_code=="2" ~ "Suburb",
-#     x2013_code=="3" ~ "Medium City",
-#     x2013_code=="4" ~ "Small City",
-#     x2013_code=="5" ~ "Town", 
-#     x2013_code=="6" ~ "Rural Area",### see: https://www.cdc.gov/nchs/data/data_acces_files/NCHSUrbruralFileDocumentationInternet2.pd
-# # from matt:
-# # Large central metro > Urban centers
-# # Large fringe metro > Suburbs
-# # Medium metro > Medium cities
-# # Small metro > Small cities
-# # Micropolitan > Towns
-# # Non-core > Rural areas
-#     TRUE ~ as.character(NA))) %>% 
-#   dplyr::select(county_name,cdc_urban_rural_classification) %>% 
-#   mutate(county = str_remove(county_name,
-#                              pattern = " County"))
-
-# ### join cdc_county_rural_urban_crosswalk to jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
-# jail_medicaid_analytic_individual_booking_level_dedup_hu_recode_cdc <- left_join(jail_medicaid_analytic_individual_booking_level_dedup_hu_recode,
-#                                                   cdc_county_rural_urban_crosswalk,
-#                                                   by = "county") 
+jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- fnc_hu_group_exclusive(jail_medicaid_analytic_individual_booking_level_dedup) 
 
 ##########
 # Update medicaid data with urban vs rural variable
