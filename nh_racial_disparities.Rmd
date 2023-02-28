@@ -8,12 +8,16 @@ output:
 ---
 
 ```{r include=FALSE}
-### call libraries
-# library(easypackages)
-# libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","gtsummary")
-Load packages, functions, and data
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
+## call libraries
+library(easypackages)
+libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","gtsummary")
+
+sp_data_path <- csg_sp_path(file.path("JR_NH"))
+
+
+# ## Load packages, functions, and data
+# source("data_cleaning/00_library.R")
+# source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
 
 # Load medicaid data
@@ -97,14 +101,12 @@ knitr::opts_chunk$set(
   )
 
 ### set sp_data_path
-# sp_data_path <- csg_sp_path(file.path("JR_NH"))
-
 sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
 
-# ### import cleaned charge analytic file (for all eight counties with charge data)
-load(paste0(sp_data_path,
-            "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda",
-            sep = ""))
+### import cleaned charge analytic file (for all eight counties with charge data)
+# load(paste0(sp_data_path,
+#             "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda",
+#             sep = ""))
 ```
 
 Here is a visualization, developed by Sara Bastomski, breaking down the calculation of an unadjusted relative rate index (unadjusted means that we have not run any regression models to account for additional individual-level factors such as gender, age, offense, or criminal history). The numbers will look a little different than what is presented later because we have rounded in this example. 
@@ -545,7 +547,85 @@ kable(nh_race_2020_table,
                  row_label_position = "l") 
 ```
 
+<br><br>
 
+### Race/Ethnicity, New Hampshire Adult Population (2020 Census) (excluding Grafton, Carroll, and Hillsborough)
+
+Note: This table excludes the 3 counties that do not appear in RRI and disporportionality analysis
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### pull census/acs data via tidycensus package
+readRenviron("~/.Renviron")
+
+### weighted estimate of percentage of race from 2020 census
+### pulled estimated counts and construct percent estimate
+### these are the ids of race variables that we want to pull 
+race_vars <- c(estimate_white = "P3_003N",
+               estimate_black = "P3_004N",
+               estimate_asian = "P3_006N",
+               estimate_native_hawaiian_pi = "P3_007N",
+               estimate_hispanic = "P4_002N",
+               estimate_american_indian = "P1_005N")
+
+nh_race_2020 <- tidycensus::get_decennial(geography = "county", 
+                                               state = "NH",
+                                               county = c("Belknap",
+                                                          "Cheshire",
+                                                          "Coos",
+                                                          "Merrimack",
+                                                          "Rockingham",
+                                                          # "Strafford",
+                                                          "Sullivan"),
+                                               variables = race_vars,
+                                               summary_var = "P3_001N", ### total population for 18+ population from race table
+                                               year = 2020,
+                                               geometry = FALSE) %>% 
+  clean_names() %>% 
+  # filter(!geoid%in%c("33011","33003","33009")) %>% 
+  dplyr::select(-geoid) %>% 
+  mutate(race_csg_4 = case_when(
+    variable == "estimate_american_indian" ~ "American Indian/Alaska Native",
+    variable %in% c("estimate_asian","estimate_native_hawaiian_pi") ~ "Asian/Pacific Islander",
+    variable == "estimate_black" ~ "Black",
+    variable == "estimate_hispanic" ~ "Hispanic",
+    variable == "estimate_white" ~ "White",
+    TRUE ~ "NA")) %>% 
+  dplyr::group_by(race_csg_4) %>% 
+  mutate(statewide_overall_value = sum(value)) %>% 
+  ungroup() %>% 
+  # distinct(variable,
+  #          .keep_all = TRUE) %>% 
+  dplyr::group_by(variable) %>% 
+  mutate(statewide_summary_value = sum(summary_value)) %>% ###create statewide count estimate 
+  ungroup() %>% 
+  distinct(race_csg_4,
+           .keep_all = TRUE) %>% ### de-dup by county
+  mutate(estimate = (statewide_overall_value/statewide_summary_value)*100) %>% ###create percent estimate from estimated counts
+   ungroup() %>% 
+  dplyr::rename(race_eth_pop = statewide_overall_value,
+                total_pop = statewide_summary_value,
+                race_eth_pop_percent = estimate) %>% 
+  dplyr::select(-c(variable,value)) %>% 
+  distinct()
+
+### prep dataframe for table
+nh_race_2020_table_final <- nh_race_2020 %>% 
+  mutate(race_eth_pop_percent = round(race_eth_pop_percent, digits = 1)) %>% 
+  dplyr::select(`Race/Ethnicity` = race_csg_4,`State Population Estimate (n)`=race_eth_pop,`State Population Estimate (%)` = race_eth_pop_percent) %>% 
+  arrange(`Race/Ethnicity`)
+
+### print table via kableextra
+kable(nh_race_2020_table_final, 
+      format.args=list(big.mark = ","), 
+      align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+```
+
+<br><br>
 
 ### Race/Ethnicity of Jail Booking Population (Unknown/Missing included)
 
@@ -627,7 +707,7 @@ Note: This table is unique by individual, not booking. **Hillsborough and Carrol
 ```{r echo=FALSE,message=FALSE,warning=FALSE}
 ### recode 'Black Hispanic' as 'Black' for now -- the sample size is too small for analysis; discuss with Mari in light of recent research-wide conversation
 ### also recode 'American Indian Alaska Native' to align with census data
-nh_eight_county_medicaid_match_final_race <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+nh_eight_county_medicaid_match_final_race_two_counties_excluded <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   mutate(race = ifelse(jail_race=="Black Hispanic",
                        "Black",
                        jail_race),
@@ -638,7 +718,38 @@ nh_eight_county_medicaid_match_final_race <- jail_medicaid_analytic_individual_b
                        "Missing",
                        jail_race)) %>% 
   filter(!race%in%c("Missing","Unknown"),
-         !county%in%c("Carroll","Hillsborough"))
+         !county%in%c("Carroll","Hillsborough","Strafford")) %>% 
+  ### dropping HU variables b/c we need to re-calculate for new sample w/o carroll and hillsborough
+  dplyr::select(-c(num_entrances,high_utilizer_4_times:high_utilizer_10_pct,hu_group_exclusive,hu_group_overall))
+
+# create high utilizer variables using custom function
+# create temporary id to use function then remove
+nh_eight_county_medicaid_match_final_race_two_counties_excluded$id  <- nh_eight_county_medicaid_match_final_race_two_counties_excluded$unique_person_id
+
+medicaid_jail_all_hus <- fnc_create_high_utilizer_variables(nh_eight_county_medicaid_match_final_race_two_counties_excluded)
+
+nh_eight_county_medicaid_match_final_race <- nh_eight_county_medicaid_match_final_race_two_counties_excluded %>%
+  left_join(medicaid_jail_all_hus, by = "id") %>%
+  dplyr::select(-id) %>% 
+  # Recoded HU variable
+  mutate(hu_group_exclusive = case_when(high_utilizer_10_pct =="No"     ~ 4,
+                                        high_utilizer_10_pct =="Yes" & 
+                                          high_utilizer_5_pct=="No" & 
+                                          high_utilizer_1_pct=="No"     ~ 3,
+                                        high_utilizer_5_pct  =="Yes" & 
+                                          high_utilizer_1_pct=="No"     ~ 2,
+                                        high_utilizer_1_pct  =="Yes"    ~ 1,
+                                        TRUE ~ as.numeric(NA)),
+         hu_group_exclusive = factor(hu_group_exclusive, 
+                                     levels = c(1,2,3,4),
+                                     labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>% 
+  # Overall HU variable
+  mutate(hu_group_overall = case_when(high_utilizer_10_pct == "No"  ~ 2,
+                                      high_utilizer_10_pct == "Yes" ~ 1,
+                                      TRUE ~ as.numeric(NA)),
+         hu_group_overall = factor(hu_group_overall,
+                                   levels = c(1,2),
+                                   labels = c("High Utilizer", "Non-High Utilizer")))
 
 ### create ungrouped denominators for grouped descriptives below
 all_ind_denom <- n_distinct(nh_eight_county_medicaid_match_final_race$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_race$race)==TRUE & !is.na(nh_eight_county_medicaid_match_final_race$unique_person_id)==TRUE])
@@ -759,7 +870,7 @@ nh_eight_county_charge_clean_final_race_table_final_to_join <- nh_eight_county_c
                 `Individuals Booked into Jail (%)`,
                 `High Jail Utilizer, top 10% (%)`)
 
-nh_race_2020_table_viz <- nh_race_2020_table %>% 
+nh_race_2020_table_viz <- nh_race_2020_table_final %>% 
   dplyr::select(`Race/Ethnicity`,
                 `State Population Estimate (%)`)
 
@@ -793,8 +904,9 @@ ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x = s
   scale_x_discrete(limits = rev) +
   scale_y_continuous(labels = scales::percent_format(accuracy=1),
                      limits=c(min(0), 
-                                           max(.97))) +
+                                           max(1))) +
   scale_fill_manual(values = c("#4095B1","#273C4C","#61C280")) +
+  scale_color_manual(values = rev(c("#4095B1","#273C4C","#61C280"))) +
   labs(x = NULL, y = NULL,
        fill = NULL,
        caption = "New Hampshire adult population data comes from the 2020 Census\nNew Hampshire jail population reflects unique individuals booked into jail from 2019 through 2021\nHillsborough and Carroll County are excluded because race/ethnicity data did not 'Hispanic' as on option",
@@ -812,11 +924,11 @@ ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x = s
   guides(fill = FALSE) + 
   geom_label_repel(aes(label = scales::percent(as.numeric(percentage),
                                                accuracy = 0.1),
-                   fill = sample_state),
-                   hjust = -0.25,
+                   color = sample_state),
+                   hjust = .6,
                    label.padding = 0.25,
                    box.padding = 0.25,
-                   color = "white",
+                   fill = "white",
                    size = 5,
                    segment.color = NA,
                    fontface = "bold",
@@ -825,7 +937,7 @@ ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x = s
 
 ### write out
 ggsave(
-    filename = file.path(sp_viz_output_path, "race_eth_overall_comparison_descriptive.png"),
+    filename = file.path(sp_viz_output_path, "race_eth_overall_comparison_descriptive_no_strafford.png"),
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 300,
@@ -837,6 +949,60 @@ ggsave(
 ```
 
 <br><br>
+
+### Exploring Racial/Ethnic Disproportionality by County
+
+**Strafford is likely explaining what we're seeing as they are an ICE-contracted facility:**
+
+* https://www.fosters.com/story/news/crime/2019/08/18/look-inside-ice-facility-at-strafford-county-jail/4439507007/
+
+* https://www.ice.gov/detain/detention-facilities/strafford-county-corrections
+
+
+Note: This table is unique by individual, not booking. **Hillsborough and Carroll are excluded because they did not include race/ethnicity data for Hispanic individuals. Use this table for actual interpretations/findings**
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique individuals booked into jail in study sample -- grouped by race/ethnicity
+nh_eight_county_medicaid_match_final_race_table <- nh_eight_county_medicaid_match_final_race %>% 
+  distinct(unique_person_id,
+           .keep_all = TRUE) %>% 
+  dplyr::filter(!is.na(race)==TRUE) %>% 
+  group_by(county) %>% 
+  summarise(`Individuals Booked into Jail (N)` = n_distinct(unique_person_id),
+            `Am. Indian/Alaska Native Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id[race=="American Indian/Alaskan Native"])/`Individuals Booked into Jail (N)`*100, digits = 2),
+            `AAPI Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id[race=="Asian/Pacific Islander"])/`Individuals Booked into Jail (N)`*100, digits = 2),
+            `Black Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id[race=="Black"])/`Individuals Booked into Jail (N)`*100, digits = 2),
+            `Hispanic Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id[race=="Hispanic"])/`Individuals Booked into Jail (N)`*100, digits = 2),
+            `White Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id[race=="White"])/`Individuals Booked into Jail (N)`*100, digits = 2)) %>% 
+  ungroup() %>% 
+  dplyr::rename(`County` = county)
+
+### all -- overall for race/ethnicity
+nh_eight_county_charge_clean_final_race_table_overall <- nh_eight_county_medicaid_match_final_race %>% 
+  distinct(unique_person_id,
+           .keep_all = TRUE) %>% 
+  filter(!is.na(race)==TRUE) %>% 
+  summarise(`Individuals Booked into Jail (N)` = n_distinct(unique_person_id),
+            `Am. Indian/Alaska Native Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id[race=="American Indian/Alaskan Native"])/`Individuals Booked into Jail (N)`*100, digits = 2),
+            `AAPI Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id[race=="Asian/Pacific Islander"])/`Individuals Booked into Jail (N)`*100, digits = 2),
+            `Black Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id[race=="Black"])/`Individuals Booked into Jail (N)`*100, digits = 2),
+            `Hispanic Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id[race=="Hispanic"])/`Individuals Booked into Jail (N)`*100, digits = 2),
+            `White Individuals Booked into Jail (%)` = round(n_distinct(unique_person_id[race=="White"])/`Individuals Booked into Jail (N)`*100, digits = 2)) %>% 
+  dplyr::mutate(`County` = "Overall") 
+
+### combine tables for kable
+nh_eight_county_charge_clean_final_race_table_final <- rbind(nh_eight_county_medicaid_match_final_race_table,nh_eight_county_charge_clean_final_race_table_overall)
+
+### print table via kableextra
+kable(nh_eight_county_charge_clean_final_race_table_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") %>% 
+  row_spec(8, bold = TRUE)
+```
+
+<br><br>
+
 
 ## Relative Rate Index (RRI)
 

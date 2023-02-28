@@ -201,6 +201,7 @@ Note: "Encounters" include any behavioral health-related medical/clinical or pha
 
 # by county
 medicaid_jail_percent_match_county_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+  # filter(county!="Strafford") %>% 
   dplyr::group_by(county) %>% 
   dplyr::summarise(`Overall Individuals (N)`           = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -217,6 +218,7 @@ medicaid_jail_percent_match_county_table <- jail_medicaid_analytic_individual_bo
 
 # statewide
 medicaid_jail_percent_match_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup %>% 
+    # filter(county!="Strafford") %>% 
   dplyr::summarise(`Overall Individuals (N)`           = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
@@ -550,6 +552,7 @@ jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- jail_medicaid
 
 # by county
 medicaid_jail_percent_match_high_util_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+    # filter(county!="Strafford") %>%
   dplyr::group_by(hu_group_exclusive) %>% 
   dplyr::summarise(`Overall Individuals (N)`           = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -561,6 +564,7 @@ medicaid_jail_percent_match_high_util_table <- jail_medicaid_analytic_individual
 
 # statewide
 medicaid_jail_percent_match_high_util_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+      # filter(county!="Strafford") %>%
    dplyr::summarise(`Overall Individuals (N)`          = n_distinct(unique_person_id),
                    `Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ Medicaid Match (%)` = scales::percent(`Individuals w/ Medicaid Match (N)`/`Overall Individuals (N)`),
