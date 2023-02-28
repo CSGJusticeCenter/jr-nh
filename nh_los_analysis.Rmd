@@ -844,7 +844,7 @@ PRES_gg_los_0_1_crime_type <- ggplot(los_0_1_day_crime_tier1hu_nonhu, aes(fill=g
   expand_limits(y = 1) +
   expand_limits(x = 1) +
   scale_x_discrete(breaks=unique(los_0_1_day_crime_tier1hu_nonhu$crime_type_lookup), 
-    labels=addline_format(c("Drug Alcohol", 
+    labels=fnc_addline_format(c("Drug Alcohol", 
                             "FTA Bail", 
                             "Probation/Parole Violation",
                             "Property",

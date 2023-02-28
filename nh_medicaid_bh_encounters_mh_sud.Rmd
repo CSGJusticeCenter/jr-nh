@@ -76,9 +76,11 @@ medicaid_encounters_costs <- medicaid_encounters_costs %>%
                 everything())
 
 # Create data of just primary diagnosis costs by subsetting to claims that are MH or SUD or both
-medicaid_encounters_costs_primary_dx <- medicaid_encounters_costs %>% 
+medicaid_encounters_costs_primary_dx_2018_2021 <- medicaid_encounters_costs %>% 
   filter(mh_service_categorized_using_primary_dx_code  == 1 | 
-         sud_service_categorized_using_primary_dx_code == 1) 
+         sud_service_categorized_using_primary_dx_code == 1) %>% 
+  # Subset to FY 2019 to FY 2021
+  filter(first_dos_dt > "2018-06-30" & first_dos_dt < "2021-07-01")
 ```         
 
 # DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behavioral Health Encounters by High Jail Utilizer Grouping
@@ -912,6 +914,123 @@ knitr::include_graphics(c("img/PRES_gg_medicaid_jail_opioid_hu_grouping.png","im
 ```
 
 <br>
+
+# Trends for Medicaid Claims (FY2019-2021) 
+
+### Table 3: Common primary diagnoses for Medicaid claims between FY2019-2021
+
+```{r}
+# Group SMI's together 
+ medicaid_encounters_cleaned <- medicaid_encounters_costs_primary_dx_2018_2021 %>% 
+  mutate(dx_prmry_clinical_classification_new = case_when(
+    
+    # SMI-related disorders
+    dx_prmry_clinical_classification == "Schizophrenia and other psychotic disorders"          ~ "SMI-related disorders",
+    dx_prmry_clinical_classification == "Schizophrenia spectrum and other psychotic disorders" ~ "SMI-related disorders",
+    dx_prmry_clinical_classification == "Depressive disorders"                                 ~ "SMI-related disorders",
+    dx_prmry_clinical_classification == "Bipolar and related disorders"                        ~ "SMI-related disorders",
+    dx_prmry_clinical_classification == "Trauma- and stressor-related disorders"               ~ "SMI-related disorders",
+    dx_prmry_clinical_classification == "Personality disorders"                                ~ "SMI-related disorders",
+    dx_prmry_clinical_classification == "Obsessive-compulsive and related disorders"           ~ "SMI-related disorders",
+    dx_prmry_clinical_classification == "Disruptive, impulse-control and conduct disorder"     ~ "SMI-related disorders",
+    dx_prmry_clinical_classification == "Mood disorders"                                       ~ "SMI-related disorders",
+    dx_prmry_clinical_classification == "Other specified and unspecified mood disorders"       ~ "SMI-related disorders",
+    
+    # Suicidal ideation/attempt/intentional self-harm
+    dx_prmry_clinical_classification == "Suicidal ideation/attempt/intentional self-harm"             ~ "Suicidal ideation/attempt/intentional self-harm",
+    dx_prmry_clinical_classification == "Suicide attempt/intentional self-harm; subsequent encounter" ~ "Suicidal ideation/attempt/intentional self-harm",
+    
+    # Other substance-related disorders
+    dx_prmry_clinical_classification == "Sedative-related disorders"                  ~ "Other substance-related disorders",
+    dx_prmry_clinical_classification == "Cannabis-related disorders"                  ~ "Other substance-related disorders",
+    dx_prmry_clinical_classification == "Tobacco-related disorders"                   ~ "Other substance-related disorders",
+    dx_prmry_clinical_classification == "Hallucinogen-related disorders"              ~ "Other substance-related disorders",
+    dx_prmry_clinical_classification == "Inhalant-related disorders"                  ~ "Other substance-related disorders",
+    dx_prmry_clinical_classification == "Other specified substance-related disorders" ~ "Other substance-related disorders",
+    dx_prmry_clinical_classification == "Stimulant-related disorders"                 ~ "Other substance-related disorders",
+    dx_prmry_clinical_classification == "Alcohol-related disorders"                   ~ "Other substance-related disorders",
+
+    # Other mh-related disorders
+    dx_prmry_clinical_classification == "Adjustment disorders"                                     ~ "Other BH-related disorders",
+    dx_prmry_clinical_classification == "Feeding and eating disorders"                             ~ "Other BH-related disorders",
+    dx_prmry_clinical_classification == "Somatic disorders"                                        ~ "Other BH-related disorders",
+    dx_prmry_clinical_classification == "Disruptive, impulse-control and conduct disorders"        ~ "Other BH-related disorders",
+    dx_prmry_clinical_classification == "Miscellaneous mental and behavioral disorders/conditions" ~ "Other BH-related disorders",
+
+    dx_prmry_clinical_classification == "Mental and substance use disorders in remission" ~ "Mental and SUD's in remission",
+
+    
+    TRUE ~ dx_prmry_clinical_classification
+  )) 
+
+# Find top primary diagnoses and the proportion of claims for each
+top_primary_diagnoses_grouped <- medicaid_encounters_cleaned %>% 
+  group_by(dx_prmry_clinical_classification_new) %>% 
+  summarise(total_claims = n_distinct(claim_id)) %>% 
+  ungroup() %>% 
+  mutate(pct_claims = (total_claims/sum(total_claims))*100,
+         pct_claims = round(pct_claims, 0),
+         pct_claims = paste0(pct_claims, "%", sep = ""),
+         pct_claims = case_when(pct_claims == "0%" ~ "<0%", TRUE ~ pct_claims)) 
+
+PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
+  ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, total_claims), 
+             y = total_claims, fill=factor(ifelse(dx_prmry_clinical_classification_new=="Opioid-related disorders","Highlighted","Normal")))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(name = "area", values=c(jri_light_blue,"grey50")) +
+      geom_text(aes(label = comma(total_claims), fontface = 'bold'
+                    ), 
+                color = ifelse(top_primary_diagnoses_grouped$dx_prmry_clinical_classification_new=="Opioid-related disorders", jri_light_blue, "black"), 
+                hjust = -.1, size = 7.5, family = "Franklin Gothic Book") +
+  xlab("") + ylab("\nNumber of Claims") +
+  scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
+                     expand = c(0,0),
+                     limits = c(0,350000),
+                     breaks=c(0, 50000, 100000, 150000, 200000, 250000, 300000)) +
+  coord_flip() +
+  theme_no_grid_no_labels +
+  theme(legend.position = "none",
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
+        
+        panel.grid.major.x = element_line(linewidth = 0.5),
+
+        axis.title   = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        axis.text.y  = element_text(size = 22, color = "black" 
+                                    #face = "bold"
+                                    ),
+        axis.text.x  = element_text(size = 22, color = "black"))
+```
+
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_medicaid_top_diagnoses, file="img/PRES_gg_medicaid_top_diagnoses.png", width = 12,  height = 6, dpi = 100)
+knitr::include_graphics("img/PRES_gg_medicaid_top_diagnoses.png")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<br><br>
 
 **See full notes and business rules for variable creation in data dictionary for individual-level analytic file here: https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=zLytTB**
 

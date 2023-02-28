@@ -39,19 +39,27 @@ medicaid_encounters_costs <- medicaid_encounters_costs %>%
                 everything())
 
 # Create data of just primary diagnosis costs by subsetting to claims that are MH or SUD or both
-medicaid_encounters_costs_primary_dx <- medicaid_encounters_costs %>% 
+medicaid_encounters_costs_primary_dx_2018_2021 <- medicaid_encounters_costs %>% 
   filter(mh_service_categorized_using_primary_dx_code  == 1 | 
          sud_service_categorized_using_primary_dx_code == 1) 
   # Subset to FY 2019 to FY 2021
-  # filter(first_dos_dt > "2018-06-30" & first_dos_dt < "2021-07-01")
+  filter(first_dos_dt > "2018-06-30" & first_dos_dt < "2021-07-01")
 ```  
 
 
 
 # Reimbursement to Providers (FY 2019-2021)
 
-Service providers were reimbursed an average of $X per claim for claims by people who matched to Medicaid and were incarcerated in NH jails between 2019 and 2021.  
+Service providers were reimbursed an average of $242.16 per claim for behavioral health-related claims by people who matched to Medicaid and were incarcerated in NH jails between 2019 and 2021.  
 
+```{r}
+average_cost_per_claim <- medicaid_encounters_costs_primary_dx_2018_2021 %>% 
+  dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
+  dplyr::summarise(min    = min(medicaid_reimb_amt, na.rm = T),
+                   median = median(medicaid_reimb_amt, na.rm = T),
+                   mean   = mean(medicaid_reimb_amt, na.rm = T),
+                   max    = max(medicaid_reimb_amt, na.rm = T)) 
+```
 
 
 
