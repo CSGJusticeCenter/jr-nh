@@ -1,10 +1,10 @@
 ############################################
 # Project: JRI New Hampshire
 # File: functions.R
-# Last updated: January 30, 2023
+# Last updated: February 28, 2023
 # Author: Mari Roberts
 
-# Custom data cleaning and structure functions
+# Custom data cleaning, visualization, and structure functions
 ############################################
 
 # load packages
@@ -61,9 +61,12 @@ fnc_data_setup <- function(df){
 # Create booking id
 # Based on inmate id and booking date
 fnc_booking_id <- function(df, county){
+  # If id was created use id, otherwise use inmate id
   df1 <- df %>%
     mutate(id = ifelse(is.na(id), inmate_id, id))
+  # Create booking date based on id and booking date
   df1$booking_id <- df1 %>% dplyr::group_indices(id, booking_date)
+  # Paste county name to booking id so there aren't duplicates when we add county files together
   df1 <- df1 %>%
     mutate(id = paste(county, id, sep = "_"),
            booking_id = paste(county, "booking", booking_id, sep = "_")) %>%
@@ -120,6 +123,29 @@ fnc_create_high_utilizer_variables <- function(df){
                                             high_utilizer_10_pct == FALSE   ~ "No"))
 
   return(df_hus_3yrs)
+}
+
+# Create exclusive HU variable - Andrew's change
+fnc_hu_group_exclusive <- function(df){
+  df <- df %>%
+    mutate(hu_group_exclusive = case_when(high_utilizer_10_pct =="No"     ~ 4,
+                                          high_utilizer_10_pct =="Yes" &
+                                            high_utilizer_5_pct=="No" &
+                                            high_utilizer_1_pct=="No"     ~ 3,
+                                          high_utilizer_5_pct  =="Yes" &
+                                            high_utilizer_1_pct=="No"     ~ 2,
+                                          high_utilizer_1_pct  =="Yes"    ~ 1,
+                                          TRUE ~ as.numeric(NA)),
+           hu_group_exclusive = factor(hu_group_exclusive,
+                                       levels = c(1,2,3,4),
+                                       labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>%
+    # Overall HU variable
+    mutate(hu_group_overall = case_when(high_utilizer_10_pct == "No"  ~ 2,
+                                        high_utilizer_10_pct == "Yes" ~ 1,
+                                        TRUE ~ as.numeric(NA)),
+           hu_group_overall = factor(hu_group_overall,
+                                     levels = c(1,2),
+                                     labels = c("High Utilizer", "Non-High Utilizer")))
 }
 
 ###########
@@ -263,29 +289,6 @@ fnc_investigate_booking_recordings <- function(df){
     distinct() %>%
     group_by(booking_type, sentence_status) %>%
     summarise(total = n())
-}
-
-# Create exclusive HU variable
-fnc_hu_group_exclusive <- function(df){
-  df <- df %>%
-    mutate(hu_group_exclusive = case_when(high_utilizer_10_pct =="No"     ~ 4,
-                                          high_utilizer_10_pct =="Yes" &
-                                            high_utilizer_5_pct=="No" &
-                                            high_utilizer_1_pct=="No"     ~ 3,
-                                          high_utilizer_5_pct  =="Yes" &
-                                            high_utilizer_1_pct=="No"     ~ 2,
-                                          high_utilizer_1_pct  =="Yes"    ~ 1,
-                                          TRUE ~ as.numeric(NA)),
-           hu_group_exclusive = factor(hu_group_exclusive,
-                                       levels = c(1,2,3,4),
-                                       labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>%
-    # Overall HU variable
-    mutate(hu_group_overall = case_when(high_utilizer_10_pct == "No"  ~ 2,
-                                        high_utilizer_10_pct == "Yes" ~ 1,
-                                        TRUE ~ as.numeric(NA)),
-           hu_group_overall = factor(hu_group_overall,
-                                     levels = c(1,2),
-                                     labels = c("High Utilizer", "Non-High Utilizer")))
 }
 
 # Get prop of variable
@@ -592,4 +595,9 @@ fnc_reactable_county_fy <- function(df, row_num){
                 change_19_21 = colDef(minWidth = 120,  name = "Change from 2019-2021", format = colFormat(percent = TRUE, digits = 1), style = list(fontWeight = "bold"))
               ))
 
+}
+
+# Add line break to ggplot axis text x
+addline_format <- function(x,...){
+  gsub('\\s','\n',x)
 }

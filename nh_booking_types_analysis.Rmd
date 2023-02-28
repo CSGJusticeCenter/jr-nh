@@ -22,7 +22,7 @@ source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
 
-# Add HU variables
+# Add HU variables to data
 bookings_entrances <- fnc_hu_group_exclusive(bookings_entrances) 
 adm_all            <- fnc_hu_group_exclusive(adm_all) 
 ```
@@ -36,8 +36,6 @@ The following booking patterns were found using jail administrative data submitt
 ```{r}
 # Count number of bookings on different sentence statuses for pie chart
 data1 <- bookings_entrances %>% 
-  select(sentence_status_standard, booking_id) %>% 
-  distinct() %>% 
   mutate(sentence_status_standard = ifelse(sentence_status_standard == "UNKNOWN", NA, sentence_status_standard)) %>% 
   group_by(sentence_status_standard) %>% 
   summarise(total = n_distinct(booking_id)) %>% 
@@ -612,6 +610,7 @@ Felony drug court programs for adult offenders are available in Belknap, Carroll
 
 ```{r}
 # Select variables and counties to look at drug courts
+# See if the booking is related to drug courts (sentenced or pretrial)
 df_drug_courts <- adm_all %>% 
   filter(county == "Cheshire" |
          county == "Hillsborough" |

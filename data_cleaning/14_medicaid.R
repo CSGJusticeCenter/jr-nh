@@ -20,15 +20,15 @@ medicaid_enrollment <- medicaid_enrollment.xlsx %>%
   clean_names() %>%
   distinct() %>%
   rename(eligibility_code = eligibility_category) %>%
-  left_join(medicaid_categories, by = "eligibility_code") %>% 
+  left_join(medicaid_categories, by = "eligibility_code") %>%
   ### filter out eligibility dates with years of "0001" here
-  ### correspondence with Uma -- my question: We are seeing some Medicaid eligibility begin dates with years of “0001” 
-  ### and Medicaid eligibility end dates with years of “9999” in the Medicaid Enrollment file. 
-  ### Are these most likely data entry errors? Or is there a consistent reason for these numbers? 
-  ### (e.g., “0001-01-01” as an eligibility start date or “9999-12-31” as an eligibility end date). 
-  ### Uma's responses: "For the 0001-01-01 – You should filter those out. I should have done that for you but must have missed that step. 
-  ### I used that data to identify records to exclude. An eligibility end date of 12/31/999 means an open ended eligibility." 
-  filter(year(ymd(as_date(eligibility_begin_date)))!=0001) %>% 
+  ### correspondence with Uma -- my question: We are seeing some Medicaid eligibility begin dates with years of “0001”
+  ### and Medicaid eligibility end dates with years of “9999” in the Medicaid Enrollment file.
+  ### Are these most likely data entry errors? Or is there a consistent reason for these numbers?
+  ### (e.g., “0001-01-01” as an eligibility start date or “9999-12-31” as an eligibility end date).
+  ### Uma's responses: "For the 0001-01-01 – You should filter those out. I should have done that for you but must have missed that step.
+  ### I used that data to identify records to exclude. An eligibility end date of 12/31/999 means an open ended eligibility."
+  filter(year(ymd(as_date(eligibility_begin_date)))!=0001) %>%
   ### now recode eligibility end dates with years of "9999" as "2030" as these indicate open end dates
   ### or enrollments that were open at the time of the data pull; by recoding to 2030, we'll be sure
   ### to include them in our inclusion/exclusion business rules
@@ -75,13 +75,13 @@ medicaid_dictionary_icd_9_ccs <- left_join(medicaid_dictionary_icd_9,
 ###############################################################################################
 # de-duplicate pure duplicates in medicaid_encounters.xlsx first
 ### correspondence with Uma on why there are pure duplicates in encounters file:
-### "No I did not dedup. Remember I had given an example of an ED visit. 
-### An outpatient claim is billed for the hospital visit and also a professional 
+### "No I did not dedup. Remember I had given an example of an ED visit.
+### An outpatient claim is billed for the hospital visit and also a professional
 ### claim is billed for the doctor who attended to the patient."
 
-### note: for analysis of reimbursement, we will want the duplicated version of the 
-### medicaid encounters file 
-medicaid_encounters_xlsx_de_dup <- medicaid_encounters.xlsx %>% 
+### note: for analysis of reimbursement, we will want the duplicated version of the
+### medicaid encounters file
+medicaid_encounters_xlsx_de_dup <- medicaid_encounters.xlsx %>%
   distinct()
 
 # clean encounters file for post-2015 records using the medicaid_dictionary_icd_10 lookup table
@@ -201,7 +201,7 @@ medicaid_encounters_pre_2015 <- medicaid_encounters_xlsx_de_dup %>%
   # subset to data before 2015-10-01 which is when they started using the ICD-10 code system
   # see: https://www.cdc.gov/nchs/icd/icd10cm_pcs_background.htm
   filter(ymd(as_date(first_dos_dt)) < as_date("2015-10-01")) %>%
-  
+
   # remove periods
   mutate_at(vars(dx_prmry_cd, dx_admtng_cd:dx_scndry_cd10), ~ str_replace(., "\\.", "")) %>%
 
@@ -301,7 +301,7 @@ medicaid_encounters_pre_2015 <- medicaid_encounters_xlsx_de_dup %>%
 
 ### combine medicaid_encounters_post_2015 and medicaid_encounters_pre_2015
 medicaid_encounters <- rbind(medicaid_encounters_pre_2015,
-                             medicaid_encounters_post_2015) 
+                             medicaid_encounters_post_2015)
 
 # save out to external hard drive
 write_rds(medicaid_encounters,
@@ -340,24 +340,24 @@ write_rds(medicaid_jail_all,
 library(tidylog)
 
 ### join medicaid_enrollment_categories and medicaid_categories
-### to join medicaid_encounters to medicaid_enrollment, 
-### the medicaid_encounters$first_dos_dt must be >= medicaid_enrollment$eligibility_begin_date 
+### to join medicaid_encounters to medicaid_enrollment,
+### the medicaid_encounters$first_dos_dt must be >= medicaid_enrollment$eligibility_begin_date
 ### and <= medicaid_enrollment$eligibility_end_date
 medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
                                                        medicaid_encounters,
-                                                       by = "unique_person_id") %>% 
+                                                       by = "unique_person_id") %>%
 
   ### we have joined all encounters/diagnoses to all medicaid enrollment records by the individual
   ### however, we only want to link encounters/diagnoses to the specific medicaid enrollment period during
   ### which the encounter/diagnosis took place
   ### in order to keep the ~6,000 enrollment records with no encounter records,
   ### require that either (1) enrollment records have no joined encounter data (using overall_bh_flag)
-  ### OR (2) that encounter dates fall within given enrollment dates -- using keep_record_flag 
+  ### OR (2) that encounter dates fall within given enrollment dates -- using keep_record_flag
   ### OR (3) for enrollment records that join to encounter records (i.e., have overall_bh_flag==1), but
-  ### do not have encounters that fall within the provided enrollment periods (for these records, we 
+  ### do not have encounters that fall within the provided enrollment periods (for these records, we
   ### want to remove their data from the encounter file)
-  ### UPDATE ON GROUP 3: 
-  ### there are four individuals and six encounters where no encounters fell between 
+  ### UPDATE ON GROUP 3:
+  ### there are four individuals and six encounters where no encounters fell between
   ### the individual's eligibility start and end dates
   ### because it's such a small number, we'll treat these cases like we do the individuals
   ### who appear in the enrollment file but not the encounter file
@@ -367,12 +367,12 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
   ### create overall BH flag (indicating that individual has had at least one behavioral health "medicaid encounter",
   ### whether it was a primary or secondary diagnosis) that occurred during an enrollment period from enrollment file
   ### this is because not everyone from medicaid enrollment file joins to encounter file
-         overall_bh_correct_dates_flag = ifelse(first_dos_dt >= eligibility_begin_date & 
+         overall_bh_correct_dates_flag = ifelse(first_dos_dt >= eligibility_begin_date &
                                        first_dos_dt <= eligibility_end_date,
                                   1,0),
   ### recode overall_bh_flag to include 0's instead of NA's -- these are the records which appear
   ### in medicaid enrollment, but not in medicaid encounters
-  ### also flag enrollment records that did not join to any BH encounter records 
+  ### also flag enrollment records that did not join to any BH encounter records
   ### ? for Uma: is it accurate to label these individuals as having enrolled in medicaid but not having any record of a
   ### BH-related Medicaid encounter
          overall_bh_no_merge_flag = ifelse(is.na(overall_bh_correct_dates_flag)==TRUE,
@@ -380,28 +380,28 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
          overall_bh_flag = ifelse(overall_bh_correct_dates_flag==1,
                                                 1,0),
          overall_bh_flag = ifelse(is.na(overall_bh_flag)==TRUE,
-                           0,overall_bh_flag)) %>% 
+                           0,overall_bh_flag)) %>%
   ### now create individual-level flag to indicate if individual had any encounter records
   ### join to enrollment records (and with encounters that occurred between eligibility start and end dates)
-  group_by(unique_person_id) %>% 
+  group_by(unique_person_id) %>%
   mutate(overall_bh_flag_max = max(overall_bh_flag,
-                                   na.rm = TRUE)) %>% 
-  ungroup() %>% 
+                                   na.rm = TRUE)) %>%
+  ungroup() %>%
   ### we want to keep records where either (1) encounters join to enrollment records
   ### and occur between eligibility start and end dates (using overall_bh_flag==1) OR
-  ### (2) individuals from the enrollment file have no BH encounter records in the encounter 
+  ### (2) individuals from the enrollment file have no BH encounter records in the encounter
   ### file (using overall_bh_flag_max==0)
   mutate(keep_record_flag = ifelse(overall_bh_flag==1 | overall_bh_flag_max==0,
-                                   1,0)) %>% 
+                                   1,0)) %>%
   ### need to convert columns from encounter file to character for next step
-  mutate(across(first_dos_dt:dx_scndry_desc10, 
-                as.character)) %>% 
+  mutate(across(first_dos_dt:dx_scndry_desc10,
+                as.character)) %>%
   ### recode all medicaid encounter values to NA if overall_bh_flag==0
   ### this ensures that we do not accidentally use encounter data for individuals
   ### who only had encounters that did not occur during the enrollment periods that we received from DHHS
-  mutate(across(first_dos_dt:dx_scndry_desc10, 
-                ~ if_else(overall_bh_flag==0, 
-                          "NA", .))) %>% 
+  mutate(across(first_dos_dt:dx_scndry_desc10,
+                ~ if_else(overall_bh_flag==0,
+                          "NA", .))) %>%
   ### reconvert flags to numeric in case we take sums/counts later
   mutate(across(c(homeless_on_eligbility_begin_date,
                   service_provided_by_cmhc_provider,
@@ -410,20 +410,20 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
                   sud_service_categorized_using_primary_dx_code,
                   mental_health_pharmacy_service,
                   sud_pharmacy_service,
-                  other_service), 
-                as.numeric)) %>% 
-  dplyr::filter(keep_record_flag==1) %>% 
-  
+                  other_service),
+                as.numeric)) %>%
+  dplyr::filter(keep_record_flag==1) %>%
+
   ### SMI definition now pulling from National Alliance on Mental Illness New Hampshire (NAMI NH)
-  ### include: 
+  ### include:
 # Schizophrenia (dx_prmry_clinical_classification=="Schizophrenia and other psychotic disorders", "Schizophrenia spectrum and other psychotic disorders")
 # Bipolar Disorder ("Bipolar and related disorders")
 # Major Depression ("Depressive disorders")
 # Post-Traumatic Stress Disorder ("Trauma- and stressor-related disorders")
 # Borderline Personality Disorder ("Personality disorders")
 # Obsessive-Compulsive Disorder ("Obsessive-compulsive and related disorders", "Disruptive, impulse-control and conduct disorder")
-# Panic Disorder, 
-# Phobias, 
+# Panic Disorder,
+# Phobias,
 # Eating Disorders
 ### also included: "Mood disorders","Other specified and unspecified mood disorders"
 
@@ -445,7 +445,7 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
                                                                 "Bipolar and related disorders",
                                                                 "Trauma- and stressor-related disorders",
                                                                 "Personality disorders",
-                                                                "Obsessive-compulsive and related disorders", 
+                                                                "Obsessive-compulsive and related disorders",
                                                                 "Disruptive, impulse-control and conduct disorder",
                                                                 "Mood disorders",
                                                                 "Other specified and unspecified mood disorders"),
@@ -454,38 +454,54 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
                                     1,0))
 
 ### de-dup dataframe by individual to see how many individuals are in which group (1,2,3)
-### looks like all but about ... of all individuals in medicaid enrollment file have 
+### looks like all but about ... of all individuals in medicaid enrollment file have
 ### at least one record in medicaid encounters file
 ### first create temp df that is unique by individual
 ### unique count of individuals: 13,276 (this is the same as the number of unique individuals in the enrollment file)
-medicaid_enrollment_categories_encounters_dedup <- medicaid_enrollment_categories_encounters %>% 
+medicaid_enrollment_categories_encounters_dedup <- medicaid_enrollment_categories_encounters %>%
   distinct(unique_person_id,
            .keep_all=TRUE)
 
 ### how many individuals don't have any BH encounter records?
 ### of the 13,276 unique individuals in the file, ~2,500 had no BH encounter records (~19%)
-### i wonder how does this finding, that 81% of the Medicaid sample had at least one BH Medicaid encounter 
+### i wonder how does this finding, that 81% of the Medicaid sample had at least one BH Medicaid encounter
 ### compare to the general NH Medicaid population?
 table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
-      useNA = 'always') 
+      useNA = 'always')
+
+
+
+
+
+
+###############################################################################
+### save medicaid_enrollment_categories_encounters to external hard drive - needed for reimbursement analysis
+###############################################################################
+write_rds(medicaid_enrollment_categories_encounters,
+          "D:/Analytic/medicaid_enrollment_categories_encounters.rds")
+
+
+
+
+
 
 ############################################################################################
-### now we will create two analytic files from medicaid_enrollment_categories_encounters 
+### now we will create two analytic files from medicaid_enrollment_categories_encounters
 ### and one analytic file from medicaid_enrollment
 
 ### See full notes and business rules for variable creation in data dictionary for analytic files here:
 ###  https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=zLytTB
 
-### three medicaid analytic files to create: 
+### three medicaid analytic files to create:
 
-## 1. individual level file: this file will have flags based on the encounter-level 
+## 1. individual level file: this file will have flags based on the encounter-level
 # raw file split into three time periods (encounters/enrollments prior to, during, and after the study window)
 
 ## 2. encounter/diagnosis level file: this file will allow us to explore the medicaid encounters/diagnosis-level data
 # with greater specificity (e.g., counts of SUD encounters as well as proximity of either encounters or medicaid enrollment to booking)
 
-## 3. medicaid enrollment level file: this file will allow us to explore the timing of medicaid enrollment/coverage loss and 
-# jail booking. did individuals lose their medicaid eligibility during their incarceration or shortly afterwards? if so, 
+## 3. medicaid enrollment level file: this file will allow us to explore the timing of medicaid enrollment/coverage loss and
+# jail booking. did individuals lose their medicaid eligibility during their incarceration or shortly afterwards? if so,
 # how long is the average jail LOS that results in medicaid coverage loss/un-enrollment? does this vary by county? by HU grouping?
 ############################################################################################
 
@@ -495,11 +511,11 @@ table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
 ### with summary flags for the 2018-2021 period; these flags will tell us if the individual received, for example
 ### any mental health or substance use disorder services for a primary diagnosis during the study window
 
-medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid_enrollment_categories_encounters %>% 
+medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid_enrollment_categories_encounters %>%
   ### first, we will group by the individual and create flags for services/diagnoses/statuses prior to 7/1/2018 as
   ### historic flags just in case we want them for analysis
-  ### flags to create include: 
-  ### mh_service_categorized_using_primary_dx_code, 
+  ### flags to create include:
+  ### mh_service_categorized_using_primary_dx_code,
   ### sud_service_categorized_using_primary_dx_code
   ### homeless_on_eligbility_begin_date
   ### service_provided_by_cmhc_provider
@@ -509,17 +525,17 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   ### sud_pharmacy_service
   ### other_service
 
-  ### create pre_bh_mh_or_sud_service_primary_flag from these two using pmax to take max across columns: 
+  ### create pre_bh_mh_or_sud_service_primary_flag from these two using pmax to take max across columns:
   ### ..._mh_service_primary_flag and ..._sud_service_primary_flag
   ### and create secondary_dx_mh_sud using bh_mh_or_sud_service_secondary_dx_encounter_flag created below
   ### which is based on whether dx_scndry_desc1 is NA or not
-  ### to determine if a given individual has primary/secondary/both primary and secondary diagnoses, 
-  ### we will use these two flags in conjunction 
+  ### to determine if a given individual has primary/secondary/both primary and secondary diagnoses,
+  ### we will use these two flags in conjunction
 
-  ### also -- we are using Medicaid eligibility start and end dates for inclusion in study window 
+  ### also -- we are using Medicaid eligibility start and end dates for inclusion in study window
   ### (i.e. Medicaid eligibility end date >= 7/1/2018 & Medicaid eligibility start date <= 6/30/2021)
 
-  ### update: adding 'pre_or_study_window_medicaid_match_flag' because we have decided to filter analysis on 
+  ### update: adding 'pre_or_study_window_medicaid_match_flag' because we have decided to filter analysis on
   ### medicaid encounters that occur prior to or during the study period in the jail admin sample
 
   mutate(study_window_medicaid_match_flag = ifelse(eligibility_end_date >= as_date("2018-07-01") & eligibility_begin_date <= as_date("2021-06-30"),
@@ -530,13 +546,13 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                                        1,0),
          post_study_window_medicaid_match_flag = ifelse(eligibility_begin_date > as_date("2021-06-30"),
                                         1,0),
-         ### here i'm creating an encounter-level flag for whether a record is flagged as BH-related due to 
+         ### here i'm creating an encounter-level flag for whether a record is flagged as BH-related due to
          ### a secondary diagnosis; if there is text in the first secondary diagnosis column, flagging as '1'
          bh_mh_or_sud_service_secondary_dx_encounter_flag = ifelse(!is.na(dx_scndry_desc1)==TRUE | dx_scndry_desc1 !="NA",
-                                                                   1,0)) %>% 
-  group_by(unique_person_id) %>% 
-  
-  ### create individual-level timing flags that take max of encounter-level data: 
+                                                                   1,0)) %>%
+  group_by(unique_person_id) %>%
+
+  ### create individual-level timing flags that take max of encounter-level data:
   ### whether they had any pre-study, study, or post-study window medicaid enrollment records
   mutate(study_window_medicaid_match_flag_overall = max(study_window_medicaid_match_flag,
                                                             na.rm=TRUE),
@@ -545,8 +561,8 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          pre_or_study_window_medicaid_match_flag_overall = max(pre_or_study_window_medicaid_match_flag,
                                                             na.rm=TRUE),
          post_study_window_medicaid_match_flag_overall = max(post_study_window_medicaid_match_flag,
-                                                            na.rm=TRUE)) %>% 
-  
+                                                            na.rm=TRUE)) %>%
+
   ### first create pre-study window flags
   mutate(pre_bh_flag = max(overall_bh_flag[pre_study_window_medicaid_match_flag==1],
                            na.rm=TRUE),
@@ -575,8 +591,8 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          pre_smi_flag = max(smi_flag[pre_study_window_medicaid_match_flag==1],
                             na.rm=TRUE),
          pre_opioid_related_flag = max(opioid_related_flag[pre_study_window_medicaid_match_flag==1],
-                             na.rm=TRUE)) %>% 
-  
+                             na.rm=TRUE)) %>%
+
   # ### then post-study window flags
   # mutate(post_bh_flag = max(overall_bh_flag[post_study_window_medicaid_match_flag==1],
   #                          na.rm=TRUE),
@@ -605,8 +621,8 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
   #        post_smi_flag = max(smi_flag[post_study_window_medicaid_match_flag==1],
   #                            na.rm=TRUE),
   #        post_opioid_related_flag = max(opioid_related_flag[post_study_window_medicaid_match_flag==1],
-  #                                      na.rm=TRUE)) %>% 
-  
+  #                                      na.rm=TRUE)) %>%
+
   ### then pre or study window flags
   mutate(pre_or_study_bh_flag = max(overall_bh_flag[pre_or_study_window_medicaid_match_flag==1],
                             na.rm=TRUE),
@@ -635,7 +651,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          pre_or_study_smi_flag = max(smi_flag[pre_or_study_window_medicaid_match_flag==1],
                              na.rm=TRUE),
          pre_or_study_opioid_related_flag = max(opioid_related_flag[pre_or_study_window_medicaid_match_flag==1],
-                                        na.rm=TRUE)) %>% 
+                                        na.rm=TRUE)) %>%
 
   ### now create flags for study window -- all prefixed with 'study_'
   mutate(study_bh_flag = max(overall_bh_flag[study_window_medicaid_match_flag==1],
@@ -666,24 +682,26 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                               na.rm=TRUE),
          study_opioid_related_flag = max(opioid_related_flag[study_window_medicaid_match_flag==1],
                                         na.rm=TRUE)) %>%
-  ungroup() %>% 
+  ungroup() %>%
   ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
-  mutate(across(.cols = pre_mh_service_primary_dx_flag:study_opioid_related_flag, 
+  mutate(across(.cols = pre_mh_service_primary_dx_flag:study_opioid_related_flag,
                 ~ ifelse(is.infinite(.x),
-                         0, .x))) %>% 
-  ### now de-dup by individual 
-      distinct(unique_person_id, .keep_all=TRUE) %>%
-  ### removing all columns that were specific to encounter- or enrollment-level data
-  ### since we have created an individual-level file with flags from the encounter and enrollment data,
-  ### i am removing the now irrelevant columns to avoid any confusion
-      dplyr::select(unique_person_id,
-                    overall_bh_flag = overall_bh_flag_max,
-                    study_window_medicaid_match_flag_overall:post_study_window_medicaid_match_flag_overall,
-                    pre_or_study_bh_flag:pre_or_study_opioid_related_flag,
-                    study_bh_flag:study_opioid_related_flag,
-                    pre_bh_flag:pre_opioid_related_flag) %>% 
-        ### change unique_person_id to character for join with medicaid jail data
-        mutate(unique_person_id = as.character(unique_person_id))
+                         0, .x))) %>%
+  ### now de-dup by individual
+      distinct(unique_person_id, .keep_all=TRUE)
+
+### removing all columns that were specific to encounter- or enrollment-level data
+### since we have created an individual-level file with flags from the encounter and enrollment data,
+### i am removing the now irrelevant columns to avoid any confusion
+medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid_enrollment_categories_encounters_2018_2021_individual_level %>%
+    dplyr::select(unique_person_id,
+                  overall_bh_flag = overall_bh_flag_max,
+                  study_window_medicaid_match_flag_overall:post_study_window_medicaid_match_flag_overall,
+                  pre_or_study_bh_flag:pre_or_study_opioid_related_flag,
+                  study_bh_flag:study_opioid_related_flag,
+                  pre_bh_flag:pre_opioid_related_flag) %>%
+      ### change unique_person_id to character for join with medicaid jail data
+      mutate(unique_person_id = as.character(unique_person_id))
 
 ###############################################################################
 ### save medicaid_enrollment_categories_encounters_2018_2021_individual_level to external hard drive
@@ -724,28 +742,28 @@ write_rds(medicaid_enrollment_categories_encounters_individual_jail_all,
 
 ###########################################################################################################################
 ###########################################################################################################################
-## 3. finally, we will build the medicaid enrollment level file: this file will allow us to explore the timing of medicaid enrollment/coverage loss and 
-# jail booking. did individuals lose their medicaid eligibility during their incarceration or shortly afterwards? if so, 
+## 3. finally, we will build the medicaid enrollment level file: this file will allow us to explore the timing of medicaid enrollment/coverage loss and
+# jail booking. did individuals lose their medicaid eligibility during their incarceration or shortly afterwards? if so,
 # how long is the average jail LOS that results in medicaid coverage loss/un-enrollment? does this vary by county? by HU grouping?
 
 #############################
 ### clean medicaid_enrollment
 #############################
 
-medicaid_enrollment_to_join <- medicaid_enrollment %>% 
+medicaid_enrollment_to_join <- medicaid_enrollment %>%
   ### change unique_person_id to character for join with medicaid jail data
   ### create unique medicaid enrollment id for grouping and de-duping in next step
   mutate(unique_person_id = as.character(unique_person_id),
          unique_medicaid_enrollment_id = paste0(unique_person_id,
-                                                eligibility_begin_date)) %>% 
+                                                eligibility_begin_date)) %>%
   ### clean dates for analysis using dates from the enrollment and jail file
   mutate(eligibility_begin_date = ymd(as_date(eligibility_begin_date)),
-         eligibility_end_date = ymd(as_date(eligibility_end_date))) %>% 
+         eligibility_end_date = ymd(as_date(eligibility_end_date))) %>%
   ### now de-dup by enrollment ID; there were a handful of cases where one individual/eligibility begin date
   ### were linked to different eligibility codes (<50/~60k); these cases are still de-duped by individual and begin date
   ### since the number is so small
   distinct(unique_medicaid_enrollment_id,
-           .keep_all = TRUE) %>% 
+           .keep_all = TRUE) %>%
   ### now arrange and group by individual to take the next eligibility begin date
   ### following a record's eligibility end date using dplyr::lead to take the next start date
   ### after a given end date (https://dplyr.tidyverse.org/reference/lead-lag.html)
@@ -754,10 +772,10 @@ medicaid_enrollment_to_join <- medicaid_enrollment %>%
   ### NA for next_eligibility_begin_date indicates no subsequent re-enrollment
   arrange(unique_person_id, eligibility_begin_date) %>%
   group_by(unique_person_id) %>%
-  mutate(next_eligibility_begin_date = dplyr::lead(eligibility_begin_date, 
-                                                   1, 
-                                                   default=NA)) %>% 
-  ungroup() %>% 
+  mutate(next_eligibility_begin_date = dplyr::lead(eligibility_begin_date,
+                                                   1,
+                                                   default=NA)) %>%
+  ungroup() %>%
   ### now calculate time between two dates in days and flag enrollment records with no subsequent re-enrollment
   mutate(medicaid_eligibility_end_next_begin_diff_days = as.numeric(difftime(next_eligibility_begin_date,
                                                                     eligibility_end_date,
@@ -776,20 +794,20 @@ medicaid_enrollment_to_join <- medicaid_enrollment %>%
 ### the county that an individual is booked in most frequently; if an individual has been to
 ### two or more different jails the same number of times, we will choose one/de-dup randomly
 
-medicaid_jail_all_to_join <- medicaid_jail_all %>% 
+medicaid_jail_all_to_join <- medicaid_jail_all %>%
   ### drop booking records with missing release dates -- these are likely folks still incarcerated at time of data pull
   ### this only affects 170/~50k records
-  filter(!is.na(release_date)==TRUE) %>% 
+  filter(!is.na(release_date)==TRUE) %>%
   ### clean dates for analysis using dates from the enrollment and jail file
   ### calculate length of stay using booking_date and release_date
   mutate(booking_date = ymd(as_date(booking_date)),
-         release_date = ymd(as_date(release_date)), 
+         release_date = ymd(as_date(release_date)),
          jail_los = as.numeric(difftime(release_date,
                                         booking_date,
-                                        units="days"))) %>% 
-  ### only keep individual-level (not booking-level) columns since 
+                                        units="days"))) %>%
+  ### only keep individual-level (not booking-level) columns since
   ### we are ultimately de-duping by medicaid enrollment
-  ### jail_los is the exception -- but we'll account for that in the 
+  ### jail_los is the exception -- but we'll account for that in the
   ### next step
   dplyr::select(unique_person_id,
                 booking_id,
@@ -800,31 +818,31 @@ medicaid_jail_all_to_join <- medicaid_jail_all %>%
                 jail_race,
                 jail_dob_year,
                 high_utilizer_4_times:high_utilizer_10_pct)
-  
+
 ################################################################################
 ### join medicaid_jail_all_counties to medicaid_enrollment
 ### we want to keep all medicaid_enrollment records and only those jail records which join via unique_person_id
 ################################################################################
 medicaid_enrollment_jail_timing_all <- left_join(medicaid_enrollment_to_join,
                                                  medicaid_jail_all_to_join,
-                                                 by = "unique_person_id") %>% 
+                                                 by = "unique_person_id") %>%
   ### we ultimately want a file that is unique by medicaid enrollment
-  ### since our denominator in analysis will be those who were booked in jail AND were enrolled in medicaid during the 
+  ### since our denominator in analysis will be those who were booked in jail AND were enrolled in medicaid during the
   ### study window (i.e., those eligible to have their medicaid coverage ended due to incarceration),
   ### we will drop individuals who did not match to medicaid by left joining the jail data to the medicaid enrollment file
-  ### now drop records which appear in medicaid enrollment but not jail file 
-  filter(!is.na(booking_id)) %>% 
+  ### now drop records which appear in medicaid enrollment but not jail file
+  filter(!is.na(booking_id)) %>%
   ### create date difference variable for analysis using dates from the enrollment and jail file
   mutate(medicaid_enroll_ends_release_date_diff_days = as.numeric(difftime(eligibility_end_date,
                                                                 release_date,
-                                                                units="days"))) %>% 
+                                                                units="days"))) %>%
   ### now create several flags:
   ### did individual's medicaid enrollment end during incarceration in jail
   ### did individual's medicaid enrollment end within 0 to 5 days of release from jail
   ### did individual's medicaid enrollment end within 5 to 10 days of release from jail
   ### did individual's medicaid enrollment end within 10 to 15 days of release from jail
   ### did individual's medicaid enrollment end within 15 to 20 days of release from jail
-  
+
   mutate(medicaid_enroll_ends_during_jail_booking_level = ifelse(eligibility_end_date>=booking_date & eligibility_end_date<=release_date,
                                                    1,0),
          medicaid_enroll_ends_after_jail_within_5_days_booking_level = ifelse(medicaid_enroll_ends_release_date_diff_days>0 & medicaid_enroll_ends_release_date_diff_days<=5,
@@ -834,23 +852,23 @@ medicaid_enrollment_jail_timing_all <- left_join(medicaid_enrollment_to_join,
          medicaid_enroll_ends_after_jail_within_15_days_booking_level = ifelse(medicaid_enroll_ends_release_date_diff_days>10 & medicaid_enroll_ends_release_date_diff_days<=15,
                                                                 1,0),
          medicaid_enroll_ends_after_jail_within_20_days_booking_level = ifelse(medicaid_enroll_ends_release_date_diff_days>15 & medicaid_enroll_ends_release_date_diff_days<=20,
-                                                                1,0)) %>% 
-  
+                                                                1,0)) %>%
+
   ### create overall flag to indicate if enrollment ended either while individual was in jail OR within 20 days or release
-  mutate(medicaid_enroll_ends_during_or_within_20_days_jail_booking_level = ifelse(medicaid_enroll_ends_during_jail_booking_level==1 | 
+  mutate(medicaid_enroll_ends_during_or_within_20_days_jail_booking_level = ifelse(medicaid_enroll_ends_during_jail_booking_level==1 |
                                                                        medicaid_enroll_ends_after_jail_within_5_days_booking_level==1 |
                                                                        medicaid_enroll_ends_after_jail_within_10_days_booking_level==1 |
                                                                        medicaid_enroll_ends_after_jail_within_15_days_booking_level==1 |
                                                                        medicaid_enroll_ends_after_jail_within_20_days_booking_level==1,
-                                                                     1,0)) %>% 
-  
+                                                                     1,0)) %>%
+
   ### At this point, our file is messy -- there are joins between all bookings and all enrollments for individuals who
   ### are in both files; for this to be a medicaid enrollment-level file, we now need to group by enrollment and take the max
   ### of the flags we just create; in other words -- if at any point a booking/period of incarceration overlapped with medicaid enrollment ending, we will capture it
   ### because multiple bookings may have occurred during a single period of medicaid enrollment, this allows us to capture any instance
   ### of medicaid enrollment ending within 20 days after jail release
 
-  group_by(unique_medicaid_enrollment_id) %>% 
+  group_by(unique_medicaid_enrollment_id) %>%
   mutate(medicaid_enroll_ends_during_jail = max(medicaid_enroll_ends_during_jail_booking_level,
                                                 na.rm=TRUE),
          medicaid_enroll_ends_after_jail_within_5_days = max(medicaid_enroll_ends_after_jail_within_5_days_booking_level,
@@ -860,13 +878,13 @@ medicaid_enrollment_jail_timing_all <- left_join(medicaid_enrollment_to_join,
          medicaid_enroll_ends_after_jail_within_15_days = max(medicaid_enroll_ends_after_jail_within_15_days_booking_level,
                                                 na.rm=TRUE),
          medicaid_enroll_ends_after_jail_within_20_days = max(medicaid_enroll_ends_after_jail_within_20_days_booking_level,
-                                                na.rm=TRUE)) %>% 
-  
-  ### note: it's possible that one medicaid enrollment record could have multiple flags 
+                                                na.rm=TRUE)) %>%
+
+  ### note: it's possible that one medicaid enrollment record could have multiple flags
   ### if multiple bookings are linked to one enrollment record and both occur within 20 days of each other
-  ### for this reason, we will keep the earliest occurring flag 
+  ### for this reason, we will keep the earliest occurring flag
   ### (e.g., keep medicaid_enroll_ends_during_jail over medicaid_enroll_ends_after_jail_within_5_days, etc)
-  
+
   mutate(medicaid_enroll_ends_after_jail_within_20_days = ifelse((medicaid_enroll_ends_after_jail_within_15_days==1 |
                                                                    medicaid_enroll_ends_after_jail_within_10_days==1 |
                                                                    medicaid_enroll_ends_after_jail_within_5_days==1 |
@@ -880,37 +898,37 @@ medicaid_enrollment_jail_timing_all <- left_join(medicaid_enrollment_to_join,
                                                                    medicaid_enroll_ends_during_jail==1),
                                                                  0,medicaid_enroll_ends_after_jail_within_10_days),
          medicaid_enroll_ends_after_jail_within_5_days = ifelse(medicaid_enroll_ends_during_jail==1,
-                                                                 0,medicaid_enroll_ends_after_jail_within_5_days)) %>% 
-  
-  ungroup() %>% 
+                                                                 0,medicaid_enroll_ends_after_jail_within_5_days)) %>%
+
+  ungroup() %>%
   ### create overall flag to indicate if enrollment ended either while individual was in jail OR within 20 days or release
-  mutate(medicaid_enroll_ends_during_or_within_20_days_jail = ifelse(medicaid_enroll_ends_during_jail==1 | 
+  mutate(medicaid_enroll_ends_during_or_within_20_days_jail = ifelse(medicaid_enroll_ends_during_jail==1 |
                                                                        medicaid_enroll_ends_after_jail_within_5_days==1 |
                                                                        medicaid_enroll_ends_after_jail_within_10_days==1 |
                                                                        medicaid_enroll_ends_after_jail_within_15_days==1 |
                                                                        medicaid_enroll_ends_after_jail_within_20_days==1,
-                                                                     1,0)) %>% 
-  
+                                                                     1,0)) %>%
+
   ### now we choose the specific jail LOS that is associated with the end of medicaid eligibility
-  ### need logic for instances where there are two bookings similar to logic above 
-  ### that keeps booking closest to end of medicaid; if individual-level flag for end of medicaid eligibility and 
+  ### need logic for instances where there are two bookings similar to logic above
+  ### that keeps booking closest to end of medicaid; if individual-level flag for end of medicaid eligibility and
   ### booking-level flag both equal 1, indicating that is the booking we are associating with the end of an enrollment, we want that LOS
   mutate(keep_booking_los = ifelse((medicaid_enroll_ends_during_jail_booking_level==1 & medicaid_enroll_ends_during_jail==1) |
-                                     (medicaid_enroll_ends_after_jail_within_5_days_booking_level==1 & medicaid_enroll_ends_after_jail_within_5_days==1) | 
-                                     (medicaid_enroll_ends_after_jail_within_10_days_booking_level==1 & medicaid_enroll_ends_after_jail_within_10_days==1) | 
+                                     (medicaid_enroll_ends_after_jail_within_5_days_booking_level==1 & medicaid_enroll_ends_after_jail_within_5_days==1) |
+                                     (medicaid_enroll_ends_after_jail_within_10_days_booking_level==1 & medicaid_enroll_ends_after_jail_within_10_days==1) |
                                      (medicaid_enroll_ends_after_jail_within_15_days_booking_level==1 & medicaid_enroll_ends_after_jail_within_15_days==1) |
                                      (medicaid_enroll_ends_after_jail_within_20_days_booking_level==1 & medicaid_enroll_ends_after_jail_within_20_days==1),
-                                   1,0)) %>% 
+                                   1,0)) %>%
   ### now create enrollment-level variable for the LOS of the booking that led to end of medicaid eligibility
-  ### on the off chance that two distinct bookings both have the same time to end of medicaid eligibility 
+  ### on the off chance that two distinct bookings both have the same time to end of medicaid eligibility
   ### (e.g., two booking, each for <1 day occurred within 3 days of each other and medicaid eligibility ended within 5 days of both),
   ### we then take the mean jail_los to create jail_los_medicaid_enroll_end
   ### this column will only be populated for medicaid enrollment records that ended during incarceration or within 20 days of release
-  group_by(unique_medicaid_enrollment_id) %>% 
+  group_by(unique_medicaid_enrollment_id) %>%
   mutate(jail_los_medicaid_enroll_ends = ifelse(medicaid_enroll_ends_during_or_within_20_days_jail==1,
                                                mean(jail_los[keep_booking_los==1],
-                                                    na.rm=TRUE),NA)) %>% 
-  ungroup() %>% 
+                                                    na.rm=TRUE),NA)) %>%
+  ungroup() %>%
   ### now de-dup by enrollment
   distinct(unique_medicaid_enrollment_id,
            .keep_all = TRUE) %>%
@@ -926,7 +944,7 @@ medicaid_enrollment_jail_timing_all <- left_join(medicaid_enrollment_to_join,
                 jail_dob_year,
                 jail_los_medicaid_enroll_ends,
                 high_utilizer_4_times:high_utilizer_10_pct)
-  
+
 ###############################################################################
 ### save medicaid_enrollment_jail_timing_all to external hard drive
 ###############################################################################

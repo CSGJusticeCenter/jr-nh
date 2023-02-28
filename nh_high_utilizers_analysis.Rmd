@@ -81,19 +81,13 @@ df_people_entered_county <- entrances_dhhs %>%
 
 # Number of entrances by county for all three years
 amt_entrances_county <- entrances_dhhs %>%
-  dplyr::ungroup() %>%
-  dplyr::select(booking_id, county) %>%
-  dplyr::distinct() %>%
   dplyr::group_by(county) %>%
-  dplyr::summarise(total = n())
+  dplyr::summarise(total = n_distinct(booking_id))
 
 # Df of total number of entrances by FY
 df_entrances_county <- entrances_dhhs %>%
-  dplyr::ungroup() %>%
-  dplyr::select(booking_id, fy, county) %>%
-  dplyr::distinct() %>%
   dplyr::group_by(fy, county) %>%
-  dplyr::summarise(total = n()) %>%
+  dplyr::summarise(total = n_distinct(booking_id)) %>%
   spread(fy, total) %>%
   mutate(`2019` = as.numeric(`2019`),
          `2020` = as.numeric(`2020`),
@@ -140,23 +134,11 @@ df_entrances_table <- merge(df_entrances_table, df_avg_entrances_county, by = "c
 
 # Count number of people by county
 hu_people_county <- entrances_dhhs %>%
-  ungroup() %>%
-  select(county,
-         id,
-         num_entrances,
-         hu_group_exclusive) %>%
-  distinct() %>%
   group_by(county, hu_group_exclusive) %>%
   summarise(total_hu_people  = n_distinct(id)) 
 
 # Count number of people by state
 hu_people_state <- entrances_dhhs %>%
-  ungroup() %>%
-  select(county,
-         id,
-         num_entrances,
-         hu_group_exclusive) %>%
-  distinct() %>%
   group_by(hu_group_exclusive) %>% 
   summarise(total_hu_people  = n_distinct(id)) %>%
   mutate(county = "State")
@@ -170,25 +152,13 @@ hu_people <- rbind(hu_people_county, hu_people_state)
 
 # Count number of entrances by county
 hu_entrances_county <- entrances_dhhs %>%
-  ungroup() %>%
-  select(county,
-         booking_id,
-         num_entrances,
-         hu_group_exclusive) %>%
-  distinct() %>%
   group_by(county, hu_group_exclusive) %>%
-  summarise(total_hu_entrances = n()) 
+  summarise(total_hu_entrances = n_distinct(booking_id)) 
 
 # Count number of entrances by state
 hu_entrances_state <- entrances_dhhs %>%
-  ungroup() %>%
-  select(county,
-         booking_id,
-         num_entrances,
-         hu_group_exclusive) %>%
-  distinct() %>%
   group_by(hu_group_exclusive) %>%
-  summarise(total_hu_entrances = n()) %>%
+  summarise(total_hu_entrances = n_distinct(booking_id)) %>%
   mutate(county = "State")
 
 # Add data together
@@ -252,6 +222,7 @@ hu_table <- hu_summary %>%
 One bed-day is defined as one person spending one day in jail. So, one person spending 10 days in jail equals 10 bed-days. Five people each spending two days in jail also represents a total of 10 bed-days (5 people each day * 2 days = 10 bed-days). If a jail has an ADP of 100 over the course of one year, then 36,500 bed-days were used in that year (100 * 365 days = 36,500 bed-days).  
 
 ```{r}
+# Get data on number of bed days (=1 day los)
 bed_days <- entrances_dhhs %>% 
   ungroup() %>% 
   select(id, booking_id, hu_group_exclusive, jail_los) %>% 
@@ -322,7 +293,7 @@ knitr::include_graphics("img/PRES_gg_pie_beddays.png")
 Essentially bed days but includes people entering jail for less than one day. Looks similar to bed days.
 
 ```{r}
-# Add one day to those with zero days so that they are counted
+# Add one day to those with zero days so that they are counted as a daily encounter (comparing to bed days)
 daily_encounters <- entrances_dhhs %>% 
   ungroup() %>% 
   mutate(jail_los = ifelse(jail_los == 0, jail_los + 1, jail_los)) %>% 
@@ -540,6 +511,9 @@ reactable(hu_nonhu_pct,
           )
 )
 ```
+<br>
+
+**Proportion of HU entrances out of all NH jail entrances**
 
 ```{r}
 # Get number of entrances by HU group
@@ -582,9 +556,10 @@ knitr::include_graphics("img/PRES_gg_hu_pct_piechart.png")
 
 <br>
 
+**Proportion of people who are high utilizers out of all people who entered NH jails**
 
 ```{r}
-# Get number of people by HU group and proportion out of all people entering NJ jails
+# Get number of people by HU group and proportion out of all people entering NH jails
 data1 <- hu_people_state %>%
   mutate(pct = total_hu_people/sum(total_hu_people , na.rm = TRUE)) %>% 
   mutate(pct = paste(round(pct*100, 0), "%", sep = "")) %>% 

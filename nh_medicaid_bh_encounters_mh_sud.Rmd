@@ -24,16 +24,61 @@ knitr::opts_chunk$set(
 ```
 
 ```{r include=FALSE}
-# Load medicaid data
+##########
+# Import files
+##########
+
+# Import medicaid_jail_all -- medicaid jail data that we'll compare to the numbers from the jail administrative files
+# This file lives on the external hard drive (created and exported in `14_medicaid.R`)
+medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
+
+# Import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
+# File is unique by individual/booking
+# This file lives on the external hard drive (created and exported in `14_medicaid.R`)
 jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
+
+# Import medicaid encounters with costs and individual diagnoses created in `14_medicaid.R`
+medicaid_encounters_costs_all <- read_rds("D:/Analytic/medicaid_enrollment_categories_encounters.rds") 
+
+##########
+# Set up files
+##########
+
+# De-dup (there are a few duplicate bookings) and create booking id for analysis
+medicaid_jail_all_dedup <- medicaid_jail_all %>% 
+  distinct(unique_person_id, 
+           booking_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id,
+                                    booking_id)) ### creating unique booking id with both individual and booking IDs
+
 
 # De-dup (there are a few duplicate bookings) and create booking id for analysis
 jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_individual_booking_level %>% 
-  distinct(unique_person_id, booking_id, .keep_all = TRUE) %>% 
-  mutate(unique_person_booking_id = paste0(unique_person_id, booking_id)) 
+  distinct(unique_person_id, 
+           booking_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id,
+                                    booking_id)) ### creating unique booking id with both individual and booking IDs
 
-# Recode high utilize percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
-jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- fnc_hu_group_exclusive(jail_medicaid_analytic_individual_booking_level_dedup)
+# Recode high utilizer percentile grouping
+jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- fnc_hu_group_exclusive(jail_medicaid_analytic_individual_booking_level_dedup) 
+
+# Create unique booking id using id and dose date
+medicaid_encounters_costs <- medicaid_encounters_costs_all
+medicaid_encounters_costs$claim_id <- medicaid_encounters_costs %>% 
+  dplyr::group_indices(unique_person_id, first_dos_dt) 
+
+# Reorganize variables
+medicaid_encounters_costs <- medicaid_encounters_costs %>% 
+  dplyr::select(unique_person_id,
+                claim_id,
+                everything())
+
+# Create data of just primary diagnosis costs by subsetting to claims that are MH or SUD or both
+medicaid_encounters_costs_primary_dx <- medicaid_encounters_costs %>% 
+  filter(mh_service_categorized_using_primary_dx_code  == 1 | 
+         sud_service_categorized_using_primary_dx_code == 1) 
 ```         
 
 # DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behavioral Health Encounters by High Jail Utilizer Grouping
@@ -393,7 +438,7 @@ PRES_gg_medicaid_match_bh <- ggplot(medicaid_match_bh, aes(x = reorder(hu_group_
   #geom_hline(yintercept = mean(medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
 ```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+```{r, out.width="75%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_medicaid_match_bh, file="img/PRES_gg_medicaid_match_bh.png", width = 9,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_match_bh.png")
 ```
@@ -450,8 +495,8 @@ PRES_gg_medicaid_match_cooccurring <- ggplot(medicaid_match_cooccurring, aes(x =
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
 ```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match_cooccurring, file="img/PRES_gg_medicaid_match_cooccurring.png", width = 12,  height = 6, dpi = 100)
+```{r, out.width="75%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_medicaid_match_cooccurring, file="img/PRES_gg_medicaid_match_cooccurring.png", width = 9,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_match_cooccurring.png")
 ```
 
@@ -710,7 +755,7 @@ PRES_gg_medicaid_jail_smi_hu_grouping <- ggplot(medicaid_jail_smi_hu_grouping, a
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_smi_hu_grouping, file="img/PRES_gg_medicaid_jail_smi_hu_grouping.png", width = 7,  height = 6, dpi = 100)
+ggsave(PRES_gg_medicaid_jail_smi_hu_grouping, file="img/PRES_gg_medicaid_jail_smi_hu_grouping.png", width = 7,  height = 6, dpi = 100)
 # knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_hu_grouping.png")
 ```
 
@@ -759,11 +804,11 @@ PRES_gg_medicaid_jail_smi_nonhu <- ggplot(medicaid_jail_smi_nonhu, aes(fill=popu
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_smi_nonhu, file="img/PRES_gg_medicaid_jail_smi_nonhu.png", width = 4,  height = 6, dpi = 100)
-# knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_nonhu.png")
+ggsave(PRES_gg_medicaid_jail_smi_nonhu, file="img/PRES_gg_medicaid_jail_smi_nonhu.png", width = 4,  height = 6, dpi = 100)
+#knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_nonhu.png")
 ```
 
-```{r, echo=FALSE,out.width="49%", out.height="20%",fig.cap="caption",fig.show='hold',fig.align='center'}
+```{r, echo=FALSE, fig.align='center'}
 knitr::include_graphics(c("img/PRES_gg_medicaid_jail_smi_hu_grouping.png","img/PRES_gg_medicaid_jail_smi_nonhu.png"))
 ```
 
@@ -814,7 +859,7 @@ PRES_gg_medicaid_jail_opioid_hu_grouping <- ggplot(medicaid_jail_opioid_hu_group
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_opioid_hu_grouping, file="img/PRES_gg_medicaid_jail_opioid_hu_grouping.png", width = 7,  height = 6, dpi = 100)
+ggsave(PRES_gg_medicaid_jail_opioid_hu_grouping, file="img/PRES_gg_medicaid_jail_opioid_hu_grouping.png", width = 7,  height = 6, dpi = 100)
 # knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid_hu_grouping.png")
 ```
 
@@ -858,11 +903,11 @@ PRES_gg_medicaid_jail_opioid_nonhu <- ggplot(medicaid_jail_opioid_nonhu, aes(fil
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_opioid_nonhu, file="img/PRES_gg_medicaid_jail_opioid_nonhu.png", width = 4,  height = 6, dpi = 100)
+ggsave(PRES_gg_medicaid_jail_opioid_nonhu, file="img/PRES_gg_medicaid_jail_opioid_nonhu.png", width = 4,  height = 6, dpi = 100)
 # knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid_nonhu.png")
 ```
 
-```{r, echo=FALSE,out.width="49%", out.height="20%",fig.cap="caption",fig.show='hold',fig.align='center'}
+```{r, echo=FALSE, fig.align='center'}
 knitr::include_graphics(c("img/PRES_gg_medicaid_jail_opioid_hu_grouping.png","img/PRES_gg_medicaid_jail_opioid_nonhu.png"))
 ```
 
