@@ -24,9 +24,25 @@ knitr::opts_chunk$set(
 ```
 
 ```{r include=FALSE}
+##########
+# Import files
+##########
+
 # Import medicaid_jail_all -- medicaid jail data that we'll compare to the numbers from the jail administrative files
 # This file lives on the external hard drive (created and exported in `14_medicaid.R`)
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
+
+# Import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
+# File is unique by individual/booking
+# This file lives on the external hard drive (created and exported in `14_medicaid.R`)
+jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
+
+# Import medicaid encounters with costs and individual diagnoses created in `14_medicaid.R`
+medicaid_encounters_costs_all <- read_rds("D:/Analytic/medicaid_enrollment_categories_encounters.rds") 
+
+##########
+# Set up files
+##########
 
 # De-dup (there are a few duplicate bookings) and create booking id for analysis
 medicaid_jail_all_dedup <- medicaid_jail_all %>% 
@@ -36,10 +52,6 @@ medicaid_jail_all_dedup <- medicaid_jail_all %>%
   mutate(unique_person_booking_id = paste0(unique_person_id,
                                     booking_id)) ### creating unique booking id with both individual and booking IDs
 
-# Import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
-# File is unique by individual/booking
-# This file lives on the external hard drive (created and exported in `14_medicaid.R`)
-jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
 
 # De-dup (there are a few duplicate bookings) and create booking id for analysis
 jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_individual_booking_level %>% 
@@ -51,6 +63,22 @@ jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_
 
 # Recode high utilizer percentile grouping
 jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- fnc_hu_group_exclusive(jail_medicaid_analytic_individual_booking_level_dedup) 
+
+# Create unique booking id using id and dose date
+medicaid_encounters_costs <- medicaid_encounters_costs_all
+medicaid_encounters_costs$claim_id <- medicaid_encounters_costs %>% 
+  dplyr::group_indices(unique_person_id, first_dos_dt) 
+
+# Reorganize variables
+medicaid_encounters_costs <- medicaid_encounters_costs %>% 
+  dplyr::select(unique_person_id,
+                claim_id,
+                everything())
+
+# Create data of just primary diagnosis costs by subsetting to claims that are MH or SUD or both
+medicaid_encounters_costs_primary_dx <- medicaid_encounters_costs %>% 
+  filter(mh_service_categorized_using_primary_dx_code  == 1 | 
+         sud_service_categorized_using_primary_dx_code == 1) 
 ```         
 
 # DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behavioral Health Encounters by High Jail Utilizer Grouping

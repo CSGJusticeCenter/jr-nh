@@ -24,20 +24,31 @@ source("data_cleaning/rdas.R")
 ```
 
 ```{r include=FALSE}
-# Import medicaid encounters
-medicaid_encounters_all <- read_rds("D:/Analytic/medicaid_enrollment_categories_encounters_2018_2021_individual_level_all.rds") 
+# Import medicaid encounters with costs and individual diagnoses created in `14_medicaid.R`
+medicaid_encounters_costs_all <- read_rds("D:/Analytic/medicaid_enrollment_categories_encounters.rds") 
 
-# De-dup (there are a few duplicate bookings) and create booking id for analysis
-# Create unique booking id with both individual and booking IDs
-medicaid_encounters <- medicaid_encounters_all %>% 
-  distinct(unique_person_id, 
-           booking_id,
-           .keep_all = TRUE) %>% 
-  mutate(unique_person_booking_id = paste0(unique_person_id,
-                                    booking_id)) 
+# Create unique booking id using id and dose date
+medicaid_encounters_costs <- medicaid_encounters_costs_all
+medicaid_encounters_costs$claim_id <- medicaid_encounters_costs %>% 
+  dplyr::group_indices(unique_person_id, first_dos_dt) 
+
+# Reorganize variables
+medicaid_encounters_costs <- medicaid_encounters_costs %>% 
+  dplyr::select(unique_person_id,
+                claim_id,
+                everything())
+
+# Create data of just primary diagnosis costs by subsetting to claims that are MH or SUD or both
+medicaid_encounters_costs_primary_dx <- medicaid_encounters_costs %>% 
+  filter(mh_service_categorized_using_primary_dx_code  == 1 | 
+         sud_service_categorized_using_primary_dx_code == 1) 
+  # Subset to FY 2019 to FY 2021
+  # filter(first_dos_dt > "2018-06-30" & first_dos_dt < "2021-07-01")
 ```  
 
-# Reimbursement to Providers
+
+
+# Reimbursement to Providers (FY 2019-2021)
 
 Service providers were reimbursed an average of $X per claim for claims by people who matched to Medicaid and were incarcerated in NH jails between 2019 and 2021.  
 

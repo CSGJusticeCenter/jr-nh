@@ -57,16 +57,16 @@ belknap_adm_all <- belknap_adm.xlsx %>%
                              housing == "no"  ~ "Housed",
                              is.na(housing)   ~ "Unknown"))
 
-# Create fy, age, los, recode race, and order variables
+# Custom function - Create fy, age, los, recode race, and order variables
 belknap_adm <- fnc_data_setup(belknap_adm_all)
 
-# Add booking id using id and booking date
+# Custom function - Add booking id using id and booking date
 belknap_adm <- fnc_booking_id(belknap_adm, "Belknap")
 
-# Calculate los (release date - booking date)
+# Custom function - Calculate los (release date - booking date)
 belknap_adm <- fnc_los(belknap_adm)
 
-# Create high utilizer variables
+# Custom function - Create high utilizer variables (1, 5, 10%)
 df_hu <- fnc_create_high_utilizer_variables(belknap_adm)
 belknap_adm <- left_join(belknap_adm, df_hu, by = c("id"))
 
@@ -82,6 +82,7 @@ belknap_adm <- left_join(belknap_adm, df_hu, by = c("id"))
 
 ###################################
 
+# Investigate booking types and sentence statuses
 booking_recordings_belknap <- fnc_investigate_booking_recordings(belknap_adm)
 # Booking types:
 # ADMIN TRANSFER -> Other

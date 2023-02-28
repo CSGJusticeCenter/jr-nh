@@ -469,6 +469,22 @@ medicaid_enrollment_categories_encounters_dedup <- medicaid_enrollment_categorie
 table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
       useNA = 'always')
 
+
+
+
+
+
+###############################################################################
+### save medicaid_enrollment_categories_encounters to external hard drive - needed for reimbursement analysis
+###############################################################################
+write_rds(medicaid_enrollment_categories_encounters,
+          "D:/Analytic/medicaid_enrollment_categories_encounters.rds")
+
+
+
+
+
+
 ############################################################################################
 ### now we will create two analytic files from medicaid_enrollment_categories_encounters
 ### and one analytic file from medicaid_enrollment
@@ -673,15 +689,6 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                          0, .x))) %>%
   ### now de-dup by individual
       distinct(unique_person_id, .keep_all=TRUE)
-
-# Save data with all information specific to encounter and enrollment-level data - need for reimbursement analysis
-medicaid_enrollment_categories_encounters_2018_2021_individual_level_all <- medicaid_enrollment_categories_encounters_2018_2021_individual_level
-
-###############################################################################
-### save medicaid_enrollment_categories_encounters_2018_2021_individual_level_all to external hard drive
-###############################################################################
-write_rds(medicaid_enrollment_categories_encounters_2018_2021_individual_level_all,
-          "D:/Analytic/medicaid_enrollment_categories_encounters_2018_2021_individual_level_all.rds")
 
 ### removing all columns that were specific to encounter- or enrollment-level data
 ### since we have created an individual-level file with flags from the encounter and enrollment data,
