@@ -217,11 +217,11 @@ This table explores the average number of days from the end of Medicaid eligibil
 # statewide
 medicaid_enrollment_jail_timing_to_re_enroll_table <- medicaid_enrollment_jail_timing_all %>% 
   dplyr::summarise(`Overall Medicaid Enrollments (N)` = n_distinct(unique_medicaid_enrollment_id),
-                   `Enrollments Ending in or within 20 days of Release from Jail (% of all enrollments)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
-                   `Mean Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)` = round(mean(medicaid_eligibility_end_next_begin_diff_days[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_next_begin_diff_days>=0], na.rm = TRUE), digits = 1),
-                   `Median Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)` = round(median(medicaid_eligibility_end_next_begin_diff_days[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_next_begin_diff_days>=0], na.rm = TRUE), digits = 1),
-                   `Enrollments Ending in or within 20 days of Release from Jail, No Re-enrollment Records (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_no_new_begin_flag==1]),
-                   `Enrollments Ending in or within 20 days of Release from Jail, No Re-enrollment Records (% of enrollments that ended)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_during_or_within_20_days_jail==1 & medicaid_eligibility_end_no_new_begin_flag==1])/n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1]), accuracy=.1)) 
+                   `Enrollments Ending in Jail (% of all enrollments)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_jail==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Mean Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)` = round(mean(medicaid_eligibility_end_next_begin_diff_days[medicaid_enroll_ends_during_jail==1 & medicaid_eligibility_end_next_begin_diff_days>=0], na.rm = TRUE), digits = 1),
+                   `Median Time to Medicaid Re-enrollment/Next Eligibility Start Date (Days)` = round(median(medicaid_eligibility_end_next_begin_diff_days[medicaid_enroll_ends_during_jail==1 & medicaid_eligibility_end_next_begin_diff_days>=0], na.rm = TRUE), digits = 1),
+                   `Enrollments Ending in or within 20 days of Release from Jail, No Re-enrollment Records (N)` = n_distinct(unique_person_id[medicaid_enroll_ends_during_jail==1 & medicaid_eligibility_end_no_new_begin_flag==1]),
+                   `Enrollments Ending in Jail, No Re-enrollment Records (% of enrollments that ended)` = scales::percent(n_distinct(unique_person_id[medicaid_enroll_ends_during_jail==1 & medicaid_eligibility_end_no_new_begin_flag==1])/n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_jail==1]), accuracy=.1)) 
 
 ### print table via kableextra
 kable(medicaid_enrollment_jail_timing_to_re_enroll_table, 
@@ -246,10 +246,10 @@ This table explores the average number of days spent in jail when Medicaid enrol
 # statewide
 medicaid_enrollment_ends_average_jail_los_table <- medicaid_enrollment_jail_timing_all %>% 
   dplyr::summarise(`Overall Medicaid Enrollments (N)` = n_distinct(unique_medicaid_enrollment_id),
-                    `Enrollments Ending in or within 20 days of Release from Jail (N)` = n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1]),
-                   `Enrollments Ending in or within 20 days of Release from Jail (% of all enrollments)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_or_within_20_days_jail==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
-                   `Mean Jail Length of Stay (Days)` = round(mean(jail_los_medicaid_enroll_ends, na.rm = TRUE), digits = 1),
-                   `Median Jail Length of Stay (Days)` = round(median(jail_los_medicaid_enroll_ends, na.rm = TRUE), digits = 1)) 
+                    `Enrollments Ending in Jail (N)` = n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_jail==1]),
+                   `Enrollments Ending in Jail (% of all enrollments)` = scales::percent(n_distinct(unique_medicaid_enrollment_id[medicaid_enroll_ends_during_jail==1])/`Overall Medicaid Enrollments (N)`, accuracy=.1),
+                   `Mean Jail Length of Stay (Days)` = round(mean(jail_los_medicaid_enroll_ends[medicaid_enroll_ends_during_jail==1], na.rm = TRUE), digits = 1),
+                   `Median Jail Length of Stay (Days)` = round(median(jail_los_medicaid_enroll_ends[medicaid_enroll_ends_during_jail==1], na.rm = TRUE), digits = 1)) 
 
 ### print table via kableextra
 kable(medicaid_enrollment_ends_average_jail_los_table, 
@@ -264,6 +264,59 @@ kable(medicaid_enrollment_ends_average_jail_los_table,
 
 <br><br>
 
+### From Uma: were claims filed during incarceration?
+```{r echo=FALSE,message=FALSE,warning=FALSE} 
+medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") %>% 
+  filter(medicaid_match_flag==1)
+
+### pull in clean and de-duped encounter file
+medicaid_encounters_clean <- read_rds("D:/Analytic/medicaid_encounters_de_dup_clean.rds") %>% 
+  mutate(unique_person_id = as.character(unique_person_id))
+
+### create file where we can flag claims made during incarceration 
+uma_claims_question_df <- inner_join(medicaid_jail_all,
+                                    medicaid_encounters_clean,
+                                    by = "unique_person_id") %>% 
+  mutate(claim_during_incarceration_flag = ifelse(first_dos_dt>booking_date &
+                                                           first_dos_dt<release_date,
+                                                   1,0))
+
+# statewide table
+uma_claims_question_df_table <- uma_claims_question_df %>% 
+  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
+                   `Individuals w/ Claims During Incarceration (N)` = n_distinct(unique_person_id[claim_during_incarceration_flag==1]),
+                   `Individuals w/ Claims During Incarceration (%)` = n_distinct(unique_person_id[claim_during_incarceration_flag==1])/`Overall Individuals (N)`*100) 
+
+### print table via kableextra
+kable(uma_claims_question_df_table, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") 
+
+# statewide table
+uma_claims_question_df_table_average <- uma_claims_question_df %>% 
+  group_by(unique_person_id) %>% 
+  dplyr::mutate(claim_count = sum(claim_during_incarceration_flag)) %>% 
+  ungroup() %>% 
+  summarise(`Mean Claims` = mean(claim_count,na.rm=TRUE),
+            `Median Claims` = median(claim_count,na.rm=TRUE))
+
+### print table via kableextra
+kable(uma_claims_question_df_table_average, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l")
+```
+
+<br><br>
 
 ## Visuals
 

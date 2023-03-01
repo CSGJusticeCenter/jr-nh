@@ -53,7 +53,7 @@ medicaid_dictionary_icd_9 <- read_excel(paste0(sp_data_path, "/Data/Medicaid Dat
                                        sheet = "Valid ICD-9 FY2023 & NF Exclude") %>%
   clean_names() %>%
   distinct() %>%
-  select(icd_code = code,
+  dplyr::select(icd_code = code,
          icd_description = long_description_valid_icd_9_fy2023) %>%
   distinct()
 
@@ -326,7 +326,7 @@ medicaid_jail_all$id  <- medicaid_jail_all$unique_person_id
 medicaid_jail_all_hus <- fnc_create_high_utilizer_variables(medicaid_jail_all)
 medicaid_jail_all     <- medicaid_jail_all %>%
   left_join(medicaid_jail_all_hus, by = "id") %>%
-  select(-id)
+  dplyr::select(-id)
 
 # save out to external hard drive
 write_rds(medicaid_jail_all,
@@ -950,6 +950,19 @@ medicaid_enrollment_jail_timing_all <- left_join(medicaid_enrollment_to_join,
 ###############################################################################
 write_rds(medicaid_enrollment_jail_timing_all,
           "D:/Analytic/medicaid_enrollment_jail_timing_all.rds")
+
+##############################
+# for analysis for Uma
+##############################
+
+### clean medicaid_encounters_xlsx_de_dup and merge to medicaid_enrollment_jail_timing_all
+medicaid_encounters_clean <- medicaid_encounters_xlsx_de_dup %>% 
+  clean_names() %>% 
+  mutate(first_dos_dt = ymd(as_date(first_dos_dt)),
+         last_dos_dt = ymd(as_date(last_dos_dt)))
+
+write_rds(medicaid_encounters_clean,
+          "D:/Analytic/medicaid_encounters_de_dup_clean.rds")
 
 ###########################################################################################################################
 ###########################################################################################################################
