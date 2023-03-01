@@ -598,6 +598,6 @@ fnc_reactable_county_fy <- function(df, row_num){
 }
 
 # Add line break to ggplot axis text x
-addline_format <- function(x,...){
+fnc_addline_format <- function(x,...){
   gsub('\\s','\n',x)
 }

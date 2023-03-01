@@ -2,8 +2,8 @@
 ############################################
 # Project: JRI New Hampshire
 # File: medicaid.R
-# Last updated: November 29, 2022
-# Author: Mari Roberts
+# Last updated: February 28, 2023
+# Author: Mari Roberts/Andrew Byrum
 
 # Merge descriptions for diagnoses from data dictionary
 ############################################

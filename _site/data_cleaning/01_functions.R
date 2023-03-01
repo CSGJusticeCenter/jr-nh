@@ -101,7 +101,7 @@ fnc_create_high_utilizer_variables <- function(df){
     dplyr::summarise(num_entrances = n())
 
   df_hus_3yrs <- df_hus_3yrs %>%
-    select(id, num_entrances) %>% distinct() %>%
+    dplyr::select(id, num_entrances) %>% distinct() %>%
     mutate(high_utilizer_4_times = num_entrances >= 4) %>%                                                # 4 or more times
 
     mutate(high_utilizer_1_pct   = quantile(df_hus_3yrs$num_entrances, probs = 0.99) < num_entrances) %>% # Top 1%
@@ -598,6 +598,6 @@ fnc_reactable_county_fy <- function(df, row_num){
 }
 
 # Add line break to ggplot axis text x
-addline_format <- function(x,...){
+fnc_addline_format <- function(x,...){
   gsub('\\s','\n',x)
 }
