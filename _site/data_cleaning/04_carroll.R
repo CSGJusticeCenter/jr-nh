@@ -145,22 +145,22 @@ carroll_adm <- carroll_adm %>%
     # PRETRIAL
     str_detect("PRE-TRIAL", sentence_status)                                         ~ "PRETRIAL",
     str_detect("AWAITING TRIAL", sentence_status)                                    ~ "PRETRIAL",
+    str_detect("BAIL SET", sentence_status)                                          ~ "PRETRIAL",
+    str_detect("BOND DENIED", sentence_status)                                       ~ "PRETRIAL",
+    str_detect("HELD", sentence_status)                                              ~ "PRETRIAL",
 
     # SENTENCED
     str_detect("SENTENCED", sentence_status)                                         ~ "SENTENCED",
     str_detect("SENTENCED FINES", sentence_status)                                   ~ "SENTENCED",
     str_detect("SENTENCED / DETAINER", sentence_status)                              ~ "SENTENCED",
+    str_detect("DETAINER", sentence_status)                                          ~ "SENTENCED",
+    str_detect("SENTENCE SUSPENDED", sentence_status)                                ~ "SENTENCED",
 
     # NH STATE PRISONER
     str_detect("STATE PRISONER", sentence_status)                                    ~ "OTHER",
 
     # OTHER
-    str_detect("BAIL SET", sentence_status)                                          ~ "OTHER",
-    str_detect("BOND DENIED", sentence_status)                                       ~ "OTHER",
-    str_detect("DETAINER", sentence_status)                                          ~ "OTHER",
-    str_detect("HELD", sentence_status)                                              ~ "OTHER",
     str_detect("DISMISSED", sentence_status)                                         ~ "OTHER",
-    str_detect("SENTENCE SUSPENDED", sentence_status)                                ~ "OTHER",
 
     TRUE ~ sentence_status)) %>%
 
