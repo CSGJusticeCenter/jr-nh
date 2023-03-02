@@ -150,6 +150,9 @@ medicaid_encounters_cleaned_2018_2021 <- medicaid_encounters_cleaned_2018_2021 %
          hu_group_exclusive
          ) %>% 
   distinct()
+
+medicaid_encounters_cleaned_2018_2021 <- medicaid_encounters_cleaned_2018_2021 %>% 
+  filter(!is.na(dx_prmry_clinical_classification_new)) 
 ```
 
 
@@ -189,11 +192,11 @@ reactable(cost_table,
           compact = TRUE,
           fullWidth = FALSE,
           columns = list(
-            total_cost = colDef(format = colFormat(currency = "USD"), name = "Total Reimbursed from 2019 to 2021"),
-            min        = colDef(format = colFormat(currency = "USD"), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
-            median     = colDef(format = colFormat(currency = "USD"), name = "Median Reimbursed Per Claim from 2019 to 2021"),
-            mean       = colDef(format = colFormat(currency = "USD"), name = "Average Reimbursed Per Claim from 2019 to 2021"),
-            max        = colDef(format = colFormat(currency = "USD"), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
+            total_cost = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Median Reimbursed Per Claim from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Average Reimbursed Per Claim from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
           )
 ```
 
@@ -238,11 +241,11 @@ reactable(cost_table,
           fullWidth = FALSE,
           columns = list(
             hu_group_overall = colDef(name = "Population"),
-            total_cost = colDef(format = colFormat(currency = "USD"), name = "Total Reimbursed from 2019 to 2021"),
-            min        = colDef(format = colFormat(currency = "USD"), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
-            median     = colDef(format = colFormat(currency = "USD"), name = "Median Reimbursed Per Claim from 2019 to 2021"),
-            mean       = colDef(format = colFormat(currency = "USD"), name = "Average Reimbursed Per Claim from 2019 to 2021"),
-            max        = colDef(format = colFormat(currency = "USD"), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
+            total_cost = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Median Reimbursed Per Claim from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Average Reimbursed Per Claim from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
           )
 ```
 <br>
@@ -281,11 +284,11 @@ reactable(cost_table,
           fullWidth = FALSE,
           columns = list(
             hu_group_exclusive = colDef(name = "Population"),
-            total_cost = colDef(format = colFormat(currency = "USD"), name = "Total Reimbursed from 2019 to 2021"),
-            min        = colDef(format = colFormat(currency = "USD"), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
-            median     = colDef(format = colFormat(currency = "USD"), name = "Median Reimbursed Per Claim from 2019 to 2021"),
-            mean       = colDef(format = colFormat(currency = "USD"), name = "Average Reimbursed Per Claim from 2019 to 2021"),
-            max        = colDef(format = colFormat(currency = "USD"), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
+            total_cost = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Median Reimbursed Per Claim from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Average Reimbursed Per Claim from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
           )
 ```
 
@@ -361,11 +364,11 @@ reactable(cost_table,
           fullWidth = FALSE,
           columns = list(
             dx_prmry_clinical_classification_new = colDef(name = "Primary Diganosis", width = 250),
-            total_cost = colDef(format = colFormat(currency = "USD"), name = "Total Reimbursed from 2019 to 2021"),
-            min        = colDef(format = colFormat(currency = "USD"), name = "Minimum Reimbursed Per Diagnosis/Service from 2019 to 2021"),
-            median     = colDef(format = colFormat(currency = "USD"), name = "Median Reimbursed Per Diagnosis/Service from 2019 to 2021"),
-            mean       = colDef(format = colFormat(currency = "USD"), name = "Average Reimbursed Per Diagnosis/Service from 2019 to 2021"),
-            max        = colDef(format = colFormat(currency = "USD"), name = "Maximum Reimbursed Per Diagnosis/Service from 2019 to 2021"))
+            total_cost = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Minimum Reimbursed Per Diagnosis/Service from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Median Reimbursed Per Diagnosis/Service from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Average Reimbursed Per Diagnosis/Service from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Maximum Reimbursed Per Diagnosis/Service from 2019 to 2021"))
           ) 
 ```
 
@@ -373,7 +376,59 @@ Diagnosis/Service = primary diagnosis within a claim. These findings are the cos
 <br>
 
 ```{r}
-# Get costs by claim and by HU
+# Get costs by total claim and by primary diagnosis
+cost_data <- cost_table %>% 
+  select(dx_prmry_clinical_classification_new,
+         total_cost) %>% 
+  mutate(total_cost = round(as.numeric(total_cost), 0)) %>% 
+  arrange(total_cost)
+
+# Which labels to bold and color
+bold.labels <- cost_data %>% 
+  mutate(bold = ifelse(dx_prmry_clinical_classification_new == "Opioid-related disorders", yes = "bold", no = "plain"))
+bold.labels <- bold.labels$bold
+color.labels <- cost_data %>% 
+  mutate(color = ifelse(dx_prmry_clinical_classification_new == "Opioid-related disorders", yes = jri_green, no = "black"))
+color.labels <- color.labels$color
+
+# Ggplot showing the total cost by primary diagnosis
+PRES_gg_primary_diagnosis_cost <- cost_data %>%
+  ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, total_cost), 
+             y = total_cost, fill=factor(ifelse(dx_prmry_clinical_classification_new=="Opioid-related disorders","Highlighted","Normal")))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(name = "area", values=c(jri_green,"grey50")) +
+  xlab("") + ylab("\nAmount Reimbursed to\nService Providers (2019-2021)") +
+  scale_y_continuous(labels = scales::dollar_format(scale = .000001, suffix = "M"),
+                     limits = c(0, 55000000)) +
+  geom_text(aes(label = paste0("$", comma(total_cost)), fontface = 'bold'), 
+                color = ifelse(cost_data$dx_prmry_clinical_classification_new=="Opioid-related disorders", jri_green, "black"), 
+                hjust = -.1, size = 7.5, family = "Franklin Gothic Book") +
+  coord_flip() +
+  theme_no_grid_no_labels +
+  theme(legend.position = "none",
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
+        
+        panel.grid.major.x = element_line(linewidth = 0.5),
+        axis.text.y = element_text(face = bold.labels, color = color.labels),
+
+        axis.title   = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        # axis.text.y  = element_text(size = 22, color = "black"),
+        axis.text.x  = element_text(size = 22, color = "black"))
+
+```
+
+```{r, out.width="150%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_primary_diagnosis_cost, file="img/PRES_gg_primary_diagnosis_cost.png", width = 15,  height = 6, dpi = 100)
+knitr::include_graphics("img/PRES_gg_primary_diagnosis_cost.png")
+```
+
+<br>
+
+```{r}
+# Get avg and median costs by by dx_prmry_clinical_classification_new
 cost_data <- cost_table %>% 
   select(dx_prmry_clinical_classification_new,
          Median = median,
@@ -382,7 +437,7 @@ cost_data <- cost_table %>%
   mutate(amt = round(as.numeric(amt), 0))
 
 # GGplot grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
-PRES_gg_diagnosis_costs_hu <- ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
+PRES_gg_diagnosis_costs <- ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
   geom_bar(position="dodge", stat="identity") +
   theme_with_grid_with_labels +
   labs(x = "", y = "Reimbursement Cost Per Diagnosis/Service\n") +
@@ -421,13 +476,13 @@ PRES_gg_diagnosis_costs_hu <- ggplot(cost_data, aes(fill=finding, y=amt, x = reo
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diagnosis_costs_hu, file="img/PRES_gg_diagnosis_costs_hu.png", width = 20,  height = 5, dpi = 100, bg = 'transparent')
-knitr::include_graphics("img/PRES_gg_diagnosis_costs_hu.png")
+# ggsave(PRES_gg_diagnosis_costs, file="img/PRES_gg_diagnosis_costs.png", width = 20,  height = 5, dpi = 100, bg = 'transparent')
+# knitr::include_graphics("img/PRES_gg_diagnosis_costs.png")
 ```
 
 ```{r}
 # GGplot grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
-PRES_gg_diagnosis_costs_hu1 <- 
+PRES_gg_diagnosis_costs1 <- 
   ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
   geom_bar(position="dodge", stat="identity") +
   theme_with_grid_with_labels +
@@ -474,8 +529,8 @@ PRES_gg_diagnosis_costs_hu1 <-
         axis.text.x  = element_text(size = 22, color = "black"))
 ```
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diagnosis_costs_hu1, file="img/PRES_gg_diagnosis_costs_hu1.png", width = 12,  height = 8, dpi = 100, bg = 'transparent')
-knitr::include_graphics("img/PRES_gg_diagnosis_costs_hu1.png")
+# ggsave(PRES_gg_diagnosis_costs1, file="img/PRES_gg_diagnosis_costs1.png", width = 12,  height = 8, dpi = 100, bg = 'transparent')
+# knitr::include_graphics("img/PRES_gg_diagnosis_costs1.png")
 ```
 <br>
 
@@ -486,7 +541,7 @@ bold.labels <- cost_data %>% filter(finding == "Median") %>%
 bold.labels <- bold.labels$bold
 
 # GGplot diverging barchart showing the average and media cost of reimbursement for the diagnosis categories
-PRES_gg_diagnosis_costs_hu2 <- cost_data %>%
+PRES_gg_diagnosis_costs2 <- cost_data %>%
   mutate(amt = ifelse(finding == "Average", amt, -1*amt)) %>% 
   ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, amt), y = amt, fill = finding))+
   geom_bar(stat = "identity") +
@@ -513,8 +568,8 @@ PRES_gg_diagnosis_costs_hu2 <- cost_data %>%
         legend.title=element_blank())
 ```
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diagnosis_costs_hu2, file="img/PRES_gg_diagnosis_costs_hu2.png", width = 14,  height = 7, dpi = 100, bg = 'transparent')
-knitr::include_graphics("img/PRES_gg_diagnosis_costs_hu2.png")
+ggsave(PRES_gg_diagnosis_costs2, file="img/PRES_gg_diagnosis_costs2.png", width = 14,  height = 7, dpi = 100, bg = 'transparent')
+knitr::include_graphics("img/PRES_gg_diagnosis_costs2.png")
 ```
 
 <br><br>
@@ -556,11 +611,11 @@ reactable(cost_table,
           compact = TRUE,
           fullWidth = FALSE,
           columns = list(
-            total_cost = colDef(format = colFormat(currency = "USD"), name = "Total Reimbursed from 2019 to 2021"),
-            min        = colDef(format = colFormat(currency = "USD"), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
-            median     = colDef(format = colFormat(currency = "USD"), name = "Median Reimbursed Per Claim from 2019 to 2021"),
-            mean       = colDef(format = colFormat(currency = "USD"), name = "Average Reimbursed Per Claim from 2019 to 2021"),
-            max        = colDef(format = colFormat(currency = "USD"), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
+            total_cost = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Median Reimbursed Per Claim from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Average Reimbursed Per Claim from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
           )
 ```
 
