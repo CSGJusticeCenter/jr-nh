@@ -94,6 +94,7 @@ medicaid_encounters_costs <- medicaid_encounters_costs %>%
                 everything())
 
 # Create data of just primary diagnosis costs by subsetting to claims that are MH or SUD or both
+# Remove pharamacy visits
 medicaid_encounters_costs_primary_dx_2018_2021 <- medicaid_encounters_costs %>% 
   filter(mh_service_categorized_using_primary_dx_code  == 1 | 
          sud_service_categorized_using_primary_dx_code == 1) %>% 
@@ -145,7 +146,11 @@ mutate(dx_prmry_clinical_classification_new = case_when(
   # join with info on person - HU, Medicaid match, etc
   mutate(unique_person_id = as.character(unique_person_id),
          study_suicide_ideation = ifelse(dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm", 1, 0)) %>% 
-  left_join(unique_ids_hu, "unique_person_id")
+  left_join(unique_ids_hu, "unique_person_id") %>% 
+  distinct() %>% 
+
+  # remove people who aren't in unique_ids_hu - dont have an HU variable
+  filter(!is.na(hu_group_exclusive))
 ```         
 
 # DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behavioral Health Encounters by High Jail Utilizer Grouping

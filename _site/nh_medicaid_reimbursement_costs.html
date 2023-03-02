@@ -2404,6 +2404,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+  <script src="site_libs/react-17.0.0/react.min.js"></script>
+  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
+  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+  <script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+  <link href="site_libs/reactable-0.4.3/reactable.css" rel="stylesheet" />
+  <script src="site_libs/reactable-binding-0.4.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2521,7 +2528,79 @@ Research
 
 
 <div class="d-article">
-<p>Coming soon.</p>
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a href="#reimbursement-to-providers-fy-2019-2021" id="toc-reimbursement-to-providers-fy-2019-2021">Reimbursement to providers (FY 2019-2021)</a>
+<ul>
+<li><a href="#reimbursement-costs-to-providers-by-hus-and-non-hus" id="toc-reimbursement-costs-to-providers-by-hus-and-non-hus">Reimbursement costs to providers by HU’s and non-HU’s</a></li>
+<li><a href="#reimbursement-costs-to-providers-by-primary-diagnosis-type" id="toc-reimbursement-costs-to-providers-by-primary-diagnosis-type">Reimbursement costs to providers by primary diagnosis type</a></li>
+<li><a href="#reimbursement-costs-to-providers-for-ed-visits" id="toc-reimbursement-costs-to-providers-for-ed-visits">Reimbursement costs to providers for ED visits</a></li>
+</ul></li>
+</ul>
+</nav>
+</div>
+<h1 id="reimbursement-to-providers-fy-2019-2021">Reimbursement to providers (FY 2019-2021)</h1>
+<p>From 2019 to 2021, service providers were reimbursed an average of $241.80 per claim for behavioral health-related claims by people who matched to Medicaid and were incarcerated in NH jails between 2019 and 2021.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-e5f47a7864dcbcba1dba" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e5f47a7864dcbcba1dba">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"total_cost":[108402680.1],"min":[0],"median":[107.66],"mean":[235.213650950704],"max":[79497.91]},"columns":[{"id":"total_cost","name":"Total Reimbursed from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"min","name":"Minimum Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"median","name":"Median Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"mean","name":"Average Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"max","name":"Maximum Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null],"inline":true,"dataKey":"418a656549033fc2ab1227cae139f264"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p><br></p>
+<h2 id="reimbursement-costs-to-providers-by-hus-and-non-hus">Reimbursement costs to providers by HU’s and non-HU’s</h2>
+<p><strong>Providers were reimbursed more, on average, for BH-related Medicaid claims submitted by people who were jail high utilizers compared to non-high utilizers.</strong></p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b09b31d796c698af5439" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b09b31d796c698af5439">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"hu_group_overall":["High Utilizer","Non-High Utilizer"],"total_cost":[33191853.66,75210826.44],"min":[0,0],"median":[116.63,102.13],"mean":[243.468767907048,231.745937141801],"max":[51874.84,79497.91]},"columns":[{"id":"hu_group_overall","name":"Population","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"width":150,"align":"center"},{"id":"total_cost","name":"Total Reimbursed from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"min","name":"Minimum Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"median","name":"Median Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"mean","name":"Average Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"max","name":"Maximum Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null],"inline":true,"dataKey":"f9579e893268d0652717fe2a5c037e7c"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-8bf004eb7c68b09929a5" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-8bf004eb7c68b09929a5">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"hu_group_exclusive":["Tier 1 HU","Tier 2 HU","Tier 3 HU","Non-HU"],"total_cost":[5123721.92,15366658.79,12701472.95,75210826.44],"min":[0,0,0,0],"median":[120,116.26,113.34,102.13],"mean":[255.534483068176,248.583056279017,233.221441949285,231.745937141801],"max":[18348.67,51874.84,37951.2,79497.91]},"columns":[{"id":"hu_group_exclusive","name":"Population","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"width":150,"align":"center"},{"id":"total_cost","name":"Total Reimbursed from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"min","name":"Minimum Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"median","name":"Median Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"mean","name":"Average Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"max","name":"Maximum Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null],"inline":true,"dataKey":"e3233b90112120cf064378605d5ad3bb"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p><br></p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="img/PRES_gg_costs_hu.png" width="100%" /></p>
+</div>
+<p><br><br></p>
+<h2 id="reimbursement-costs-to-providers-by-primary-diagnosis-type">Reimbursement costs to providers by primary diagnosis type</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-2794524c30e3c11627e6" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-2794524c30e3c11627e6">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"dx_prmry_clinical_classification_new":["Anxiety and fear-related disorders","Mental and SUD's in remission","Neurodevelopmental disorders","Opioid-related disorders","Other BH-related disorders","Other substance-related disorders","SMI-related disorders","Suicidal ideation/attempt/intentional self-harm"],"total_cost":[1854804.19,1295332.53,9074921.14,44950295.18,293226.24,21304112.21,28326936.7,1303051.91],"min":[0,0,0,0,0,0,0,0],"median":[76.53,67.83,235.2,72,89.76,115.77,82.41,96.9],"mean":[135.743866364169,80.8622591922093,436.609147943228,141.561019421603,174.851663685152,254.356199601227,193.041683930762,289.631453656368],"max":[17524.92,5204.22,12198.6,20411.85,18062.85,51874.84,79414,60617.7]},"columns":[{"id":"dx_prmry_clinical_classification_new","name":"Primary Diganosis","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"width":250,"align":"center"},{"id":"total_cost","name":"Total Reimbursed from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"min","name":"Minimum Reimbursed Per Diagnosis/Service from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"median","name":"Median Reimbursed Per Diagnosis/Service from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"mean","name":"Average Reimbursed Per Diagnosis/Service from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"max","name":"Maximum Reimbursed Per Diagnosis/Service from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null],"inline":true,"dataKey":"a244a84b6a837d6db60ef8242bef11b3"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>Diagnosis/Service = primary diagnosis within a claim. These findings are the cost per diagnosis, not per claim, since people can have multiple diagnoses per claim.<br />
+<br></p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="img/PRES_gg_diagnosis_costs_hu.png" width="100%" /></p>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="img/PRES_gg_diagnosis_costs_hu1.png" width="100%" /></p>
+</div>
+<p><br></p>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="img/PRES_gg_diagnosis_costs_hu2.png" width="100%" /></p>
+</div>
+<p><br><br></p>
+<h2 id="reimbursement-costs-to-providers-for-ed-visits">Reimbursement costs to providers for ED visits</h2>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-9a6c935978a8cc2350f4" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-9a6c935978a8cc2350f4">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"total_cost":[10940633.69],"min":[0],"median":[314.635],"mean":[794.065444186384],"max":[36741.33]},"columns":[{"id":"total_cost","name":"Total Reimbursed from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"min","name":"Minimum Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"median","name":"Median Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"mean","name":"Average Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"},{"id":"max","name":"Maximum Reimbursed Per Claim from 2019 to 2021","type":"numeric","format":{"cell":{"currency":"USD"},"aggregated":{"currency":"USD"}},"width":150,"align":"center"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null],"inline":true,"dataKey":"b0799a0b90b26f0f8482a13eae4b105f"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+
+</div>
 <p><br><br></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

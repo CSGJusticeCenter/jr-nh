@@ -21,11 +21,42 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
+
+# Import medicaid encounters with costs and individual diagnoses created in `14_medicaid.R`
+medicaid_encounters_costs_all <- read_rds("D:/Analytic/medicaid_enrollment_categories_encounters.rds") 
+
+# Import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
+# File is unique by individual/booking
+# This file lives on the external hard drive (created and exported in `14_medicaid.R`)
+jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
 ```
 
 ```{r include=FALSE}
-# Import medicaid encounters with costs and individual diagnoses created in `14_medicaid.R`
-medicaid_encounters_costs_all <- read_rds("D:/Analytic/medicaid_enrollment_categories_encounters.rds") 
+# De-dup (there are a few duplicate bookings) and create booking id for analysis
+jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_individual_booking_level %>% 
+  distinct(unique_person_id, 
+           booking_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id,
+                                    booking_id)) ### creating unique booking id with both individual and booking IDs
+
+# Recode high utilizer percentile grouping
+jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- fnc_hu_group_exclusive(jail_medicaid_analytic_individual_booking_level_dedup) 
+
+
+
+
+# Save ids and HU status
+unique_ids_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  select(unique_person_id, 
+         hu_group_exclusive,
+         hu_group_overall,
+         pre_or_study_window_medicaid_match_flag_overall,
+         pre_or_study_smi_flag) %>% 
+  mutate(unique_person_id = as.character(unique_person_id))
+
+
+
 
 # Create unique booking id using id and dose date
 medicaid_encounters_costs <- medicaid_encounters_costs_all
@@ -39,26 +70,490 @@ medicaid_encounters_costs <- medicaid_encounters_costs %>%
                 everything())
 
 # Create data of just primary diagnosis costs by subsetting to claims that are MH or SUD or both
+# Remove pharamacy visits
 medicaid_encounters_costs_primary_dx_2018_2021 <- medicaid_encounters_costs %>% 
   filter(mh_service_categorized_using_primary_dx_code  == 1 | 
-         sud_service_categorized_using_primary_dx_code == 1) 
+         sud_service_categorized_using_primary_dx_code == 1) %>% 
   # Subset to FY 2019 to FY 2021
   filter(first_dos_dt > "2018-06-30" & first_dos_dt < "2021-07-01")
-```  
 
 
 
-# Reimbursement to Providers (FY 2019-2021)
 
-Service providers were reimbursed an average of $242.16 per claim for behavioral health-related claims by people who matched to Medicaid and were incarcerated in NH jails between 2019 and 2021.  
+length(unique(medicaid_encounters_costs_primary_dx_2018_2021$unique_person_id)); length(unique(medicaid_encounters_costs_primary_dx_2018_2021$claim_id)); dim(medicaid_encounters_costs_primary_dx_2018_2021)
+
+
+# Group SMI's together 
+medicaid_encounters_cleaned_2018_2021 <- medicaid_encounters_costs_primary_dx_2018_2021 %>% 
+mutate(dx_prmry_clinical_classification_new = case_when(
+  
+  # SMI-related disorders
+  dx_prmry_clinical_classification == "Schizophrenia and other psychotic disorders"          ~ "SMI-related disorders",
+  dx_prmry_clinical_classification == "Schizophrenia spectrum and other psychotic disorders" ~ "SMI-related disorders",
+  dx_prmry_clinical_classification == "Depressive disorders"                                 ~ "SMI-related disorders",
+  dx_prmry_clinical_classification == "Bipolar and related disorders"                        ~ "SMI-related disorders",
+  dx_prmry_clinical_classification == "Trauma- and stressor-related disorders"               ~ "SMI-related disorders",
+  dx_prmry_clinical_classification == "Personality disorders"                                ~ "SMI-related disorders",
+  dx_prmry_clinical_classification == "Obsessive-compulsive and related disorders"           ~ "SMI-related disorders",
+  dx_prmry_clinical_classification == "Disruptive, impulse-control and conduct disorder"     ~ "SMI-related disorders",
+  dx_prmry_clinical_classification == "Mood disorders"                                       ~ "SMI-related disorders",
+  dx_prmry_clinical_classification == "Other specified and unspecified mood disorders"       ~ "SMI-related disorders",
+  
+  # Suicidal ideation/attempt/intentional self-harm
+  dx_prmry_clinical_classification == "Suicidal ideation/attempt/intentional self-harm"             ~ "Suicidal ideation/attempt/intentional self-harm",
+  dx_prmry_clinical_classification == "Suicide attempt/intentional self-harm; subsequent encounter" ~ "Suicidal ideation/attempt/intentional self-harm",
+  
+  # Other substance-related disorders
+  dx_prmry_clinical_classification == "Sedative-related disorders"                  ~ "Other substance-related disorders",
+  dx_prmry_clinical_classification == "Cannabis-related disorders"                  ~ "Other substance-related disorders",
+  dx_prmry_clinical_classification == "Tobacco-related disorders"                   ~ "Other substance-related disorders",
+  dx_prmry_clinical_classification == "Hallucinogen-related disorders"              ~ "Other substance-related disorders",
+  dx_prmry_clinical_classification == "Inhalant-related disorders"                  ~ "Other substance-related disorders",
+  dx_prmry_clinical_classification == "Other specified substance-related disorders" ~ "Other substance-related disorders",
+  dx_prmry_clinical_classification == "Stimulant-related disorders"                 ~ "Other substance-related disorders",
+  dx_prmry_clinical_classification == "Alcohol-related disorders"                   ~ "Other substance-related disorders",
+
+  # Other mh-related disorders
+  dx_prmry_clinical_classification == "Adjustment disorders"                                     ~ "Other BH-related disorders",
+  dx_prmry_clinical_classification == "Feeding and eating disorders"                             ~ "Other BH-related disorders",
+  dx_prmry_clinical_classification == "Somatic disorders"                                        ~ "Other BH-related disorders",
+  dx_prmry_clinical_classification == "Disruptive, impulse-control and conduct disorders"        ~ "Other BH-related disorders",
+  dx_prmry_clinical_classification == "Miscellaneous mental and behavioral disorders/conditions" ~ "Other BH-related disorders",
+
+  dx_prmry_clinical_classification == "Mental and substance use disorders in remission" ~ "Mental and SUD's in remission",
+
+  
+  TRUE ~ dx_prmry_clinical_classification)) %>% 
+  
+  # join with info on person - HU, Medicaid match, etc
+  # mutate(unique_person_id = as.character(unique_person_id),
+  #        study_suicide_ideation = ifelse(dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm", 1, 0)) %>% 
+    mutate(unique_person_id = as.character(unique_person_id)) %>% 
+  left_join(unique_ids_hu, by = "unique_person_id") %>% 
+  distinct() %>% 
+  
+  # remove people who aren't in unique_ids_hu - dont have an HU variable
+  filter(!is.na(hu_group_exclusive))
+
+# remove variables that seem to be causing a lot of duplicates
+medicaid_encounters_cleaned_2018_2021 <- medicaid_encounters_cleaned_2018_2021 %>% 
+  select(unique_person_id,
+         claim_id,
+         dx_prmry_clinical_classification,
+         dx_prmry_clinical_classification_new,
+         medicaid_reimb_amt,
+         ed_visit_or_service,
+         hu_group_overall,
+         hu_group_exclusive
+         ) %>% 
+  distinct()
+```
+
+
+
+# Reimbursement to providers (FY 2019-2021)
+
+From 2019 to 2021, service providers were reimbursed an average of $241.80 per claim for behavioral health-related claims by people who matched to Medicaid and were incarcerated in NH jails between 2019 and 2021.  
 
 ```{r}
-average_cost_per_claim <- medicaid_encounters_costs_primary_dx_2018_2021 %>% 
+# Get costs by claim 
+cost_table <- medicaid_encounters_cleaned_2018_2021 %>% 
   dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
-  dplyr::summarise(min    = min(medicaid_reimb_amt, na.rm = T),
+  # combine costs by claim id - right now it is separated out by diagnosis and cost
+  group_by(claim_id) %>% 
+  summarise(medicaid_reimb_amt = sum(medicaid_reimb_amt, na.rm = T))
+
+cost_table <- cost_table %>%         
+  dplyr::summarise(total_cost = sum(medicaid_reimb_amt, na.rm = T),
+                   min    = min(medicaid_reimb_amt, na.rm = T),
                    median = median(medicaid_reimb_amt, na.rm = T),
                    mean   = mean(medicaid_reimb_amt, na.rm = T),
                    max    = max(medicaid_reimb_amt, na.rm = T)) 
+
+# Create reactable table
+reactable(cost_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            width = 150, 
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            total_cost = colDef(format = colFormat(currency = "USD"), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD"), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD"), name = "Median Reimbursed Per Claim from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD"), name = "Average Reimbursed Per Claim from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD"), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
+          )
+```
+
+<br>
+
+## Reimbursement costs to providers by HU's and non-HU's
+
+**Providers were reimbursed more, on average, for BH-related Medicaid claims submitted by people who were jail high utilizers compared to non-high utilizers.**
+
+```{r}
+# Get costs by claim and by HU
+cost_table <- medicaid_encounters_cleaned_2018_2021 %>% 
+  dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
+  # combine costs by claim id - right now it is separated out by diagnosis and cost
+  group_by(claim_id, hu_group_overall) %>% 
+  summarise(medicaid_reimb_amt = sum(medicaid_reimb_amt, na.rm = T))
+
+cost_table <- cost_table %>% 
+  group_by(hu_group_overall) %>% 
+  dplyr::summarise(total_cost = sum(medicaid_reimb_amt, na.rm = T),
+                   min    = min(medicaid_reimb_amt, na.rm = T),
+                   median = median(medicaid_reimb_amt, na.rm = T),
+                   mean   = mean(medicaid_reimb_amt, na.rm = T),
+                   max    = max(medicaid_reimb_amt, na.rm = T)) 
+
+# Create reactable table
+reactable(cost_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            width = 150, 
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu_group_overall = colDef(name = "Population"),
+            total_cost = colDef(format = colFormat(currency = "USD"), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD"), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD"), name = "Median Reimbursed Per Claim from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD"), name = "Average Reimbursed Per Claim from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD"), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
+          )
+```
+
+```{r}
+# Get costs by claim and by HU
+cost_table <- medicaid_encounters_cleaned_2018_2021 %>% 
+  dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
+  # combine costs by claim id - right now it is separated out by diagnosis and cost
+  group_by(claim_id, hu_group_exclusive) %>% 
+  summarise(medicaid_reimb_amt = sum(medicaid_reimb_amt, na.rm = T))
+
+cost_table <- cost_table %>% 
+  group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(total_cost = sum(medicaid_reimb_amt, na.rm = T),
+                   min    = min(medicaid_reimb_amt, na.rm = T),
+                   median = median(medicaid_reimb_amt, na.rm = T),
+                   mean   = mean(medicaid_reimb_amt, na.rm = T),
+                   max    = max(medicaid_reimb_amt, na.rm = T)) 
+
+
+# Create reactable table
+reactable(cost_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            width = 150, 
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu_group_exclusive = colDef(name = "Population"),
+            total_cost = colDef(format = colFormat(currency = "USD"), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD"), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD"), name = "Median Reimbursed Per Claim from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD"), name = "Average Reimbursed Per Claim from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD"), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
+          )
+```
+
+<br>
+
+```{r}
+# Get costs by claim and by HU
+cost_data <- cost_table %>% 
+  select(hu_group_exclusive,
+         Median = median,
+         Average = mean) %>% 
+  gather("Median", "Average", key = finding, value = amt) %>% 
+  mutate(amt = round(as.numeric(amt), 0),
+         hu_group_exclusive1 = case_when(
+           hu_group_exclusive == "Tier 1 HU" |hu_group_exclusive == "Tier 2 HU" |hu_group_exclusive == "Tier 3 HU" ~ "highlight", TRUE ~ "don't highlight"
+         ))
+
+# Grouped barplot
+PRES_gg_costs_hu <- ggplot(cost_data, aes(fill=finding, y=amt, x=hu_group_exclusive)) + 
+  geom_bar(position="dodge", stat="identity") +
+  theme_with_grid_with_labels +
+  labs(x = "", y = "Reimbursement Cost Per Claim\n") +
+  scale_y_continuous(limits = c(0, 300), labels = scales::dollar_format()) +
+  geom_text(aes(label = paste0("$",amt)),
+           size = 7.5, family = "Franklin Gothic Book",
+           position = position_dodge(width = 1),
+           vjust = -.1,
+           color = ifelse(cost_data$finding == "Median", jri_dark_blue, jri_orange),
+           fontface = "bold") + 
+  scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
+    theme(axis.title.y = element_text(size = 22, color = "black"),
+          axis.title.x = element_text(size = 22, color = "black"),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          legend.position = "top",
+          legend.justification = c(0.3, 0),
+          legend.title=element_blank()) 
+```
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_costs_hu, file="img/PRES_gg_costs_hu.png", width = 9,  height = 5, dpi = 100, bg = 'transparent')
+knitr::include_graphics("img/PRES_gg_costs_hu.png")
+```
+
+<br><br>
+
+## Reimbursement costs to providers by primary diagnosis type
+
+```{r}
+# Get costs by diagnoses code (not by claim)
+cost_table <- medicaid_encounters_cleaned_2018_2021 %>% 
+  dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
+  group_by(dx_prmry_clinical_classification_new) %>% 
+  dplyr::summarise(total_cost = sum(medicaid_reimb_amt, na.rm = T),
+                   min    = min(medicaid_reimb_amt, na.rm = T),
+                   median = median(medicaid_reimb_amt, na.rm = T),
+                   mean   = mean(medicaid_reimb_amt, na.rm = T),
+                   max    = max(medicaid_reimb_amt, na.rm = T)) 
+
+# Create reactable table of cost of reimbursement for the diagnosis categories
+reactable(cost_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            width = 150, 
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            dx_prmry_clinical_classification_new = colDef(name = "Primary Diganosis", width = 250),
+            total_cost = colDef(format = colFormat(currency = "USD"), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD"), name = "Minimum Reimbursed Per Diagnosis/Service from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD"), name = "Median Reimbursed Per Diagnosis/Service from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD"), name = "Average Reimbursed Per Diagnosis/Service from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD"), name = "Maximum Reimbursed Per Diagnosis/Service from 2019 to 2021"))
+          ) 
+```
+
+Diagnosis/Service = primary diagnosis within a claim. These findings are the cost per diagnosis, not per claim, since people can have multiple diagnoses per claim.  
+<br>
+
+```{r}
+# Get costs by claim and by HU
+cost_data <- cost_table %>% 
+  select(dx_prmry_clinical_classification_new,
+         Median = median,
+         Average = mean) %>% 
+  gather("Median", "Average", key = finding, value = amt) %>% 
+  mutate(amt = round(as.numeric(amt), 0))
+
+# GGplot grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
+PRES_gg_diagnosis_costs_hu <- ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
+  geom_bar(position="dodge", stat="identity") +
+  theme_with_grid_with_labels +
+  labs(x = "", y = "Reimbursement Cost Per Diagnosis/Service\n") +
+  scale_y_continuous(limits = c(0, 550), labels = scales::dollar_format()) +
+  geom_text(aes(label = paste0("$",amt)),
+           size = 7.5, family = "Franklin Gothic Book",
+           position = position_dodge(width = 1),
+           vjust = -.1,
+           color = ifelse(cost_data$finding == "Median", jri_dark_blue, jri_orange),
+           fontface = "bold") +
+    scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
+    scale_x_discrete(breaks=c("Mental and SUD's in remission", 
+                                "Anxiety and fear-related disorders", 
+                                "Opioid-related disorders",
+                                "Other BH-related disorders",
+                                "SMI-related disorders",
+                                "Other substance-related disorders",
+                                "Neurodevelopmental disorders",
+                                "Suicidal ideation/attempt/intentional self-harm"), 
+                     labels = c("Mental and\nSUD's in\nremission",
+                                "Anxiety and\nfear-related\ndisorders",
+                                "Opioid-related \ndisorders",
+                                "Other\nBH-related\ndisorders",
+                                "SMI-related\ndisorders",
+                                "Other\nsubstance-related\ndisorders",
+                                "Neurod-\ndevelopmental\ndisorders",
+                                "Suicidal ideation/\nattempt/intentional\nself-harm")
+    ) +
+    theme(axis.title.y = element_text(size = 22, color = "black"),
+          axis.title.x = element_text(size = 22, color = "black"),
+          panel.grid.major.x = element_blank(),
+          panel.grid.minor.x = element_blank(),
+          legend.position = "top",
+          legend.justification = c(0.5, 0),
+          legend.title=element_blank())
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_diagnosis_costs_hu, file="img/PRES_gg_diagnosis_costs_hu.png", width = 20,  height = 5, dpi = 100, bg = 'transparent')
+knitr::include_graphics("img/PRES_gg_diagnosis_costs_hu.png")
+```
+
+```{r}
+# GGplot grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
+PRES_gg_diagnosis_costs_hu1 <- 
+  ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
+  geom_bar(position="dodge", stat="identity") +
+  theme_with_grid_with_labels +
+  labs(x = "", y = "\nReimbursement Cost Per Diagnosis/Service") +
+  scale_y_continuous(limits = c(0, 550), labels = scales::dollar_format()) +
+  geom_text(aes(label = paste0("$",amt)),
+           size = 7.5, family = "Franklin Gothic Book",
+           position = position_dodge(width = 0.9),
+           hjust = -.1,
+           color = ifelse(cost_data$finding == "Median", jri_dark_blue, jri_orange),
+           fontface = "bold") +
+    scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
+    scale_x_discrete(breaks=c("Mental and SUD's in remission", 
+                                "Anxiety and fear-related disorders", 
+                                "Opioid-related disorders",
+                                "Other BH-related disorders",
+                                "SMI-related disorders",
+                                "Other substance-related disorders",
+                                "Neurodevelopmental disorders",
+                                "Suicidal ideation/attempt/intentional self-harm"), 
+                     labels = c("Mental and SUD's in remission", 
+                                "Anxiety and fear-related disorders", 
+                                "Opioid-related disorders",
+                                "Other BH-related disorders",
+                                "SMI-related disorders",
+                                "Other substance-related disorders",
+                                "Neurodevelopmental disorders",
+                                "Suicidal ideation/attempt/\nintentional self-harm")
+    ) +
+  coord_flip() +
+  theme_no_grid_no_labels +
+  theme(legend.position = "right",
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
+        
+        panel.grid.major.x = element_line(linewidth = 0.5),
+
+        axis.title   = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        axis.text.y  = element_text(size = 22, color = "black" 
+                                    #face = "bold"
+                                    ),
+        axis.text.x  = element_text(size = 22, color = "black"))
+```
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_diagnosis_costs_hu1, file="img/PRES_gg_diagnosis_costs_hu1.png", width = 12,  height = 8, dpi = 100, bg = 'transparent')
+knitr::include_graphics("img/PRES_gg_diagnosis_costs_hu1.png")
+```
+<br>
+
+```{r}
+# Which labels to bold
+bold.labels <- cost_data %>% filter(finding == "Median") %>% 
+  mutate(bold = ifelse(dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm", yes = "bold", no = "plain"))
+bold.labels <- bold.labels$bold
+
+# GGplot diverging barchart showing the average and media cost of reimbursement for the diagnosis categories
+PRES_gg_diagnosis_costs_hu2 <- cost_data %>%
+  mutate(amt = ifelse(finding == "Average", amt, -1*amt)) %>% 
+  ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, amt), y = amt, fill = finding))+
+  geom_bar(stat = "identity") +
+  labs(x = "", y = "Reimbursement Cost Per Diagnosis/Service") +
+ geom_text(aes(label = paste0("$", scales::comma(abs(amt)))),
+            size = 7.5, family = "Franklin Gothic Book",
+            hjust = ifelse(cost_data$finding == "Average", -.1, 1.1),
+            color = ifelse(cost_data$finding == "Average", jri_orange, jri_dark_blue),
+            fontface = "bold"
+              ) +
+  scale_y_continuous(limits = c(-400, 500)) +
+  scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
+  theme_no_grid_no_labels +
+  coord_flip() +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_text(face = bold.labels),
+        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "top",
+        legend.justification = c(0.5, 0),
+        legend.title=element_blank())
+```
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_diagnosis_costs_hu2, file="img/PRES_gg_diagnosis_costs_hu2.png", width = 14,  height = 7, dpi = 100, bg = 'transparent')
+knitr::include_graphics("img/PRES_gg_diagnosis_costs_hu2.png")
+```
+
+<br><br>
+
+## Reimbursement costs to providers for ED visits
+
+```{r}
+# Get costs for ED visits
+cost_table <- medicaid_encounters_cleaned_2018_2021 %>% 
+  dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
+  distinct() %>% 
+  # combine costs by claim id - right now it is separated out by diagnosis and cost
+  filter(ed_visit_or_service == 1) %>% 
+  group_by(claim_id) %>% 
+  summarise(medicaid_reimb_amt = sum(medicaid_reimb_amt, na.rm = T))
+
+cost_table <- cost_table %>%  
+  dplyr::summarise(total_cost = sum(medicaid_reimb_amt, na.rm = T),
+                   min    = min(medicaid_reimb_amt, na.rm = T),
+                   median = median(medicaid_reimb_amt, na.rm = T),
+                   mean   = mean(medicaid_reimb_amt, na.rm = T),
+                   max    = max(medicaid_reimb_amt, na.rm = T)) 
+
+# Create reactable table
+reactable(cost_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            width = 150, 
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            total_cost = colDef(format = colFormat(currency = "USD"), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD"), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD"), name = "Median Reimbursed Per Claim from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD"), name = "Average Reimbursed Per Claim from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD"), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
+          )
 ```
 
 
@@ -72,4 +567,29 @@ average_cost_per_claim <- medicaid_encounters_costs_primary_dx_2018_2021 %>%
 
 
 
+
+
+
+
+
+```{r}
+## Reimbursement costs to providers for claims that had at least on opioid-related disorder
+
+# Get costs
+# cost_table <- medicaid_encounters_cleaned_2018_2021 %>% 
+#   group_by(claim_id) %>% 
+#   filter(any(dx_prmry_clinical_classification_new == "Opioid-related disorders")) 
+  # dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
+  # # combine costs by claim id - right now it is separated out by diagnosis and cost
+  # group_by(claim_id, hu_group_exclusive) %>% 
+  # summarise(medicaid_reimb_amt = sum(medicaid_reimb_amt, na.rm = T))
+```
+
+
+
+
+
+
+
 <br><br>
+
