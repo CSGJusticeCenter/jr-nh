@@ -434,6 +434,7 @@ theme_with_grid_with_labels <- theme_minimal(base_family = "Franklin Gothic Book
     legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black")
   )
 
+
 # Set up highcharts download buttons
 hc_setup <- function(x) {
   highcharter::hc_add_dependency(x, name = "plugins/series-label.js") %>%

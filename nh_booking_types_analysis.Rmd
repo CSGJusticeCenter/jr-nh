@@ -246,46 +246,6 @@ knitr::include_graphics("img/PRES_gg_pretrial_prop.png")
 
 <br>
 
-## Carroll County 
-
-This is how we standardized sentence statuses in Carroll County. It's possible that some of the sentence statuses should be in "Pretrial" instead of "Other."
-
-```{r}
-# Select Carroll data to understand their sentence statuses
-data1 <- adm_all %>% 
-  filter(county == "Carroll") %>% 
-  group_by(sentence_status, sentence_status_standard) %>% 
-  summarise(total = n()) %>% 
-  arrange(sentence_status_standard) %>% 
-  select(`Sentence Status (Raw)` = sentence_status,
-         `Sentence Status (Standardized)` = sentence_status_standard,
-         `Total Bookings (N)` = total)
-
-# Create kable table
-kable(data1, 
-      format.args = list(big.mark = ","), 
-      align=rep('l')) %>%
-  kable_styling(bootstrap_options = c("striped", 
-                                       "hover", 
-                                       "condensed", 
-                                       "responsive"), 
-                 row_label_position = "l") %>% 
-   column_spec(1, bold = T, width = "15em") %>% 
-   column_spec(2, width = "15em") %>% 
-   column_spec(3, width = "15em") 
-```
-
-
-
-
-
-
-
-
-
-
-<br>
-
 ## Sentence Statuses and Charge Types
 
 ### Charge Type by Sentence Status (Row Sums)
