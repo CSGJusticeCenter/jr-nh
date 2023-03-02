@@ -76,7 +76,8 @@ unique_ids_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
          hu_group_exclusive,
          hu_group_overall,
          pre_or_study_window_medicaid_match_flag_overall,
-         pre_or_study_smi_flag) 
+         pre_or_study_smi_flag) %>% 
+  mutate(unique_person_id = as.character(unique_person_id))
 
 
 
@@ -100,7 +101,7 @@ medicaid_encounters_costs_primary_dx_2018_2021 <- medicaid_encounters_costs %>%
   filter(first_dos_dt > "2018-06-30" & first_dos_dt < "2021-07-01")
 
 # Group SMI's together 
-medicaid_encounters_cleaned <- medicaid_encounters_costs_primary_dx_2018_2021 %>% 
+medicaid_encounters_cleaned_2018_2021 <- medicaid_encounters_costs_primary_dx_2018_2021 %>% 
 mutate(dx_prmry_clinical_classification_new = case_when(
   
   # SMI-related disorders
@@ -139,8 +140,12 @@ mutate(dx_prmry_clinical_classification_new = case_when(
   dx_prmry_clinical_classification == "Mental and substance use disorders in remission" ~ "Mental and SUD's in remission",
 
   
-  TRUE ~ dx_prmry_clinical_classification
-)) 
+  TRUE ~ dx_prmry_clinical_classification)) %>% 
+  
+  # join with info on person - HU, Medicaid match, etc
+  mutate(unique_person_id = as.character(unique_person_id),
+         study_suicide_ideation = ifelse(dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm", 1, 0)) %>% 
+  left_join(unique_ids_hu, "unique_person_id")
 ```         
 
 # DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behavioral Health Encounters by High Jail Utilizer Grouping
@@ -1160,7 +1165,7 @@ knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid1.png")
 
 ```{r}
 # Find top primary diagnoses and the proportion of claims for each
-top_primary_diagnoses_grouped <- medicaid_encounters_cleaned %>% 
+top_primary_diagnoses_grouped <- medicaid_encounters_cleaned_2018_2021 %>% 
   group_by(dx_prmry_clinical_classification_new) %>% 
   summarise(total_claims = n_distinct(claim_id)) %>% 
   ungroup() %>% 
@@ -1218,7 +1223,7 @@ knitr::include_graphics("img/PRES_gg_medicaid_top_diagnoses.png")
 ```{r}
 ### Common primary diagnoses for opioid-related disorders Medicaid claims between FY2019-2021 - not using
 # Find top primary diagnoses and the proportion of claims for each
-opioid_primary_diagnoses <- medicaid_encounters_cleaned %>% 
+opioid_primary_diagnoses <- medicaid_encounters_cleaned_2018_2021 %>% 
   filter(dx_prmry_clinical_classification_new == "Opioid-related disorders") %>% 
   group_by(dx_prmry_desc) %>% 
   summarise(total_claims = n_distinct(claim_id)) %>% 
@@ -1233,7 +1238,7 @@ opioid_primary_diagnoses <- medicaid_encounters_cleaned %>%
 
 ```{r}
 # Find top primary diagnoses and the proportion of claims for each
-smi_primary_diagnoses <- medicaid_encounters_cleaned %>% 
+smi_primary_diagnoses <- medicaid_encounters_cleaned_2018_2021 %>% 
   filter(dx_prmry_clinical_classification_new == "SMI-related disorders") %>% 
   group_by(dx_prmry_clinical_classification) %>% 
   summarise(total_claims = n_distinct(claim_id)) %>% 
@@ -1277,216 +1282,6 @@ PRES_gg_medicaid_smi_primary_diagnoses <- smi_primary_diagnoses %>%
 ggsave(PRES_gg_medicaid_smi_primary_diagnoses, file="img/PRES_gg_medicaid_smi_primary_diagnoses.png", width = 12,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_smi_primary_diagnoses.png")
 ```
-
-<br>
-
-### Proportion of HU's and non-HU's by SMI encounter type
-
-```{r}
-# get number of people for denominator - HU
-total_smi_people_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  filter(hu_group_overall == "High Utilizer") %>% 
-  dplyr::summarise(smi_people = n_distinct(unique_person_id[pre_or_study_smi_flag==1])) 
-total_smi_people_hu <- total_smi_people_hu$smi_people
-
-# get number of people for denominator - Not HU
-total_smi_people_nonhu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  filter(hu_group_overall == "Non-High Utilizer") %>% 
-  dplyr::summarise(smi_people = n_distinct(unique_person_id[pre_or_study_smi_flag==1])) 
-total_smi_people_nonhu <- total_smi_people_nonhu$smi_people
-
-# find top primary diagnoses and the proportion of claims for each
-smi_primary_diagnoses_hu <- medicaid_encounters_cleaned %>% 
-  mutate(unique_person_id = as.character(unique_person_id)) %>% 
-  filter(dx_prmry_clinical_classification_new == "SMI-related disorders") %>% 
-  left_join(unique_ids_hu, by = "unique_person_id") %>% 
-  filter(!is.na(hu_group_overall)) %>% 
-  filter(hu_group_overall == "High Utilizer") %>% 
-  group_by(hu_group_overall, dx_prmry_clinical_classification) %>% 
-  summarise(total_people = n_distinct(unique_person_id)) %>% 
-  # ungroup() %>% 
-  mutate(pct = (total_people/total_smi_people_hu)*100,
-         pct = round(pct, 0),
-         pct_label = paste0(pct, "%", sep = ""),
-         pct_label = case_when(pct_label == "0%" ~ "<0%", TRUE ~ pct_label)) 
-
-# find top primary diagnoses and the proportion of claims for each
-smi_primary_diagnoses_nonhu <- medicaid_encounters_cleaned %>% 
-  mutate(unique_person_id = as.character(unique_person_id)) %>% 
-  filter(dx_prmry_clinical_classification_new == "SMI-related disorders") %>% 
-  left_join(unique_ids_hu, by = "unique_person_id") %>% 
-  filter(!is.na(hu_group_overall)) %>% 
-  filter(hu_group_overall == "Non-High Utilizer") %>% 
-  group_by(hu_group_overall, dx_prmry_clinical_classification) %>% 
-  summarise(total_people = n_distinct(unique_person_id)) %>% 
-  ungroup() %>% 
-  mutate(pct = (total_people/total_smi_people_nonhu)*100,
-         pct = round(pct, 0),
-         pct_label = paste0(pct, "%", sep = ""),
-         pct_label = case_when(pct_label == "0%" ~ "<0%", TRUE ~ pct_label)) 
-
-# add data together
-smi_primary_diagnoses_hu <- rbind(smi_primary_diagnoses_hu, smi_primary_diagnoses_nonhu)
-
-# Which labels to bold
-bold.labels <- smi_primary_diagnoses_hu %>% filter(hu_group_overall == "Non-High Utilizer") %>% 
-  mutate(bold = ifelse(dx_prmry_clinical_classification == "Schizophrenia spectrum and other psychotic disorders", yes = "bold", no = "plain"),
-         dx_prmry_clinical_classification_order = case_when(dx_prmry_clinical_classification == "Obsessive-compulsive and related disorders" ~ 7,
-                                                            dx_prmry_clinical_classification ==   "Other specified and unspecified mood disorders" ~ 6,
-                                                            dx_prmry_clinical_classification ==   "Personality disorders" ~ 5,
-                                                             dx_prmry_clinical_classification ==  "Schizophrenia spectrum and other psychotic disorders" ~ 4,
-                                                             dx_prmry_clinical_classification ==  "Bipolar and related disorders" ~ 3,
-                                                             dx_prmry_clinical_classification ==  "Trauma- and stressor-related disorders" ~ 2,
-                                                             dx_prmry_clinical_classification ==  "Depressive disorders" ~ 1)) %>% 
-  arrange(dx_prmry_clinical_classification_order)
-bold.labels <- bold.labels$bold
-
-# diverging ggplot showing proportion of people with SMI by HU type
-PRES_gg_diverge_hu_nonhu_smi <- smi_primary_diagnoses_hu %>%
-  mutate(pct = ifelse(hu_group_overall == "High Utilizer", pct, -1*pct)) %>% 
-  ggplot(aes(x =dx_prmry_clinical_classification , y = pct, fill = hu_group_overall))+
-  geom_bar(stat = "identity") +
-  labs(x = "", y = "Proportion of People\nN = Number of People") +
-  geom_text(aes(label = ifelse(pct > 1 | pct < -1, pct_label, "")),
-            size = 7.5, family = "Franklin Gothic Book",
-            position = position_stack(vjust = 0.5),
-            color = "white",
-            fontface = "bold") +
-  geom_text(aes(label = paste0("N=", comma(total_people))),
-            size = 7.5, family = "Franklin Gothic Book",
-            hjust = ifelse(smi_primary_diagnoses_hu$hu_group_overall == "High Utilizer", -.1, 1.1),
-            color = ifelse(smi_primary_diagnoses_hu$hu_group_overall == "High Utilizer", jri_orange, "gray50")
-              ) +
-  scale_fill_manual(values=c(jri_orange, "gray50")) +
-  scale_y_continuous(limits = c(-56,55)) +
-  theme_no_grid_no_labels +
-  coord_flip() +
-  guides(fill = guide_legend(reverse = TRUE)) +
-  theme(axis.text.y = element_text(face = bold.labels),
-        axis.text.x = element_blank(),
-        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        legend.position = "top",
-        legend.justification = c(0.45, 0),
-        legend.title=element_blank()) +
-    scale_x_discrete(limits = c("Obsessive-compulsive and related disorders",
-                                "Other specified and unspecified mood disorders",
-                                "Personality disorders",
-                                "Schizophrenia spectrum and other psychotic disorders",
-                                "Bipolar and related disorders",
-                                "Trauma- and stressor-related disorders",
-                                "Depressive disorders")
-                     )
-```
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diverge_hu_nonhu_smi, file="img/PRES_gg_diverge_hu_nonhu_smi.png", width = 16,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_diverge_hu_nonhu_smi.png")
-```
-
-<br>
-
-```{r}
-# get number of people for denominator - HU
-total_smi_people_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  filter(hu_group_exclusive == "Tier 1 HU") %>% 
-  dplyr::summarise(smi_people = n_distinct(unique_person_id[pre_or_study_smi_flag==1])) 
-total_smi_people_hu <- total_smi_people_hu$smi_people
-
-# get number of people for denominator - Not HU
-total_smi_people_nonhu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  filter(hu_group_exclusive == "Non-HU") %>% 
-  dplyr::summarise(smi_people = n_distinct(unique_person_id[pre_or_study_smi_flag==1])) 
-total_smi_people_nonhu <- total_smi_people_nonhu$smi_people
-
-# find top primary diagnoses and the proportion of claims for each
-smi_primary_diagnoses_hu <- medicaid_encounters_cleaned %>% 
-  mutate(unique_person_id = as.character(unique_person_id)) %>% 
-  filter(dx_prmry_clinical_classification_new == "SMI-related disorders") %>% 
-  left_join(unique_ids_hu, by = "unique_person_id") %>% 
-  filter(!is.na(hu_group_exclusive)) %>% 
-  filter(hu_group_exclusive == "Tier 1 HU") %>% 
-  group_by(hu_group_exclusive, dx_prmry_clinical_classification) %>% 
-  summarise(total_people = n_distinct(unique_person_id)) %>% 
-  # ungroup() %>% 
-  mutate(pct = (total_people/total_smi_people_hu)*100,
-         pct = round(pct, 0),
-         pct_label = paste0(pct, "%", sep = ""),
-         pct_label = case_when(pct_label == "0%" ~ "<0%", TRUE ~ pct_label)) 
-
-# find top primary diagnoses and the proportion of claims for each
-smi_primary_diagnoses_nonhu <- medicaid_encounters_cleaned %>% 
-  mutate(unique_person_id = as.character(unique_person_id)) %>% 
-  filter(dx_prmry_clinical_classification_new == "SMI-related disorders") %>% 
-  left_join(unique_ids_hu, by = "unique_person_id") %>% 
-  filter(!is.na(hu_group_exclusive)) %>% 
-  filter(hu_group_exclusive == "Non-HU") %>% 
-  group_by(hu_group_exclusive, dx_prmry_clinical_classification) %>% 
-  summarise(total_people = n_distinct(unique_person_id)) %>% 
-  ungroup() %>% 
-  mutate(pct = (total_people/total_smi_people_nonhu)*100,
-         pct = round(pct, 0),
-         pct_label = paste0(pct, "%", sep = ""),
-         pct_label = case_when(pct_label == "0%" ~ "<0%", TRUE ~ pct_label)) 
-
-# add data together
-smi_primary_diagnoses_hu <- rbind(smi_primary_diagnoses_hu, smi_primary_diagnoses_nonhu)
-
-# diverging ggplot showing proportion of people with SMI by HU type
-PRES_gg_diverge_tier1hu_nonhu_smi <- smi_primary_diagnoses_hu %>%
-  mutate(pct = ifelse(hu_group_exclusive == "Tier 1 HU", pct, -1*pct)) %>% 
-  ggplot(aes(x =dx_prmry_clinical_classification , y = pct, fill = hu_group_exclusive))+
-  geom_bar(stat = "identity") +
-  labs(x = "", y = "Proportion of People\nN = Number of People") +
-  geom_text(aes(label = ifelse(pct > 2 | pct < -2, pct_label, "")),
-            size = 7.5, family = "Franklin Gothic Book",
-            position = position_stack(vjust = 0.5),
-            color = "white",
-            fontface = "bold") +
-  geom_text(aes(label = paste0("N=", comma(total_people))),
-            size = 7.5, family = "Franklin Gothic Book",
-            hjust = ifelse(smi_primary_diagnoses_hu$hu_group_exclusive == "Tier 1 HU", -.1, 1.1),
-            color = ifelse(smi_primary_diagnoses_hu$hu_group_exclusive == "Tier 1 HU", jri_light_blue, "gray50")
-              ) +
-  scale_fill_manual(values=c(jri_light_blue, "gray50")) +
-  scale_y_continuous(limits = c(-58,65)) +
-  theme_no_grid_no_labels +
-  coord_flip() +
-  guides(fill = guide_legend(reverse = TRUE)) +
-  theme(axis.text.x = element_blank(),
-        #axis.text.y = element_blank(),
-        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        legend.position = "top",
-        legend.justification = c(0.45, 0),
-        legend.title=element_blank()) +
-  scale_x_discrete(limits = c("Obsessive-compulsive and related disorders",
-                              "Other specified and unspecified mood disorders",
-                              "Personality disorders",
-                              "Schizophrenia spectrum and other psychotic disorders",
-                              "Bipolar and related disorders",
-                              "Trauma- and stressor-related disorders",
-                              "Depressive disorders"
-                              ))
-```
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diverge_tier1hu_nonhu_smi, file="img/PRES_gg_diverge_tier1hu_nonhu_smi.png", width = 16,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_diverge_tier1hu_nonhu_smi.png")
-```
-
-<br><br>
-
-### Proportion of HU's and non-HU's with suicidal ideation/attempt/intentional self-harm diagnoses
-
-
-
-
-
 
 
 <br><br>
