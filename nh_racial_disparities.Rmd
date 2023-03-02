@@ -724,6 +724,7 @@ Note: This table is unique by individual, not booking. **Hillsborough and Carrol
 ### recode 'Black Hispanic' as 'Black' for now -- the sample size is too small for analysis; discuss with Mari in light of recent research-wide conversation
 ### also recode 'American Indian Alaska Native' to align with census data
 nh_eight_county_medicaid_match_final_race_two_counties_excluded <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  filter(medicaid_match_flag==1) %>% 
   mutate(race = ifelse(jail_race=="Black Hispanic",
                        "Black",
                        jail_race),
@@ -820,11 +821,14 @@ kable(nh_eight_county_charge_clean_final_race_table_final,
   row_spec(6, bold = TRUE)
 ```
 
+<br><br>
 
-```{r eval=FALSE,include=FALSE,message=FALSE,warning=FALSE}
-### Race/Ethnicity of Jail Booking Population: PC-Hold versus non-PC Hold
+### Race/Ethnicity of Jail Booking Population: PC-Hold versus non-PC Hold (**This is using jail admin data, not Medicaid data. For internal analysis only**)
 
 Note: Unlike most of the other analysis, this table is unique by booking, not individual given that we are exploring booking type here. Percentages are column percentages, not row percentages. Bookings with missing PC Hold information are excluded from this analysis
+
+```{r include=FALSE,message=FALSE,warning=FALSE}
+
 
 ### create ungrouped denominators for grouped descriptives below
 all_ind_denom <- n_distinct(nh_eight_county_charge_clean_final$booking_id[!is.na(nh_eight_county_charge_clean_final$race)==TRUE & !is.na(nh_eight_county_charge_clean_final$pc_hold)==TRUE])

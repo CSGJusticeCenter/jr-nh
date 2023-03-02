@@ -703,6 +703,77 @@ kable(table_fy_charge_type_summary_final,
   row_spec(4, bold = TRUE)
 ```
 
+
+<br><br>
+
+### Table 2.5. Charge Type by Race/Ethnicity (Non-PC Holds Only)
+
+Note: These booking frequencies by charge type are grouped by fiscal year of booking
+
+```{r echo=FALSE,message=FALSE,warning=FALSE}
+### unique bookings per charge type by fiscal year
+df_race_charge_type_summary <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>%
+  filter(!is.na(race)) %>% 
+  dplyr::group_by(race) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings for Violent Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for Property Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Property"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for Drug/Alcohol Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for Public Order Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                    `Bookings for Probation/Parole Violation (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for Other Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Other"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1)) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`Race/Ethnicity` = race) 
+
+### overall bookings by charge type for nh
+df_race_charge_type_summary_statewide <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+    filter(!is.na(race)) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Bookings for Violent Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for Property Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Property"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for Drug/Alcohol Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Drug/Alcohol"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for Public Order Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Public Order"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                    `Bookings for Probation/Parole Violation (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for FTA/Bail (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="FTA/Bail"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for Temporary Hold (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Temporary Hold"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1),
+                   `Bookings for Other Charge (%)` = scales::percent(n_distinct(unique_booking_id_nh[crime_type_clean=="Other"])/`Unique Non-PC Bookings (N)`,
+                                                                       accuracy = .1)) %>% 
+  mutate(`Race/Ethnicity` = "Overall")
+
+### combine tables for kable
+table_race_charge_type_summary_final <- rbind(df_race_charge_type_summary,
+                                               df_race_charge_type_summary_statewide)
+
+### print table via kableextra
+kable(table_race_charge_type_summary_final, 
+      format.args = list(big.mark = ","), 
+      align=rep('c')) %>%
+  kable_styling(bootstrap_options = c("striped", 
+                                       "hover", 
+                                       "condensed", 
+                                       "responsive"), 
+                 row_label_position = "l") %>% 
+  row_spec(6, bold = TRUE)
+```
+
 <br><br>
 
 ### Table 3a. Charge Type for Individuals who are High Utilizers (based on all three years of data) 
@@ -1809,7 +1880,7 @@ nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_recode <- nh_eigh
     TRUE ~ as.numeric(NA)),
     hu_group_exclusive = factor(hu_group_exclusive,
          levels = c(1,2,3,4),
-         labels = c("Top 1% HU", "Top 5% HU", "Top 10% HU", "Non-HU"))) 
+         labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) 
 
 # %>% 
 #   mutate(hu_group_exclusive_to_plot = paste0(
@@ -1898,6 +1969,381 @@ ggsave(
   )
 ```
 
+
+<br><br>
+
+### Figure 7a (take two). Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
+
+This visual focuses specifically on VOP
+
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_vop <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  # filter(!crime_type_clean%in%c("Other",
+  #                               "FTA/Bail",
+  #                               "Temporary Hold")) %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when( 
+    high_utilizer_10_pct=="No" ~ 4,
+    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct=="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) 
+
+### unique bookings per charge type by HU grouping
+df_hu_charge_type_summary_vop <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_vop %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Probation/Parole Violation` = n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`,
+                    `Other` = n_distinct(unique_booking_id_nh[crime_type_clean!="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+### pivot df long for ggplot 
+df_hu_charge_type_summary_long_vop <- df_hu_charge_type_summary_vop %>%
+  gather(charge_type, percent, `Probation/Parole Violation`:`Other`) %>% 
+  mutate(percent_label = scales::percent(percent, 
+                                         accuracy = 1)) %>% 
+  mutate(charge_type_factor =  factor(charge_type,
+                                      levels = c("Probation/Parole Violation","Other")))
+
+### ggplot
+ggplot(data = df_hu_charge_type_summary_long_vop, 
+       aes(y = percent, 
+           x = `High Utilizer Percentiles`, 
+           fill = forcats::fct_rev(charge_type_factor))) + 
+  geom_bar(stat = "identity", 
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = rev(c("#2F7084",
+                               "grey50"))) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  geom_label(aes(y = percent,
+      label = percent_label,
+      fontface = "bold"),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = "Charge Type",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_by_hu_percentiles_statewide_vop_highlight.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+<br><br>
+
+### Figure 7a (take three). Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
+
+This visual focuses specifically on VOP
+
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_vop <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  # filter(!crime_type_clean%in%c("Other",
+  #                               "FTA/Bail",
+  #                               "Temporary Hold")) %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when( 
+    high_utilizer_10_pct=="No" ~ 4,
+    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct=="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) 
+
+### unique bookings per charge type by HU grouping
+df_hu_charge_type_summary_vop <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_vop %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                   `Probation/Parole Violation` = n_distinct(unique_booking_id_nh[crime_type_clean=="Probation/Parole Violation"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+### pivot df long for ggplot 
+df_hu_charge_type_summary_long_vop <- df_hu_charge_type_summary_vop %>%
+  gather(charge_type, percent, `Probation/Parole Violation`) %>% 
+  mutate(percent_label = scales::percent(percent, 
+                                         accuracy = 1))
+
+### bar plot
+ggplot(data = df_hu_charge_type_summary_long_vop, aes(y = percent, x = `High Utilizer Percentiles`, fill = forcats::fct_rev(`High Utilizer Percentiles`))) + 
+  geom_bar(stat = "identity",  color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), max(.4))) +
+  geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","#2F7084","#2F7084","#2F7084","#2F7084")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+    coord_flip() 
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_by_hu_percentiles_statewide_vop_highlight_option_2.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+<br><br>
+
+### Figure 7a (take four). Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
+
+This visual focuses specifically on violent offenses
+
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_vop <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  # filter(!crime_type_clean%in%c("Other",
+  #                               "FTA/Bail",
+  #                               "Temporary Hold")) %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when( 
+    high_utilizer_10_pct=="No" ~ 4,
+    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct=="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) 
+
+### unique bookings per charge type by HU grouping
+df_hu_charge_type_summary_vop <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_vop %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                  `Violent` = n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
+                    `Other` = n_distinct(unique_booking_id_nh[crime_type_clean!="Violent"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+### pivot df long for ggplot 
+df_hu_charge_type_summary_long_vop <- df_hu_charge_type_summary_vop %>%
+  gather(charge_type, percent, `Violent`:`Other`) %>% 
+  mutate(percent_label = scales::percent(percent, 
+                                         accuracy = 1)) %>% 
+  mutate(charge_type_factor =  factor(charge_type,
+                                      levels = c("Violent","Other")))
+
+### ggplot
+ggplot(data = df_hu_charge_type_summary_long_vop, 
+       aes(y = percent, 
+           x = `High Utilizer Percentiles`, 
+           fill = forcats::fct_rev(charge_type_factor))) + 
+  geom_bar(stat = "identity", 
+           color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values = rev(c("#2F7084",
+                               "grey50"))) +
+  guides(fill = guide_legend(reverse = TRUE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
+  geom_label(aes(y = percent,
+      label = percent_label,
+      fontface = "bold"),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = "Charge Type",
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+  coord_flip()
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_by_hu_percentiles_statewide_violent_highlight.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
+
+<br><br>
+
+### Figure 7a (take five). Charge Type by High Utilizer Grouping (Non-PC Holds Only), Bar Plot (based on all three years of data) 
+
+This visual focuses specifically on violent offenses
+
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### to recode high utlizer percentile grouping, we don't need to group_by as the percentile grouping is already grouped across individual from Mari's cleaning
+nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_vop <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc %>% 
+  # filter(!crime_type_clean%in%c("Other",
+  #                               "FTA/Bail",
+  #                               "Temporary Hold")) %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when( 
+    high_utilizer_10_pct=="No" ~ 4,
+    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct=="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) 
+
+### unique bookings per charge type by HU grouping
+df_hu_charge_type_summary_vop <- nh_eight_county_charge_clean_final_crime_type_recode_non_pc_hu_vop %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Unique Non-PC Bookings (N)` = n_distinct(unique_booking_id_nh),
+                  `Violent` = n_distinct(unique_booking_id_nh[crime_type_clean=="Violent"])/`Unique Non-PC Bookings (N)`,
+                    `Other` = n_distinct(unique_booking_id_nh[crime_type_clean!="Violent"])/`Unique Non-PC Bookings (N)`) %>% 
+  ungroup() %>% 
+  distinct() %>% 
+  dplyr::rename(`High Utilizer Percentiles` = hu_group_exclusive) 
+
+### pivot df long for ggplot 
+df_hu_charge_type_summary_long_vop <- df_hu_charge_type_summary_vop %>%
+  gather(charge_type, percent, `Violent`) %>% 
+  mutate(percent_label = scales::percent(percent, 
+                                         accuracy = 1))
+
+### bar plot
+ggplot(data = df_hu_charge_type_summary_long_vop, aes(y = percent, x = `High Utilizer Percentiles`, fill = forcats::fct_rev(`High Utilizer Percentiles`))) + 
+  geom_bar(stat = "identity",  color = "gray80") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1),
+                     limits = c(min(0), max(.4))) +
+  geom_label(
+    aes(
+      y = percent,
+      label = scales::percent(percent,
+                              accuracy = 1),
+      fontface = "bold"
+    ),
+    position = position_stack(vjust = .5),
+    size = 5,
+    colour = "white",
+    show.legend = FALSE
+  ) +
+  scale_fill_manual(values = c("#2F7084","#2F7084","#2F7084","#2F7084","#2F7084")) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL,
+       fill = NULL,
+       caption = NULL,
+       title = NULL,
+       subtitle = NULL) +
+  theme_minimal() +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.text.y = element_markdown(face = "bold", hjust = 1, size = 12),
+        axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
+    coord_flip() 
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "charge_type_by_hu_percentiles_statewide_violent_highlight_option_2.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
+```
 
 <br><br>
 
