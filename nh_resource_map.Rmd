@@ -56,6 +56,9 @@ default_font_family <- "Arial"
 # Save path
 sp_data_path <- csg_get_project_path("NH")
 
+### set path for viz output
+sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
+
 ### pull in resource data
 nh_resource_locations_raw <- readxl::read_xlsx(file.path(sp_data_path,"Data","nh_resource_map_data.xlsx")) %>% 
   clean_names() %>% 
@@ -432,95 +435,104 @@ ggplot(
               guide = F) + # suppress legend
   # add main fill aesthetic
   # use thin white stroke for municipality borders
+  # geom_sf(
+  #   mapping = aes(
+  #     fill = resource_rate_quartile
+  #     ),
+  #   color = "white",
+  #   size = 0.1
+  # ) +
   geom_sf(
     mapping = aes(
-      fill = resource_rate_quartile
+      fill = overall_resources_rate
       ),
     color = "white",
-    size = 0.1
+    size = 0.3
   ) +
-  #   scale_fill_distiller(
-  #   labels = scales::percent_format(accuracy=1),
-  #   direction = 1,
-  #   name = "% Bookings with Drug/Alcohol\n Charges"
-  # ) +
+    scale_fill_distiller(
+    labels = scales::number_format(accuracy=1),
+    direction = 1,
+    name = "Overall Behavioral Health and Housing\nResources per 100k Residents"
+  ) +
   ### use jr palette here
-    # scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
- scale_fill_manual(
-    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
-    name = "Overall BH and Housing Resources\nper 100k Residents",
-    na.value = "grey50",
-    guide = guide_legend(
-     keyheight = unit(7.5, units = "mm"),
-     title.position = "top",
-     reverse = F # display highest on top
-  )) +
+    scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
+ # scale_fill_manual(
+ #    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+ #    name = "Overall Behavioral Health and Housing\nResources per 100k Residents",
+ #    na.value = "grey50",
+ #    guide = guide_legend(
+ #     keyheight = unit(7.5, units = "mm"),
+ #     title.position = "top",
+ #     reverse = F # display highest on top
+ #  )) +
   # use white stroke borders for county boundaries
   geom_sf(
-    data = nh_acs_census_county_geo_to_map,
+    data = nh_acs_census_county_geo,
     fill = "transparent",
     color = "white",
     size = 1
   )  +
-  # # use additional state-level shapefile for state border
-  # geom_sf(
-  #   data = nh_state_shape,
-  #   fill = "transparent",
-  #   color = "black",
-  #   size = .3
-  # )  +
-  geom_label(
+  # use additional state-level shapefile for state border
+  geom_sf(
+    data = nh_state_shape,
+    fill = "transparent",
+    color = "grey40",
+    size = .05
+  )  +
+ geom_label(
      data = nh_acs_census_county_geo_to_map, 
      aes(geometry = geometry, 
          label = county),
-     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
-    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+    vjust = ifelse((nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Hillsborough")] | 
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Merrimack")] | 
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Carroll")]), 1.15, 0),
+    # hjust = ifelse(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"], 1, .5),
     family = "Franklin Gothic Demi",
     color = "gray25",
-    size = 2,
+    size = 4.25,
     fontface = "bold",
     stat = "sf_coordinates") +
-  # guides(fill = guide_colorbar(barwidth = 8),
-  #          direction = "horizontal",
-  #     barheight = unit(2, units = "mm"),
-  #     barwidth = unit(50, units = "mm"),
-  #     draw.ulim = F,
-  #     title.position = 'top',
-  #     # some shifting around
-  #     title.hjust = 0.5,
-  #     label.hjust = 0.5) +
+  guides(fill = guide_colorbar(barwidth = 8),
+           direction = "horizontal",
+      barheight = unit(2, units = "mm"),
+      barwidth = unit(50, units = "mm"),
+      draw.ulim = F,
+      title.position = 'top',
+      # some shifting around
+      title.hjust = 0.5,
+      label.hjust = 0.5) +
   labs(
     title = NULL,
     subtitle = NULL,
     x = NULL,
     y = NULL,
-    fill = NULL,
-    caption = NULL
+    fill = NULL
   ) +
   # add theme
-  theme_map() 
-# +
-#   theme(
-#     # plot.margin = margin(),
-#     panel.grid = element_blank(),
-#     axis.text.x = element_blank(),
-#     axis.text.y = element_blank(),
-#     legend.position = "bottom",
-#     legend.justification = c(0.5, 0.5),
-#     legend.text = element_text(size = 11)) 
+  theme_map() +
+  theme(
+    panel.grid = element_blank(),
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    legend.position = "bottom",
+    legend.justification = c(0.5, 0.5),
+    legend.text = element_text(size = 11),
+    legend.margin=margin(-10,0,0,0),
+    legend.box.margin=margin(-10,0,0,0)
+  ) 
 
 
-# ### write out
-# ggsave(
-#     filename = file.path(sp_viz_output_path, "nh_resource_availability_overall.png"),
-#     plot = last_plot(),
-#     device = ragg::agg_png,
-#     dpi = 300,
-#     height = 5.25,
-#     width = 10,
-#     units = "in",
-#     bg = "transparent"
-#   )
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "nh_resource_availability_map_overall_continuous.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -596,17 +608,19 @@ ggplot(
     color = "grey40",
     size = .05
   )  +
-  # geom_label(
-  #    data = nh_acs_census_county_geo, 
-  #    aes(geometry = geometry, 
-  #        label = county),
-  #    # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
-  #   # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
-  #   family = "Franklin Gothic Demi",
-  #   color = "gray25",
-  #   size = 3,
-  #   fontface = "bold",
-  #   stat = "sf_coordinates") +
+ geom_label(
+     data = nh_acs_census_county_geo_to_map, 
+     aes(geometry = geometry, 
+         label = county),
+    vjust = ifelse((nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Hillsborough")] | 
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Merrimack")] | 
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Carroll")]), 1.15, 0),
+    # hjust = ifelse(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"], 1, .5),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 4.25,
+    fontface = "bold",
+    stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
            direction = "horizontal",
       barheight = unit(2, units = "mm"),
@@ -621,32 +635,33 @@ ggplot(
     subtitle = NULL,
     x = NULL,
     y = NULL,
-    fill = NULL,
-    caption = NULL
+    fill = NULL
   ) +
   # add theme
   theme_map() +
   theme(
-    # plot.margin = margin(),
     panel.grid = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     legend.position = "bottom",
     legend.justification = c(0.5, 0.5),
-    legend.text = element_text(size = 11))
+    legend.text = element_text(size = 11),
+    legend.margin=margin(-10,0,0,0),
+    legend.box.margin=margin(-10,0,0,0)
+  ) 
 
 
-# ### write out
-# ggsave(
-#     filename = file.path(sp_viz_output_path, "nh_resource_availability_overall.png"),
-#     plot = last_plot(),
-#     device = ragg::agg_png,
-#     dpi = 300,
-#     height = 5.25,
-#     width = 10,
-#     units = "in",
-#     bg = "transparent"
-#   )
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "nh_resource_availability_map_cmhc.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -722,17 +737,19 @@ ggplot(
     color = "grey40",
     size = .05
   )  +
-  # geom_label(
-  #    data = nh_acs_census_county_geo, 
-  #    aes(geometry = geometry, 
-  #        label = county),
-  #    # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
-  #   # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
-  #   family = "Franklin Gothic Demi",
-  #   color = "gray25",
-  #   size = 3,
-  #   fontface = "bold",
-  #   stat = "sf_coordinates") +
+ geom_label(
+     data = nh_acs_census_county_geo_to_map, 
+     aes(geometry = geometry, 
+         label = county),
+    vjust = ifelse((nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Hillsborough")] | 
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Merrimack")] | 
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Carroll")]), 1.15, 0),
+    # hjust = ifelse(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"], 1, .5),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 4.25,
+    fontface = "bold",
+    stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
            direction = "horizontal",
       barheight = unit(2, units = "mm"),
@@ -747,32 +764,32 @@ ggplot(
     subtitle = NULL,
     x = NULL,
     y = NULL,
-    fill = NULL,
-    caption = NULL
+    fill = NULL
   ) +
   # add theme
   theme_map() +
   theme(
-    # plot.margin = margin(),
     panel.grid = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     legend.position = "bottom",
     legend.justification = c(0.5, 0.5),
-    legend.text = element_text(size = 11))
+    legend.text = element_text(size = 11),
+    legend.margin=margin(-10,0,0,0),
+    legend.box.margin=margin(-10,0,0,0)
+  ) 
 
-
-# ### write out
-# ggsave(
-#     filename = file.path(sp_viz_output_path, "nh_resource_availability_overall.png"),
-#     plot = last_plot(),
-#     device = ragg::agg_png,
-#     dpi = 300,
-#     height = 5.25,
-#     width = 10,
-#     units = "in",
-#     bg = "transparent"
-#   )
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "nh_resource_availability_map_sud.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -827,17 +844,19 @@ ggplot(
     color = "grey40",
     size = .05
   )  +
-  # geom_label(
-  #    data = nh_acs_census_county_geo, 
-  #    aes(geometry = geometry, 
-  #        label = county),
-  #    # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
-  #   # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
-  #   family = "Franklin Gothic Demi",
-  #   color = "gray25",
-  #   size = 3,
-  #   fontface = "bold",
-  #   stat = "sf_coordinates") +
+ geom_label(
+     data = nh_acs_census_county_geo_to_map, 
+     aes(geometry = geometry, 
+         label = county),
+    vjust = ifelse((nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Hillsborough")] | 
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Merrimack")] | 
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Carroll")]), 1.15, 0),
+    # hjust = ifelse(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"], 1, .5),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 4.25,
+    fontface = "bold",
+    stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
            direction = "horizontal",
       barheight = unit(2, units = "mm"),
@@ -852,32 +871,33 @@ ggplot(
     subtitle = NULL,
     x = NULL,
     y = NULL,
-    fill = NULL,
-    caption = NULL
+    fill = NULL
   ) +
   # add theme
   theme_map() +
   theme(
-    # plot.margin = margin(),
     panel.grid = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
     legend.position = "bottom",
     legend.justification = c(0.5, 0.5),
-    legend.text = element_text(size = 11))
+    legend.text = element_text(size = 11),
+    legend.margin=margin(-10,0,0,0),
+    legend.box.margin=margin(-10,0,0,0)
+  ) 
 
 
-# ### write out
-# ggsave(
-#     filename = file.path(sp_viz_output_path, "nh_resource_availability_overall.png"),
-#     plot = last_plot(),
-#     device = ragg::agg_png,
-#     dpi = 300,
-#     height = 5.25,
-#     width = 10,
-#     units = "in",
-#     bg = "transparent"
-#   )
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "nh_resource_availability_map_rco.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>

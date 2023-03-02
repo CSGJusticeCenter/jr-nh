@@ -1612,15 +1612,17 @@ ggplot(
   #   color = "black",
   #   size = .3
   # )  +
-  geom_label(
+ geom_label(
      data = df_county_level_charge_type_summary_geo_to_map, 
      aes(geometry = geometry, 
          label = county),
-     # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
-    # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
+    vjust = ifelse((df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Hillsborough")] | 
+                      df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack")] | 
+                      df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Carroll")]), 1.15, 0),
+    # hjust = ifelse(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"], 1, .5),
     family = "Franklin Gothic Demi",
     color = "gray25",
-    size = 3,
+    size = 4.25,
     fontface = "bold",
     stat = "sf_coordinates") +
   # guides(fill = guide_colorbar(barwidth = 8),
@@ -1655,7 +1657,7 @@ ggplot(
 
 ### write out
 ggsave(
-    filename = file.path(sp_viz_output_path, "charge_type_percent_drug_alcohol_by_jail_non_pc_continuous.png"),
+    filename = file.path(sp_viz_output_path, "charge_type_percent_drug_alcohol_by_jail_non_pc.png"),
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 300,

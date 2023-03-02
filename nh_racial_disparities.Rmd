@@ -333,7 +333,14 @@ nh_gender_acs <- left_join(nh_gender_male,
                            nh_gender_female,
                            by = "geoid") %>% 
   dplyr::select(name=name.x,Male,Female) %>% 
-  gather(gender, percentage, `Male`:`Female`)
+  gather(gender, percentage, `Male`:`Female`) %>% 
+  ### switching out bjs jail survey gender numbers for NH-specific population-wide numbers
+  ### using table 3 from: https://bjs.ojp.gov/sites/g/files/xyckuh236/files/media/document/ji21st_sumB.pdf
+  mutate(bjs_jail_survey_gender_percentage = ifelse(gender=="Female",
+                                                    13.4,
+                                                    86.6)) %>% 
+  dplyr::select(-percentage) %>% 
+  dplyr::rename(percentage = bjs_jail_survey_gender_percentage)
 
 nh_eight_county_medicaid_match_final_gender <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   filter(!is.na(gender)) %>% 
@@ -408,7 +415,7 @@ nh_eight_county_charge_clean_final_gender_table_final_to_join <- nh_eight_county
 
 nh_gender_acs_to_join <- nh_gender_acs %>% 
   dplyr::select(`Gender` = gender,
-                `State Population Estimate (%)` = percentage)
+                `US Jail Population Estimate (%)` = percentage)
 
 ### join df_iowa_prelim_exploration_raw_invidual_supervision_race_table_to_join and iowa_race_2020_table_viz
 df_nh_sample_state_gender_compare <- inner_join(nh_gender_acs_to_join,
@@ -417,44 +424,53 @@ df_nh_sample_state_gender_compare <- inner_join(nh_gender_acs_to_join,
 
 ### pivot wide to long for geom_bar
 df_nh_sample_state_gender_compare_bar <- df_nh_sample_state_gender_compare %>%
-  dplyr::select(`Gender`,`State Population Estimate (%)`,`Individuals Booked into Jail (%)`,`High Jail Utilizer, top 10% (%)`) %>%
-  gather(`sample_state`, percentage, `State Population Estimate (%)`:`High Jail Utilizer, top 10% (%)`) %>% 
-  mutate(`sample_state` = case_when(`sample_state`=="State Population Estimate (%)"~"NH Adult Population",
-                                    `sample_state`=="Individuals Booked into Jail (%)"~"Overall Jail Population",
-                                    `sample_state`=="High Jail Utilizer, top 10% (%)"~"High Jail Utilizer Population",
+  dplyr::select(`Gender`,`US Jail Population Estimate (%)`,`Individuals Booked into Jail (%)`,`High Jail Utilizer, top 10% (%)`) %>%
+  gather(`sample_state`, percentage, `US Jail Population Estimate (%)`:`High Jail Utilizer, top 10% (%)`) %>% 
+  mutate(`sample_state` = case_when(`sample_state`=="US Jail Population Estimate (%)"~"US Jail Population",
+                                    `sample_state`=="Individuals Booked into Jail (%)"~"NH Jail Population",
+                                    `sample_state`=="High Jail Utilizer, top 10% (%)"~"NH High Jail Utilizer Population",
          TRUE ~ as.character(NA))) %>% 
   mutate(`sample_state` = factor(`sample_state`,
-                                levels = c("NH Adult Population","Overall Jail Population","High Jail Utilizer Population"))) %>% 
+                                levels = c("US Jail Population","NH Jail Population","NH High Jail Utilizer Population"))) %>% 
   mutate(percentage=percentage/100) ### convert percentage to decimal for ggplot
 
 ### plot
-ggplot(data = df_nh_sample_state_gender_compare_bar, aes(y = percentage, x = sample_state, fill = forcats::fct_rev(sample_state))) + 
+ggplot(data = df_nh_sample_state_gender_compare_bar, aes(y = percentage, x = forcats::fct_rev(sample_state), fill = `Gender`)) + 
   geom_bar(stat = "identity", position = "dodge", color = "gray80") +
   scale_x_discrete(limits = rev) +
   scale_y_continuous(labels = scales::percent_format(accuracy=1),
                      limits=c(min(0), 
                                            max(.97))) +
-  scale_fill_manual(values = c("#4095B1","#273C4C","#61C280")) +
-  scale_color_manual(values = rev(c("#4095B1","#273C4C","#61C280"))) +
+  scale_fill_manual(values = rev(c("#4095B1","#273C4C"))) +
+  scale_color_manual(values = rev(c("#4095B1","#273C4C"))) +
   labs(x = NULL, y = NULL,
        fill = NULL,
-       caption = "New Hampshire adult population data comes from the 2020 Census\nNew Hampshire jail population reflects unique individuals booked into jail from 2019 through 2021",
+       caption = "US jail population data were pulled from the Bureau of Justice Statistics 2021 Annual Survey of Jails (ASJ)\nNew Hampshire jail population reflects unique individuals booked into jail from 2019 through 2021",
        title = NULL,
        subtitle = NULL) +
   theme_minimal() +
- theme(axis.text.x = element_text(size = 10.5, face="bold"),
+ theme(legend.position = "top",
+        legend.title.align=0.5,
+       axis.text.x = element_text(size = 10.5, face="bold"),
        axis.ticks.length = unit(0, "cm"),
        plot.caption = element_text(hjust = 0.5),
         strip.placement="outside",
         strip.text.x=element_text(angle=180, hjust=1, face="bold", size=11.5,
                               margin=margin(r=10))) +
-  coord_flip() + 
-  facet_grid(`Gender` ~ ., scales="free_y", space="free_y", switch="y") +
-  guides(fill = FALSE) + 
+  # coord_flip() + 
+  # facet_grid(`Gender` ~ ., scales="free_y", space="free_y", switch="y") +
+ guides(fill = guide_legend(reverse = FALSE,
+                             title.position = "top",
+                             label.position = "bottom",
+                             keywidth = 3,
+                             nrow = 1)) +
   geom_label_repel(aes(label = scales::percent(as.numeric(percentage),
                                                accuracy = 0.1),
-                   color = sample_state),
-                   hjust = -0.25,
+                   color = `Gender`),
+                   position = position_dodge(.9),
+                  # direction = 'y',
+                  vjust = .65,
+                  hjust = .5,             
                    fill = "white",
                    label.padding = 0.25,
                    box.padding = 0.25,
@@ -466,7 +482,7 @@ ggplot(data = df_nh_sample_state_gender_compare_bar, aes(y = percentage, x = sam
 
 ### write out
 ggsave(
-    filename = file.path(sp_viz_output_path, "gender_overall_comparison_descriptive.png"),
+    filename = file.path(sp_viz_output_path, "gender_overall_comparison_descriptive_option_2.png"),
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 300,
@@ -549,7 +565,7 @@ kable(nh_race_2020_table,
 
 <br><br>
 
-### Race/Ethnicity, New Hampshire Adult Population (2020 Census) (excluding Grafton, Carroll, and Hillsborough)
+### Race/Ethnicity, New Hampshire Adult Population (2020 Census) (excluding Grafton, Carroll, Strafford, and Hillsborough)
 
 Note: This table excludes the 3 counties that do not appear in RRI and disporportionality analysis
 
@@ -909,7 +925,7 @@ ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x = s
   scale_color_manual(values = rev(c("#4095B1","#273C4C","#61C280"))) +
   labs(x = NULL, y = NULL,
        fill = NULL,
-       caption = "New Hampshire adult population data comes from the 2020 Census\nNew Hampshire jail population reflects unique individuals booked into jail from 2019 through 2021\nHillsborough and Carroll County are excluded because race/ethnicity data did not 'Hispanic' as on option",
+       caption = "New Hampshire adult population data comes from the 2020 Census\nNew Hampshire jail population reflects unique individuals booked into jail from 2019 through 2021\nHillsborough and Carroll County are excluded because race/ethnicity data did not 'Hispanic' as on option\nAdditionally, Strafford County is excluded because of demographic differences\nlikely resulting from federally-contracted detention services",
        title = NULL,
        subtitle = NULL) +
   theme_minimal() +
@@ -925,11 +941,14 @@ ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x = s
   geom_label_repel(aes(label = scales::percent(as.numeric(percentage),
                                                accuracy = 0.1),
                    color = sample_state),
+                  # position = position_dodge(),
+                  # direction = 'x',
                    hjust = .6,
-                   label.padding = 0.25,
-                   box.padding = 0.25,
+                  # vjust = .5,
+                  label.padding = 0.2,
+                   box.padding = 0.2,
                    fill = "white",
-                   size = 5,
+                   size = 4.75,
                    segment.color = NA,
                    fontface = "bold",
                    na.rm = TRUE,
@@ -937,7 +956,7 @@ ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x = s
 
 ### write out
 ggsave(
-    filename = file.path(sp_viz_output_path, "race_eth_overall_comparison_descriptive_no_strafford.png"),
+    filename = file.path(sp_viz_output_path, "race_eth_overall_comparison_descriptive.png"),
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 300,
@@ -998,7 +1017,7 @@ kable(nh_eight_county_charge_clean_final_race_table_final,
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
    kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"), row_label_position = "l") %>% 
-  row_spec(8, bold = TRUE)
+  row_spec(7, bold = TRUE)
 ```
 
 <br><br>
@@ -1067,6 +1086,111 @@ kable(df_nh_race_eth_rri_analytic_table,
                                        "condensed", 
                                        "responsive"), 
                  row_label_position = "l") 
+```
+
+<br><br>
+
+### Statewide Rates Visual: overall jail population and high utilizer population (using top 10% threshold) 
+
+*Interpretation:* 
+
+- Looking at the relative rate indices for individuals booked into jail by race/ethnicity, where the dotted line represents the reference group of White clients, we see notable disproportionality between Black individuals and White individuals. For example, Black individuals are 4.8 times more likely to be booked into jail in New Hampshire than White individuals. AAPI individuals are notably less likely to be booked into jail or be a high utilizer of jail compared to White individuals. 
+
+- For any discussion with stakeholders, we probably want to note that in exploring proportionality of the jail population via the relative rate index, we are also capturing any disproportionality that happens upstream of being booked into jail. And since it may come up in discussion, we also aren’t controlling for other factors here – like offense or criminal history. We could expand this analysis to account for offense type. 
+
+```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+### remove american indian/alaska native individuals from analysis due to small sample size
+df_nh_race_eth_rri_analytic_table_without_am_indian <- df_nh_race_eth_rri_analytic_table %>% 
+  filter(!`Race/Ethnicity`%in%c("American Indian/Alaska Native","Asian/Pacific Islander"))
+
+### pull out RRIs for plot
+### use gather to shift data from wide to long
+df_nh_race_eth_rri_overall_to_plot <- df_nh_race_eth_rri_analytic_table_without_am_indian  %>% 
+  dplyr::select(`Race/Ethnicity`,`Individuals Booked into Jail RRI (to White individuals)`,`High Jail Utilizer, top 10% RRI (to White individuals)`) %>% 
+  gather(rri_measure, rri, `Individuals Booked into Jail RRI (to White individuals)`:`High Jail Utilizer, top 10% RRI (to White individuals)`) %>% 
+  mutate(rri_measure = case_when(
+    rri_measure=="Individuals Booked into Jail RRI (to White individuals)" ~ "Overall Jail Population",
+    rri_measure=="High Jail Utilizer, top 10% RRI (to White individuals)" ~ "High Utilizer Population",
+    TRUE ~ "NA")) %>%
+    mutate(rri_measure = factor(rri_measure,
+                                levels = c("Overall Jail Population","High Utilizer Population"))) %>% 
+  dplyr::filter(`Race/Ethnicity`!="White") %>% 
+  mutate(state = "NH")
+
+### plot
+ggplot(data = df_nh_race_eth_rri_overall_to_plot, 
+       aes(y = rri, 
+           x = `Race/Ethnicity`, 
+           fill = forcats::fct_rev(`Race/Ethnicity`))) + 
+  geom_bar(stat = "identity", 
+           position = "dodge", 
+           color = "gray80") +
+  geom_abline(slope=0, 
+              intercept=1,  
+              col = "#000000", 
+              size = 1.5, 
+              linetype="dashed") +
+  scale_x_discrete(limits = rev) +
+  scale_y_continuous(limits=c(min(0), 
+                                           max(9))) +
+  scale_fill_manual(values = c("#273C4C","#4095B1")) +
+  scale_color_manual(values = rev(c("#273C4C","#4095B1"))) +
+  theme(legend.position = "top",
+        legend.title.align=0.5,
+        axis.text.y = element_text(face = "bold", hjust = 1, size = 12),
+        strip.text.x = element_text(face = "bold", vjust = 1.5, size = 14, 
+                                    hjust = 0.5),
+        plot.caption = element_text(hjust = 0.5),
+        axis.ticks.length = unit(0, "cm")) +
+    labs(y = "Relative Rate Index (RRI)", 
+         x = NULL,
+      caption = "Note: New Hampshire jail administrative data reflects unique individuals booked into jail in 2019-2021\nDue to a small sample size, individuals who are American Indian/Alaska Native or Asian/Pacific Islander are excluded from this analysis\nHillsborough and Carroll County are excluded because race/ethnicity data did not 'Hispanic' as on option\nAdditionally, Strafford County is excluded because of demographic differences\nlikely resulting from federally-contracted detention services",
+      title = NULL,
+      subtitle = NULL,
+      fill = NULL) +
+    coord_flip() +
+  facet_grid(~ rri_measure) +
+ # guides(fill = guide_legend(reverse = TRUE,
+ #                             title.position = "top",
+ #                             label.position = "bottom",
+ #                             keywidth = 3,
+ #                             nrow = 1)) +
+   guides(fill = FALSE) +
+  # geom_label_repel(aes(label = format(round(as.numeric(rri), 
+  #                                           digits = 1), 
+  #                                     nsmall=1), 
+  #                      group = forcats::fct_rev(`Race/Ethnicity`),
+  #                      color = `Race/Ethnicity`),
+  #                 position = position_dodge(.9),
+  #                 direction = 'x',
+  #                 hjust = 0.75,
+  #                 label.padding = 0.3,
+  #                 box.padding = 0.15,
+  #                 size = 5,
+  #                 fill = "white",
+  #                 fontface = "bold",
+  #                 na.rm = TRUE,
+  #                 show.legend = FALSE) +
+  annotate("text", 
+           x = 2.53, 
+           y = 2.9, 
+           label = "This line represents White\nindividuals (reference group)", 
+           colour = "#000000", 
+           size = 2.75, 
+           fontface = 2)
+
+
+### write out
+ggsave(
+    filename = file.path(sp_viz_output_path, "race_eth_overall_supervision_rri_option_3.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 5.25,
+    width = 10,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
