@@ -463,8 +463,8 @@ ggplot(data = medicaid_jail_ed_visits_hu_overall_table_bar, aes(y = percentage, 
   scale_y_continuous(labels = scales::percent_format(accuracy=1),
                      limits=c(min(0), 
                                            max(.8))) +
-  scale_fill_manual(values = c("#4095B1","#273C4C")) +
-  scale_color_manual(values = c("#4095B1","#273C4C")) +
+  scale_fill_manual(values = c("#167a9c","#293e5c")) +
+  scale_color_manual(values = c("#167a9c","#293e5c")) +
   labs(x = NULL, y = NULL,
        fill = NULL,
        caption = NULL,
@@ -545,7 +545,7 @@ medicaid_enrollment_categories_encounters_individual_jail_all <- read_rds("D:/An
 
 # by hu_group_exclusive
 medicaid_jail_ed_smi_opioid_visits_hu_table <- medicaid_enrollment_categories_encounters_individual_jail_all %>% 
-  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::group_by(hu_group_exclusive) %>%
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `ED and SMI Visits (N)` = n_distinct(unique_person_id[pre_or_study_ed_visit_or_service_related_to_smi_flag==1]),
                    `ED and SMI Visits (%)` = `ED and SMI Visits (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -578,8 +578,8 @@ ggplot(data = medicaid_jail_ed_smi_opioid_visits_hu_table_bar, aes(y = percentag
   scale_y_continuous(labels = scales::percent_format(accuracy=1),
                      limits=c(min(0), 
                                            max(.4))) +
-  scale_fill_manual(values = c("#4095B1","#273C4C")) +
-  scale_color_manual(values = c("#4095B1","#273C4C")) +
+  scale_fill_manual(values = c("#167a9c","#293e5c")) +
+  scale_color_manual(values = c("#167a9c","#293e5c")) +
   labs(x = NULL, y = NULL,
        fill = NULL,
        caption = NULL,

@@ -441,11 +441,11 @@ ggplot(data = df_nh_sample_state_gender_compare_bar, aes(y = percentage, x = for
   scale_y_continuous(labels = scales::percent_format(accuracy=1),
                      limits=c(min(0), 
                                            max(.97))) +
-  scale_fill_manual(values = rev(c("#4095B1","#273C4C"))) +
-  scale_color_manual(values = rev(c("#4095B1","#273C4C"))) +
+  scale_fill_manual(values = rev(c("#167a9c","#293e5c"))) +
+  scale_color_manual(values = rev(c("#167a9c","#293e5c"))) +
   labs(x = NULL, y = NULL,
        fill = NULL,
-       caption = "US jail population data were pulled from the Bureau of Justice Statistics 2021 Annual Survey of Jails (ASJ)\nNew Hampshire jail population reflects unique individuals booked into jail from 2019 through 2021",
+       caption = NULL,
        title = NULL,
        subtitle = NULL) +
   theme_minimal() +
@@ -727,7 +727,7 @@ Note: This table is unique by individual, not booking. **Hillsborough and Carrol
 ### recode 'Black Hispanic' as 'Black' for now -- the sample size is too small for analysis; discuss with Mari in light of recent research-wide conversation
 ### also recode 'American Indian Alaska Native' to align with census data
 nh_eight_county_medicaid_match_final_race_two_counties_excluded <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  filter(medicaid_match_flag==1) %>% 
+  # filter(medicaid_match_flag==1) %>% 
   mutate(race = ifelse(jail_race=="Black Hispanic",
                        "Black",
                        jail_race),
@@ -928,11 +928,11 @@ ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x = s
   scale_y_continuous(labels = scales::percent_format(accuracy=1),
                      limits=c(min(0), 
                                            max(1))) +
-  scale_fill_manual(values = c("#4095B1","#273C4C","#61C280")) +
-  scale_color_manual(values = rev(c("#4095B1","#273C4C","#61C280"))) +
+  scale_fill_manual(values = c("#167a9c","#293e5c","#557e39")) +
+  scale_color_manual(values = rev(c("#167a9c","#293e5c","#557e39"))) +
   labs(x = NULL, y = NULL,
        fill = NULL,
-       caption = "New Hampshire adult population data comes from the 2020 Census\nNew Hampshire jail population reflects unique individuals booked into jail from 2019 through 2021\nHillsborough and Carroll County are excluded because race/ethnicity data did not 'Hispanic' as on option\nAdditionally, Strafford County is excluded because of demographic differences\nlikely resulting from federally-contracted detention services",
+       caption = NULL,
        title = NULL,
        subtitle = NULL) +
   theme_minimal() +
@@ -941,7 +941,10 @@ ggplot(data = df_nh_sample_state_race_eth_compare_bar, aes(y = percentage, x = s
        plot.caption = element_text(hjust = 0.5),
         strip.placement="outside",
         strip.text.x=element_text(angle=180, hjust=1, face="bold", size=11.5,
-                              margin=margin(r=10))) +
+                              margin=margin(r=10)),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
   coord_flip() + 
   facet_grid(`Race/Ethnicity` ~ ., scales="free_y", space="free_y", switch="y") +
   guides(fill = FALSE) + 
@@ -1140,18 +1143,21 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
   scale_x_discrete(limits = rev) +
   scale_y_continuous(limits=c(min(0), 
                                            max(9))) +
-  scale_fill_manual(values = c("#273C4C","#4095B1")) +
-  scale_color_manual(values = rev(c("#273C4C","#4095B1"))) +
+  scale_fill_manual(values = c("#293e5c","#167a9c")) +
+  scale_color_manual(values = rev(c("#293e5c","#167a9c"))) +
   theme(legend.position = "top",
         legend.title.align=0.5,
         axis.text.y = element_text(face = "bold", hjust = 1, size = 12),
         strip.text.x = element_text(face = "bold", vjust = 1.5, size = 14, 
                                     hjust = 0.5),
         plot.caption = element_text(hjust = 0.5),
-        axis.ticks.length = unit(0, "cm")) +
+        axis.ticks.length = unit(0, "cm"),
+        panel.grid.major.y = element_blank(),
+        # panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
     labs(y = "Relative Rate Index (RRI)", 
          x = NULL,
-      caption = "Note: New Hampshire jail administrative data reflects unique individuals booked into jail in 2019-2021\nDue to a small sample size, individuals who are American Indian/Alaska Native or Asian/Pacific Islander are excluded from this analysis\nHillsborough and Carroll County are excluded because race/ethnicity data did not 'Hispanic' as on option\nAdditionally, Strafford County is excluded because of demographic differences\nlikely resulting from federally-contracted detention services",
+      caption = NULL,
       title = NULL,
       subtitle = NULL,
       fill = NULL) +

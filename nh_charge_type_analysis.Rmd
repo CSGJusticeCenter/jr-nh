@@ -1253,7 +1253,7 @@ ggplot(data = df_nh_charge_type_overall, aes(y = `Bookings, Percent of Sample (%
     colour = "white",
     show.legend = FALSE
   ) +
-  scale_fill_manual(values = c("#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084","#2F7084")) +
+  scale_fill_manual(values = c("#167a9c","#167a9c","#167a9c","#167a9c","#167a9c","#167a9c","#167a9c","#167a9c","#167a9c")) +
   guides(fill = FALSE) +
   labs(x = NULL, y = NULL,
        fill = NULL,
@@ -1269,7 +1269,7 @@ ggplot(data = df_nh_charge_type_overall, aes(y = `Bookings, Percent of Sample (%
         axis.text.x = element_text(face = "bold", hjust = 1, size = 12),
         axis.ticks.length = unit(0, "cm"),
         panel.grid.major.y = element_blank(),
-        panel.grid.major.x = element_blank(),
+        # panel.grid.major.x = element_blank(),
         panel.grid.minor = element_blank()) +
     coord_flip() 
 
@@ -1327,11 +1327,11 @@ ggplot(data = df_county_level_charge_type_summary_long,
            color = "gray80") +
   scale_x_discrete(limits = rev) +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c("#2F7084",
-                               "#1F4A58",
-                               "#E17619",
+  scale_fill_manual(values = c("#167a9c",
+                               "#293e5c",
+                               "#b95826",
                                "#87C2D4",
-                               "#61C280")) +
+                               "#557e39")) +
   guides(fill = guide_legend(reverse = TRUE,
                              title.position = "top",
                              label.position = "bottom",
@@ -1686,14 +1686,21 @@ ggplot(
  geom_label(
      data = df_county_level_charge_type_summary_geo_to_map, 
      aes(geometry = geometry, 
-         label = county),
-    vjust = ifelse((df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Hillsborough")] | 
-                      df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack")] | 
-                      df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Carroll")]), 1.15, 0),
+         label = paste0(county,"\n",scales::percent(`Bookings with any Drug/Alcohol Charge (%)`, accuracy = 1))),
+     vjust = case_when(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county=="Hillsborough"] ~ 1.05,
+                       df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county=="Merrimack"] ~ .5,
+                       df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county=="Carroll"] ~ .4,
+                       df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county=="Strafford"] ~ .2,
+                       df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county=="Cheshire"] ~ .15,
+                       df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county=="Rockingham"] ~ .15,
+                              TRUE ~ 0),
+      # ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county=="Hillsborough"] | 
+      #                 df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county=="Merrimack"] | 
+      #                 df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county=="Carroll"], 1, 0),
     # hjust = ifelse(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"], 1, .5),
     family = "Franklin Gothic Demi",
     color = "gray25",
-    size = 4.25,
+    size = 3.15,
     fontface = "bold",
     stat = "sf_coordinates") +
   # guides(fill = guide_colorbar(barwidth = 8),
@@ -2021,8 +2028,8 @@ ggplot(data = df_hu_charge_type_summary_long_vop,
            color = "gray80") +
   scale_x_discrete(limits = rev) +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = rev(c("#2F7084",
-                               "grey50"))) +
+  scale_fill_manual(values = rev(c("#167a9c",
+                               "gray"))) +
   guides(fill = guide_legend(reverse = TRUE,
                              title.position = "top",
                              label.position = "bottom",
@@ -2033,7 +2040,8 @@ ggplot(data = df_hu_charge_type_summary_long_vop,
       fontface = "bold"),
     position = position_stack(vjust = .5),
     size = 5,
-    colour = "white",
+    colour = case_when(df_hu_charge_type_summary_long_vop$charge_type_factor == "Other" ~ "black",
+                              TRUE ~ "white"),
     show.legend = FALSE) +
   labs(x = NULL, y = NULL,
        fill = "Charge Type",
@@ -2208,8 +2216,8 @@ ggplot(data = df_hu_charge_type_summary_long_vop,
            color = "gray80") +
   scale_x_discrete(limits = rev) +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = rev(c("#2F7084",
-                               "grey50"))) +
+  scale_fill_manual(values = rev(c("#167a9c",
+                               "gray"))) +
   guides(fill = guide_legend(reverse = TRUE,
                              title.position = "top",
                              label.position = "bottom",
@@ -2220,8 +2228,8 @@ ggplot(data = df_hu_charge_type_summary_long_vop,
       fontface = "bold"),
     position = position_stack(vjust = .5),
     size = 5,
-    colour = "white",
-    show.legend = FALSE) +
+    colour = case_when(df_hu_charge_type_summary_long_vop$charge_type_factor == "Other" ~ "black",
+                              TRUE ~ "white"),    show.legend = FALSE) +
   labs(x = NULL, y = NULL,
        fill = "Charge Type",
        caption = NULL,
@@ -2401,11 +2409,11 @@ ggplot(data = df_hu_public_order_charge_type_summary_long,
            color = "gray80") +
   scale_x_discrete(limits = rev) +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values = c("#2F7084",
-                               "#1F4A58",
-                               "#E17619",
+  scale_fill_manual(values = c("#167a9c",
+                               "#293e5c",
+                               "#b95826",
                                "#87C2D4",
-                               "#61C280")) +
+                               "#557e39")) +
   guides(fill = guide_legend(reverse = TRUE,
                              title.position = "top",
                              label.position = "bottom",
@@ -2419,7 +2427,7 @@ ggplot(data = df_hu_public_order_charge_type_summary_long,
     colour = "white",
     show.legend = FALSE) +
   labs(x = NULL, y = NULL,
-       fill = "Charge Type",
+       fill = "Public Order Charges",
        caption = NULL,
        title = NULL,
        subtitle = NULL) +
