@@ -456,7 +456,10 @@ ggplot(data = df_nh_sample_state_gender_compare_bar, aes(y = percentage, x = for
        plot.caption = element_text(hjust = 0.5),
         strip.placement="outside",
         strip.text.x=element_text(angle=180, hjust=1, face="bold", size=11.5,
-                              margin=margin(r=10))) +
+                              margin=margin(r=10)),
+        # panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor = element_blank()) +
   # coord_flip() + 
   # facet_grid(`Gender` ~ ., scales="free_y", space="free_y", switch="y") +
  guides(fill = guide_legend(reverse = FALSE,
