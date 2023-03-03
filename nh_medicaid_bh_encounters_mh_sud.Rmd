@@ -21,9 +21,7 @@ knitr::opts_chunk$set(
   dev = "ragg_png",
   cache = FALSE
   )
-```
 
-```{r include=FALSE}
 ##########
 # Import files
 ##########
@@ -81,7 +79,7 @@ unique_ids_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
 
 
 
-
+# Medicaid encounters with costs
 # Create unique booking id using id and dose date
 medicaid_encounters_costs <- medicaid_encounters_costs_all
 medicaid_encounters_costs$claim_id <- medicaid_encounters_costs %>% 
@@ -94,6 +92,7 @@ medicaid_encounters_costs <- medicaid_encounters_costs %>%
                 everything())
 
 # Create data of just primary diagnosis costs by subsetting to claims that are MH or SUD or both
+# Remove pharamacy visits
 medicaid_encounters_costs_primary_dx_2018_2021 <- medicaid_encounters_costs %>% 
   filter(mh_service_categorized_using_primary_dx_code  == 1 | 
          sud_service_categorized_using_primary_dx_code == 1) %>% 
@@ -144,8 +143,32 @@ mutate(dx_prmry_clinical_classification_new = case_when(
   
   # join with info on person - HU, Medicaid match, etc
   mutate(unique_person_id = as.character(unique_person_id),
-         study_suicide_ideation = ifelse(dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm", 1, 0)) %>% 
-  left_join(unique_ids_hu, "unique_person_id")
+         study_suicide_ideation = ifelse(dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm", 1, 0)) 
+
+# Merge with person info created from jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
+medicaid_encounters_cleaned_2018_2021 <- unique_ids_hu %>% 
+  left_join(medicaid_encounters_cleaned_2018_2021, "unique_person_id") %>% 
+  distinct() %>% 
+
+  # remove people who aren't in unique_ids_hu - dont have an HU variable
+  filter(!is.na(hu_group_exclusive)) %>% 
+  filter(pre_or_study_window_medicaid_match_flag_overall == 1) 
+
+# remove variables that seem to be causing a lot of duplicates
+medicaid_encounters_cleaned_2018_2021 <- medicaid_encounters_cleaned_2018_2021 %>% 
+  select(unique_person_id,
+         claim_id,
+         dx_prmry_clinical_classification,
+         dx_prmry_clinical_classification_new,
+         medicaid_reimb_amt,
+         ed_visit_or_service,
+         hu_group_overall,
+         hu_group_exclusive
+         ) %>% 
+  distinct()
+
+medicaid_encounters_cleaned_2018_2021 <- medicaid_encounters_cleaned_2018_2021 %>% 
+  filter(!is.na(dx_prmry_clinical_classification_new)) 
 ```         
 
 # DHHS Medicaid Match and Jail Booking Descriptive Analysis: Behavioral Health Encounters by High Jail Utilizer Grouping
@@ -270,7 +293,8 @@ medicaid_match_mh_all <- medicaid_match_mh_all %>%
 ```{r}
 PRES_gg_medicaid_mh <- ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
-  scale_y_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0,1.3)) +
   scale_fill_manual(values=c("gray",jri_light_blue),
                     na.value = "white") +
   geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
@@ -301,7 +325,7 @@ PRES_gg_medicaid_mh <- ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_ov
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_mh, file="img/PRES_gg_medicaid_mh.png", width = 12,  height = 6, dpi = 100)
+ggsave(PRES_gg_medicaid_mh, file="img/PRES_gg_medicaid_mh.png", width = 10,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_mh.png")
 ```
 
@@ -351,7 +375,8 @@ medicaid_match_sud_all <- medicaid_match_sud_all %>%
 ```{r}
 PRES_gg_medicaid_sud <- ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
-  scale_y_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0,1.3)) +
   scale_fill_manual(values=c("gray",jri_green),
                     na.value = "white") +
   geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
@@ -382,7 +407,7 @@ PRES_gg_medicaid_sud <- ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_sud, file="img/PRES_gg_medicaid_sud.png", width = 12,  height = 6, dpi = 100)
+ggsave(PRES_gg_medicaid_sud, file="img/PRES_gg_medicaid_sud.png", width = 10,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_sud.png")
 ```
 
@@ -520,7 +545,7 @@ PRES_gg_medicaid_match_bh <- ggplot(medicaid_match_bh, aes(x = reorder(hu_group_
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match_bh, file="img/PRES_gg_medicaid_match_bh.png", width = 9,  height = 6, dpi = 100)
+ggsave(PRES_gg_medicaid_match_bh, file="img/PRES_gg_medicaid_match_bh.png", width = 10,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_match_bh.png")
 ```
 <br>
@@ -589,7 +614,7 @@ PRES_gg_medicaid_match_cooccurring <- ggplot(medicaid_match_cooccurring, aes(x =
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match_cooccurring, file="img/PRES_gg_medicaid_match_cooccurring.png", width = 9,  height = 6, dpi = 100)
+ggsave(PRES_gg_medicaid_match_cooccurring, file="img/PRES_gg_medicaid_match_cooccurring.png", width = 10,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_match_cooccurring.png")
 ```
 
@@ -947,7 +972,8 @@ PRES_gg_medicaid_jail_smi_hu_grouping1 <-
   ggplot(medicaid_jail_smi_hu_grouping,
          aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_bar(stat = "identity") +
-  scale_y_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0,1.3)) +
   scale_fill_manual(values=c("gray",jri_orange),
                     na.value = "white") +
   geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
@@ -1119,7 +1145,8 @@ PRES_gg_medicaid_jail_opioid1 <-
   ggplot(medicaid_jail_opioid_hu_grouping,
          aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_bar(stat = "identity") +
-  scale_y_continuous(labels = scales::percent) +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0,1.3)) +
   scale_fill_manual(values=c("gray",jri_green),
                     na.value = "white") +
   geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
@@ -1172,7 +1199,16 @@ top_primary_diagnoses_grouped <- medicaid_encounters_cleaned_2018_2021 %>%
   mutate(pct_claims = (total_claims/sum(total_claims))*100,
          pct_claims = round(pct_claims, 0),
          pct_claims = paste0(pct_claims, "%", sep = ""),
-         pct_claims = case_when(pct_claims == "0%" ~ "<0%", TRUE ~ pct_claims)) 
+         pct_claims = case_when(pct_claims == "0%" ~ "<0%", TRUE ~ pct_claims)) %>% 
+  arrange(pct_claims)
+
+# Which labels to bold and color
+bold.labels <- top_primary_diagnoses_grouped %>% 
+  mutate(bold = ifelse(dx_prmry_clinical_classification_new == "Opioid-related disorders", yes = "bold", no = "plain"))
+bold.labels <- bold.labels$bold
+color.labels <- top_primary_diagnoses_grouped %>% 
+  mutate(color = ifelse(dx_prmry_clinical_classification_new == "Opioid-related disorders", yes = jri_green, no = "black"))
+color.labels <- color.labels$color
 
 PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, total_claims), 
@@ -1195,17 +1231,16 @@ PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
         legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
         
         panel.grid.major.x = element_line(linewidth = 0.5),
+        axis.text.y = element_text(face = bold.labels, color = color.labels),
 
         axis.title   = element_text(size = 22, color = "black"),
         axis.title.y = element_text(size = 22, color = "black"),
         axis.title.x = element_text(size = 22, color = "black"),
-        axis.text.y  = element_text(size = 22, color = "black" 
-                                    #face = "bold"
-                                    ),
+        # axis.text.y  = element_text(size = 22, color = "black"),
         axis.text.x  = element_text(size = 22, color = "black"))
 ```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+```{r, out.width="150%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_medicaid_top_diagnoses, file="img/PRES_gg_medicaid_top_diagnoses.png", width = 12,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_top_diagnoses.png")
 ```
@@ -1216,23 +1251,7 @@ knitr::include_graphics("img/PRES_gg_medicaid_top_diagnoses.png")
 
 
 
-
-
 <br><br>
-
-```{r}
-### Common primary diagnoses for opioid-related disorders Medicaid claims between FY2019-2021 - not using
-# Find top primary diagnoses and the proportion of claims for each
-opioid_primary_diagnoses <- medicaid_encounters_cleaned_2018_2021 %>% 
-  filter(dx_prmry_clinical_classification_new == "Opioid-related disorders") %>% 
-  group_by(dx_prmry_desc) %>% 
-  summarise(total_claims = n_distinct(claim_id)) %>% 
-  ungroup() %>% 
-  mutate(pct_claims = (total_claims/sum(total_claims))*100,
-         pct_claims = round(pct_claims, 0),
-         pct_claims = paste0(pct_claims, "%", sep = ""),
-         pct_claims = case_when(pct_claims == "0%" ~ "<0%", TRUE ~ pct_claims)) 
-```
 
 ### Common primary diagnoses for SMI-related disorders Medicaid claims between FY2019-2021
 
@@ -1246,7 +1265,16 @@ smi_primary_diagnoses <- medicaid_encounters_cleaned_2018_2021 %>%
   mutate(pct_claims = (total_claims/sum(total_claims))*100,
          pct_claims = round(pct_claims, 0),
          pct_claims = paste0(pct_claims, "%", sep = ""),
-         pct_claims = case_when(pct_claims == "0%" ~ "<0%", TRUE ~ pct_claims)) 
+         pct_claims = case_when(pct_claims == "0%" ~ "<0%", TRUE ~ pct_claims)) %>% 
+  arrange(total_claims)
+
+# Which labels to bold and color
+bold.labels <- smi_primary_diagnoses %>% 
+  mutate(bold = ifelse(dx_prmry_clinical_classification == "Schizophrenia spectrum and other psychotic disorders", yes = "bold", no = "plain"))
+bold.labels <- bold.labels$bold
+color.labels <- smi_primary_diagnoses %>% 
+  mutate(color = ifelse(dx_prmry_clinical_classification == "Schizophrenia spectrum and other psychotic disorders", yes = jri_orange, no = "black"))
+color.labels <- color.labels$color
 
 PRES_gg_medicaid_smi_primary_diagnoses <- smi_primary_diagnoses %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification, total_claims), 
@@ -1269,19 +1297,30 @@ PRES_gg_medicaid_smi_primary_diagnoses <- smi_primary_diagnoses %>%
         legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
         
         panel.grid.major.x = element_line(linewidth = 0.5),
+        axis.text.y = element_text(face = bold.labels, color = color.labels),
 
         axis.title   = element_text(size = 22, color = "black"),
         axis.title.y = element_text(size = 22, color = "black"),
         axis.title.x = element_text(size = 22, color = "black"),
-        axis.text.y  = element_text(size = 22, color = "black" 
-                                    #face = "bold"
-                                    ),
+        # axis.text.y  = element_text(size = 22, color = "black"),
         axis.text.x  = element_text(size = 22, color = "black"))
+
 ```
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_medicaid_smi_primary_diagnoses, file="img/PRES_gg_medicaid_smi_primary_diagnoses.png", width = 12,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_smi_primary_diagnoses.png")
 ```
+
+<br><br>
+
+### Common primary diagnoses for SMI-related disorders Medicaid claims between FY2019-2021 by HU 
+
+```{r}
+
+```
+
+
+
 
 
 <br><br>
