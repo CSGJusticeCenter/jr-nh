@@ -593,35 +593,35 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
          pre_opioid_related_flag = max(opioid_related_flag[pre_study_window_medicaid_match_flag==1],
                              na.rm=TRUE)) %>%
 
-  # ### then post-study window flags
-  # mutate(post_bh_flag = max(overall_bh_flag[post_study_window_medicaid_match_flag==1],
-  #                          na.rm=TRUE),
-  #        post_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
-  #                                           na.rm=TRUE),
-  #        post_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
-  #                                            na.rm=TRUE),
-  #        post_bh_mh_or_sud_service_primary_dx_flag = pmax(post_mh_service_primary_dx_flag,post_sud_service_primary_dx_flag,
-  #                                              na.rm=TRUE),
-  #        post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[post_study_window_medicaid_match_flag==1],
-  #                                                          na.rm=TRUE),
-  #        post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
-  #                                                      na.rm=TRUE),
-  #        post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
-  #                                                          na.rm=TRUE),
-  #        post_ed_visit_or_service_flag = max(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
-  #                                            na.rm=TRUE),
-  #        post_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
-  #                                                      na.rm=TRUE),
-  #        post_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[post_study_window_medicaid_match_flag==1],
-  #                                                       na.rm=TRUE),
-  #        post_sud_pharmacy_service_flag = max(sud_pharmacy_service[post_study_window_medicaid_match_flag==1],
-  #                                             na.rm=TRUE),
-  #        post_other_service_flag = max(other_service[post_study_window_medicaid_match_flag==1],
-  #                                      na.rm=TRUE),
-  #        post_smi_flag = max(smi_flag[post_study_window_medicaid_match_flag==1],
-  #                            na.rm=TRUE),
-  #        post_opioid_related_flag = max(opioid_related_flag[post_study_window_medicaid_match_flag==1],
-  #                                      na.rm=TRUE)) %>%
+  ### then post-study window flags
+  mutate(post_bh_flag = max(overall_bh_flag[post_study_window_medicaid_match_flag==1],
+                           na.rm=TRUE),
+         post_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
+                                            na.rm=TRUE),
+         post_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[post_study_window_medicaid_match_flag==1],
+                                             na.rm=TRUE),
+         post_bh_mh_or_sud_service_primary_dx_flag = pmax(post_mh_service_primary_dx_flag,post_sud_service_primary_dx_flag,
+                                               na.rm=TRUE),
+         post_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[post_study_window_medicaid_match_flag==1],
+                                                           na.rm=TRUE),
+         post_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[post_study_window_medicaid_match_flag==1],
+                                                       na.rm=TRUE),
+         post_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[post_study_window_medicaid_match_flag==1],
+                                                           na.rm=TRUE),
+         post_ed_visit_or_service_flag = max(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
+                                             na.rm=TRUE),
+         post_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[post_study_window_medicaid_match_flag==1],
+                                                       na.rm=TRUE),
+         post_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[post_study_window_medicaid_match_flag==1],
+                                                        na.rm=TRUE),
+         post_sud_pharmacy_service_flag = max(sud_pharmacy_service[post_study_window_medicaid_match_flag==1],
+                                              na.rm=TRUE),
+         post_other_service_flag = max(other_service[post_study_window_medicaid_match_flag==1],
+                                       na.rm=TRUE),
+         post_smi_flag = max(smi_flag[post_study_window_medicaid_match_flag==1],
+                             na.rm=TRUE),
+         post_opioid_related_flag = max(opioid_related_flag[post_study_window_medicaid_match_flag==1],
+                                       na.rm=TRUE)) %>%
 
   ### then pre or study window flags
   mutate(pre_or_study_bh_flag = max(overall_bh_flag[pre_or_study_window_medicaid_match_flag==1],
@@ -640,6 +640,10 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                                            na.rm=TRUE),
          pre_or_study_ed_visit_or_service_flag = max(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1],
                                              na.rm=TRUE),
+         pre_or_study_ed_visit_or_service_related_to_smi_flag = max(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1 & smi_flag==1],
+                                                     na.rm=TRUE),
+         pre_or_study_ed_visit_or_service_related_to_opioid_flag = max(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1 & opioid_related_flag==1],
+                                                                    na.rm=TRUE),
          pre_or_study_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1],
                                                         na.rm=TRUE),
          pre_or_study_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[pre_or_study_window_medicaid_match_flag==1],
@@ -684,7 +688,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                         na.rm=TRUE)) %>%
   ungroup() %>%
   ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
-  mutate(across(.cols = pre_mh_service_primary_dx_flag:study_opioid_related_flag,
+  mutate(across(.cols = pre_or_study_mh_service_primary_dx_flag:pre_or_study_opioid_related_flag,
                 ~ ifelse(is.infinite(.x),
                          0, .x))) %>%
   ### now de-dup by individual
@@ -699,7 +703,8 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                   study_window_medicaid_match_flag_overall:post_study_window_medicaid_match_flag_overall,
                   pre_or_study_bh_flag:pre_or_study_opioid_related_flag,
                   study_bh_flag:study_opioid_related_flag,
-                  pre_bh_flag:pre_opioid_related_flag) %>%
+                  pre_bh_flag:pre_opioid_related_flag
+                  ) %>%
       ### change unique_person_id to character for join with medicaid jail data
       mutate(unique_person_id = as.character(unique_person_id))
 

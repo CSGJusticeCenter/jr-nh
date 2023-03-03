@@ -612,7 +612,7 @@ PRES_gg_medicaid_match_hu <- ggplot(df_medicaid_match, aes(x = reorder(hu_group_
                 fontface = 'bold'),
             position = position_fill(vjust = 0.5),
             vjust = 0.8,
-            size = 10, family = "Franklin Gothic Book",
+            size = 7.5, family = "Franklin Gothic Book",
             color = case_when(df_medicaid_match$population == "Individuals w/ any Medicaid Match" ~ "white",
                               TRUE ~ "black")) +
   theme_no_grid_no_labels +
@@ -624,8 +624,8 @@ PRES_gg_medicaid_match_hu <- ggplot(df_medicaid_match, aes(x = reorder(hu_group_
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 28, color = "black"),
-        axis.text.y = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(color = "black"),
+        axis.text.y = element_text(color = "black"),
         legend.justification = c(0.2, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
