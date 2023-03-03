@@ -43,14 +43,12 @@ medicaid_encounters_costs_all <- read_rds("D:/Analytic/medicaid_enrollment_categ
 ##########
 
 #####
-# De-dup (there are a few duplicate bookings) and create booking id for analysis
-medicaid_jail_all_dedup <- medicaid_jail_all %>% 
-  distinct(unique_person_id, 
-           booking_id,
-           .keep_all = TRUE) %>% 
-  mutate(unique_person_booking_id = paste0(unique_person_id,
-                                    booking_id)) ### creating unique booking id with both individual and booking IDs
-
+entrances_dhhs <- medicaid_jail_all %>% 
+  mutate(id = unique_person_id,
+         fy = case_when(booking_date > "2018-06-30" & booking_date < "2019-07-01" ~ 2019,
+                        booking_date > "2019-06-30" & booking_date < "2020-07-01" ~ 2020,
+                        booking_date > "2020-06-30" & booking_date < "2021-07-01" ~ 2021)) %>% 
+   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01")
 #####
 
 
@@ -163,6 +161,7 @@ medicaid_encounters_cleaned_2018_2021 <- unique_ids_hu %>%
 medicaid_encounters_cleaned_2018_2021 <- medicaid_encounters_cleaned_2018_2021 %>% 
   select(unique_person_id,
          claim_id,
+         pre_or_study_window_medicaid_match_flag_overall,
          dx_prmry_clinical_classification,
          dx_prmry_clinical_classification_new,
          medicaid_reimb_amt,
@@ -1015,6 +1014,77 @@ ggsave(PRES_gg_medicaid_jail_smi_hu_grouping1, file="img/PRES_gg_medicaid_jail_s
 knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_hu_grouping1.png")
 ```
 
+<br>
+
+```{r}
+# by county
+medicaid_jail_smi_county <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ SMI Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
+                   `Individuals w/ SMI Primary Diagnosis` = `Individuals w/ SMI Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out SMI Primary Diagnosis` = 1-`Individuals w/ SMI Primary Diagnosis`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ SMI Primary Diagnosis (N)`))
+
+# by state
+medicaid_jail_smi_county_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ SMI Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
+                   `Individuals w/ SMI Primary Diagnosis` = `Individuals w/ SMI Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out SMI Primary Diagnosis` = 1-`Individuals w/ SMI Primary Diagnosis`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ SMI Primary Diagnosis (N)`)) %>% 
+  mutate(county = "State")
+
+# add data together
+medicaid_jail_smi_county <- rbind(medicaid_jail_smi_county, medicaid_jail_smi_county_state)
+
+# change from wide to long format
+medicaid_jail_smi_county <- gather(medicaid_jail_smi_county, population, pct, `Individuals w/ SMI Primary Diagnosis`:`Individuals w/out SMI Primary Diagnosis`, factor_key=TRUE) 
+medicaid_jail_smi_county <- medicaid_jail_smi_county %>% 
+  mutate(population = factor(population, 
+                             levels = c("Individuals w/out SMI Primary Diagnosis",
+                                        "Individuals w/ SMI Primary Diagnosis"),
+                             labels = c("Individuals w/out SMI Primary Diagnosis",
+                                        "Individuals w/ SMI Primary Diagnosis")))
+
+# Stacked bar chart showing the proportion of people with SMI by county
+PRES_gg_medicaid_jail_smi_county <- ggplot(medicaid_jail_smi_county, aes(x = county, y = pct, fill = population)) +
+  geom_col(colour = "white", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_orange),
+                    na.value = "white") +
+  geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
+                fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.8,
+            size = 10, family = "Franklin Gothic Book",
+            color = case_when(medicaid_jail_smi_county$population == "Individuals w/ SMI Primary Diagnosis" ~ "white",
+                              TRUE ~ "black")) +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
+        axis.text.y = element_text(size = 28, color = "black"),
+        legend.title=element_blank(),
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.position = "bottom",
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_medicaid_jail_smi_county, file="img/PRES_gg_medicaid_jail_smi_county.png", width = 9,  height = 7, dpi = 100)
+knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_county.png")
+```
 
 <br><br>
 
@@ -1188,10 +1258,80 @@ ggsave(PRES_gg_medicaid_jail_opioid1, file="img/PRES_gg_medicaid_jail_opioid1.pn
 knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid1.png")
 ```
 
+<br>
+
+```{r}
+# by county
+medicaid_jail_opioid_county <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(county) %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ Opioid-related Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
+                   `Individuals w/ Opioid-related Primary Diagnosis` = `Individuals w/ Opioid-related Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out Opioid-related Primary Diagnosis` = 1-`Individuals w/ Opioid-related Primary Diagnosis`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ Opioid-related Primary Diagnosis (N)`))
+
+# by state
+medicaid_jail_opioid_county_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ Opioid-related Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
+                   `Individuals w/ Opioid-related Primary Diagnosis` = `Individuals w/ Opioid-related Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out Opioid-related Primary Diagnosis` = 1-`Individuals w/ Opioid-related Primary Diagnosis`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ Opioid-related Primary Diagnosis (N)`)) %>% 
+  mutate(county = "State")
+
+# add data together
+medicaid_jail_opioid_county <- rbind(medicaid_jail_opioid_county, medicaid_jail_opioid_county_state)
+
+# change from wide to long format
+medicaid_jail_opioid_county <- gather(medicaid_jail_opioid_county, population, pct, `Individuals w/ Opioid-related Primary Diagnosis`:`Individuals w/out Opioid-related Primary Diagnosis`, factor_key=TRUE) 
+medicaid_jail_opioid_county <- medicaid_jail_opioid_county %>% 
+  mutate(population = factor(population, 
+                             levels = c("Individuals w/out Opioid-related Primary Diagnosis",
+                                        "Individuals w/ Opioid-related Primary Diagnosis"),
+                             labels = c("Individuals w/out Opioid-related Primary Diagnosis",
+                                        "Individuals w/ Opioid-related Primary Diagnosis")))
+
+# Stacked bar chart showing the proportion of people with opioid by county
+PRES_gg_medicaid_jail_opioid_county <- ggplot(medicaid_jail_opioid_county, aes(x = county, y = pct, fill = population)) +
+  geom_col(colour = "white", position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_green),
+                    na.value = "white") +
+  geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
+                fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.8,
+            size = 10, family = "Franklin Gothic Book",
+            color = case_when(medicaid_jail_opioid_county$population == "Individuals w/ Opioid-related Primary Diagnosis" ~ "white",
+                              TRUE ~ "black")) +
+  theme_minimal() +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
+        axis.text.y = element_text(size = 28, color = "black"),
+        legend.title=element_blank(),
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.position = "bottom",
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_medicaid_jail_opioid_county, file="img/PRES_gg_medicaid_jail_opioid_county.png", width = 9,  height = 7, dpi = 100)
+knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid_county.png")
+```
+
+
 <br><br>
-
-
-
 
 # Trends for Medicaid Claims (FY2019-2021) 
 
@@ -1540,14 +1680,87 @@ knitr::include_graphics("img/PRES_gg_smi_primary_diagnoses_tier1hu.png")
 ```
 <br><br>
 
+
+
+
+
+
+
 ### Primary diagnosis for "suicidal ideation/attempt/intentional self-harm" Medicaid claims between FY2019-2021
 
 ```{r}
+# Find number and proportion of people with primary diagnosis for "suicidal ideation/attempt/intentional self-harm" 
+# by hu_group_overall
+smi_suicide_related_hu <- medicaid_encounters_cleaned_2018_2021 %>% 
+  group_by(hu_group_exclusive) %>% 
+  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+            
+            `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm"]),
+            `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`= `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ Medicaid Match (N)`,
+            `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) 
+  
+# by state
+smi_suicide_related_hu_state <- medicaid_encounters_cleaned_2018_2021 %>% 
+  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+            
+            `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm"]),
+            `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`= `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ Medicaid Match (N)`,
+            `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) %>% 
+  mutate(hu_group_exclusive = "State")
 
+# combine data
+smi_suicide_related_hu <- rbind(smi_suicide_related_hu, smi_suicide_related_hu_state)
+
+# change from wide to long format
+smi_suicide_related_hu <- gather(smi_suicide_related_hu, population, pct, `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`:`Individuals w/out suicidal ideation/attempt/intentional self-harm (%)`, factor_key=TRUE) 
+smi_suicide_related_hu <- smi_suicide_related_hu %>% 
+  mutate(population = factor(population, 
+                             levels = c("Individuals w/out suicidal ideation/attempt/intentional self-harm (%)",
+                                        "Individuals w/ suicidal ideation/attempt/intentional self-harm (%)"),
+                             labels = c("Individuals w/out suicidal ideation/attempt/intentional self-harm",
+                                        "Individuals w/ suicidal ideation/attempt/intentional self-harm")))
+
+PRES_gg_smi_suicide_related_hu <- 
+  ggplot(smi_suicide_related_hu,
+         aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0,1.3)) +
+  scale_fill_manual(values=c("gray",jri_light_blue),
+                    na.value = "white") +
+  geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
+                fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.8,
+            size = 7.5, family = "Franklin Gothic Book",
+            color = case_when(smi_suicide_related_hu$population == "Individuals w/ suicidal ideation/attempt/intentional self-harm" ~ "white",
+                              TRUE ~ "black")) +
+  theme_no_grid_no_labels +
+  coord_flip() +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(color = "black"),
+        axis.text.y = element_text(color = "black"),
+        # legend.position = "right",
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.position = "bottom",
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", color = "black"))
 ```
 
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_smi_suicide_related_hu, file="img/PRES_gg_smi_suicide_related_hu.png", width = 10,  height = 6, dpi = 100)
+knitr::include_graphics("img/PRES_gg_smi_suicide_related_hu.png")
+```
 
-
+<br><br>
 
 **See full notes and business rules for variable creation in data dictionary for individual-level analytic file here: https://csgorg.sharepoint.com/:x:/s/Team-JC-Research/EUJfEABIuNNBvKARa4Kq1nwBvSLwsK4aH7K9oZDOWxbc1w?e=zLytTB**
 
