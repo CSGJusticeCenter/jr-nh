@@ -68,11 +68,13 @@ entrances_dhhs <- medicaid_jail_all %>%
                                           "Over 180")))
 ```
 
-# Length of Stay for Jail Entrances, Statewide from 2019 to 2021 (DHHS data)
+# Length of Stay, Statewide from 2019 to 2021 (DHHS data)
+
+Length of stay was calculated by the number of days between the booking date and release date (regardless of time). Some jails provided time stamps while others only provided month, day, and year. High utilizers have shorter lengths of stay compared to non-high utilizers.   
 
 ```{r}
-# Length of stay for all people
-# Remove instances where release date is earlier than booking date and NAs
+# length of stay for all people
+# remove instances where release date is earlier than booking date and NAs
 dhhs_jail_los_entrances <- entrances_dhhs %>%
   select(fy,
          county,
@@ -84,7 +86,7 @@ dhhs_jail_los_entrances <- entrances_dhhs %>%
   distinct() %>%
   filter(!is.na(jail_los) & jail_los >= 0)
 
-# Get min med mean max of jail entrances for all 
+# get min med mean max of jail entrances for all 
 overall_los_summary <- dhhs_jail_los_entrances %>%
   group_by() %>%
   summarise(
@@ -95,7 +97,7 @@ overall_los_summary <- dhhs_jail_los_entrances %>%
   mutate(mean = round(mean, 1)) %>% 
   mutate(hu_group_exclusive = "All (HU's and non-HU's)") %>% select(hu_group_exclusive, everything())
 
-# Get min med mean max of jail entrances for High Utilizers
+# get min med mean max of jail entrances for high utilizers
 hu_los_summary <- dhhs_jail_los_entrances %>%
   group_by(hu_group_exclusive) %>%
   summarise(
@@ -105,10 +107,10 @@ hu_los_summary <- dhhs_jail_los_entrances %>%
     max    = max(jail_los, na.rm = T)) %>%
   mutate(mean = round(mean, 1)) 
 
-# Add together
+# add together
 hu_los_summary <- rbind(hu_los_summary, overall_los_summary)
 
-# Reactable table
+# reactable table
 reactable(hu_los_summary,
           pagination = FALSE,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
@@ -197,72 +199,11 @@ PRES_gg_los_category <- data1 %>%
   )
 ```
 
-**Nearly half of jail entrances (DHHS data) had lengths of stay between 0-1 days**
+**Nearly half of jail entrances (DHHS data) had LOS between 0-1 days.**
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_los_category, file="img/PRES_gg_los_category.png", width = 10,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_los_category.png")
-```
-
-**Average and Median Length of Stay for High Utilizers**
-
-```{r}
-# Filter to LOS for all HU's
-data1 <- dhhs_jail_los_entrances %>% 
-  filter(hu_group_exclusive != "Non-HU") %>% 
-  group_by(los_category) %>% 
-  summarise(total = n()) 
-
-# Ggplot showing the average and median los for high utilizers
-gg_hu_los_category <- ggplot(data1) +
-
-  geom_bar(aes(x = los_category, y = total, fill = jri_orange), stat="identity", width = 0.75) +
-  labs(x = "Length of Stay (Days)", y = "Number of Entrances\n") +
-  scale_fill_manual(values=c(jri_orange)) +
-
-  # Median
-  geom_vline(xintercept = 3, linetype = "dashed", colour = "darkgray",size = 1) +
-  geom_richtext(aes(x=3, y=3400, label="Median LOS = 2"),
-                color = "white",
-                size = 7.5,
-                fontface = 'bold',
-                fill = "darkgray",
-                label.r = unit(0, "lines"),
-                label.padding = unit(c(.5, .5, .5, .5), "lines"),
-                nudge_x = 1,
-                #angle = 90
-                ) +
-
-  # Mean
-  geom_vline(xintercept = 8, linetype = "dashed", colour = "darkgray",size = 1) +
-  geom_richtext(aes(x=8, y=3400, label="Average LOS = 22"),
-                color = "white",
-                size = 7.5,
-                fontface = 'bold',
-                fill = "darkgray",
-                label.r = unit(0, "lines"),
-                label.padding = unit(c(.5, .5, .5, .5), "lines"),
-                nudge_x = 1.1,
-                ) +
-  
-  scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ",")) +
-
-  theme_no_grid_no_labels +
-  theme(axis.text.x = element_text(angle = 45,size = 22, color = "black",
-                                   hjust=1),
-        axis.text.y = element_text(size = 22, color = "black"),
-        axis.title = element_text(color = "black"),
-        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        legend.position = "none")
-
-```
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(gg_hu_los_category, file="img/gg_hu_los_category.png", width = 12,  height = 5, dpi = 100)
-knitr::include_graphics("img/gg_hu_los_category.png")
 ```
 
 **Proportion of entrances for HU's with each LOS category**
@@ -386,7 +327,7 @@ PRES_gg_diverge_nonhu_1pct_hu_los_prop <- hu_1pct_los_prop %>%
            position = position_stack(vjust = 0.5),
            color = "white",
            fontface = "bold") + 
-  scale_fill_manual(values=c(jri_dark_blue, jri_light_blue)) +
+  scale_fill_manual(values=c("gray50", jri_light_blue)) +
   theme_no_grid_no_labels +
   coord_flip() +
   theme(axis.text.x = element_blank(),
@@ -479,11 +420,6 @@ PRES_gg_diverge_hu_overall_los_prop <- hu_overall_los_prop %>%
   ggplot(aes(x = los_category, y = pct, fill = hu_group_overall))+
   geom_bar(stat = "identity") +
   labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
-  # geom_text(aes(label = ifelse(pct > .02 | pct < 0, pct_label, "")),
-  #          size = 7.5, family = "Franklin Gothic Book",
-  #          position = position_stack(vjust = 0.5),
-  #          color = "white",
-  #          fontface = "bold") + 
    geom_text(aes(label = ifelse(pct > .02 | pct < 0, pct_label, "")),
             size = 7.5, family = "Franklin Gothic Book",
             hjust = ifelse(hu_overall_los_prop$hu_group_overall == "High Utilizer", -.1, 1.1),
@@ -607,112 +543,6 @@ jail_booking_entrances_los_0_1_day <- jail_booking_entrances_los_0_1_day %>%
   mutate(sentence_status_standard = factor(sentence_status_standard, levels = c("Pretrial", "Protective Custody","Sentenced", "Other")))
 ```
 
-**Sentence Statuses for People Entering Jail for 0-1 Days**
-
-```{r}
-PRES_gg_pie_0_1_los_bookings <- ggplot(jail_booking_entrances_los_0_1_day, aes(x = state, y = total, fill = sentence_status_standard)) +
-  geom_col(colour = NA, position = "fill") +
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c(jri_green, jri_light_blue, jri_orange, "gray")) +
-  geom_text(aes(label = ifelse(total > 100, pct, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
-            size = 8, family = "Franklin Gothic Book",
-            color = ifelse(jail_booking_entrances_los_0_1_day$sentence_status_standard == "NA", "gray", "white")
-            ) +
-  
-  theme(legend.position = "top",
-        legend.justification = c(0, 0),
-        legend.title=element_blank(),
-        axis.title.y = element_blank()) +
-  coord_polar("y", start=0) +
-  theme_no_grid_no_labels +
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.border = element_blank(),
-    panel.grid=element_blank(),
-    axis.ticks = element_blank(),
-    plot.title=element_text(size=14, face="bold"),
-    axis.text.x=element_blank(),
-    axis.text.y=element_blank(),
-    legend.title = element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
-```
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_0_1_los_bookings, file="img/PRES_gg_pie_0_1_los_bookings.png", width = 8,  height = 8, dpi = 100)
-knitr::include_graphics("img/PRES_gg_pie_0_1_los_bookings.png")
-```
-
-**Sentence Statuses for People Entering Jail for 0 Days**
-
-```{r}
-PRES_gg_pie_0_los_bookings <- ggplot(jail_booking_entrances_los_0_day, aes(x = state, y = total, fill = sentence_status_standard)) +
-  geom_col(colour = NA, position = "fill") +
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c(jri_green, jri_light_blue, jri_orange, "gray")) +
-  geom_text(aes(label = ifelse(total > 100, pct, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
-            size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(jail_booking_entrances_los_0_day$sentence_status_standard == "NA", "gray", "white")
-            ) +
-  
-  theme(legend.position = "top",
-        legend.justification = c(0, 0),
-        legend.title=element_blank(),
-        axis.title.y = element_blank()) +
-  coord_polar("y", start=0) +
-  theme_no_grid_no_labels +
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.border = element_blank(),
-    panel.grid=element_blank(),
-    axis.ticks = element_blank(),
-    plot.title=element_text(size=14, face="bold"),
-    axis.text.x=element_blank(),
-    axis.text.y=element_blank(),
-    legend.title = element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
-```
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_0_los_bookings, file="img/PRES_gg_pie_0_los_bookings.png", width = 8,  height = 8, dpi = 100)
-knitr::include_graphics("img/PRES_gg_pie_0_los_bookings.png")
-```
-
-**Sentence Statuses for People Entering Jail for 1 Day**
-
-```{r}
-PRES_gg_pie_1_los_bookings <- ggplot(jail_booking_entrances_los_1_day, aes(x = state, y = total, fill = sentence_status_standard)) +
-  geom_col(colour = NA, position = "fill") +
-  scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c(jri_green, jri_light_blue, jri_orange, "gray")) +
-  geom_text(aes(label = ifelse(total > 100, pct, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
-            size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(jail_booking_entrances_los_1_day$sentence_status_standard == "NA", "gray", "white")
-            ) +
-  
-  theme(legend.position = "top",
-        legend.justification = c(0, 0),
-        legend.title=element_blank(),
-        axis.title.y = element_blank()) +
-  coord_polar("y", start=0) +
-  theme_no_grid_no_labels +
-  theme(
-    axis.title.x = element_blank(),
-    axis.title.y = element_blank(),
-    panel.border = element_blank(),
-    panel.grid=element_blank(),
-    axis.ticks = element_blank(),
-    plot.title=element_text(size=14, face="bold"),
-    axis.text.x=element_blank(),
-    axis.text.y=element_blank(),
-    legend.title = element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
-```
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_1_los_bookings, file="img/PRES_gg_pie_1_los_bookings.png", width = 8,  height = 8, dpi = 100)
-knitr::include_graphics("img/PRES_gg_pie_1_los_bookings.png")
-```
-
-<br>
 
 ```{r}
 # Calculate LOS
@@ -786,11 +616,122 @@ PRES_gg_jail_los_category <- jail_booking_entrances_los %>%
   )
 ```
 
-**38 pct of jail bookings (non-PC holds) had lengths of stay between 0-1 days.**
+38% of jail bookings (non-PC holds) had lengths of stay between 0-1 days.  
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_jail_los_category, file="img/PRES_gg_jail_los_category.png", width = 10,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_jail_los_category.png")
+```
+
+**Sentence Statuses for People Entering Jail for 0-1 Days**
+
+The majority of sentence statuses for people entering jail for 0-1 days were pretrial.  
+
+```{r}
+PRES_gg_pie_0_1_los_bookings <- ggplot(jail_booking_entrances_los_0_1_day, aes(x = state, y = total, fill = sentence_status_standard)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c(jri_green, jri_light_blue, jri_orange, "gray")) +
+  geom_text(aes(label = ifelse(total > 100, pct, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
+            size = 8, family = "Franklin Gothic Book",
+            color = ifelse(jail_booking_entrances_los_0_1_day$sentence_status_standard == "NA", "gray", "white")
+            ) +
+  
+  theme(legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank(),
+        axis.title.y = element_blank()) +
+  coord_polar("y", start=0) +
+  theme_no_grid_no_labels +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.border = element_blank(),
+    panel.grid=element_blank(),
+    axis.ticks = element_blank(),
+    plot.title=element_text(size=14, face="bold"),
+    axis.text.x=element_blank(),
+    axis.text.y=element_blank(),
+    legend.title = element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+```
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_pie_0_1_los_bookings, file="img/PRES_gg_pie_0_1_los_bookings.png", width = 8,  height = 8, dpi = 100)
+knitr::include_graphics("img/PRES_gg_pie_0_1_los_bookings.png")
+```
+
+**Sentence Statuses for People Entering Jail for 0 Days**
+
+The majority of sentence statuses for people entering jail for 0 days were pretrial.  
+
+```{r}
+PRES_gg_pie_0_los_bookings <- ggplot(jail_booking_entrances_los_0_day, aes(x = state, y = total, fill = sentence_status_standard)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c(jri_green, jri_light_blue, jri_orange, "gray")) +
+  geom_text(aes(label = ifelse(total > 100, pct, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
+            size = 7.5, family = "Franklin Gothic Book",
+            color = ifelse(jail_booking_entrances_los_0_day$sentence_status_standard == "NA", "gray", "white")
+            ) +
+  
+  theme(legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank(),
+        axis.title.y = element_blank()) +
+  coord_polar("y", start=0) +
+  theme_no_grid_no_labels +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.border = element_blank(),
+    panel.grid=element_blank(),
+    axis.ticks = element_blank(),
+    plot.title=element_text(size=14, face="bold"),
+    axis.text.x=element_blank(),
+    axis.text.y=element_blank(),
+    legend.title = element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+```
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_pie_0_los_bookings, file="img/PRES_gg_pie_0_los_bookings.png", width = 8,  height = 8, dpi = 100)
+knitr::include_graphics("img/PRES_gg_pie_0_los_bookings.png")
+```
+
+**Sentence Statuses for People Entering Jail for 1 Day**
+
+The majority of sentence statuses for people entering jail for 1 day were pretrial.  
+
+```{r}
+PRES_gg_pie_1_los_bookings <- ggplot(jail_booking_entrances_los_1_day, aes(x = state, y = total, fill = sentence_status_standard)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c(jri_green, jri_light_blue, jri_orange, "gray")) +
+  geom_text(aes(label = ifelse(total > 100, pct, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
+            size = 7.5, family = "Franklin Gothic Book",
+            color = ifelse(jail_booking_entrances_los_1_day$sentence_status_standard == "NA", "gray", "white")
+            ) +
+  
+  theme(legend.position = "top",
+        legend.justification = c(0, 0),
+        legend.title=element_blank(),
+        axis.title.y = element_blank()) +
+  coord_polar("y", start=0) +
+  theme_no_grid_no_labels +
+  theme(
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    panel.border = element_blank(),
+    panel.grid=element_blank(),
+    axis.ticks = element_blank(),
+    plot.title=element_text(size=14, face="bold"),
+    axis.text.x=element_blank(),
+    axis.text.y=element_blank(),
+    legend.title = element_blank(),
+    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+```
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_pie_1_los_bookings, file="img/PRES_gg_pie_1_los_bookings.png", width = 8,  height = 8, dpi = 100)
+knitr::include_graphics("img/PRES_gg_pie_1_los_bookings.png")
 ```
 
 <br>
@@ -888,7 +829,7 @@ PRES_gg_los_0_1_crime_type <- ggplot(los_0_1_day_crime_tier1hu_nonhu, aes(fill=g
   )
 ```
 
-For those with LOS between 0-1 days, tier 1 high utilizers were more likely to be booked for probation and parole violations compared to non-high utilizers. Not including PC holds.    
+For those with LOS between 0-1 days, tier 1 high utilizers were more likely to be booked for probation and parole violations compared to non-high utilizers.     
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_los_0_1_crime_type, file="img/PRES_gg_los_0_1_crime_type.png", width = 13,  height = 6, dpi = 100)
