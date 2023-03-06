@@ -521,6 +521,8 @@ reactable(hu_nonhu_pct,
 ```
 <br>
 
+<br>
+
 **Proportion of HU entrances out of all NH jail entrances**
 
 ```{r}
@@ -596,6 +598,130 @@ PRES_gg_hu_people_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_peo
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_hu_people_pct_piechart, file="img/PRES_gg_hu_people_pct_piechart.png", width = 6,  height = 5, dpi = 100, bg='transparent')
 knitr::include_graphics("img/PRES_gg_hu_people_pct_piechart.png")
+```
+
+## High Utilizers (Overall)
+
+```{r}
+########################################
+# HU People
+########################################
+
+# Count number of people by county
+hu_people_county <- entrances_dhhs %>%
+  group_by(county, hu_group_overall) %>%
+  summarise(total_hu_people  = n_distinct(id)) 
+
+# Count number of people by state
+hu_people_state <- entrances_dhhs %>%
+  group_by(hu_group_overall) %>% 
+  summarise(total_hu_people  = n_distinct(id)) %>%
+  mutate(county = "State")
+
+# Add data together
+hu_people <- rbind(hu_people_county, hu_people_state)
+
+########################################
+# HU ENTRANCES
+########################################
+
+# Count number of entrances by county
+hu_entrances_county <- entrances_dhhs %>%
+  group_by(county, hu_group_overall) %>%
+  summarise(total_hu_entrances = n_distinct(booking_id)) 
+
+# Count number of entrances by state
+hu_entrances_state <- entrances_dhhs %>%
+  group_by(hu_group_overall) %>%
+  summarise(total_hu_entrances = n_distinct(booking_id)) %>%
+  mutate(county = "State")
+
+# Add data together
+hu_entrances <- rbind(hu_entrances_county, hu_entrances_state)
+
+########################################
+# HU min median mean max range
+########################################
+
+# Summary of hu entrances by county
+hu_summary_county <- entrances_dhhs %>%
+  ungroup() %>%
+  select(county, id, num_entrances, hu_group_overall) %>%
+  distinct() %>%
+  group_by(county, hu_group_overall) %>%
+  summarise(min    = min(num_entrances, na.rm = T),
+            median = median(num_entrances, na.rm = T),
+            mean   = mean(num_entrances, na.rm = T),
+            max    = max(num_entrances, na.rm = T)) %>%
+  select(county, everything()) 
+
+# Summary of hu entrances by state
+hu_summary_state <- entrances_dhhs %>%
+  ungroup() %>%
+  select(id, num_entrances, hu_group_overall) %>%
+  distinct() %>%
+  group_by(hu_group_overall) %>%
+  summarise(min    = min(num_entrances, na.rm = T),
+            median = median(num_entrances, na.rm = T),
+            mean   = mean(num_entrances, na.rm = T),
+            max    = max(num_entrances, na.rm = T)) %>%
+  mutate(county = "State") %>%
+  select(county, everything())
+
+# Add data together
+hu_summary <- rbind(hu_summary_county, hu_summary_state)
+
+# Final summary table
+hu_table <- hu_summary %>%
+  left_join(hu_people, by = c("county", "hu_group_overall")) %>%
+  left_join(hu_entrances, by = c("county", "hu_group_overall")) %>%
+  left_join(df_entrances_county, by = "county") %>% 
+  mutate(freq = total_hu_entrances/entrances_total) %>% 
+  mutate(range = paste(min, max, sep = "-")) %>% 
+  arrange(county %in% "State") %>% 
+  select(hu_group_overall,
+         county,
+         total_hu_people,
+         total_hu_entrances,
+         total_entrances = entrances_total,
+         freq, 
+         range,
+         median,
+         mean)
+
+# Filter to Tier 1
+hu_pct <- hu_table %>% filter(hu_group_overall == "High Utilizer") %>% select(-hu_group_overall)
+
+# Create reactable table
+reactable(hu_pct,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            county = colDef(show = T, minWidth = 190, name = "County", align = "left",
+                            style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3")),
+            total_hu_entrances = colDef(show = T, minWidth = 100, name = "HU's (Entrances)"),
+            total_hu_people    = colDef(show = T, minWidth = 100, name = "HU's (People)"),
+            total_entrances    = colDef(show = T, minWidth = 100, name = "Total Jail Entrances"),
+            freq               = colDef(show = T, minWidth = 100, name = "Proportion of Entrances that were HU's",
+                                              style = list(fontWeight = "bold", position = "sticky", borderRight = "1px solid #d3d3d3"),
+                                              format = colFormat(percent = TRUE, digits = 1)),
+                        
+            median             = colDef(show = T, minWidth = 100, name = "Median Number of Entrances Per Person"),
+            mean               = colDef(show = T, minWidth = 130, name = "Avg Number of Entrances Per Person", format = colFormat(percent = FALSE, digits = 1)),
+            range              = colDef(show = T, minWidth = 100, name = "Min - Max Number of Entrances Per Person")
+
+          )
+)
 ```
 
 <br><br>
