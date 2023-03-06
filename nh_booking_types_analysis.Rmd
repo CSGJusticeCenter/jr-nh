@@ -29,12 +29,14 @@ adm_all            <- fnc_hu_group_exclusive(adm_all)
 
 ## Sentence Statuses
 
-The following booking patterns were found using jail administrative data submitted directly to CSG. DHHS matched data does not have information on sentence statuses. The "other" category includes federal holds, holds for other agencies, 24 hour and 72 hour holds, other holds, dual status, bail set, bond denied, dismissed, and sentence suspended.  
+The following booking patterns were found using jail administrative data submitted directly to CSG. DHHS matched-to-Medicaid data does not have information on sentence statuses. The "other" category includes federal holds, holds for other agencies, 24 hour and 72 hour holds, other holds, dual status, bail set, bond denied, dismissed, and sentence suspended.  
 
 ### Sentence Statuses State-wide
 
+The majority of bookings result in a pretrial sentence status, followed by protective custody.  
+
 ```{r}
-# Count number of bookings on different sentence statuses for pie chart
+# count number of and proportion of bookings for different sentence statuses for pie chart
 data1 <- bookings_entrances %>% 
   mutate(sentence_status_standard = ifelse(sentence_status_standard == "UNKNOWN", NA, sentence_status_standard)) %>% 
   group_by(sentence_status_standard) %>% 
@@ -82,7 +84,7 @@ data1 <- bookings_entrances %>%
   distinct() %>% 
   mutate(sentence_status_standard = ifelse(sentence_status_standard == "UNKNOWN", NA, sentence_status_standard))
 
-# Get frequencies for different sentence statuses
+# get frequencies for different sentence statuses
 data1 <- data.frame(summarytools::freq(data1$sentence_status_standard, order = "freq", cum.percent = FALSE))
 data1 <- data1 %>% tibble::rownames_to_column("sentence_status_standard") %>%
   dplyr::select(`Sentence Status` = sentence_status_standard,
@@ -90,7 +92,7 @@ data1 <- data1 %>% tibble::rownames_to_column("sentence_status_standard") %>%
                 `Proportion of Bookings (%)` = X..Valid) %>% 
   mutate(`Proportion of Bookings (%)` = percent(`Proportion of Bookings (%)`/100))
 
-# Create kable table
+# create kable table
 kable(data1, 
       format.args = list(big.mark = ","), 
       align=rep('l')) %>%
@@ -104,6 +106,8 @@ kable(data1,
 ```
 
 ### Sentence Statuses by County (N)
+
+The number of sentence statuses by county from 2019 to 2021.  
 
 ```{r}
 # Df of total number of entrances by county
@@ -132,7 +136,7 @@ df_sentence_statuses_county <- bookings_entrances %>%
   left_join(df_entrances_county, by = c("County" = "county")) %>% 
   rename(`Total Entrances (N)` = total)
 
-# Create kable table
+# create kable table
 kable(df_sentence_statuses_county, 
       format.args = list(big.mark = ","), 
       align=rep('l')) %>%
@@ -154,8 +158,10 @@ kable(df_sentence_statuses_county,
 
 ### Sentence Statuses by County (%)
 
+The proportion of sentence statuses by county from 2019 to 2021.  
+
 ```{r}
-# Calculate proportion of sentence statuses out of all entrances
+# calculate proportion of sentence statuses out of all entrances
 df_sentence_statuses_county_pct <- df_sentence_statuses_county %>% 
   mutate(`Pretrial %`             = percent(`Pretrial (N)`/`Total Entrances (N)`),
          `Protective Custody (%)` = percent(`Protective Custody (N)`/`Total Entrances (N)`),
@@ -171,7 +177,7 @@ df_sentence_statuses_county_pct <- df_sentence_statuses_county %>%
          `Unknown (N)`,
          `Total Entrances (N)`))
 
-# Create kable table
+# create kable table
 kable(df_sentence_statuses_county_pct, 
       format.args = list(big.mark = ","), 
       align=rep('l')) %>%
@@ -192,8 +198,10 @@ kable(df_sentence_statuses_county_pct,
 
 **Proportion of jail bookings that are pretrial by county**
 
+There was substantial variation among counties for the proportion of bookings that were pretrial. Hillsborough had the highest proportion of bookings that were pretrial.  
+
 ```{r}
-# Number of pretrial by county for all three years
+# number of pretrial by county for all three years
 data1 <- bookings_entrances %>%
   dplyr::ungroup() %>%
   dplyr::select(booking_id, county, sentence_status_standard) %>%
@@ -248,12 +256,14 @@ knitr::include_graphics("img/PRES_gg_pretrial_prop.png")
 
 ## Sentence Statuses and Charge Types
 
-### Charge Type by Sentence Status (Row Sums)
+### Charge Type by Sentence Status (Row sum)
+
+The number and proportion of charge types by sentence statuses from 2019 to 2021. This table shows column sum. For example, of all sentence statuses that were pretrial, 31% of bookings had a violent charge type.  
 
 ```{r}
-# Get proportion of charge types by sentence status
+# get proportion of charge types by sentence status
 data1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
-table1 <- prop.table(data1, 1)
+table1 <- prop.table(data1, 2) # row sum
 table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("Charge Type")
 
@@ -271,11 +281,11 @@ table1 <- table1 %>%
               "Sentenced (%)"          = 10,
               "Unknown (%)"            = 11) 
 
-# Sep tables into N and % 
+# sep tables into N and % 
 table_n   <- table1 %>% select(1:6)
 table_pct <- table1 %>% select(1, 7:11)
 
-# Create reactable table for N
+# create reactable table for N
 reactable(table_n,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
@@ -303,7 +313,7 @@ reactable(table_n,
           ) %>%
 add_source(paste(""), font_style = "italic", font_size = 14)
 
-# Create reactable table for %
+# create reactable table for %
 reactable(table_pct,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
@@ -340,12 +350,14 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-### Charge Type by Sentence Status (Column Sums)
+### Charge Type by Sentence Status (Column sum)
+
+The number and proportion of charge types by sentence statuses from 2019 to 2021. This table shows row sum. For example, of all charge types that were drug/alcohol, 73% resulted in a pretrial sentence status.   
 
 ```{r}
-# Get proportion of charge types by sentence status
+# get proportion of charge types by sentence status
 data1 <- table(adm_all$crime_type_lookup, adm_all$sentence_status_standard)
-table1 <- prop.table(data1, 1)
+table1 <- prop.table(data1, 1) # column sum
 table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("Charge Type")
 
@@ -363,11 +375,11 @@ table1 <- table1 %>%
               "Sentenced (%)"          = 10,
               "Unknown (%)"            = 11) 
 
-# Sep tables into N and % 
+# sep tables into N and % 
 table_n   <- table1 %>% select(1:6)
 table_pct <- table1 %>% select(1, 7:11)
 
-# Create reactable table for N
+# create reactable table for N
 reactable(table_n,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
@@ -395,7 +407,7 @@ reactable(table_n,
           ) %>%
 add_source(paste(""), font_style = "italic", font_size = 14)
 
-# Create reactable table for %
+# create reactable table for %
 reactable(table_pct,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
@@ -430,14 +442,14 @@ reactable(table_pct,
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
 
-
 <br>
 
+### High Utilizers and Sentence Statuses (Row sum)
 
-### High Utilizers and Sentence Statuses (Row sums)
+This table shows row sum. For example, of the bookings by tier 1 high utilizers, 40% were pretrial and 27% were protective custody.  
 
 ```{r}
-# Select HU entrances
+# select HU entrances
 df_hus_entrances <- adm_all %>% 
   select(id, 
          booking_id, 
@@ -449,13 +461,13 @@ df_hus_entrances <- adm_all %>%
   distinct() %>% 
   filter(sentence_status_standard != "UNKNOWN")
 
-# Get proportion of sentence statuses by HU type
+# get proportion of sentence statuses by HU type
 data1 <- table(df_hus_entrances$sentence_status_standard, df_hus_entrances$hu_group_exclusive)
 table1 <- prop.table(data1, 2)
 table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("Entrance Type")
 
-# Create reactable table
+# create reactable table
 reactable(table1,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
@@ -495,16 +507,18 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-### High Utilizers and Sentence Statuses (Column sums)
+### High Utilizers and Sentence Statuses (Column sum)
+
+This table shows column sum. For example, of the bookings that resulted in a pretrial sentence status, 4% were by tier 1 high utilizers.    
 
 ```{r}
-# Get proportion of sentence statuses by HU type
+# get proportion of sentence statuses by HU type
 data1 <- table(df_hus_entrances$sentence_status_standard, df_hus_entrances$hu_group_exclusive)
 table1 <- prop.table(data1, 1)
 table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("Entrance Type")
 
-# Create reactable table
+# create reactable table
 reactable(table1,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
@@ -569,8 +583,8 @@ Specialty court programs for people involved in the criminal jusice system with 
 Felony drug court programs for adult offenders are available in Belknap, Carroll, Cheshire, Coos, Grafton, Hillsborough (North and South), Merrimack, Rockingham, and Strafford Counties. A defendant who enters those drug court programs must reside in the County where drug court is offered, in addition to having committed the crime in that county. 
 
 ```{r}
-# Select variables and counties to look at drug courts
-# See if the booking is related to drug courts (sentenced or pretrial)
+# select variables and counties to look at drug courts
+# see if the booking is related to drug courts (sentenced or pretrial)
 df_drug_courts <- adm_all %>% 
   filter(county == "Cheshire" |
          county == "Hillsborough" |
@@ -595,14 +609,16 @@ df_drug_courts <- adm_all %>%
 
 ### Drug court-related bookings by county
 
+Drug-court related bookings accounted for 5% of all jail bookings in Cheshire, Hillsborough, and Rockingham County jails.  
+
 ```{r}
-# Get proportion of bookings that were drug court-related
+# get proportion of bookings that were drug court-related
 data1 <- table(df_drug_courts$county, df_drug_courts$drug_court)
 table1 <- prop.table(data1, 1)
 table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("County")
 
-# Create reactable table
+# create reactable table
 reactable(table1,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
@@ -641,16 +657,18 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
-### Drug court-related bookings by high utilizers (Row sums)
+### Drug court-related bookings by high utilizers (Row sum)
+
+High utilizers accounted for 85% of drug court-related bookings in Cheshire, Hillsborough, and Rockingham County jails.  
 
 ```{r}
-# Get proportion of HU bookings that were drug court related
+# get proportion of HU bookings that were drug court related
 data1 <- table(df_drug_courts$hu_group_exclusive, df_drug_courts$drug_court)
-table1 <- prop.table(data1, 2)
+table1 <- prop.table(data1, 2) # row sum
 table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("HU Type")
 
-# Create reactable table
+# create reactable table
 reactable(table1,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
@@ -687,7 +705,7 @@ reactable(table1,
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
 ```{r}
-# Select variables and count number of drug court related bookings by HU type
+# select variables and count number of drug court related bookings by HU type
 data1 <- df_drug_courts %>%
   select(county,
          fy,
@@ -706,7 +724,7 @@ data1 <- as.data.frame(data1)
 data1 <- data1 %>% mutate(pct = paste0(pct, "%")) %>% 
   mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")))
 
-# One stacked barplot for all three years and then make it a pie chart
+# one stacked barplot for all three years and then make it a pie chart
 PRES_gg_pie_drug_court_bookings <- ggplot(data1, aes(x = drug_court, y = total, fill = hu_group_exclusive )) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
@@ -728,16 +746,18 @@ ggsave(PRES_gg_pie_drug_court_bookings, file="img/PRES_gg_pie_drug_court_booking
 knitr::include_graphics("img/PRES_gg_pie_drug_court_bookings.png")
 ```
 
-### Drug court-related bookings by high utilizers (Column sums)
+### Drug court-related bookings by high utilizers (Column sum)
+
+This table shows column sum. For example, of all tier 1 hu bookings, 34% were drug court-related.  
 
 ```{r}
-# Get proportion of HUs with drug court related bookings
+# get proportion of HUs with drug court related bookings
 data1 <- table(df_drug_courts$hu_group_exclusive, df_drug_courts$drug_court)
-table1 <- prop.table(data1, 1)
+table1 <- prop.table(data1, 1) # column sum
 table1 <- as.data.frame(cbind(data1, table1))
 table1 <- table1 %>% rownames_to_column("HU Type")
 
-# Create reactable table
+# create reactable table
 reactable(table1,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           pagination = FALSE,
