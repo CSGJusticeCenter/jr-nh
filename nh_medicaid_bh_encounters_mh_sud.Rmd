@@ -26,16 +26,16 @@ knitr::opts_chunk$set(
 # Import files
 ##########
 
-# Import medicaid_jail_all -- medicaid jail data that we'll compare to the numbers from the jail administrative files
-# This file lives on the external hard drive (created and exported in `14_medicaid.R`)
+# import medicaid_jail_all -- medicaid jail data that we'll compare to the numbers from the jail administrative files
+# this file lives on the external hard drive (created and exported in `14_medicaid.R`)
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
 
-# Import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
-# File is unique by individual/booking
-# This file lives on the external hard drive (created and exported in `14_medicaid.R`)
+# import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
+# file is unique by individual/booking
+# this file lives on the external hard drive (created and exported in `14_medicaid.R`)
 jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
 
-# Import medicaid encounters with costs and individual diagnoses created in `14_medicaid.R`
+# import medicaid encounters with costs and individual diagnoses created in `14_medicaid.R`
 medicaid_encounters_costs_all <- read_rds("D:/Analytic/medicaid_enrollment_categories_encounters.rds") 
 
 ##########
@@ -54,7 +54,7 @@ entrances_dhhs <- medicaid_jail_all %>%
 
 
 #####
-# De-dup (there are a few duplicate bookings) and create booking id for analysis
+# de-dup (there are a few duplicate bookings) and create booking id for analysis
 jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_individual_booking_level %>% 
   distinct(unique_person_id, 
            booking_id,
@@ -62,14 +62,14 @@ jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_
   mutate(unique_person_booking_id = paste0(unique_person_id,
                                     booking_id)) ### creating unique booking id with both individual and booking IDs
 
-# Recode high utilizer percentile grouping
+# recode high utilizer percentile grouping
 jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- fnc_hu_group_exclusive(jail_medicaid_analytic_individual_booking_level_dedup) 
 #####
 
 
 
 #####
-# Save ids and HU status
+# save ids and HU status, flags
 unique_ids_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   select(unique_person_id, 
          hu_group_exclusive,
@@ -82,27 +82,27 @@ unique_ids_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
 
 
 #####
-# Medicaid encounters with cost and diagnoses information ############################ Check this
-# Create unique case id using id and dose date
+# medicaid encounters with cost and diagnoses information ############################ Check this
+# create unique case id using id and dose date
 medicaid_encounters_costs <- medicaid_encounters_costs_all
 medicaid_encounters_costs$claim_id <- medicaid_encounters_costs %>% 
   dplyr::group_indices(unique_person_id, first_dos_dt) 
 
-# Reorganize variables
+# reorganize variables
 medicaid_encounters_costs <- medicaid_encounters_costs %>% 
   dplyr::select(unique_person_id,
                 claim_id,
                 everything())
 
-# Create data of just primary diagnosis costs by subsetting to claims that are MH or SUD or both
-# Remove pharamacy visits
+# create data of just primary diagnosis costs by subsetting to claims that are MH or SUD or both
+# remove pharmacy visits
 medicaid_encounters_costs_primary_dx_2018_2021 <- medicaid_encounters_costs %>% 
   filter(mh_service_categorized_using_primary_dx_code  == 1 |
          sud_service_categorized_using_primary_dx_code == 1) %>%
-  # Subset to FY 2019 to FY 2021
+  # subset to FY 2019 to FY 2021
   filter(first_dos_dt > "2018-06-30" & first_dos_dt < "2021-07-01")
 
-# Group SMI's together 
+# group SMI's and other categories together 
 medicaid_encounters_cleaned_2018_2021 <- medicaid_encounters_costs_primary_dx_2018_2021 %>% 
 mutate(dx_prmry_clinical_classification_new = case_when(
   
@@ -148,7 +148,7 @@ mutate(dx_prmry_clinical_classification_new = case_when(
   mutate(unique_person_id = as.character(unique_person_id),
          study_suicide_ideation = ifelse(dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm", 1, 0)) 
 
-# Merge with person info created from jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
+# merge with person info created from jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
 medicaid_encounters_cleaned_2018_2021 <- unique_ids_hu %>% 
   left_join(medicaid_encounters_cleaned_2018_2021, "unique_person_id") %>% 
   distinct() %>% 
@@ -193,11 +193,11 @@ Note: Co-Occurring Disorders indicates that individual had at least one Mental H
 medicaid_jail_county_bh_service_type_hu_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_overall) %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
-                   `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])/`Overall Individuals (N)`),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(n_distinct(unique_person_id[pre_or_study_bh_flag==1])/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   `Individuals w/ any Medicaid Match (% of Overall Sample)`     = scales::percent(n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (%)`                             = scales::percent(n_distinct(unique_person_id[pre_or_study_bh_flag==1])/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
                    
-                   `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
-                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (N)`  = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)`  = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
                    
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
@@ -213,11 +213,11 @@ medicaid_jail_county_bh_service_type_hu_table <- jail_medicaid_analytic_individu
 # statewide
 medicaid_jail_overall_bh_service_type_hu_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
-                   `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])/`Overall Individuals (N)`),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(n_distinct(unique_person_id[pre_or_study_bh_flag==1])/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   `Individuals w/ any Medicaid Match (% of Overall Sample)`     = scales::percent(n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])/`Overall Individuals (N)`),
+                   `Individuals w/ BH Encounter (%)`                             = scales::percent(n_distinct(unique_person_id[pre_or_study_bh_flag==1])/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
                    
-                   `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
-                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (N)`  = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
+                   `Individuals w/ MH Service Encounter, Primary Diagnosis (%)`  = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
                    
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
@@ -231,8 +231,7 @@ medicaid_jail_overall_bh_service_type_hu_table <- jail_medicaid_analytic_individ
   dplyr::mutate(`High Utilizer Status` = "Statewide") 
 
 # rbind county and statewide files 
-medicaid_jail_county_statewide_bh_service_type_hu_table <- rbind(medicaid_jail_county_bh_service_type_hu_table,
-                                                                 medicaid_jail_overall_bh_service_type_hu_table)
+medicaid_jail_county_statewide_bh_service_type_hu_table <- rbind(medicaid_jail_county_bh_service_type_hu_table, medicaid_jail_overall_bh_service_type_hu_table)
 
 ### print table via kableextra
 kable(medicaid_jail_county_statewide_bh_service_type_hu_table, 
@@ -293,9 +292,7 @@ medicaid_match_mh_all <- medicaid_match_mh_all %>%
                              labels = c("Individuals w/out MH Service Encounter",
                                         "Individuals w/ MH Service Encounter"))) %>% 
   mutate(pct1 = round(pct*100, 0))
-```
 
-```{r}
 PRES_gg_medicaid_mh <- ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent,
@@ -329,7 +326,7 @@ PRES_gg_medicaid_mh <- ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_ov
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
 ```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_medicaid_mh, file="img/PRES_gg_medicaid_mh.png", width = 10,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_mh.png")
 ```
@@ -375,9 +372,7 @@ medicaid_match_sud_all <- medicaid_match_sud_all %>%
                              labels = c("Individuals w/out SUD Service Encounter",
                                         "Individuals w/ SUD Service Encounter"))) %>% 
   mutate(pct1 = round(pct*100, 0))
-```
 
-```{r}
 PRES_gg_medicaid_sud <- ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent,
@@ -411,7 +406,7 @@ PRES_gg_medicaid_sud <- ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
 ```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_medicaid_sud, file="img/PRES_gg_medicaid_sud.png", width = 10,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_sud.png")
 ```
@@ -430,13 +425,17 @@ medicaid_jail_county_bh_service_type_hu_table <- jail_medicaid_analytic_individu
   dplyr::group_by(hu_group_exclusive) %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])/`Overall Individuals (N)`),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(n_distinct(unique_person_id[pre_or_study_bh_flag==1])/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   `Individuals w/ BH Encounter (%)`                         = scales::percent(n_distinct(unique_person_id[pre_or_study_bh_flag==1])/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   
                    `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1 & pre_or_study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_bh_mh_or_sud_service_secondary_dx_flag==1]),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]))) %>% 
   ungroup() %>% 
@@ -446,13 +445,17 @@ medicaid_jail_county_bh_service_type_hu_table <- jail_medicaid_analytic_individu
 medicaid_jail_overall_bh_service_type_hu_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])/`Overall Individuals (N)`),
-                   `Individuals w/ BH Encounter (%)` = scales::percent(n_distinct(unique_person_id[pre_or_study_bh_flag==1])/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   `Individuals w/ BH Encounter (%)`                         = scales::percent(n_distinct(unique_person_id[pre_or_study_bh_flag==1])/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
                    `Individuals w/ MH Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ MH Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ SUD Service Encounter, Primary Diagnosis (%)` = scales::percent(`Individuals w/ SUD Service Encounter, Primary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   
                    `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1 & pre_or_study_sud_service_primary_dx_flag==1]),
                    `Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (%)` = scales::percent(`Individuals w/ MH and SUD Service Encounters, Co-Occurring Disorders (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+                   
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_bh_mh_or_sud_service_secondary_dx_flag==1]),
                    `Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (%)` = scales::percent(`Individuals w/ MH or SUD Service Encounter, Secondary Diagnosis (N)`/n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]))) %>% 
   ungroup() %>% 
@@ -484,7 +487,7 @@ kable(medicaid_jail_county_statewide_bh_service_type_hu_table,
 <br>
 
 ```{r}
-# Calculate proportion of individuals that matched to Medicaid from 2014-2021
+# BH encounters
 # by HU
 medicaid_match_bh <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
 
@@ -556,6 +559,7 @@ knitr::include_graphics("img/PRES_gg_medicaid_match_bh.png")
 <br>
 
 ```{r}
+# Cooccurring disorders
 # by hu_group_exclusive
 medicaid_match_cooccurring <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
@@ -714,10 +718,13 @@ medicaid_jail_smi_opioid_hu_grouping <- jail_medicaid_analytic_individual_bookin
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
                    `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Individuals w/ any Medicaid Match (N)`),
+                   
                    `Individuals w/ SMI Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
                    `Individuals w/ SMI Primary Diagnosis (%)` = scales::percent(`Individuals w/ SMI Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
+                   
                    `Individuals w/ Opioid-related Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
                    `Individuals w/ Opioid-related Primary Diagnosis (%)` = scales::percent(`Individuals w/ Opioid-related Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`)) %>% 
   ungroup() %>% 
@@ -728,10 +735,13 @@ medicaid_jail_smi_opioid_statewide <- jail_medicaid_analytic_individual_booking_
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
                    `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Individuals w/ any Medicaid Match (N)`),
+                   
                    `Individuals w/ SMI Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
                    `Individuals w/ SMI Primary Diagnosis (%)` = scales::percent(`Individuals w/ SMI Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
+                   
                    `Individuals w/ Opioid-related Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
                    `Individuals w/ Opioid-related Primary Diagnosis (%)` = scales::percent(`Individuals w/ Opioid-related Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`)) %>% 
   dplyr::mutate(`High Utilizer Status` = "Statewide") 
@@ -789,10 +799,13 @@ medicaid_jail_smi_opioid_hu_grouping <- jail_medicaid_analytic_individual_bookin
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
                    `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Individuals w/ any Medicaid Match (N)`),
+                   
                    `Individuals w/ SMI Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
                    `Individuals w/ SMI Primary Diagnosis (%)` = scales::percent(`Individuals w/ SMI Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
+                   
                    `Individuals w/ Opioid-related Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
                    `Individuals w/ Opioid-related Primary Diagnosis (%)` = scales::percent(`Individuals w/ Opioid-related Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`)) %>% 
   ungroup() %>% 
@@ -803,10 +816,13 @@ medicaid_jail_smi_opioid_statewide <- jail_medicaid_analytic_individual_booking_
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `Individuals w/ any Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ any Medicaid Match (% of Overall Sample)` = scales::percent(`Individuals w/ any Medicaid Match (N)`/`Overall Individuals (N)`),
+                   
                    `Individuals w/ BH Encounter (N)` = n_distinct(unique_person_id[pre_or_study_mh_service_primary_dx_flag==1]),
                    `Individuals w/ BH Encounter (%)` = scales::percent(`Individuals w/ BH Encounter (N)`/`Individuals w/ any Medicaid Match (N)`),
+                   
                    `Individuals w/ SMI Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
                    `Individuals w/ SMI Primary Diagnosis (%)` = scales::percent(`Individuals w/ SMI Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`),
+                   
                    `Individuals w/ Opioid-related Primary Diagnosis (N)` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
                    `Individuals w/ Opioid-related Primary Diagnosis (%)` = scales::percent(`Individuals w/ Opioid-related Primary Diagnosis (N)`/`Individuals w/ any Medicaid Match (N)`)) %>% 
   dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
@@ -836,109 +852,100 @@ kable(medicaid_jail_smi_opioid_hu_grouping_statewide_table,
 **High utilizers were more likely to have a serious mental illness (SMI) than non-high utilizers.**
 
 ```{r}
-# by hu_group_exclusive
-medicaid_jail_smi_hu_grouping <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   `Individuals w/ SMI Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
-                   `Individuals w/out SMI Primary Diagnosis` = `Individuals w/ any Medicaid Match`-`Individuals w/ SMI Primary Diagnosis`,
-                   pct = `Individuals w/ SMI Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
-  ungroup() %>% 
-  select(-`Individuals w/ any Medicaid Match`) %>% 
-  filter(hu_group_exclusive != "Non-HU")
-
-# change from wide to long format
-medicaid_jail_smi_hu_grouping <- gather(medicaid_jail_smi_hu_grouping, population, total, `Individuals w/ SMI Primary Diagnosis`:`Individuals w/out SMI Primary Diagnosis`, factor_key=TRUE) 
-medicaid_jail_smi_hu_grouping <- medicaid_jail_smi_hu_grouping %>% 
-  mutate(population = factor(population, 
-                             levels = c("Individuals w/out SMI Primary Diagnosis",
-                                        "Individuals w/ SMI Primary Diagnosis"),
-                             labels = c("Individuals w/out SMI Primary Diagnosis",
-                                        "Individuals w/ SMI Primary Diagnosis")))
-
-PRES_gg_medicaid_jail_smi_hu_grouping <- ggplot(medicaid_jail_smi_hu_grouping, aes(fill=population, y=total, x=hu_group_exclusive)) + 
-    geom_bar(position="stack", stat="identity") +
-    geom_text(aes(label = ifelse(medicaid_jail_smi_hu_grouping$population == "Individuals w/ SMI Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
-              # position=position_dodge(width=0.2), vjust=-0.25,
-              position = position_stack(vjust = .5),
-              size = 7.5, family = "Franklin Gothic Book",
-              color = "white",
-              fontface = "bold") + 
-    scale_fill_manual(values=c("gray",jri_orange),
-                    na.value = "white") +
-    # expand_limits(y = 1400) +
-    scale_y_continuous(labels = label_number(big.mark = ",")) +
-    xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
-    theme_with_grid_with_labels +
-    theme(legend.justification = c(0.5, 0.5),
-          legend.direction = "vertical",
-          legend.box = "horizontal",
-          legend.position = "bottom",
-          legend.title=element_blank(),
-          legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
+# # by hu_group_exclusive
+# medicaid_jail_smi_hu_grouping <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+#   dplyr::group_by(hu_group_exclusive) %>% 
+#   dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+#                    `Individuals w/ SMI Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
+#                    `Individuals w/out SMI Primary Diagnosis` = `Individuals w/ any Medicaid Match`-`Individuals w/ SMI Primary Diagnosis`,
+#                    pct = `Individuals w/ SMI Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
+#   ungroup() %>% 
+#   select(-`Individuals w/ any Medicaid Match`) %>% 
+#   filter(hu_group_exclusive != "Non-HU")
+# 
+# # change from wide to long format
+# medicaid_jail_smi_hu_grouping <- gather(medicaid_jail_smi_hu_grouping, population, total, `Individuals w/ SMI Primary Diagnosis`:`Individuals w/out SMI Primary Diagnosis`, factor_key=TRUE) 
+# medicaid_jail_smi_hu_grouping <- medicaid_jail_smi_hu_grouping %>% 
+#   mutate(population = factor(population, 
+#                              levels = c("Individuals w/out SMI Primary Diagnosis",
+#                                         "Individuals w/ SMI Primary Diagnosis"),
+#                              labels = c("Individuals w/out SMI Primary Diagnosis",
+#                                         "Individuals w/ SMI Primary Diagnosis")))
+# 
+# PRES_gg_medicaid_jail_smi_hu_grouping <- ggplot(medicaid_jail_smi_hu_grouping, aes(fill=population, y=total, x=hu_group_exclusive)) + 
+#     geom_bar(position="stack", stat="identity") +
+#     geom_text(aes(label = ifelse(medicaid_jail_smi_hu_grouping$population == "Individuals w/ SMI Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
+#               position = position_stack(vjust = .5),
+#               size = 7.5, family = "Franklin Gothic Book",
+#               color = "white",
+#               fontface = "bold") + 
+#     scale_fill_manual(values=c("gray",jri_orange),
+#                     na.value = "white") +
+#     scale_y_continuous(labels = label_number(big.mark = ",")) +
+#     xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
+#     theme_with_grid_with_labels +
+#     theme(legend.justification = c(0.5, 0.5),
+#           legend.direction = "vertical",
+#           legend.box = "horizontal",
+#           legend.position = "bottom",
+#           legend.title=element_blank(),
+#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_smi_hu_grouping, file="img/PRES_gg_medicaid_jail_smi_hu_grouping.png", width = 7,  height = 6, dpi = 100)
+# ggsave(PRES_gg_medicaid_jail_smi_hu_grouping, file="img/PRES_gg_medicaid_jail_smi_hu_grouping.png", width = 7,  height = 6, dpi = 100)
 # knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_hu_grouping.png")
 ```
 
 ```{r}
-# by non-HU
-medicaid_jail_smi_nonhu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   `Individuals w/ SMI Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
-                   `Individuals w/out SMI Primary Diagnosis` = `Individuals w/ any Medicaid Match`-`Individuals w/ SMI Primary Diagnosis`,
-                   pct = `Individuals w/ SMI Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
-  ungroup() %>% 
-  select(-`Individuals w/ any Medicaid Match`) %>% 
-  filter(hu_group_exclusive == "Non-HU")
-
-# change from wide to long format
-medicaid_jail_smi_nonhu <- gather(medicaid_jail_smi_nonhu, population, total, `Individuals w/ SMI Primary Diagnosis`:`Individuals w/out SMI Primary Diagnosis`, factor_key=TRUE) 
-medicaid_jail_smi_nonhu <- medicaid_jail_smi_nonhu %>% 
-  mutate(population = factor(population, 
-                             levels = c("Individuals w/out SMI Primary Diagnosis",
-                                        "Individuals w/ SMI Primary Diagnosis"),
-                             labels = c("Individuals w/out SMI Primary Diagnosis",
-                                        "Individuals w/ SMI Primary Diagnosis")))
-
-PRES_gg_medicaid_jail_smi_nonhu <- ggplot(medicaid_jail_smi_nonhu, aes(fill=population, y=total, x=hu_group_exclusive)) + 
-    geom_bar(position="stack", stat="identity") +
-    geom_text(aes(label = ifelse(medicaid_jail_smi_nonhu$population == "Individuals w/ SMI Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
-              # position=position_dodge(width=0.2), vjust=-0.25,
-              position = position_stack(vjust = .5),
-              size = 7.5, family = "Franklin Gothic Book",
-              color = "white",
-              fontface = "bold") + 
-    scale_fill_manual(values=c("gray",jri_orange),
-                    na.value = "white") +
-    # expand_limits(y = 1400) +
-    scale_y_continuous(labels = label_number(big.mark = ",")) +
-    xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
-    theme_with_grid_with_labels +
-    theme(#legend.justification = c(0.5, 0.5),
-          #legend.direction = "vertical",
-          #legend.box = "horizontal",
-          #legend.position = "bottom",
-          legend.position = "none",
-          legend.title=element_blank(),
-          legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
+# # by non-HU
+# medicaid_jail_smi_nonhu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+#   dplyr::group_by(hu_group_exclusive) %>% 
+#   dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+#                    `Individuals w/ SMI Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
+#                    `Individuals w/out SMI Primary Diagnosis` = `Individuals w/ any Medicaid Match`-`Individuals w/ SMI Primary Diagnosis`,
+#                    pct = `Individuals w/ SMI Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
+#   ungroup() %>% 
+#   select(-`Individuals w/ any Medicaid Match`) %>% 
+#   filter(hu_group_exclusive == "Non-HU")
+# 
+# # change from wide to long format
+# medicaid_jail_smi_nonhu <- gather(medicaid_jail_smi_nonhu, population, total, `Individuals w/ SMI Primary Diagnosis`:`Individuals w/out SMI Primary Diagnosis`, factor_key=TRUE) 
+# medicaid_jail_smi_nonhu <- medicaid_jail_smi_nonhu %>% 
+#   mutate(population = factor(population, 
+#                              levels = c("Individuals w/out SMI Primary Diagnosis",
+#                                         "Individuals w/ SMI Primary Diagnosis"),
+#                              labels = c("Individuals w/out SMI Primary Diagnosis",
+#                                         "Individuals w/ SMI Primary Diagnosis")))
+# 
+# PRES_gg_medicaid_jail_smi_nonhu <- ggplot(medicaid_jail_smi_nonhu, aes(fill=population, y=total, x=hu_group_exclusive)) + 
+#     geom_bar(position="stack", stat="identity") +
+#     geom_text(aes(label = ifelse(medicaid_jail_smi_nonhu$population == "Individuals w/ SMI Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
+#               position = position_stack(vjust = .5),
+#               size = 7.5, family = "Franklin Gothic Book",
+#               color = "white",
+#               fontface = "bold") + 
+#     scale_fill_manual(values=c("gray",jri_orange),
+#                     na.value = "white") +
+#     scale_y_continuous(labels = label_number(big.mark = ",")) +
+#     xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
+#     theme_with_grid_with_labels +
+#     theme(legend.position = "none",
+#           legend.title=element_blank(),
+#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_smi_nonhu, file="img/PRES_gg_medicaid_jail_smi_nonhu.png", width = 4,  height = 6, dpi = 100)
+# ggsave(PRES_gg_medicaid_jail_smi_nonhu, file="img/PRES_gg_medicaid_jail_smi_nonhu.png", width = 4,  height = 6, dpi = 100)
 #knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_nonhu.png")
 ```
 
 ```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics(c("img/PRES_gg_medicaid_jail_smi_hu_grouping.png","img/PRES_gg_medicaid_jail_smi_nonhu.png"))
+# knitr::include_graphics(c("img/PRES_gg_medicaid_jail_smi_hu_grouping.png","img/PRES_gg_medicaid_jail_smi_nonhu.png"))
 ```
 
-<br>
-
 ```{r}
+# Proportion of people with SMI
 # by hu_group_exclusive
 medicaid_jail_smi_hu_grouping <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
@@ -1000,7 +1007,6 @@ PRES_gg_medicaid_jail_smi_hu_grouping1 <-
         axis.title.x = element_blank(),
         axis.text.x = element_text(color = "black"),
         axis.text.y = element_text(color = "black"),
-        # legend.position = "right",
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
@@ -1017,6 +1023,7 @@ knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_hu_grouping1.png")
 <br>
 
 ```{r}
+# Proportion of people with SMI
 # by county
 medicaid_jail_smi_county <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(county) %>% 
@@ -1081,7 +1088,7 @@ PRES_gg_medicaid_jail_smi_county <- ggplot(medicaid_jail_smi_county, aes(x = cou
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
 ```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+```{r, out.width="75%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_medicaid_jail_smi_county, file="img/PRES_gg_medicaid_jail_smi_county.png", width = 9,  height = 7, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_county.png")
 ```
@@ -1091,99 +1098,100 @@ knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_county.png")
 **High utilizers were more likely to have a an opioid-related primary diagnosis than non-high utilizers.**
 
 ```{r}
-# by hu_group_exclusive
-medicaid_jail_opioid_hu_grouping <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   `Individuals w/ Opioid-related Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
-                   `Individuals w/out Opioid-related Primary Diagnosis` = `Individuals w/ any Medicaid Match` - `Individuals w/ Opioid-related Primary Diagnosis`,
-                   `pct` = `Individuals w/ Opioid-related Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
-  ungroup() %>% 
-  select(-`Individuals w/ any Medicaid Match`) %>% 
-  filter(hu_group_exclusive != "Non-HU")
-# change from wide to long format
-medicaid_jail_opioid_hu_grouping <- gather(medicaid_jail_opioid_hu_grouping, population, total, `Individuals w/ Opioid-related Primary Diagnosis`:`Individuals w/out Opioid-related Primary Diagnosis`, factor_key=TRUE) 
-medicaid_jail_opioid_hu_grouping <- medicaid_jail_opioid_hu_grouping %>% 
-  mutate(population = factor(population, 
-                             levels = c("Individuals w/out Opioid-related Primary Diagnosis",
-                                        "Individuals w/ Opioid-related Primary Diagnosis"),
-                             labels = c("Individuals w/out Opioid-related Primary Diagnosis",
-                                        "Individuals w/ Opioid-related Primary Diagnosis")))
-PRES_gg_medicaid_jail_opioid_hu_grouping <- ggplot(medicaid_jail_opioid_hu_grouping, aes(fill=population, y=total, x=hu_group_exclusive)) + 
-    geom_bar(position="stack", stat="identity") +
-    geom_text(aes(label = ifelse(medicaid_jail_opioid_hu_grouping$population == "Individuals w/ Opioid-related Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
-              position = position_stack(vjust = .5),
-              size = 7.5, family = "Franklin Gothic Book",
-              color = "white",
-              fontface = "bold") + 
-    scale_fill_manual(values=c("gray",jri_green),
-                    na.value = "white") +
-    # expand_limits(y = 1400) +
-    scale_y_continuous(labels = label_number(big.mark = ",")) +
-    xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
-    theme_with_grid_with_labels +
-    theme(legend.justification = c(0.85, 0.5),
-          legend.direction = "vertical",
-          legend.box = "horizontal",
-          legend.position = "bottom",
-          legend.title=element_blank(),
-          legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
+# # Proportion of people with opioid-related primary diagnosis
+# # by hu_group_exclusive
+# medicaid_jail_opioid_hu_grouping <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+#   dplyr::group_by(hu_group_exclusive) %>% 
+#   dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+#                    `Individuals w/ Opioid-related Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
+#                    `Individuals w/out Opioid-related Primary Diagnosis` = `Individuals w/ any Medicaid Match` - `Individuals w/ Opioid-related Primary Diagnosis`,
+#                    `pct` = `Individuals w/ Opioid-related Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
+#   ungroup() %>% 
+#   select(-`Individuals w/ any Medicaid Match`) %>% 
+#   filter(hu_group_exclusive != "Non-HU")
+# # change from wide to long format
+# medicaid_jail_opioid_hu_grouping <- gather(medicaid_jail_opioid_hu_grouping, population, total, `Individuals w/ Opioid-related Primary Diagnosis`:`Individuals w/out Opioid-related Primary Diagnosis`, factor_key=TRUE) 
+# medicaid_jail_opioid_hu_grouping <- medicaid_jail_opioid_hu_grouping %>% 
+#   mutate(population = factor(population, 
+#                              levels = c("Individuals w/out Opioid-related Primary Diagnosis",
+#                                         "Individuals w/ Opioid-related Primary Diagnosis"),
+#                              labels = c("Individuals w/out Opioid-related Primary Diagnosis",
+#                                         "Individuals w/ Opioid-related Primary Diagnosis")))
+# PRES_gg_medicaid_jail_opioid_hu_grouping <- ggplot(medicaid_jail_opioid_hu_grouping, aes(fill=population, y=total, x=hu_group_exclusive)) + 
+#     geom_bar(position="stack", stat="identity") +
+#     geom_text(aes(label = ifelse(medicaid_jail_opioid_hu_grouping$population == "Individuals w/ Opioid-related Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
+#               position = position_stack(vjust = .5),
+#               size = 7.5, family = "Franklin Gothic Book",
+#               color = "white",
+#               fontface = "bold") + 
+#     scale_fill_manual(values=c("gray",jri_green),
+#                     na.value = "white") +
+#     # expand_limits(y = 1400) +
+#     scale_y_continuous(labels = label_number(big.mark = ",")) +
+#     xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
+#     theme_with_grid_with_labels +
+#     theme(legend.justification = c(0.85, 0.5),
+#           legend.direction = "vertical",
+#           legend.box = "horizontal",
+#           legend.position = "bottom",
+#           legend.title=element_blank(),
+#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_opioid_hu_grouping, file="img/PRES_gg_medicaid_jail_opioid_hu_grouping.png", width = 7,  height = 6, dpi = 100)
+# ggsave(PRES_gg_medicaid_jail_opioid_hu_grouping, file="img/PRES_gg_medicaid_jail_opioid_hu_grouping.png", width = 7,  height = 6, dpi = 100)
 # knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid_hu_grouping.png")
 ```
 
 ```{r}
-# by hu_group_exclusive
-medicaid_jail_opioid_nonhu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   `Individuals w/ Opioid-related Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
-                   `Individuals w/out Opioid-related Primary Diagnosis` = `Individuals w/ any Medicaid Match` - `Individuals w/ Opioid-related Primary Diagnosis`,
-                   `pct` = `Individuals w/ Opioid-related Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
-  ungroup() %>% 
-  select(-`Individuals w/ any Medicaid Match`) %>% 
-  filter(hu_group_exclusive == "Non-HU")
-# change from wide to long format
-medicaid_jail_opioid_nonhu <- gather(medicaid_jail_opioid_nonhu, population, total, `Individuals w/ Opioid-related Primary Diagnosis`:`Individuals w/out Opioid-related Primary Diagnosis`, factor_key=TRUE) 
-medicaid_jail_opioid_nonhu <- medicaid_jail_opioid_nonhu %>% 
-  mutate(population = factor(population, 
-                             levels = c("Individuals w/out Opioid-related Primary Diagnosis",
-                                        "Individuals w/ Opioid-related Primary Diagnosis"),
-                             labels = c("Individuals w/out Opioid-related Primary Diagnosis",
-                                        "Individuals w/ Opioid-related Primary Diagnosis")))
-PRES_gg_medicaid_jail_opioid_nonhu <- ggplot(medicaid_jail_opioid_nonhu, aes(fill=population, y=total, x=hu_group_exclusive)) + 
-    geom_bar(position="stack", stat="identity") +
-    geom_text(aes(label = ifelse(medicaid_jail_opioid_nonhu$population == "Individuals w/ Opioid-related Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
-              position = position_stack(vjust = .5),
-              size = 7.5, family = "Franklin Gothic Book",
-              color = "white",
-              fontface = "bold") + 
-    scale_fill_manual(values=c("gray",jri_green),
-                    na.value = "white") +
-    # expand_limits(y = 1400) +
-    scale_y_continuous(labels = label_number(big.mark = ",")) +
-    xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
-    theme_with_grid_with_labels +
-    theme(legend.position = "none",
-          legend.title=element_blank(),
-          legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
+# # by hu_group_exclusive
+# medicaid_jail_opioid_nonhu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+#   dplyr::group_by(hu_group_exclusive) %>% 
+#   dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+#                    `Individuals w/ Opioid-related Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
+#                    `Individuals w/out Opioid-related Primary Diagnosis` = `Individuals w/ any Medicaid Match` - `Individuals w/ Opioid-related Primary Diagnosis`,
+#                    `pct` = `Individuals w/ Opioid-related Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
+#   ungroup() %>% 
+#   select(-`Individuals w/ any Medicaid Match`) %>% 
+#   filter(hu_group_exclusive == "Non-HU")
+# 
+# # change from wide to long format
+# medicaid_jail_opioid_nonhu <- gather(medicaid_jail_opioid_nonhu, population, total, `Individuals w/ Opioid-related Primary Diagnosis`:`Individuals w/out Opioid-related Primary Diagnosis`, factor_key=TRUE) 
+# medicaid_jail_opioid_nonhu <- medicaid_jail_opioid_nonhu %>% 
+#   mutate(population = factor(population, 
+#                              levels = c("Individuals w/out Opioid-related Primary Diagnosis",
+#                                         "Individuals w/ Opioid-related Primary Diagnosis"),
+#                              labels = c("Individuals w/out Opioid-related Primary Diagnosis",
+#                                         "Individuals w/ Opioid-related Primary Diagnosis")))
+# PRES_gg_medicaid_jail_opioid_nonhu <- ggplot(medicaid_jail_opioid_nonhu, aes(fill=population, y=total, x=hu_group_exclusive)) + 
+#     geom_bar(position="stack", stat="identity") +
+#     geom_text(aes(label = ifelse(medicaid_jail_opioid_nonhu$population == "Individuals w/ Opioid-related Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
+#               position = position_stack(vjust = .5),
+#               size = 7.5, family = "Franklin Gothic Book",
+#               color = "white",
+#               fontface = "bold") + 
+#     scale_fill_manual(values=c("gray",jri_green),
+#                     na.value = "white") +
+#     # expand_limits(y = 1400) +
+#     scale_y_continuous(labels = label_number(big.mark = ",")) +
+#     xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
+#     theme_with_grid_with_labels +
+#     theme(legend.position = "none",
+#           legend.title=element_blank(),
+#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_opioid_nonhu, file="img/PRES_gg_medicaid_jail_opioid_nonhu.png", width = 4,  height = 6, dpi = 100)
+# ggsave(PRES_gg_medicaid_jail_opioid_nonhu, file="img/PRES_gg_medicaid_jail_opioid_nonhu.png", width = 4,  height = 6, dpi = 100)
 # knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid_nonhu.png")
 ```
 
 ```{r, echo=FALSE, fig.align='center'}
-knitr::include_graphics(c("img/PRES_gg_medicaid_jail_opioid_hu_grouping.png","img/PRES_gg_medicaid_jail_opioid_nonhu.png"))
+# knitr::include_graphics(c("img/PRES_gg_medicaid_jail_opioid_hu_grouping.png","img/PRES_gg_medicaid_jail_opioid_nonhu.png"))
 ```
 
-<br>
-
 ```{r}
+# proportion of opioid-related primary diagnosis claims 
 # by hu_group_exclusive
 medicaid_jail_opioid_hu_grouping <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
@@ -1261,6 +1269,7 @@ knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid1.png")
 <br>
 
 ```{r}
+# proportion of opioid-related primary diagnosis claims 
 # by county
 medicaid_jail_opioid_county <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(county) %>% 
@@ -1325,7 +1334,7 @@ PRES_gg_medicaid_jail_opioid_county <- ggplot(medicaid_jail_opioid_county, aes(x
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
 ```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+```{r, out.width="75%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_medicaid_jail_opioid_county, file="img/PRES_gg_medicaid_jail_opioid_county.png", width = 9,  height = 7, dpi = 100)
 knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid_county.png")
 ```
@@ -1335,7 +1344,9 @@ knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid_county.png")
 
 # Trends for Medicaid Claims (FY2019-2021) 
 
-### Common primary diagnoses for Medicaid claims between FY2019-2021
+### Common primary diagnoses for Medicaid claims between FY2019-2021.
+
+Most of the Medicaid claims were for opioid-related disorders.  
 
 ```{r}
 # Find top primary diagnoses and the proportion of claims for each
@@ -1400,7 +1411,9 @@ knitr::include_graphics("img/PRES_gg_medicaid_top_diagnoses.png")
 
 <br><br>
 
-### Common primary diagnoses for SMI-related disorders Medicaid claims between FY2019-2021
+### Common primary diagnoses for SMI-related disorders Medicaid claims between FY2019-2021.
+
+The majority of SMI-related Medicaid claims were for schizophrenia spectrum and other psychotic disorders.  
 
 ```{r}
 # Find top primary diagnoses and the proportion of claims for each
@@ -1458,9 +1471,9 @@ ggsave(PRES_gg_medicaid_smi_primary_diagnoses, file="img/PRES_gg_medicaid_smi_pr
 knitr::include_graphics("img/PRES_gg_medicaid_smi_primary_diagnoses.png")
 ```
 
-<br><br>
+<br>
 
-**Of those with a history of SMI, high utilizers were more likely to have a primary diagnosis claim for schizophrenia spectrum and other psychotic disorders compared to non-high utilizers.**  
+Of those with a history of SMI, high utilizers were more likely to have a primary diagnosis claim for schizophrenia spectrum and other psychotic disorders compared to non-high utilizers.  
 
 ```{r}
 # Find top primary diagnoses and the proportion of claims for each
@@ -1686,7 +1699,9 @@ knitr::include_graphics("img/PRES_gg_smi_primary_diagnoses_tier1hu.png")
 
 
 
-### Primary diagnosis for "suicidal ideation/attempt/intentional self-harm" Medicaid claims between FY2019-2021
+### Primary diagnosis for "suicidal ideation/attempt/intentional self-harm" Medicaid claims between FY2019-2021.
+
+High utilizers were more likely to have a primary diagnosis for suicidal ideation/attempt/intentional self-harm.  
 
 ```{r}
 # Find number and proportion of people with primary diagnosis for "suicidal ideation/attempt/intentional self-harm" 
