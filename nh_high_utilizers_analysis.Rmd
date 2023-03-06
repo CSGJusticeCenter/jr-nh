@@ -16,18 +16,18 @@ knitr::opts_chunk$set(
   cache = FALSE
   )
 
-# Load packages, functions, and data
+# load packages, functions, and data
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
 
-# Change HU variable to Tier 1 = 1 percent, Tier 2 = 2-5 percent, Tier 3 = 6-10 percent
+# create HU variable to Tier 1 = 1 percent, Tier 2 = 2-5 percent, Tier 3 = 6-10 percent
 medicaid_jail_all <- fnc_hu_group_exclusive(medicaid_jail_all)
 
 # DHHS data
-# Rename variables
-# Get fiscal year based on booking date
+# rename variables
+# get fiscal year based on booking date
 entrances_dhhs <- medicaid_jail_all %>% 
   mutate(id = unique_person_id,
          fy = case_when(booking_date > "2018-06-30" & booking_date < "2019-07-01" ~ 2019,
@@ -39,13 +39,13 @@ entrances_dhhs <- medicaid_jail_all %>%
                                         booking_date,
                                         units="days"))) 
 
-# Change HU variable to Tier 1 = 1 percent, Tier 2 = 2-5 percent, Tier 3 = 6-10 percent
+# create HU variable to Tier 1 = 1 percent, Tier 2 = 2-5 percent, Tier 3 = 6-10 percent
 entrances_dhhs <- fnc_hu_group_exclusive(entrances_dhhs)
 ```
 
 ## How we define people who are high utilizers of the jail system
 
-We defined people who are high utilizers of the jail system as the tier 1, tier 2, or tier 3 of people entering jails from FY2019 to FY2021. De-identified jail administrative data was provided by DHHS, which includes a unique id for each person to account for entrances at more than one jail.   
+De-identified jail administrative data was provided by DHHS, which includes a unique id for each person to account for entrances at more than one jail. We defined people who are high utilizers of the jail system as the tier 1, tier 2, or tier 3 of people entering jails from FY2019 to FY2021. Tier 1 = 1% (99th percentile), Tier 2 = 2-5%, Tier 3 = 6-10%.  
 
 ```{r}
 ########################################
@@ -325,8 +325,8 @@ reactable(daily_encounters,
             hu_group_exclusive = colDef(show = T, minWidth = 100, name = ""),
             state = colDef(show = F),
             pct_label = colDef(show = F),
-            encounter_days     = colDef(show = T, minWidth = 100, name = "Number of Bed Days"),
-            pct                = colDef(show = T, minWidth = 130, name = "Proportion of Bed Days", format = colFormat(percent = TRUE, digits = 1))
+            encounter_days     = colDef(show = T, minWidth = 100, name = "Number of Daily Encounters"),
+            pct                = colDef(show = T, minWidth = 130, name = "Proportion of Daily Encounters", format = colFormat(percent = TRUE, digits = 1))
           )
 )
 ```
@@ -360,7 +360,9 @@ knitr::include_graphics("img/PRES_gg_pie_daily_encounters.png")
 
 <br><br>
 
-## Tier 1
+## Tier 1 High Utilizers
+
+Tier 1 high utilizers had an average of 16.5 entrances per person from 2019 to 2021.  
 
 ```{r}
 # Filter to Tier 1
@@ -398,7 +400,9 @@ reactable(hu_1_pct,
 )
 ```
 
-## Tier 2
+## Tier 2 High Utilizers
+
+Tier 2 high utilizers had an average of 7.6 entrances per person from 2019 to 2021.  
 
 ```{r}
 # Filter to Tier 2
@@ -436,7 +440,9 @@ reactable(hu_5_pct,
 )
 ```
 
-## Tier 3
+## Tier 3 High Utilizers
+
+Tier 3 high utilizers had an average of 4.4 entrances per person from 2019 to 2021.  
 
 ```{r}
 # Filter to Tier 3
@@ -474,7 +480,9 @@ reactable(hu_10_pct,
 )
 ```
 
-## Non-High Utilizer
+## Non-High Utilizers
+
+Non-high utilizers had an average of 1.3 entrances per person from 2019 to 2021.  
 
 ```{r}
 # Filter to Tier 1

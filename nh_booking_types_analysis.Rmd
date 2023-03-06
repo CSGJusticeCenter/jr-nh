@@ -794,3 +794,135 @@ reactable(table1,
 add_source(paste(""), font_style = "italic", font_size = 14)
 ```
 
+```{r}
+# Create pie charts for proportion of bookings that are drug-court related by high utilizer (tier 1)
+tier1hu <- table1 %>% filter(`HU Type` == "Tier 1 HU") %>% 
+  select(`HU Type`,
+         drug_court_related_booking = `Drug court-related booking.1`,
+         not_drug_court_related_booking = `Not a drug court-related booking.1`)
+tier1hu <- gather(tier1hu, type, pct, drug_court_related_booking:not_drug_court_related_booking, factor_key=TRUE)
+
+PRES_gg_drugcourt_tier1hu <- ggplot(tier1hu, aes(x = "", y = pct, fill = type)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("#404040", "gray"),
+                    labels = c("Drug-court related booking",
+                               "Not a drug court-related booking")) +
+  geom_text(aes(label = paste0(round(pct*100, 0), "%"),
+                fontface = 'bold'),
+                position = position_fill(vjust = 0.5),
+                size = 7.5,
+                family = "Franklin Gothic Book",
+                color = ifelse(tier1hu$type == "drug_court_related_booking", "white", "gray")
+            ) +
+  coord_polar("y", start=0) +
+  theme_no_grid_no_labels +
+  theme(axis.ticks = element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.position = "bottom",
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = "black"))
+
+# Create pie charts for proportion of bookings that are drug-court related by high utilizer (tier 2)
+tier2hu <- table1 %>% filter(`HU Type` == "Tier 2 HU") %>% 
+  select(`HU Type`,
+         drug_court_related_booking = `Drug court-related booking.1`,
+         not_drug_court_related_booking = `Not a drug court-related booking.1`)
+tier2hu <- gather(tier2hu, type, pct, drug_court_related_booking:not_drug_court_related_booking, factor_key=TRUE)
+
+PRES_gg_drugcourt_tier2hu <- ggplot(tier2hu, aes(x = "", y = pct, fill = type)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("#404040", "gray"),
+                    labels = c("Drug-court related booking",
+                               "Not a drug court-related booking")) +
+  geom_text(aes(label = paste0(round(pct*100, 0), "%"),
+                fontface = 'bold'),
+                position = position_fill(vjust = 0.5),
+                size = 7.5,
+                family = "Franklin Gothic Book",
+                color = ifelse(tier2hu$type == "drug_court_related_booking", "white", "gray")
+            ) +
+  coord_polar("y", start=0) +
+  theme_no_grid_no_labels +
+  theme(axis.ticks = element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.position = "bottom",
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = "black"))
+
+# Create pie charts for proportion of bookings that are drug-court related by high utilizer (tier 3)
+tier3hu <- table1 %>% filter(`HU Type` == "Tier 3 HU") %>% 
+  select(`HU Type`,
+         drug_court_related_booking = `Drug court-related booking.1`,
+         not_drug_court_related_booking = `Not a drug court-related booking.1`)
+tier3hu <- gather(tier3hu, type, pct, drug_court_related_booking:not_drug_court_related_booking, factor_key=TRUE)
+
+PRES_gg_drugcourt_tier3hu <- ggplot(tier3hu, aes(x = "", y = pct, fill = type)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("#404040", "gray"),
+                    labels = c("Drug-court related booking",
+                               "Not a drug court-related booking")) +
+  geom_text(aes(label = paste0(round(pct*100, 0), "%"),
+                fontface = 'bold'),
+                position = position_fill(vjust = 0.5),
+                hjust = -.25,
+                size = 7.5,
+                family = "Franklin Gothic Book",
+                color = ifelse(tier3hu$type == "drug_court_related_booking", "black", "gray")
+            ) +
+  coord_polar("y", start=0) +
+  theme_no_grid_no_labels +
+  theme(axis.ticks = element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.position = "bottom",
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = "black"))
+
+# Create pie charts for proportion of bookings that are drug-court related by high utilizer (non-HU)
+nonhu <- table1 %>% filter(`HU Type` == "Non-HU") %>% 
+  select(`HU Type`,
+         drug_court_related_booking = `Drug court-related booking.1`,
+         not_drug_court_related_booking = `Not a drug court-related booking.1`)
+nonhu <- gather(nonhu, type, pct, drug_court_related_booking:not_drug_court_related_booking, factor_key=TRUE)
+
+PRES_gg_drugcourt_nonhu <- ggplot(nonhu, aes(x = "", y = pct, fill = type)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("#404040", "gray"),
+                    labels = c("Drug-court related booking",
+                               "Not a drug court-related booking")) +
+  geom_text(aes(label = paste0(round(pct*100, 0), "%"),
+                fontface = 'bold'),
+                position = position_fill(vjust = 0.5),
+                hjust = -.25,
+                size = 7.5,
+                family = "Franklin Gothic Book",
+                color = ifelse(nonhu$type == "drug_court_related_booking", "black", "gray")
+            ) +
+  coord_polar("y", start=0) +
+  theme_no_grid_no_labels +
+  theme(axis.ticks = element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.position = "bottom",
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = "black"))
+```
+

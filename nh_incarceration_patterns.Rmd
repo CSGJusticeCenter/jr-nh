@@ -8,7 +8,7 @@ output:
     self_contained: false
 ---
 
-The following incarceration patterns were found using jail administrative data submitted to DHHS, which was then de-identified and sent to CSG. This data gives a more accurate picture of the number of people entering NH jails from FY2019 to FY2021.  
+The following incarceration patterns were found using jail administrative data submitted to DHHS, which was then de-identified and sent to CSG. This data gives a more accurate picture of the number of people entering NH jails from FY2019 to FY2021 due to movements between jails.  
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(
