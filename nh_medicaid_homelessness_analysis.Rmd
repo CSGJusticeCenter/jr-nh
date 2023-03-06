@@ -428,316 +428,234 @@ kable(medicaid_jail_homelessness_hu_county_statewide_study_period_table,
 
 <br><br>
 
-
 ```{r}
-# 
-# ### Table 5. Percentage of People with BH needs who were Experiencing Homelessness at time of Medicaid Eligibility by County
-# 
-# # Number of people by county
-# medicaid_bh_homeless_people_county <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-#   select(county, unique_person_id, pre_or_study_window_medicaid_match_flag_overall, pre_or_study_bh_flag, pre_or_study_homeless_on_eligibility_begin_flag) %>% 
-#   distinct() %>% 
-#   group_by(county) %>% 
-#   dplyr::summarise(# Number of people on Medicaid
-#                    medicaid_n  = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-#                    
-#                    # Number of people experiencing homelessness
-#                    homeless_n = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#                   
-#                    ########
-#                    # People with BH encounters
-#                    ########
-#                    
-#                    # Number of people on Medicaid and BH encounters
-#                    bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
-#                    
-#                    # Number of people on Medicaid and BH encounters, and homeless
-#                    bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#                    
-#                    # Pct of people who dont have BH and are homeless
-#                    bh_people_homeless_pct = bh_people_homeless_n/bh_people_n,
-#                    
-#                    ########
-#                    # People without BH encounters
-#                    ########
-#                    
-#                    # Number of people on Medicaid and without BH encounters
-#                    no_bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0]),
-#                    
-#                    # Number of people on Medicaid and without BH encounters, and homeless
-#                    no_bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#                   
-#                    # Pct of people who dont have BH and are homeless
-#                    no_bh_people_homeless_pct = no_bh_people_homeless_n/no_bh_people_n
-#                    ) 
-# 
-# # Number of people by state
-# medicaid_bh_homeless_people_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-#   select(county, unique_person_id, pre_or_study_window_medicaid_match_flag_overall, pre_or_study_bh_flag, pre_or_study_homeless_on_eligibility_begin_flag) %>% 
-#   distinct() %>% 
-#   dplyr::summarise(# Number of people on Medicaid
-#                    medicaid_n  = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-#                    
-#                    # Number of people experiencing homelessness
-#                    homeless_n = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#                   
-#                    ########
-#                    # People with BH encounters
-#                    ########
-#                    
-#                    # Number of people on Medicaid and BH encounters
-#                    bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
-#                    
-#                    # Number of people on Medicaid and BH encounters, and homeless
-#                    bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#                    # Pct of people who dont have BH and are homeless
-#                    bh_people_homeless_pct = bh_people_homeless_n/bh_people_n,
-#                    
-#                    ########
-#                    # People without BH encounters
-#                    ########
-#                    
-#                    # Number of people on Medicaid and without BH encounters
-#                    no_bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0]),
-#                    
-#                    # Number of people on Medicaid and without BH encounters, and homeless
-#                    no_bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#                   
-#                    # Pct of people who dont have BH and are homeless
-#                    no_bh_people_homeless_pct = no_bh_people_homeless_n/no_bh_people_n
-#                    ) %>% 
-#   mutate(county = "State")
-# 
-# medicaid_bh_homeless_people_overview <- rbind(medicaid_bh_homeless_people_county, medicaid_bh_homeless_people_state)
+
+nh_eight_county_medicaid_match_final_race_two_counties_excluded <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  # filter(medicaid_match_flag==1) %>% 
+  mutate(race = ifelse(jail_race=="Black Hispanic",
+                       "Black",
+                       jail_race),
+         race= ifelse(jail_race=="American Indian/Alaskan Native",
+                                 "American Indian/Alaska Native",
+                                 jail_race),
+         race = ifelse(is.na(jail_race)==TRUE,
+                       "Missing",
+                       jail_race)) %>% 
+  filter(!race%in%c("Missing","Unknown"),
+         !county%in%c("Carroll","Hillsborough","Strafford")) %>% 
+  ### dropping HU variables b/c we need to re-calculate for new sample w/o carroll and hillsborough
+  dplyr::select(-c(num_entrances,high_utilizer_4_times:high_utilizer_10_pct,hu_group_exclusive,hu_group_overall))
+
+nh_eight_county_medicaid_match_final_race_two_counties_excluded <- nh_eight_county_medicaid_match_final_race_two_counties_excluded %>% 
+  mutate(race = case_when(
+    race == "American Indian/Alaskan Native" ~ "Other",
+    race == "Asian/Pacific Islander" ~ "Other",
+    TRUE ~ race
+  )) %>% 
+  filter(!is.na(jail_dob_year),
+         !is.na(booking_date)) %>% 
+  mutate(jail_dob_age_clean = as.numeric(jail_dob_year),
+         jail_booking_age_clean = year(ymd(as_date(booking_date))),
+         age_at_booking_years = jail_booking_age_clean-jail_dob_age_clean) %>% 
+  mutate(age_at_booking_bin = case_when(
+    age_at_booking_years<25 ~ 1,
+    age_at_booking_years>=25 & age_at_booking_years<=34 ~ 2,
+    age_at_booking_years>34 & age_at_booking_years<=45 ~ 3,
+    age_at_booking_years>45 ~ 4,
+    TRUE ~ as.numeric(NA)),
+    age_at_booking_bin = factor(age_at_booking_bin,
+         levels = c(1,2,3,4),
+         labels = c("18 to 24", "25 to 34", "35 to 45", "46+"))) %>%  ### use factor function to assign labels to values
+    dplyr::filter(!is.na(age_at_booking_bin)==TRUE,
+                  age_at_booking_years<100)
+
+# create high utilizer variables using custom function
+# create temporary id to use function then remove
+nh_eight_county_medicaid_match_final_race_two_counties_excluded$id  <- nh_eight_county_medicaid_match_final_race_two_counties_excluded$unique_person_id
+
+medicaid_jail_all_hus <- fnc_create_high_utilizer_variables(nh_eight_county_medicaid_match_final_race_two_counties_excluded)
+
+nh_eight_county_medicaid_match_final_race <- nh_eight_county_medicaid_match_final_race_two_counties_excluded %>%
+  left_join(medicaid_jail_all_hus, by = "id") %>%
+  dplyr::select(-id) %>% 
+  # Recoded HU variable
+  mutate(hu_group_exclusive = case_when(high_utilizer_10_pct =="No"     ~ 4,
+                                        high_utilizer_10_pct =="Yes" & 
+                                          high_utilizer_5_pct=="No" & 
+                                          high_utilizer_1_pct=="No"     ~ 3,
+                                        high_utilizer_5_pct  =="Yes" & 
+                                          high_utilizer_1_pct=="No"     ~ 2,
+                                        high_utilizer_1_pct  =="Yes"    ~ 1,
+                                        TRUE ~ as.numeric(NA)),
+         hu_group_exclusive = factor(hu_group_exclusive, 
+                                     levels = c(1,2,3,4),
+                                     labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>% 
+  # Overall HU variable
+  mutate(hu_group_overall = case_when(high_utilizer_10_pct == "No"  ~ 2,
+                                      high_utilizer_10_pct == "Yes" ~ 1,
+                                      TRUE ~ as.numeric(NA)),
+         hu_group_overall = factor(hu_group_overall,
+                                   levels = c(1,2),
+                                   labels = c("High Utilizer", "Non-High Utilizer")))
 ```
 
 ```{r}
-# # Reactable table
-# reactable(medicaid_bh_homeless_people_overview,
-#           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
-#           pagination = FALSE,
-#           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
-#                                  headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-#           defaultColDef = reactable::colDef(
-#             format = colFormat(separators = TRUE), align = "left", minWidth = 150
-#           ),
-#           rowStyle = function(index) {
-#               if (index %in% c(10)) {
-#                 list(`border-top` = "thin solid",
-#                      fontWeight = "bold")
-#               }
-#             },
-#           compact = TRUE,
-#           fullWidth = FALSE,
-#           columnGroups = list(
-#             colGroup(name = "People with BH Encounters", columns = c("bh_people_n", "bh_people_homeless_n", "bh_people_homeless_pct")),
-#             colGroup(name = "People without BH Encounters", columns = c("no_bh_people_n", "no_bh_people_homeless_n", "no_bh_people_homeless_pct"))),
-#           columns = list(
-#             county                    = colDef(name = "County", minWidth = 200, style = list(fontWeight = "bold")),
-#             
-#             medicaid_n                = colDef(name = "People Matched to Medicaid (N)"),
-#             homeless_n                = colDef(name = "People Experiencing Homelessness (N)",
-#                                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-#             
-#             bh_people_n               = colDef(name = "People Matched to Medicaid and with BH Encounters (N)"),
-#             bh_people_homeless_n      = colDef(name = "People Experiencing Homelessness and with BH Encounters (N)"),
-#             bh_people_homeless_pct    = colDef(name = "People Experiencing Homelessness and with BH Encounters(%)", format = colFormat(percent = TRUE, digits = 0),
-#                                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3",
-#                                                             color = jri_orange)),
-#             
-#             no_bh_people_n            = colDef(name = "People Matched to Medicaid and without BH Encounters (N)"),
-#             no_bh_people_homeless_n   = colDef(name = "People Experiencing Homelessness and without BH Encounters (N)"),
-#             no_bh_people_homeless_pct = colDef(name = "People Experiencing Homelessness and without BH Encounters (%)", format = colFormat(percent = TRUE, digits = 0),
-#                                             style = list(position = "sticky", borderRight = "1px solid #d3d3d3",
-#                                                          color = jri_green))
-#             )
-#           ) %>%
-# add_source(paste(""), font_style = "italic", font_size = 14)
-```
-
-
-```{r}
-### Table 6. Percentage of People with BH needs who were Experiencing Homelessness at time of Medicaid Eligibility by HU Group
-
-# # Number of people by hu_group_exclusive
-# medicaid_bh_homeless_people_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-#   group_by(hu_group_exclusive) %>% 
-#   dplyr::summarise(# Number of people on Medicaid
-#     medicaid_n  = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-#     
-#     # Number of people experiencing homelessness
-#     homeless_n = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#     
-#     ########
-#     # People with BH encounters
-#     ########
-#     
-#     # Number of people on Medicaid and BH encounters
-#     bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
-#     
-#     # Number of people on Medicaid and BH encounters, and homeless
-#     bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#     # Pct of people who dont have BH and are homeless
-#     bh_people_homeless_pct = bh_people_homeless_n/bh_people_n,
-#     
-#     ########
-#     # People without BH encounters
-#     ########
-#     
-#     # Number of people on Medicaid and without BH encounters
-#     no_bh_people_n = n_distinct(unique_person_id[study_bh_flag==0]),
-#     
-#     # Number of people on Medicaid and without BH encounters, and homeless
-#     no_bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#     
-#     # Pct of people who dont have BH and are homeless
-#     no_bh_people_homeless_pct = no_bh_people_homeless_n/no_bh_people_n
-#   ) 
-# 
-# # Number of people by state
-# medicaid_bh_homeless_people_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-#   dplyr::summarise(# Number of people on Medicaid
-#     medicaid_n  = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-#     
-#     # Number of people experiencing homelessness
-#     homeless_n = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#     
-#     ########
-#     # People with BH encounters
-#     ########
-#     
-#     # Number of people on Medicaid and BH encounters
-#     bh_people_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1]),
-#     
-#     # Number of people on Medicaid and BH encounters, and homeless
-#     bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==1 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#     # Pct of people who dont have BH and are homeless
-#     bh_people_homeless_pct = bh_people_homeless_n/bh_people_n,
-#     
-#     ########
-#     # People without BH encounters
-#     ########
-#     
-#     # Number of people on Medicaid and without BH encounters
-#     no_bh_people_n = n_distinct(unique_person_id[study_bh_flag==0]),
-#     
-#     # Number of people on Medicaid and without BH encounters, and homeless
-#     no_bh_people_homeless_n = n_distinct(unique_person_id[pre_or_study_bh_flag==0 & pre_or_study_homeless_on_eligibility_begin_flag==1]),
-#     
-#     # Pct of people who dont have BH and are homeless
-#     no_bh_people_homeless_pct = no_bh_people_homeless_n/no_bh_people_n
-#   ) %>% 
-#   mutate(hu_group_exclusive = "State")
-# 
-# medicaid_bh_homeless_people_overview <- rbind(medicaid_bh_homeless_people_hu, medicaid_bh_homeless_people_state)
-```
-
-```{r}
-# # Reactable table
-# reactable(medicaid_bh_homeless_people_overview,
-#           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
-#           pagination = FALSE,
-#           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
-#                                  headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-#           defaultColDef = reactable::colDef(
-#             format = colFormat(separators = TRUE), align = "left", minWidth = 150
-#           ),
-#           rowStyle = function(index) {
-#             if (index %in% c(5)) {
-#               list(`border-top` = "thin solid",
-#                    fontWeight = "bold")
-#             }
-#           },
-#           compact = TRUE,
-#           fullWidth = FALSE,
-#           columnGroups = list(
-#             colGroup(name = "People with BH Encounters", columns = c("bh_people_n", "bh_people_homeless_n", "bh_people_homeless_pct")),
-#             colGroup(name = "People without BH Encounters", columns = c("no_bh_people_n", "no_bh_people_homeless_n", "no_bh_people_homeless_pct"))),
-#           columns = list(
-#             hu_group_exclusive        = colDef(name = "", minWidth = 200),
-#             
-#             medicaid_n                = colDef(name = "People Matched to Medicaid (N)"),
-#             homeless_n                = colDef(name = "People Experiencing Homelessness (N)",
-#                                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-#             
-#             bh_people_n               = colDef(name = "People Matched to Medicaid and with BH Encounters (N)"),
-#             bh_people_homeless_n      = colDef(name = "People Experiencing Homelessness and with BH Encounters (N)"),
-#             bh_people_homeless_pct    = colDef(name = "People Experiencing Homelessness and with BH Encounters(%)", format = colFormat(percent = TRUE, digits = 0),
-#                                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3",
-#                                                             color = jri_orange,
-#                                                             fontWeight = "bold")),
-#             
-#             no_bh_people_n            = colDef(name = "People Matched to Medicaid and without BH Encounters (N)"),
-#             no_bh_people_homeless_n   = colDef(name = "People Experiencing Homelessness and without BH Encounters (N)"),
-#             no_bh_people_homeless_pct = colDef(name = "People Experiencing Homelessness and without BH Encounters (%)", format = colFormat(percent = TRUE, digits = 0),
-#                                                style = list(position = "sticky", borderRight = "1px solid #d3d3d3",
-#                                                             color = jri_green,
-#                                                             fontWeight = "bold"))
-#           )
-# ) %>%
-#   add_source(paste(""), font_style = "italic", font_size = 14)
-```
-
-```{r include=FALSE}
-## Comparing Jail Data and Medicaid Data
-######################
-# MEDICAID DATA
-######################
-
 # by county
-dhhs_housing_hu_pct <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-  dplyr::group_by(hu_group_exclusive) %>% 
-  dplyr::summarise(medicaid_match_n = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   homeless_n       = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
-                   homeless_pct     = homeless_n/medicaid_match_n,
-                   not_homeless_n   = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==0]),
-                   not_homeless_pct = not_homeless_n/medicaid_match_n) %>% 
-  select(hu_group_exclusive,
-         homeless = homeless_pct,
-         not_homeless = not_homeless_pct) %>% 
-  mutate(data = "Medicaid Data")
+medicaid_jail_homelessness_hu_county_table <- nh_eight_county_medicaid_match_final_race %>% 
+  dplyr::group_by(race, hu_group_overall) %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (%)` = `Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`)  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Race/Ethnicity` = race) 
 
-# Change from wide to long format
-dhhs_housing_hu_pct <- gather(dhhs_housing_hu_pct, population, pct, homeless:not_homeless, factor_key=TRUE)
+# statewide
+medicaid_jail_homelessness_hu_overall_table <- nh_eight_county_medicaid_match_final_race %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (%)` = `Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`)  %>%  
+  dplyr::mutate(`Race/Ethnicity` = "Statewide",
+                hu_group_overall = "Statewide") 
 
-######################
-# JAIL DATA
-######################
+# rbind county and statewide files 
+medicaid_jail_homelessness_hu_county_statewide_table <- rbind(medicaid_jail_homelessness_hu_county_table,
+                                                              medicaid_jail_homelessness_hu_overall_table)
 
-# Save dataframe for this analysis
-# See if someone was homeless at any booking
-jail_housing_entrances <- bookings_entrances %>% 
-  filter(county != "Cheshire" & county != "Strafford" & county != "Carroll") %>% 
-  filter(housing != "Unknown" & !is.na(housing)) %>% 
-  dplyr::group_by(id) %>%
-  mutate(all_housing_types=paste(sort(unique(housing)), collapse="&")) %>%
-  mutate(housing_in_booking = case_when(all_housing_types == 'Housed&Unhoused' | 
-                                        all_housing_types == 'Unhoused'          ~ "Homeless",
-                                        all_housing_types == "Housed"            ~ "Not Homeless"))
-
-# Count number and proportion of HUs who were homeless by county and by fiscal year
-jail_housing_hu_pct <- jail_housing_entrances %>% 
-  select(id, housing_in_booking, hu_group_exclusive) %>% 
-  distinct() %>% 
-  group_by(housing_in_booking, hu_group_exclusive) %>% 
-  summarise(total = n()) %>% 
-  spread(housing_in_booking, total) %>% 
-  clean_names() %>% 
-  adorn_totals("row") %>% 
-  mutate(number_of_people = homeless + not_homeless,
-         pct_homeless     = homeless/number_of_people,
-         pct_not_homeless = not_homeless/number_of_people,
-         data = "Jail Data") %>% 
-  select(hu_group_exclusive, homeless = pct_homeless, not_homeless = pct_not_homeless) %>% 
-  filter(hu_group_exclusive != "Total") %>% 
-  mutate(data = "Jail Data")
-
-# Change from wide to long format
-jail_housing_hu_pct <- gather(jail_housing_hu_pct, population, pct, homeless:not_homeless, factor_key=TRUE)
-
-# Add jail and Medicaid data together
-jail_medicaid_housing_hu_pct <- rbind(jail_housing_hu_pct,
-                                      dhhs_housing_hu_pct)
+# reactable table
+reactable(medicaid_jail_homelessness_hu_county_statewide_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(minWidth = 150,
+            format = colFormat(separators = TRUE), align = "left"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          rowStyle = function(index) {
+            if (index %in% c(9)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+          columns = list(
+            `Race/Ethnicity` = colDef(minWidth = 150, name = "", style = list(fontWeight = "bold")),
+            hu_group_overall    = colDef(minWidth = 150, name = "Population", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+            `Individuals w/ any experience of homelessness (%)` = colDef(format = colFormat(percent = TRUE, digits = 1)
+            )))
 ```
+
+<br><br>
+
+```{r}
+# by county
+medicaid_jail_homelessness_hu_county_table <- nh_eight_county_medicaid_match_final_race %>% 
+  filter(!is.na(gender)) %>% 
+  dplyr::group_by(gender, hu_group_overall) %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (%)` = `Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`)  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender) 
+
+# statewide
+medicaid_jail_homelessness_hu_overall_table <- nh_eight_county_medicaid_match_final_race %>% 
+  filter(!is.na(gender)) %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (%)` = `Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`)  %>%  
+  dplyr::mutate(`Gender` = "Statewide",
+                hu_group_overall = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_homelessness_hu_county_statewide_table <- rbind(medicaid_jail_homelessness_hu_county_table,
+                                                              medicaid_jail_homelessness_hu_overall_table)
+
+# reactable table
+reactable(medicaid_jail_homelessness_hu_county_statewide_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(minWidth = 150,
+            format = colFormat(separators = TRUE), align = "left"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          rowStyle = function(index) {
+            if (index %in% c(5)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+          columns = list(
+            `Race/Ethnicity` = colDef(minWidth = 150, name = "", style = list(fontWeight = "bold")),
+            hu_group_overall    = colDef(minWidth = 150, name = "Population", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+            `Individuals w/ any experience of homelessness (%)` = colDef(format = colFormat(percent = TRUE, digits = 1)
+            )))
+```
+
+<br><br>
+
+```{r}
+# by county
+medicaid_jail_homelessness_hu_county_table <- nh_eight_county_medicaid_match_final_race %>% 
+  filter(!is.na(age_at_booking_bin)) %>% 
+  dplyr::group_by(age_at_booking_bin, hu_group_overall) %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (%)` = `Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`)  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Age Category` = age_at_booking_bin) 
+
+# statewide
+medicaid_jail_homelessness_hu_overall_table <- nh_eight_county_medicaid_match_final_race %>% 
+  filter(!is.na(age_at_booking_bin)) %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (%)` = `Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`)  %>%  
+  dplyr::mutate(`Age Category` = "Statewide",
+                hu_group_overall = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_homelessness_hu_county_statewide_table <- rbind(medicaid_jail_homelessness_hu_county_table,
+                                                              medicaid_jail_homelessness_hu_overall_table)
+
+# reactable table
+reactable(medicaid_jail_homelessness_hu_county_statewide_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(minWidth = 150,
+            format = colFormat(separators = TRUE), align = "left"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          rowStyle = function(index) {
+            if (index %in% c(9)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+          columns = list(
+            `Race/Ethnicity` = colDef(minWidth = 150, name = "", style = list(fontWeight = "bold")),
+            hu_group_overall    = colDef(minWidth = 150, name = "Population", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+            `Individuals w/ any experience of homelessness (%)` = colDef(format = colFormat(percent = TRUE, digits = 1)
+            )))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 <br><br>

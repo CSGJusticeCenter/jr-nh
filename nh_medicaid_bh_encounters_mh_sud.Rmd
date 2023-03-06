@@ -82,7 +82,7 @@ unique_ids_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
 
 
 #####
-# medicaid encounters with cost and diagnoses information ############################ Check this
+# medicaid encounters with cost and diagnoses information ############################ Andrew, please check this!
 # create unique case id using id and dose date
 medicaid_encounters_costs <- medicaid_encounters_costs_all
 medicaid_encounters_costs$claim_id <- medicaid_encounters_costs %>% 
@@ -98,7 +98,13 @@ medicaid_encounters_costs <- medicaid_encounters_costs %>%
 # remove pharmacy visits
 medicaid_encounters_costs_primary_dx_2018_2021 <- medicaid_encounters_costs %>% 
   filter(mh_service_categorized_using_primary_dx_code  == 1 |
-         sud_service_categorized_using_primary_dx_code == 1) %>%
+         sud_service_categorized_using_primary_dx_code == 1 |
+         mental_health_pharmacy_service == 1 |
+         sud_pharmacy_service == 1 
+         # other_service == 1
+         ) %>% 
+    # filter(mh_service_categorized_using_primary_dx_code  == 1 |
+    #        sud_service_categorized_using_primary_dx_code == 1) %>%
   # subset to FY 2019 to FY 2021
   filter(first_dos_dt > "2018-06-30" & first_dos_dt < "2021-07-01")
 
@@ -130,7 +136,7 @@ mutate(dx_prmry_clinical_classification_new = case_when(
   dx_prmry_clinical_classification == "Inhalant-related disorders"                  ~ "Other substance-related disorders",
   dx_prmry_clinical_classification == "Other specified substance-related disorders" ~ "Other substance-related disorders",
   dx_prmry_clinical_classification == "Stimulant-related disorders"                 ~ "Other substance-related disorders",
-  dx_prmry_clinical_classification == "Alcohol-related disorders"                   ~ "Other substance-related disorders",
+  # dx_prmry_clinical_classification == "Alcohol-related disorders"                   ~ "Other substance-related disorders",
 
   # Other mh-related disorders
   dx_prmry_clinical_classification == "Adjustment disorders"                                     ~ "Other BH-related disorders",
@@ -1360,14 +1366,6 @@ top_primary_diagnoses_grouped <- medicaid_encounters_cleaned_2018_2021 %>%
          pct_claims = case_when(pct_claims == "0%" ~ "<0%", TRUE ~ pct_claims)) %>% 
   arrange(pct_claims)
 
-# Which labels to bold and color
-bold.labels <- top_primary_diagnoses_grouped %>% 
-  mutate(bold = ifelse(dx_prmry_clinical_classification_new == "Opioid-related disorders", yes = "bold", no = "plain"))
-bold.labels <- bold.labels$bold
-color.labels <- top_primary_diagnoses_grouped %>% 
-  mutate(color = ifelse(dx_prmry_clinical_classification_new == "Opioid-related disorders", yes = jri_green, no = "black"))
-color.labels <- color.labels$color
-
 PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, total_claims), 
              y = total_claims, fill=factor(ifelse(dx_prmry_clinical_classification_new=="Opioid-related disorders","Highlighted","Normal")))) +
@@ -1389,7 +1387,8 @@ PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
         legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
         
         panel.grid.major.x = element_line(linewidth = 0.5),
-        axis.text.y = element_text(face = bold.labels, color = color.labels),
+        axis.text.y = element_text(face = c("plain", "plain", "plain", "plain", "plain", "plain", "plain",  "plain", "bold"), 
+                                   color = c( "black","black","black","black","black","black","black","black","#557e39" )),
 
         axis.title   = element_text(size = 22, color = "black"),
         axis.title.y = element_text(size = 22, color = "black"),
@@ -1774,6 +1773,83 @@ PRES_gg_smi_suicide_related_hu <-
 ggsave(PRES_gg_smi_suicide_related_hu, file="img/PRES_gg_smi_suicide_related_hu.png", width = 10,  height = 6, dpi = 100)
 knitr::include_graphics("img/PRES_gg_smi_suicide_related_hu.png")
 ```
+
+<br><br>
+
+### Primary diagnosis for "alcohol-related disorders" Medicaid claims between FY2019-2021.
+
+```{r}
+# Find number and proportion of people with primary diagnosis for "alcohol-related disorders" 
+# by hu_group_overall
+alcohol_related_hu <- medicaid_encounters_cleaned_2018_2021 %>% 
+  group_by(hu_group_exclusive) %>% 
+  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+            
+            `Individuals w/ alcohol-related disorders (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification == "Alcohol-related disorders"]),
+            `Individuals w/ alcohol-related disorders (%)`= `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ Medicaid Match (N)`,
+            `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) 
+  
+# by state
+alcohol_related_hu_state <- medicaid_encounters_cleaned_2018_2021 %>% 
+  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+            
+            `Individuals w/ alcohol-related disorders (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification == "Alcohol-related disorders"]),
+            `Individuals w/ alcohol-related disorders (%)`= `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ Medicaid Match (N)`,
+            `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) %>% 
+  mutate(hu_group_exclusive = "State")
+
+# combine data
+alcohol_related_hu <- rbind(alcohol_related_hu, alcohol_related_hu_state)
+
+# change from wide to long format
+alcohol_related_hu <- gather(alcohol_related_hu, population, pct, `Individuals w/ alcohol-related disorders (%)`:`Individuals w/out alcohol-related disorders (%)`, factor_key=TRUE) 
+alcohol_related_hu <- alcohol_related_hu %>% 
+  mutate(population = factor(population, 
+                             levels = c("Individuals w/out alcohol-related disorders (%)",
+                                        "Individuals w/ alcohol-related disorders (%)"),
+                             labels = c("Individuals w/out alcohol-related disorders",
+                                        "Individuals w/ alcohol-related disorders")))
+
+PRES_gg_alcohol_related_hu <- 
+  ggplot(alcohol_related_hu,
+         aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
+  geom_bar(stat = "identity") +
+  scale_y_continuous(labels = scales::percent,
+                     limits = c(0,1.3)) +
+  scale_fill_manual(values=c("gray",jri_green),
+                    na.value = "white") +
+  geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
+                fontface = 'bold'),
+            position = position_fill(vjust = 0.5),
+            vjust = 0.8,
+            size = 7.5, family = "Franklin Gothic Book",
+            color = case_when(alcohol_related_hu$population == "Individuals w/ alcohol-related disorders" ~ "white",
+                              TRUE ~ "black")) +
+  theme_no_grid_no_labels +
+  coord_flip() +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme(panel.grid.minor.y = element_blank(),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        axis.text.x = element_text(color = "black"),
+        axis.text.y = element_text(color = "black"),
+        # legend.position = "right",
+        legend.justification = c(0.5, 0.5),
+        legend.direction = "vertical",
+        legend.box = "horizontal",
+        legend.position = "bottom",
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", color = "black"))
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_alcohol_related_hu, file="img/PRES_gg_alcohol_related_hu.png", width = 10,  height = 6, dpi = 100)
+knitr::include_graphics("img/PRES_gg_alcohol_related_hu.png")
+```
+
 
 <br><br>
 

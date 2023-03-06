@@ -2406,6 +2406,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
   <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
   <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+  <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
+  <script src="site_libs/react-17.0.0/react.min.js"></script>
+  <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
+  <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+  <script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+  <link href="site_libs/reactable-0.4.3/reactable.css" rel="stylesheet" />
+  <script src="site_libs/reactable-binding-0.4.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2975,7 +2982,7 @@ Bookings w/ any experience of homelessness (%)
 <tbody>
 <tr>
 <td style="text-align:center;">
-Top 1%
+Tier 1 HU
 </td>
 <td style="text-align:center;">
 213
@@ -2998,7 +3005,7 @@ Top 1%
 </tr>
 <tr>
 <td style="text-align:center;">
-Top 5%
+Tier 2 HU
 </td>
 <td style="text-align:center;">
 932
@@ -3021,7 +3028,7 @@ Top 5%
 </tr>
 <tr>
 <td style="text-align:center;">
-Top 10%
+Tier 3 HU
 </td>
 <td style="text-align:center;">
 1,198
@@ -3128,7 +3135,7 @@ Bookings w/ any experience of homelessness (%)
 <tbody>
 <tr>
 <td style="text-align:center;">
-Top 1%
+Tier 1 HU
 </td>
 <td style="text-align:center;">
 213
@@ -3151,7 +3158,7 @@ Top 1%
 </tr>
 <tr>
 <td style="text-align:center;">
-Top 5%
+Tier 2 HU
 </td>
 <td style="text-align:center;">
 932
@@ -3174,7 +3181,7 @@ Top 5%
 </tr>
 <tr>
 <td style="text-align:center;">
-Top 10%
+Tier 3 HU
 </td>
 <td style="text-align:center;">
 1,198
@@ -3250,13 +3257,18 @@ Statewide
 
 </div>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b93c71a6bcf697fd1c40" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b93c71a6bcf697fd1c40">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Race/Ethnicity":["Black","Black","Hispanic","Hispanic","Other","Other","White","White","Statewide"],"hu_group_overall":["High Utilizer","Non-High Utilizer","High Utilizer","Non-High Utilizer","High Utilizer","Non-High Utilizer","High Utilizer","Non-High Utilizer","Statewide"],"Individuals w/ Medicaid Match (N)":[29,227,19,133,7,48,1017,6148,7599],"Individuals w/ any experience of homelessness (N)":[15,50,7,39,4,12,387,1488,1985],"Individuals w/ any experience of homelessness (%)":[0.517241379310345,0.220264317180617,0.368421052631579,0.293233082706767,0.571428571428571,0.25,0.380530973451327,0.24202992843201,0.261218581392288]},"columns":[{"id":"Race/Ethnicity","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left","style":{"fontWeight":"bold"}},{"id":"hu_group_overall","name":"Population","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"Individuals w/ Medicaid Match (N)","name":"Individuals w/ Medicaid Match (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"Individuals w/ any experience of homelessness (N)","name":"Individuals w/ any experience of homelessness (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"Individuals w/ any experience of homelessness (%)","name":"Individuals w/ any experience of homelessness (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":150,"align":"left"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"e2c932ac1d351af36270a716b4209017"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
+<p><br><br></p>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-e19c941e909791d7d98c" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-e19c941e909791d7d98c">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Gender":["F","F","M","M","Statewide"],"hu_group_overall":["High Utilizer","Non-High Utilizer","High Utilizer","Non-High Utilizer","Statewide"],"Individuals w/ Medicaid Match (N)":[274,1929,785,4614,7599],"Individuals w/ any experience of homelessness (N)":[111,445,293,1139,1985],"Individuals w/ any experience of homelessness (%)":[0.405109489051095,0.230689476412649,0.373248407643312,0.246857390550498,0.261218581392288]},"columns":[{"id":"Gender","name":"Gender","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"hu_group_overall","name":"Population","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"Individuals w/ Medicaid Match (N)","name":"Individuals w/ Medicaid Match (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"Individuals w/ any experience of homelessness (N)","name":"Individuals w/ any experience of homelessness (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"Individuals w/ any experience of homelessness (%)","name":"Individuals w/ any experience of homelessness (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":150,"align":"left"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"bd54952316615ad8bf41ec4170e62c28"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
+<p><br><br></p>
 <div class="layout-chunk" data-layout="l-body">
-
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-1cd8eb5eb291bf317f92" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-1cd8eb5eb291bf317f92">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Age Category":["18 to 24","18 to 24","25 to 34","25 to 34","35 to 45","35 to 45","46+","46+","Statewide"],"hu_group_overall":["High Utilizer","Non-High Utilizer","High Utilizer","Non-High Utilizer","High Utilizer","Non-High Utilizer","High Utilizer","Non-High Utilizer","Statewide"],"Individuals w/ Medicaid Match (N)":[126,809,496,2477,386,1997,187,1437,7599],"Individuals w/ any experience of homelessness (N)":[38,171,173,678,155,517,89,281,1985],"Individuals w/ any experience of homelessness (%)":[0.301587301587302,0.211372064276885,0.348790322580645,0.273718207509084,0.401554404145078,0.258888332498748,0.475935828877005,0.195546276965901,0.261218581392288]},"columns":[{"id":"Age Category","name":"Age Category","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"hu_group_overall","name":"Population","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"Individuals w/ Medicaid Match (N)","name":"Individuals w/ Medicaid Match (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"Individuals w/ any experience of homelessness (N)","name":"Individuals w/ any experience of homelessness (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":150,"align":"left"},{"id":"Individuals w/ any experience of homelessness (%)","name":"Individuals w/ any experience of homelessness (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":150,"align":"left"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"d5678a297acda147e38a8b607971a75a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <p><br><br></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
