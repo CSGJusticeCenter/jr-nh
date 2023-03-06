@@ -537,10 +537,55 @@ reactable(medicaid_jail_homelessness_hu_county_statewide_table,
             }
           },
           columns = list(
-            `Race/Ethnicity` = colDef(minWidth = 150, name = "", style = list(fontWeight = "bold")),
+            `Race/Ethnicity` = colDef(minWidth = 150, name = "Race/Ethnicity", style = list(fontWeight = "bold")),
             hu_group_overall    = colDef(minWidth = 150, name = "Population", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
             `Individuals w/ any experience of homelessness (%)` = colDef(format = colFormat(percent = TRUE, digits = 1)
             )))
+```
+
+```{r}
+medicaid_jail_homelessness_hu_county_statewide_data <- medicaid_jail_homelessness_hu_county_statewide_table %>% 
+  mutate(pct = `Individuals w/ any experience of homelessness (%)`) %>%
+  mutate(pct = round(pct, 2),
+         pct_label = paste0(round(pct*100,0), "%")) %>% 
+  filter(`Race/Ethnicity` != "Statewide") %>% 
+  mutate(`Race/Ethnicity` = factor(`Race/Ethnicity`,
+                                   levels = c("Hispanic",
+                                              "White",
+                                              "Black",
+                                              "Other")))
+
+
+
+PRES_gg_diverge_race <- medicaid_jail_homelessness_hu_county_statewide_data %>%
+  mutate(pct = ifelse(hu_group_overall == "High Utilizer", pct, -1*pct)) %>% 
+  ggplot(aes(x = `Race/Ethnicity`, y = pct, fill = hu_group_overall))+
+  geom_bar(stat = "identity") +
+  labs(x = "Race/Ethnicity\n", y = "Proportion of Individuals\n") +
+   geom_text(aes(label = ifelse(pct > .02 | pct < 0, pct_label, "")),
+            size = 7.5, family = "Franklin Gothic Book",
+            hjust = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", -.1, 1.1),
+            color = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", jri_orange, jri_gray),
+            fontface = "bold"
+              ) +
+  scale_y_continuous(limits = c(-.55, .65)) +
+  scale_fill_manual(values=c(jri_orange, "gray")) +
+  theme_no_grid_no_labels +
+  coord_flip() +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_text(face = "bold"),
+        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "top",
+        legend.justification = c(.5, 0),
+        legend.title=element_blank())
+```
+```{r, out.width="75%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_diverge_race, file="img/PRES_gg_diverge_race.png", width = 8,  height = 4, dpi = 100)
+knitr::include_graphics("img/PRES_gg_diverge_race.png")
 ```
 
 <br><br>
@@ -639,6 +684,48 @@ reactable(medicaid_jail_homelessness_hu_county_statewide_table,
             )))
 ```
 
+```{r}
+medicaid_jail_homelessness_hu_county_statewide_data <- medicaid_jail_homelessness_hu_county_statewide_table %>% 
+  mutate(pct = `Individuals w/ any experience of homelessness (%)`) %>%
+  mutate(pct = round(pct, 2),
+         pct_label = paste0(round(pct*100,0), "%")) %>% 
+  filter(`Age Category` != "Statewide") %>% 
+  mutate(`Age Category` = factor(`Age Category`,
+                               levels = c("46+",
+                                          "35 to 45",
+                                          "25 to 34",
+                                          "18 to 24")))
+
+PRES_gg_diverge_age <- medicaid_jail_homelessness_hu_county_statewide_data %>%
+  mutate(pct = ifelse(hu_group_overall == "High Utilizer", pct, -1*pct)) %>% 
+  ggplot(aes(x = `Age Category`, y = pct, fill = hu_group_overall))+
+  geom_bar(stat = "identity") +
+  labs(x = "Age (Years)\n", y = "Proportion of Individuals\n") +
+   geom_text(aes(label = ifelse(pct > .02 | pct < 0, pct_label, "")),
+            size = 7.5, family = "Franklin Gothic Book",
+            hjust = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", -.1, 1.1),
+            color = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", jri_orange, jri_gray),
+            fontface = "bold"
+              ) +
+  scale_y_continuous(limits = c(-.55, .65)) +
+  scale_fill_manual(values=c(jri_orange, "gray")) +
+  theme_no_grid_no_labels +
+  coord_flip() +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_text(face = "bold"),
+        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
+        axis.title.x = element_text(size = 22, color = "black"),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "top",
+        legend.justification = c(.5, 0),
+        legend.title=element_blank())
+```
+```{r, out.width="75%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_diverge_age, file="img/PRES_gg_diverge_age.png", width = 8,  height = 4, dpi = 100)
+knitr::include_graphics("img/PRES_gg_diverge_age.png")
+```
 
 
 

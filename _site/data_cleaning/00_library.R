@@ -90,4 +90,4 @@ jri_dark_blue  <- "#293e5c"
 jri_red        <- "#E25449"
 jri_green      <- "#557e39"
 jri_orange     <- "#b95826"
-
+jri_gray       <- "#404040"
