@@ -22,7 +22,7 @@
 # Add county label
 hillsborough_adm_all <- hillsborough_adm.xlsx %>%
   clean_names() %>%
-  mutate(charge_code = NA,
+  mutate(charge_code = NA, # doesn't have the same variables as the other counties so make NA to be able to rbind
          race_label = case_when(race == "Asian/Pacific Islander"         ~ "Asian/Pacific Islander",
                                 race == "Black"                          ~ "Black",
                                 race == "American Indian/Alaskan Native" ~ "American Indian/Alaskan Native",

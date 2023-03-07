@@ -22,7 +22,7 @@
 # Add county label
 rockingham_adm_all <- rockingham_adm.xlsx %>%
   clean_names() %>%
-  mutate(id = NA,
+  mutate(id = NA, # doesn't have the same variables as the other counties so make NA to be able to rbind
          release_type = NA,
          race_label = case_when(
            race == "A" ~ "Asian/Pacific Islander",
