@@ -55,7 +55,7 @@ PRES_gg_pie_pretrial <- ggplot(data1, aes(x = state, y = total, fill = sentence_
                 position = position_fill(vjust = 0.5),
                 size = 7.5,
                 family = "Franklin Gothic Book",
-                color = ifelse(data1$sentence_status_standard == "Other", "black", "white")
+                color = ifelse(data1$sentence_status_standard == "Other", jri_gray, "white")
             ) +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
@@ -227,12 +227,12 @@ PRES_gg_pretrial_prop <- ggplot(data1, aes(x = county, y = total, fill = sentenc
             position = position_fill(vjust = 0.5),
             vjust = 0.8,
             size = 7.5, family = "Franklin Gothic Book",
-            color = case_when(data1$sentence_status_standard == "Not Pretrial" ~ "black",
+            color = case_when(data1$sentence_status_standard == "Not Pretrial" ~ jri_gray,
                               TRUE ~ "white")) +
   theme_no_grid_no_labels +
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 0.85, color = "black"))
+        axis.text.x = element_text(angle = 45, hjust = 0.85, color = jri_gray))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -602,9 +602,9 @@ df_drug_courts <- adm_all %>%
   mutate(drug_court = case_when(drug_court_pretrial == 1 | drug_court_sentenced == 1 ~ "Drug court-related booking", 
                                 drug_court_pretrial == 0 | drug_court_sentenced == 0 ~ "Not a drug court-related booking"))
 
-# # remove violent offenses 
-# df_drug_courts <- df_drug_courts %>% 
-#   filter(crime_type_lookup != "Violent")
+# remove violent offenses - these should not be categorized as drug court
+df_drug_courts <- df_drug_courts %>%
+  mutate(drug_court = case_when(drug_court == "Drug court-related booking" & crime_type_lookup == "Violent" ~ "Not a drug court-related booking", TRUE ~ drug_court))
 ```
 
 ### Drug court-related bookings by county
@@ -731,7 +731,7 @@ PRES_gg_pie_drug_court_bookings <- ggplot(data1, aes(x = drug_court, y = total, 
   scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = case_when(data1$hu_group_exclusive == "Non-HU" ~ "black",
+            color = case_when(data1$hu_group_exclusive == "Non-HU" ~ jri_gray,
                   TRUE ~ "white")) +
   coord_polar("y", start=0) +
   theme_no_grid_no_labels +
@@ -739,7 +739,7 @@ PRES_gg_pie_drug_court_bookings <- ggplot(data1, aes(x = drug_court, y = total, 
   theme(axis.ticks = element_blank(),
         axis.text.x=element_blank(),
         axis.text.y=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 18, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 18, color = jri_gray))
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
@@ -826,7 +826,7 @@ PRES_gg_drugcourt_tier1hu <- ggplot(tier1hu, aes(x = "", y = pct, fill = type)) 
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = jri_gray))
 
 # Create pie charts for proportion of bookings that are drug-court related by high utilizer (tier 2)
 tier2hu <- table1 %>% filter(`HU Type` == "Tier 2 HU") %>% 
@@ -858,7 +858,7 @@ PRES_gg_drugcourt_tier2hu <- ggplot(tier2hu, aes(x = "", y = pct, fill = type)) 
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = jri_gray))
 
 # Create pie charts for proportion of bookings that are drug-court related by high utilizer (tier 3)
 tier3hu <- table1 %>% filter(`HU Type` == "Tier 3 HU") %>% 
@@ -879,7 +879,7 @@ PRES_gg_drugcourt_tier3hu <- ggplot(tier3hu, aes(x = "", y = pct, fill = type)) 
                 hjust = -.25,
                 size = 7.5,
                 family = "Franklin Gothic Book",
-                color = ifelse(tier3hu$type == "drug_court_related_booking", "black", "gray")
+                color = ifelse(tier3hu$type == "drug_court_related_booking", jri_gray, "gray")
             ) +
   coord_polar("y", start=0) +
   theme_no_grid_no_labels +
@@ -891,7 +891,7 @@ PRES_gg_drugcourt_tier3hu <- ggplot(tier3hu, aes(x = "", y = pct, fill = type)) 
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = jri_gray))
 
 # Create pie charts for proportion of bookings that are drug-court related by high utilizer (non-HU)
 nonhu <- table1 %>% filter(`HU Type` == "Non-HU") %>% 
@@ -912,7 +912,7 @@ PRES_gg_drugcourt_nonhu <- ggplot(nonhu, aes(x = "", y = pct, fill = type)) +
                 hjust = -.25,
                 size = 7.5,
                 family = "Franklin Gothic Book",
-                color = ifelse(nonhu$type == "drug_court_related_booking", "black", "gray")
+                color = ifelse(nonhu$type == "drug_court_related_booking", jri_gray, "gray")
             ) +
   coord_polar("y", start=0) +
   theme_no_grid_no_labels +
@@ -924,6 +924,6 @@ PRES_gg_drugcourt_nonhu <- ggplot(nonhu, aes(x = "", y = pct, fill = type)) +
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = jri_gray))
 ```
 

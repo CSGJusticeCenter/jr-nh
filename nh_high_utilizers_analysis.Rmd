@@ -268,7 +268,7 @@ PRES_gg_pie_beddays <-
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray")) +
   geom_text(aes(label = ifelse(pct > .04, pct_label, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(bed_days$hu_group_exclusive == "Non-HU", "black", "white")) +
+            color = ifelse(bed_days$hu_group_exclusive == "Non-HU", jri_gray, "white")) +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
@@ -340,7 +340,7 @@ PRES_gg_pie_daily_encounters <-
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray")) +
   geom_text(aes(label = ifelse(pct > .04, pct_label, ""), fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(daily_encounters$hu_group_exclusive == "Non-HU", "black", "white")) +
+            color = ifelse(daily_encounters$hu_group_exclusive == "Non-HU", jri_gray, "white")) +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
@@ -544,7 +544,7 @@ PRES_gg_hu_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_entrances,
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray"), labels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(data1$hu_group_exclusive == "Non-HU", "black", "white")) +
+            color = ifelse(data1$hu_group_exclusive == "Non-HU", jri_gray, "white")) +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),
@@ -583,7 +583,7 @@ PRES_gg_hu_people_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_peo
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray"), labels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")) +
   # geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
   #           size = 7.5, family = "Franklin Gothic Book",
-  #           color = ifelse(data1$hu_group_exclusive == "Non-HU", "black", "white")) +
+  #           color = ifelse(data1$hu_group_exclusive == "Non-HU", jri_gray, "white")) +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
         legend.title=element_blank(),

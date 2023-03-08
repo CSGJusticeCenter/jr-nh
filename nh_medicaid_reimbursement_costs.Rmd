@@ -317,8 +317,8 @@ PRES_gg_costs_hu <- ggplot(cost_data, aes(fill=finding, y=amt, x=hu_group_exclus
            color = ifelse(cost_data$finding == "Median", jri_dark_blue, jri_orange),
            fontface = "bold") + 
   scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
-    theme(axis.title.y = element_text(size = 22, color = "black"),
-          axis.title.x = element_text(size = 22, color = "black"),
+    theme(axis.title.y = element_text(size = 22, color = jri_gray),
+          axis.title.x = element_text(size = 22, color = jri_gray),
           panel.grid.major.x = element_blank(),
           panel.grid.minor.x = element_blank(),
           legend.position = "top",
@@ -388,7 +388,7 @@ bold.labels <- cost_data %>%
   mutate(bold = ifelse(dx_prmry_clinical_classification_new == "Opioid-related disorders", yes = "bold", no = "plain"))
 bold.labels <- bold.labels$bold
 color.labels <- cost_data %>% 
-  mutate(color = ifelse(dx_prmry_clinical_classification_new == "Opioid-related disorders", yes = jri_green, no = "black"))
+  mutate(color = ifelse(dx_prmry_clinical_classification_new == "Opioid-related disorders", yes = jri_green, no = jri_gray))
 color.labels <- color.labels$color
 
 # Ggplot showing the total cost by primary diagnosis
@@ -396,27 +396,27 @@ PRES_gg_primary_diagnosis_cost <- cost_data %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, total_cost), 
              y = total_cost, fill=factor(ifelse(dx_prmry_clinical_classification_new=="Opioid-related disorders","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(name = "area", values=c(jri_green,"grey50")) +
+  scale_fill_manual(name = "area", values=c(jri_green,"gray")) +
   xlab("") + ylab("\nAmount Reimbursed to\nService Providers (2019-2021)") +
   scale_y_continuous(labels = scales::dollar_format(scale = .000001, suffix = "M"),
                      limits = c(0, 55000000)) +
   geom_text(aes(label = paste0("$", comma(total_cost)), fontface = 'bold'), 
-                color = ifelse(cost_data$dx_prmry_clinical_classification_new=="Opioid-related disorders", jri_green, "black"), 
+                color = ifelse(cost_data$dx_prmry_clinical_classification_new=="Opioid-related disorders", jri_green, jri_gray), 
                 hjust = -.1, size = 7.5, family = "Franklin Gothic Book") +
   coord_flip() +
   theme_no_grid_no_labels +
   theme(legend.position = "none",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = jri_gray),
         
         panel.grid.major.x = element_line(linewidth = 0.5),
         axis.text.y = element_text(face = bold.labels, color = color.labels),
 
-        axis.title   = element_text(size = 22, color = "black"),
-        axis.title.y = element_text(size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
-        # axis.text.y  = element_text(size = 22, color = "black"),
-        axis.text.x  = element_text(size = 22, color = "black"))
+        axis.title   = element_text(size = 22, color = jri_gray),
+        axis.title.y = element_text(size = 22, color = jri_gray),
+        axis.title.x = element_text(size = 22, color = jri_gray),
+        # axis.text.y  = element_text(size = 22, color = jri_gray),
+        axis.text.x  = element_text(size = 22, color = jri_gray))
 
 ```
 
@@ -466,8 +466,8 @@ PRES_gg_diagnosis_costs <- ggplot(cost_data, aes(fill=finding, y=amt, x = reorde
                                 "Neurod-\ndevelopmental\ndisorders",
                                 "Suicidal ideation/\nattempt/intentional\nself-harm")
     ) +
-    theme(axis.title.y = element_text(size = 22, color = "black"),
-          axis.title.x = element_text(size = 22, color = "black"),
+    theme(axis.title.y = element_text(size = 22, color = jri_gray),
+          axis.title.x = element_text(size = 22, color = jri_gray),
           panel.grid.major.x = element_blank(),
           panel.grid.minor.x = element_blank(),
           legend.position = "top",
@@ -516,17 +516,17 @@ PRES_gg_diagnosis_costs1 <-
   theme_no_grid_no_labels +
   theme(legend.position = "right",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = jri_gray),
         
         panel.grid.major.x = element_line(linewidth = 0.5),
 
-        axis.title   = element_text(size = 22, color = "black"),
-        axis.title.y = element_text(size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
-        axis.text.y  = element_text(size = 22, color = "black" 
+        axis.title   = element_text(size = 22, color = jri_gray),
+        axis.title.y = element_text(size = 22, color = jri_gray),
+        axis.title.x = element_text(size = 22, color = jri_gray),
+        axis.text.y  = element_text(size = 22, color = jri_gray 
                                     #face = "bold"
                                     ),
-        axis.text.x  = element_text(size = 22, color = "black"))
+        axis.text.x  = element_text(size = 22, color = jri_gray))
 ```
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
 # ggsave(PRES_gg_diagnosis_costs1, file="img/PRES_gg_diagnosis_costs1.png", width = 12,  height = 8, dpi = 100, bg = 'transparent')
@@ -559,8 +559,8 @@ PRES_gg_diagnosis_costs2 <- cost_data %>%
   guides(fill = guide_legend(reverse = TRUE)) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(face = bold.labels),
-        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(angle = 90, size = 22, color = jri_gray),
+        axis.title.x = element_text(size = 22, color = jri_gray),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
         legend.position = "top",

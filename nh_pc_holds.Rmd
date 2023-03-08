@@ -70,7 +70,7 @@ PRES_gg_pch_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = pc_hold_
   scale_fill_manual(values=c("gray",jri_light_blue), labels = c("Non-PC      ","PC")) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = ifelse(data1$pc_hold_in_booking == "Non-PC Hold", "black", "white")) +
+            color = ifelse(data1$pc_hold_in_booking == "Non-PC Hold", jri_gray, "white")) +
   theme_no_grid_no_labels +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
@@ -274,7 +274,7 @@ PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_i
             position = position_fill(vjust = 0.5),
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
-            color = case_when(data1$pc_hold_in_booking == "Non-PC Hold" ~ "black",
+            color = case_when(data1$pc_hold_in_booking == "Non-PC Hold" ~ jri_gray,
                               TRUE ~ "white")) +
   theme_no_grid_no_labels +
   theme(panel.grid.minor.y = element_blank(),
@@ -283,8 +283,8 @@ PRES_gg_pchold_prop <- ggplot(data1, aes(x = county, y = total, fill = pc_hold_i
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
-        axis.text.y = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = jri_gray),
+        axis.text.y = element_text(size = 28, color = jri_gray),
         legend.position = "right",
         legend.justification = c(1, 0.5))
 ```
@@ -339,7 +339,7 @@ PRES_gg_pie_hu_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, 
                     guide = guide_legend(reverse = TRUE) ) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
-            color = case_when(data1$hu_group_exclusive == "Non-HU" ~ "black",
+            color = case_when(data1$hu_group_exclusive == "Non-HU" ~ jri_gray,
                               TRUE ~ "white")) +
   theme(legend.position = "top",
         legend.justification = c(0, 0),
@@ -357,7 +357,7 @@ PRES_gg_pie_hu_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, 
     axis.text.x=element_blank(),
     axis.text.y=element_blank(),
     legend.title = element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = "black"))
+    legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = jri_gray))
 ```
 
 **Between 2019 and 2021, people who were high jail utilizers also accounted for nearly a quarter of PC holds.**  
@@ -393,7 +393,7 @@ PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = hu_gro
                 fontface = 'bold'),
             position = position_fill(vjust = 0.5),
             vjust = 0.7,
-            color = ifelse(data1$hu_group_exclusive == "Non-HU", "black", "white"),
+            color = ifelse(data1$hu_group_exclusive == "Non-HU", jri_gray, "white"),
             size = 10, family = "Franklin Gothic Book") +
   # coord_flip() +
   # scale_x_discrete(limits = rev(levels(data1$county))) +
@@ -404,12 +404,12 @@ PRES_gg_pchold_hu_prop <- ggplot(data1, aes(x = county, y = total, fill = hu_gro
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, size = 28, color = "black", hjust = 0.75),
-        axis.text.y = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(angle = 45, size = 28, color = jri_gray, hjust = 0.75),
+        axis.text.y = element_text(size = 28, color = jri_gray),
         legend.position = "right",
         legend.justification = c(1, 0.5),
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = jri_gray))
   # geom_hline(aes(yintercept=0.20), size = 1)
 ```
 
@@ -446,7 +446,7 @@ PRES_gg_pchold_hu_prop_overall <- ggplot(data1, aes(x = county, y = total, fill 
                 fontface = 'bold'),
             position = position_fill(vjust = 0.5),
             vjust = 0.7,
-            color = ifelse(data1$hu_group_overall == "Non-High Utilizer", "black", "white"),
+            color = ifelse(data1$hu_group_overall == "Non-High Utilizer", jri_gray, "white"),
             size = 10, family = "Franklin Gothic Book") +
   theme_minimal() +
   theme(panel.grid.minor.y = element_blank(),
@@ -455,12 +455,12 @@ PRES_gg_pchold_hu_prop_overall <- ggplot(data1, aes(x = county, y = total, fill 
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, size = 28, color = "black", hjust = 0.75),
-        axis.text.y = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(angle = 45, size = 28, color = jri_gray, hjust = 0.75),
+        axis.text.y = element_text(size = 28, color = jri_gray),
         legend.position = "right",
         legend.justification = c(1, 0.5),
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = jri_gray))
 ```
 
 **Belknap and Merrimack County had the most high utilizers who entered jail on a PC hold.**

@@ -418,7 +418,7 @@ PRES_gg_medicaid_match <- ggplot(df_medicaid_match, aes(x = county, y = pct, fil
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
             color = case_when(df_medicaid_match$population == "Individuals w/ any Medicaid Match" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_minimal() +
   theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
@@ -426,13 +426,13 @@ PRES_gg_medicaid_match <- ggplot(df_medicaid_match, aes(x = county, y = pct, fil
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
-        axis.text.y = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = jri_gray),
+        axis.text.y = element_text(size = 28, color = jri_gray),
         legend.position = "right",
         legend.justification = c(1, 0.5),
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
-  #geom_hline(yintercept = mean(df_medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = jri_gray)) 
+  #geom_hline(yintercept = mean(df_medicaid_match$pct), color=jri_gray, linetype='dotted', lwd=1.5)
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -481,7 +481,7 @@ PRES_gg_bh_match <- ggplot(df_bh_match, aes(x = county, y = pct, fill = populati
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
             color = case_when(df_bh_match$population == "Individuals w/ any BH Encounter" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_minimal() +
   theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
@@ -489,12 +489,12 @@ PRES_gg_bh_match <- ggplot(df_bh_match, aes(x = county, y = pct, fill = populati
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
-        axis.text.y = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = jri_gray),
+        axis.text.y = element_text(size = 28, color = jri_gray),
         legend.position = "right",
         legend.justification = c(1, 0.5),
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = jri_gray))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -614,7 +614,7 @@ PRES_gg_medicaid_match_hu <- ggplot(df_medicaid_match, aes(x = reorder(hu_group_
             vjust = 0.8,
             size = 7.5, family = "Franklin Gothic Book",
             color = case_when(df_medicaid_match$population == "Individuals w/ any Medicaid Match" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
@@ -624,13 +624,13 @@ PRES_gg_medicaid_match_hu <- ggplot(df_medicaid_match, aes(x = reorder(hu_group_
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(color = "black"),
-        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = jri_gray),
+        axis.text.y = element_text(color = jri_gray),
         legend.justification = c(0.2, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom")
-  #geom_hline(yintercept = mean(df_medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
+  #geom_hline(yintercept = mean(df_medicaid_match$pct), color=jri_gray, linetype='dotted', lwd=1.5)
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}

@@ -181,17 +181,17 @@ PRES_gg_los_category <- data1 %>%
            label = pct_label),
            size = 7.5, family = "Franklin Gothic Book",
            position=position_dodge(width=0.9), vjust=-0.25,
-           color = "black",
+           color = jri_gray,
            fontface = "bold") + 
   # scale_fill_manual(values=c(jri_green)) +
-  scale_fill_manual(name = "area", values=c(jri_orange,"grey50")) +
+  scale_fill_manual(name = "area", values=c(jri_orange,jri_gray)) +
   scale_y_continuous(limits = c(0,0.3)) +
   theme_no_grid_no_labels +
   theme(
-    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
+    axis.text.x = element_text(size = 18, color = jri_gray, angle = 45, hjust = 0.75),
     axis.text.y = element_blank(),
-    axis.title.x = element_text(size = 18, color = "black"),
-    axis.title.y = element_text(angle = 90, size = 18, color = "black"),
+    axis.title.x = element_text(size = 18, color = jri_gray),
+    axis.title.y = element_text(angle = 90, size = 18, color = jri_gray),
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank(),
     legend.position = "none"
@@ -355,7 +355,7 @@ PRES_gg_diverge_hu_overall_los_prop1 <- hu_overall_los_prop %>%
    geom_text(aes(label = pct_label),
             size = 7.5, family = "Franklin Gothic Book",
             hjust = ifelse(hu_overall_los_prop$hu_group_overall == "High Utilizer", -.1, 1.1),
-            color = ifelse(hu_overall_los_prop$hu_group_overall == "High Utilizer", "black", "black"),
+            color = ifelse(hu_overall_los_prop$hu_group_overall == "High Utilizer", jri_gray, jri_gray),
             fontface = "bold"
               ) +
   scale_y_continuous(limits = c(-.35, .35)) +
@@ -365,8 +365,8 @@ PRES_gg_diverge_hu_overall_los_prop1 <- hu_overall_los_prop %>%
   guides(fill = guide_legend(reverse = TRUE)) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(face = "bold"),
-        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(angle = 90, size = 22, color = jri_gray),
+        axis.title.x = element_text(size = 22, color = jri_gray),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
         legend.position = "top",
@@ -549,17 +549,17 @@ PRES_gg_jail_los_category <- jail_booking_los %>%
            label = pct_label),
            size = 7.5, family = "Franklin Gothic Book",
            position=position_dodge(width=0.9), vjust=-0.25,
-           color = "black",
+           color = jri_gray,
            fontface = "bold") + 
   # scale_fill_manual(values=c(jri_green)) +
-  scale_fill_manual(name = "area", values=c(jri_green,"grey50")) +
+  scale_fill_manual(name = "area", values=c(jri_green,"gray")) +
   scale_y_continuous(limits = c(0,0.3)) +
   theme_no_grid_no_labels +
   theme(
-    axis.text.x = element_text(size = 18, color = "black", angle = 45, hjust = 0.75),
+    axis.text.x = element_text(size = 18, color = jri_gray, angle = 45, hjust = 0.75),
     axis.text.y = element_blank(),
-    axis.title.x = element_text(size = 18, color = "black"),
-    axis.title.y = element_text(angle = 90, size = 18, color = "black"),
+    axis.title.x = element_text(size = 18, color = jri_gray),
+    axis.title.y = element_text(angle = 90, size = 18, color = jri_gray),
     panel.grid.major.x = element_blank(),
     panel.grid.minor.x = element_blank(),
     legend.position = "none"
@@ -605,7 +605,7 @@ PRES_gg_pie_0_1_los_bookings <- ggplot(jail_booking_los_0_1_day, aes(x = state, 
     axis.text.x=element_blank(),
     axis.text.y=element_blank(),
     legend.title = element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = jri_gray))
 ```
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
 ggsave(PRES_gg_pie_0_1_los_bookings, file="img/PRES_gg_pie_0_1_los_bookings.png", width = 8,  height = 8, dpi = 100)
@@ -684,7 +684,7 @@ PRES_gg_los_0_1_crime_type <- ggplot(los_0_1_day_crime_tier1hu_nonhu, aes(fill=g
            position=position_dodge(width=0.9),
            # hjust = -.1,
            vjust = -.1,
-           color = "black",
+           color = jri_gray,
            fontface = "bold") + 
   scale_fill_manual(name = "area", values=c("grey", jri_light_blue)) +
   expand_limits(y = 1) +
@@ -753,6 +753,10 @@ df_drug_courts <- adm_all %>%
   distinct() %>% 
   mutate(drug_court = case_when(drug_court_pretrial == 1 | drug_court_sentenced == 1 ~ "Drug court-related booking", 
                                 drug_court_pretrial == 0 | drug_court_sentenced == 0 ~ "Not a drug court-related booking"))
+
+# remove violent offenses - these should not be categorized as drug court
+df_drug_courts <- df_drug_courts %>%
+  mutate(drug_court = case_when(drug_court == "Drug court-related booking" & crime_type_lookup == "Violent" ~ "Not a drug court-related booking", TRUE ~ drug_court))
 
 # Filter to just drug court related bookings
 drug_court_bookings_los <- df_drug_courts %>% 
@@ -877,6 +881,38 @@ reactable(crime_los_summary,
             median = colDef(minWidth = 90, name = "Median"),
             mean   = colDef(minWidth = 90, name = "Mean"),
             max    = colDef(minWidth = 90, name = "Maximum")))
+```
+
+```{r}
+PRES_gg_crime_los <- crime_los_summary %>%
+  ggplot(aes(x = reorder(crime_type_lookup, mean), 
+             y = mean, fill=factor(ifelse(crime_type_lookup=="Violent","Highlighted","Normal")))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(name = "area", values=c(jri_orange,"gray")) +
+      geom_text(aes(label = paste0(round(mean, 0), " Days"), fontface = 'bold'
+                    ), 
+                color = ifelse(crime_los_summary$crime_type_lookup=="Violent", jri_orange, jri_gray), 
+                hjust = -.1, size = 7.5, family = "Franklin Gothic Book") +
+  xlab("") + ylab("\nAverage LOS (Days)") +
+  scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
+                     expand = c(0,0),
+                     limits = c(0,86)) +
+  coord_flip() +
+  theme_no_grid_with_labels +
+  theme(legend.position = "none",
+        legend.title=element_blank(),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = jri_gray),
+        
+        axis.text.y = element_text(face = c("plain", "plain", "plain", "plain", "plain", "plain", "bold"), color = c(jri_gray, jri_gray, jri_gray, jri_gray, jri_gray, jri_gray, jri_orange)),
+
+        axis.title   = element_text(size = 22, color = jri_gray),
+        axis.title.y = element_text(size = 22, color = jri_gray),
+        axis.text.x = element_blank())
+
+```
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_crime_los, file="img/PRES_gg_crime_los.png", width = 10,  height = 5, dpi = 100)
+knitr::include_graphics("img/PRES_gg_crime_los.png")
 ```
 
 # Remove 4,705 bookings that are outliers (out of 28,023 bookings)

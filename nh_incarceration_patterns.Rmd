@@ -100,7 +100,7 @@ PRES_gg_dhhs_entrances <-
   ggplot(data=data1, aes(x=fy, y=total)) +
   geom_bar(stat="identity", width = 0.74, fill = jri_green) +
   xlab("") + ylab("Number of Entrances") +
-  geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
+  geom_text(aes(label = comma(total)), color = jri_gray, vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
                      limits = c(0,24000)) +
@@ -160,7 +160,7 @@ PRES_gg_entrances_change_county <-
             size = 7.5,
             hjust = 1.2,
             family = "Franklin Gothic Book",
-            color = "black") +
+            color = jri_gray) +
   theme_no_grid_no_labels +
   theme(legend.position = "none",
         axis.title.y = element_blank(),
@@ -326,13 +326,13 @@ PRES_gg_num_entrances <-
                      expand = c(0.05,0),
                      limits = c(0,20000)) +
   geom_hline(yintercept=20) +
-  geom_text(aes(label = comma(total)), color = "black", vjust = -1, size = 10, family = "Franklin Gothic Book") +
+  geom_text(aes(label = comma(total)), color = jri_gray, vjust = -1, size = 10, family = "Franklin Gothic Book") +
   theme_no_grid_with_labels +
   xlab("\nNumber of Entrances (2019 - 2021)") + ylab("Number of People\n") +
   theme(axis.text.y  = element_blank(),
-        axis.title.y = element_text(size = 28, color = "black"),
-        axis.title.x = element_text(size = 28, color = "black"),
-        axis.text.x  = element_text(size = 28, color = "black"))
+        axis.title.y = element_text(size = 28, color = jri_gray),
+        axis.title.x = element_text(size = 28, color = jri_gray),
+        axis.text.x  = element_text(size = 28, color = jri_gray))
 
 # Save and output graph
 ggsave(PRES_gg_num_entrances, file= "img/PRES_gg_num_entrances.png", width = 19, height = 9, dpi = 100)

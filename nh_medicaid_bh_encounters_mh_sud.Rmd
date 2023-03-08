@@ -311,7 +311,7 @@ PRES_gg_medicaid_mh <- ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_ov
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
             color = case_when(medicaid_match_mh_all$population == "Individuals w/ MH Service Encounter" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_minimal() +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
@@ -321,15 +321,15 @@ PRES_gg_medicaid_mh <- ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_ov
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 28, color = "black"),
-        axis.text.y = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(size = 28, color = jri_gray),
+        axis.text.y = element_text(size = 28, color = jri_gray),
         # legend.position = "right",
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = jri_gray))
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
@@ -391,7 +391,7 @@ PRES_gg_medicaid_sud <- ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
             color = case_when(medicaid_match_sud_all$population == "Individuals w/ SUD Service Encounter" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_minimal() +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
@@ -401,15 +401,15 @@ PRES_gg_medicaid_sud <- ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(size = 28, color = "black"),
-        axis.text.y = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(size = 28, color = jri_gray),
+        axis.text.y = element_text(size = 28, color = jri_gray),
         # legend.position = "right",
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = jri_gray))
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
@@ -537,7 +537,7 @@ PRES_gg_medicaid_match_bh <- ggplot(medicaid_match_bh, aes(x = reorder(hu_group_
             vjust = 0.8,
             size = 7.5, family = "Franklin Gothic Book",
             color = case_when(medicaid_match_bh$population == "Individuals w/ BH Encounter" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
@@ -547,15 +547,15 @@ PRES_gg_medicaid_match_bh <- ggplot(medicaid_match_bh, aes(x = reorder(hu_group_
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(color = "black"),
-        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = jri_gray),
+        axis.text.y = element_text(color = jri_gray),
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", color = "black")) 
-  #geom_hline(yintercept = mean(medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
+        legend.text = element_text(family = "Franklin Gothic Book", color = jri_gray)) 
+  #geom_hline(yintercept = mean(medicaid_match$pct), color=jri_gray, linetype='dotted', lwd=1.5)
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
@@ -608,7 +608,7 @@ PRES_gg_medicaid_match_cooccurring <- ggplot(medicaid_match_cooccurring, aes(x =
             vjust = 0.8,
             size = 7.5, family = "Franklin Gothic Book",
             color = case_when(medicaid_match_cooccurring$population == "Individuals w/ Co-Occurring Disorders" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
@@ -618,15 +618,15 @@ PRES_gg_medicaid_match_cooccurring <- ggplot(medicaid_match_cooccurring, aes(x =
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(color = "black"),
-        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = jri_gray),
+        axis.text.y = element_text(color = jri_gray),
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book",
-                                   color = "black"))
+                                   color = jri_gray))
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
@@ -895,7 +895,7 @@ kable(medicaid_jail_smi_opioid_hu_grouping_statewide_table,
 #           legend.box = "horizontal",
 #           legend.position = "bottom",
 #           legend.title=element_blank(),
-#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
+#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = jri_gray))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -938,7 +938,7 @@ kable(medicaid_jail_smi_opioid_hu_grouping_statewide_table,
 #     theme_with_grid_with_labels +
 #     theme(legend.position = "none",
 #           legend.title=element_blank(),
-#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
+#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = jri_gray))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -1001,7 +1001,7 @@ PRES_gg_medicaid_jail_smi_hu_grouping1 <-
             vjust = 0.8,
             size = 7.5, family = "Franklin Gothic Book",
             color = case_when(medicaid_jail_smi_hu_grouping$population == "Individuals w/ SMI Primary Diagnosis"~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
@@ -1011,14 +1011,14 @@ PRES_gg_medicaid_jail_smi_hu_grouping1 <-
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(color = "black"),
-        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = jri_gray),
+        axis.text.y = element_text(color = jri_gray),
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", color = jri_gray))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -1076,7 +1076,7 @@ PRES_gg_medicaid_jail_smi_county <- ggplot(medicaid_jail_smi_county, aes(x = cou
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
             color = case_when(medicaid_jail_smi_county$population == "Individuals w/ SMI Primary Diagnosis" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_minimal() +
   theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
@@ -1084,14 +1084,14 @@ PRES_gg_medicaid_jail_smi_county <- ggplot(medicaid_jail_smi_county, aes(x = cou
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
-        axis.text.y = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = jri_gray),
+        axis.text.y = element_text(size = 28, color = jri_gray),
         legend.title=element_blank(),
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom",
-        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = jri_gray))
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
@@ -1141,7 +1141,7 @@ knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_county.png")
 #           legend.box = "horizontal",
 #           legend.position = "bottom",
 #           legend.title=element_blank(),
-#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
+#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = jri_gray))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -1184,7 +1184,7 @@ knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_county.png")
 #     theme_with_grid_with_labels +
 #     theme(legend.position = "none",
 #           legend.title=element_blank(),
-#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
+#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = jri_gray))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -1246,7 +1246,7 @@ PRES_gg_medicaid_jail_opioid1 <-
             vjust = 0.8,
             size = 7.5, family = "Franklin Gothic Book",
             color = case_when(medicaid_jail_opioid_hu_grouping$population == "Individuals w/ Opioid-related Primary Diagnosis" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
@@ -1256,15 +1256,15 @@ PRES_gg_medicaid_jail_opioid1 <-
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(color = "black"),
-        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = jri_gray),
+        axis.text.y = element_text(color = jri_gray),
         # legend.position = "right",
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", color = jri_gray))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -1322,7 +1322,7 @@ PRES_gg_medicaid_jail_opioid_county <- ggplot(medicaid_jail_opioid_county, aes(x
             vjust = 0.8,
             size = 10, family = "Franklin Gothic Book",
             color = case_when(medicaid_jail_opioid_county$population == "Individuals w/ Opioid-related Primary Diagnosis" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_minimal() +
   theme(panel.grid.minor.y = element_blank(),
         panel.grid.major.y = element_blank(),
@@ -1330,14 +1330,14 @@ PRES_gg_medicaid_jail_opioid_county <- ggplot(medicaid_jail_opioid_county, aes(x
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = "black"),
-        axis.text.y = element_text(size = 28, color = "black"),
+        axis.text.x = element_text(angle = 45, hjust = 0.85, size = 28, color = jri_gray),
+        axis.text.y = element_text(size = 28, color = jri_gray),
         legend.title=element_blank(),
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom",
-        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = jri_gray))
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
@@ -1370,10 +1370,10 @@ PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, total_claims), 
              y = total_claims, fill=factor(ifelse(dx_prmry_clinical_classification_new=="Opioid-related disorders","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(name = "area", values=c(jri_green,"grey50")) +
+  scale_fill_manual(name = "area", values=c(jri_green,"gray")) +
       geom_text(aes(label = comma(total_claims), fontface = 'bold'
                     ), 
-                color = ifelse(top_primary_diagnoses_grouped$dx_prmry_clinical_classification_new=="Opioid-related disorders", jri_green, "black"), 
+                color = ifelse(top_primary_diagnoses_grouped$dx_prmry_clinical_classification_new=="Opioid-related disorders", jri_green, jri_gray), 
                 hjust = -.1, size = 7.5, family = "Franklin Gothic Book") +
   xlab("") + ylab("\nNumber of Claims") +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
@@ -1384,17 +1384,17 @@ PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
   theme_no_grid_no_labels +
   theme(legend.position = "none",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = jri_gray),
         
         panel.grid.major.x = element_line(linewidth = 0.5),
         axis.text.y = element_text(face = c("plain", "plain", "plain", "plain", "plain", "plain", "plain",  "plain", "bold"), 
-                                   color = c( "black","black","black","black","black","black","black","black","#557e39" )),
+                                   color = c( jri_gray,jri_gray,jri_gray,jri_gray,jri_gray,jri_gray,jri_gray,jri_gray,"#557e39" )),
 
-        axis.title   = element_text(size = 22, color = "black"),
-        axis.title.y = element_text(size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
-        # axis.text.y  = element_text(size = 22, color = "black"),
-        axis.text.x  = element_text(size = 22, color = "black"))
+        axis.title   = element_text(size = 22, color = jri_gray),
+        axis.title.y = element_text(size = 22, color = jri_gray),
+        axis.title.x = element_text(size = 22, color = jri_gray),
+        # axis.text.y  = element_text(size = 22, color = jri_gray),
+        axis.text.x  = element_text(size = 22, color = jri_gray))
 ```
 
 ```{r, out.width="150%", echo=FALSE, layout = "l-body"}
@@ -1432,17 +1432,17 @@ bold.labels <- smi_primary_diagnoses %>%
   mutate(bold = ifelse(dx_prmry_clinical_classification == "Schizophrenia spectrum and other psychotic disorders", yes = "bold", no = "plain"))
 bold.labels <- bold.labels$bold
 color.labels <- smi_primary_diagnoses %>% 
-  mutate(color = ifelse(dx_prmry_clinical_classification == "Schizophrenia spectrum and other psychotic disorders", yes = jri_orange, no = "black"))
+  mutate(color = ifelse(dx_prmry_clinical_classification == "Schizophrenia spectrum and other psychotic disorders", yes = jri_orange, no = jri_gray))
 color.labels <- color.labels$color
 
 PRES_gg_medicaid_smi_primary_diagnoses <- smi_primary_diagnoses %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification, total_claims), 
              y = total_claims, fill=factor(ifelse(dx_prmry_clinical_classification=="Schizophrenia spectrum and other psychotic disorders","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(name = "area", values=c(jri_orange,"grey50")) +
+  scale_fill_manual(name = "area", values=c(jri_orange,"gray")) +
       geom_text(aes(label = comma(total_claims), fontface = 'bold'
                     ), 
-                color = ifelse(smi_primary_diagnoses$dx_prmry_clinical_classification=="Schizophrenia spectrum and other psychotic disorders", jri_orange, "black"), 
+                color = ifelse(smi_primary_diagnoses$dx_prmry_clinical_classification=="Schizophrenia spectrum and other psychotic disorders", jri_orange, jri_gray), 
                 hjust = -.1, size = 7.5, family = "Franklin Gothic Book") +
   xlab("") + ylab("\nNumber of Claims") +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
@@ -1453,16 +1453,16 @@ PRES_gg_medicaid_smi_primary_diagnoses <- smi_primary_diagnoses %>%
   theme_no_grid_no_labels +
   theme(legend.position = "none",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
+        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = jri_gray),
         
         panel.grid.major.x = element_line(linewidth = 0.5),
         axis.text.y = element_text(face = bold.labels, color = color.labels),
 
-        axis.title   = element_text(size = 22, color = "black"),
-        axis.title.y = element_text(size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
-        # axis.text.y  = element_text(size = 22, color = "black"),
-        axis.text.x  = element_text(size = 22, color = "black"))
+        axis.title   = element_text(size = 22, color = jri_gray),
+        axis.title.y = element_text(size = 22, color = jri_gray),
+        axis.title.x = element_text(size = 22, color = jri_gray),
+        # axis.text.y  = element_text(size = 22, color = jri_gray),
+        axis.text.x  = element_text(size = 22, color = jri_gray))
 
 ```
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -1555,19 +1555,19 @@ PRES_gg_smi_primary_diagnoses_hu <- smi_primary_diagnoses_hu %>%
  geom_text(aes(label = paste0(abs(pct), "%")),
             size = 7.5, family = "Franklin Gothic Book",
             hjust = ifelse(smi_primary_diagnoses_hu$hu_group_overall == "High Utilizer", -.1, 1.1),
-            color = ifelse(smi_primary_diagnoses_hu$hu_group_overall == "High Utilizer", jri_orange, "black"),
+            color = ifelse(smi_primary_diagnoses_hu$hu_group_overall == "High Utilizer", jri_orange, jri_gray),
             fontface = "bold"
               ) +
   scale_y_continuous(limits = c(-100, 100)) +
-  scale_fill_manual(values=c(jri_orange, "gray50")) +
+  scale_fill_manual(values=c(jri_orange, "gray")) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(face = c("plain", "plain", "plain", "plain", "bold", 
                                             "plain", "plain", "plain", "plain", "plain", "plain")),
-        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(angle = 90, size = 22, color = jri_gray),
+        axis.title.x = element_text(size = 22, color = jri_gray),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
         legend.position = "top",
@@ -1665,19 +1665,19 @@ PRES_gg_smi_primary_diagnoses_tier1hu <- smi_primary_diagnoses_hu %>%
  geom_text(aes(label = paste0(abs(pct), "%")),
             size = 7.5, family = "Franklin Gothic Book",
             hjust = ifelse(smi_primary_diagnoses_hu$hu_group_exclusive == "Tier 1 HU", -.1, 1.1),
-            color = ifelse(smi_primary_diagnoses_hu$hu_group_exclusive == "Tier 1 HU", jri_light_blue, "black"),
+            color = ifelse(smi_primary_diagnoses_hu$hu_group_exclusive == "Tier 1 HU", jri_light_blue, jri_gray),
             fontface = "bold"
               ) +
   scale_y_continuous(limits = c(-100, 100)) +
-  scale_fill_manual(values=c(jri_light_blue, "gray50")) +
+  scale_fill_manual(values=c(jri_light_blue, jri_gray)) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
   theme(axis.text.x = element_blank(),
         axis.text.y = element_text(face = c("plain", "plain", "plain", "plain", "bold", 
                                             "plain", "plain", "plain", "plain", "plain", "plain")),
-        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
+        axis.title.y = element_text(angle = 90, size = 22, color = jri_gray),
+        axis.title.x = element_text(size = 22, color = jri_gray),
         panel.grid.major.x = element_blank(),
         panel.grid.minor.x = element_blank(),
         legend.position = "top",
@@ -1748,7 +1748,7 @@ PRES_gg_smi_suicide_related_hu <-
             vjust = 0.8,
             size = 7.5, family = "Franklin Gothic Book",
             color = case_when(smi_suicide_related_hu$population == "Individuals w/ suicidal ideation/attempt/intentional self-harm" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
@@ -1758,15 +1758,15 @@ PRES_gg_smi_suicide_related_hu <-
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(color = "black"),
-        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = jri_gray),
+        axis.text.y = element_text(color = jri_gray),
         # legend.position = "right",
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", color = jri_gray))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
@@ -1824,7 +1824,7 @@ PRES_gg_alcohol_related_hu <-
             vjust = 0.8,
             size = 7.5, family = "Franklin Gothic Book",
             color = case_when(alcohol_related_hu$population == "Individuals w/ alcohol-related disorders" ~ "white",
-                              TRUE ~ "black")) +
+                              TRUE ~ jri_gray)) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
@@ -1834,15 +1834,15 @@ PRES_gg_alcohol_related_hu <-
         panel.grid.minor.x = element_blank(),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
-        axis.text.x = element_text(color = "black"),
-        axis.text.y = element_text(color = "black"),
+        axis.text.x = element_text(color = jri_gray),
+        axis.text.y = element_text(color = jri_gray),
         # legend.position = "right",
         legend.justification = c(0.5, 0.5),
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", color = "black"))
+        legend.text = element_text(family = "Franklin Gothic Book", color = jri_gray))
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
