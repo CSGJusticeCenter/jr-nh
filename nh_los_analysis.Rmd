@@ -184,7 +184,7 @@ PRES_gg_los_category <- data1 %>%
            color = jri_gray,
            fontface = "bold") + 
   # scale_fill_manual(values=c(jri_green)) +
-  scale_fill_manual(name = "area", values=c(jri_orange,jri_gray)) +
+  scale_fill_manual(name = "area", values=c(jri_orange,"gray")) +
   scale_y_continuous(limits = c(0,0.3)) +
   theme_no_grid_no_labels +
   theme(
@@ -379,6 +379,59 @@ ggsave(PRES_gg_diverge_hu_overall_los_prop1, file="img/PRES_gg_diverge_hu_overal
 knitr::include_graphics("img/PRES_gg_diverge_hu_overall_los_prop1.png")
 ```
 
+```{r}
+# Filter to LOS for all HU's and calculate number of entrances/prop of entrances with los category
+hu_overall_los_prop <- jail_booking_los_overall %>%
+  filter(hu_group_exclusive == "Tier 1 HU") %>% 
+  group_by(los_category) %>% 
+  summarise(total = n()) %>% 
+  mutate(pct = total/sum(total)) %>%
+  mutate(pct = round(pct, 2),
+         pct_label = paste0(round(pct*100,0), "%"),
+         hu_group_exclusive = "Tier 1 HU")
+
+# Filter to LOS for all non-HU's and calculate number of entrances/prop of entrances with los category
+non_hu_los_prop <- jail_booking_los_overall %>%
+  filter(hu_group_exclusive == "Non-HU") %>% 
+  group_by(los_category) %>% 
+  summarise(total = n()) %>% 
+  mutate(pct = total/sum(total)) %>%
+  mutate(pct = round(pct, 2),
+         pct_label = paste0(round(pct*100,0), "%"),
+         hu_group_exclusive = "Non-HU")
+
+hu_overall_los_prop <- rbind(non_hu_los_prop, hu_overall_los_prop)
+
+PRES_gg_diverge_hu_overall_los_prop2 <- hu_overall_los_prop %>%
+  mutate(pct = ifelse(hu_group_exclusive == "Tier 1 HU", pct, -1*pct)) %>% 
+  ggplot(aes(x = los_category, y = pct, fill = hu_group_exclusive))+
+  geom_bar(stat = "identity") +
+  labs(x = "Length of Stay (Days)\n", y = "Proportion of Entrances\n") +
+   geom_text(aes(label = pct_label),
+            size = 7.5, family = "Franklin Gothic Book",
+            hjust = ifelse(hu_overall_los_prop$hu_group_exclusive == "Tier 1 HU", -.1, 1.1),
+            color = ifelse(hu_overall_los_prop$hu_group_exclusive == "Tier 1 HU", jri_light_blue, jri_gray),
+            fontface = "bold"
+              ) +
+  scale_y_continuous(limits = c(-.35, .35)) +
+  scale_fill_manual(values=c("gray", jri_light_blue)) +
+  theme_no_grid_no_labels +
+  coord_flip() +
+  theme(axis.text.x = element_blank(),
+        axis.text.y = element_text(face = "bold"),
+        axis.title.y = element_text(angle = 90, size = 22, color = jri_gray),
+        axis.title.x = element_text(size = 22, color = jri_gray),
+        panel.grid.major.x = element_blank(),
+        panel.grid.minor.x = element_blank(),
+        legend.position = "top",
+        legend.justification = c(0.3, 0),
+        legend.title=element_blank())
+```
+
+```{r, out.width="100%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_diverge_hu_overall_los_prop2, file="img/PRES_gg_diverge_hu_overall_los_prop2.png", width = 8,  height = 8, dpi = 100)
+knitr::include_graphics("img/PRES_gg_diverge_hu_overall_los_prop2.png")
+```
 
 
 
