@@ -22,9 +22,6 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
-
-# Create HU variables
-bookings_entrances <- fnc_hu_group_exclusive(bookings_entrances) 
 ```
 
 # Protective Custody Holds
@@ -360,13 +357,13 @@ PRES_gg_pie_hu_pc_holds <- ggplot(data1, aes(x = pc_hold_in_booking, y = total, 
     axis.text.x=element_blank(),
     axis.text.y=element_blank(),
     legend.title = element_blank(),
-    legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
+    legend.text = element_text(family = "Franklin Gothic Book", size = 14, color = "black"))
 ```
 
 **Between 2019 and 2021, people who were high jail utilizers also accounted for nearly a quarter of PC holds.**  
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_hu_pc_holds, file="img/PRES_gg_pie_hu_pc_holds.png", width = 5,  height = 5, dpi = 100)
+ggsave(PRES_gg_pie_hu_pc_holds, file="img/PRES_gg_pie_hu_pc_holds.png", width = 5,  height = 5, dpi = 100, bg='transparent')
 knitr::include_graphics("img/PRES_gg_pie_hu_pc_holds.png")
 ```
 
@@ -444,7 +441,7 @@ data1 <- bookings_entrances %>%
 PRES_gg_pchold_hu_prop_overall <- ggplot(data1, aes(x = county, y = total, fill = hu_group_overall)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c("gray", jri_orange), labels = c("Non-High Utilizer", "High Utilizer")) +
+  scale_fill_manual(values=c("gray", jri_gray), labels = c("Non-High Utilizer", "High Utilizer")) +
   geom_text(aes(label = ifelse(pct > 4, paste0(pct, "%"), ""),
                 fontface = 'bold'),
             position = position_fill(vjust = 0.5),

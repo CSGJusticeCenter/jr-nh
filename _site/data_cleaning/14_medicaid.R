@@ -475,7 +475,7 @@ table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
 
 
 ###############################################################################
-### save medicaid_enrollment_categories_encounters to external hard drive - needed for reimbursement analysis
+### save medicaid_enrollment_categories_encounters to external hard drive - needed for reimbursement analysis???
 ###############################################################################
 write_rds(medicaid_enrollment_categories_encounters,
           "D:/Analytic/medicaid_enrollment_categories_encounters.rds")
@@ -693,6 +693,21 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                          0, .x))) %>%
   ### now de-dup by individual
       distinct(unique_person_id, .keep_all=TRUE)
+
+
+
+
+
+###############################################################################
+### save medicaid_enrollment_categories_encounters_2018_2021_individual_level to external hard drive - needed for reimbursement analysis????
+###############################################################################
+write_rds(medicaid_enrollment_categories_encounters_2018_2021_individual_level,
+          "D:/Analytic/medicaid_enrollment_categories_encounters_2018_2021_individual_level_details.rds")
+
+
+
+
+
 
 ### removing all columns that were specific to encounter- or enrollment-level data
 ### since we have created an individual-level file with flags from the encounter and enrollment data,
@@ -961,8 +976,8 @@ write_rds(medicaid_enrollment_jail_timing_all,
 ##############################
 
 ### clean medicaid_encounters_xlsx_de_dup and merge to medicaid_enrollment_jail_timing_all
-medicaid_encounters_clean <- medicaid_encounters_xlsx_de_dup %>% 
-  clean_names() %>% 
+medicaid_encounters_clean <- medicaid_encounters_xlsx_de_dup %>%
+  clean_names() %>%
   mutate(first_dos_dt = ymd(as_date(first_dos_dt)),
          last_dos_dt = ymd(as_date(last_dos_dt)))
 

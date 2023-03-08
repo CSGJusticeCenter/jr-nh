@@ -25,7 +25,6 @@ library(kableExtra)
 library(reactable)
 library(reactablefmtr)
 library(stringr)
-library(csgjcr)
 library(highcharter)
 library(labelled)
 library(sjPlot)
@@ -56,6 +55,8 @@ library(svDialogs)
 
 # # Download CSGJCR package
 # # devtools::install_github("CSGJusticeCenter/csgjcr@DEVELOP")
+
+library(csgjcr)
 
 # # Set project path for MAR
 # csg_set_project_path(project = "NH", sp_folder = "C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH", force = TRUE)

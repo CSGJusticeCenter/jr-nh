@@ -177,18 +177,18 @@ hillsborough_adm <- hillsborough_adm %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
   mutate(drug_court_pretrial  = case_when(sentence_status == "PRE TRIAL DRUG COURT (MANCH)" |
                                        sentence_status == "PRE TRIAL DRUG COURT (NASHUA)" |
-                                       sentence_status == "PRETRIAL DRUG COURT SATCO" |
-                                       sentence_status == "PRE TRIAL ROCK SATCO" |
-                                       sentence_status == "PRETRIAL GRAFTON SATCO" |
-                                       sentence_status == "PRETRIAL SATCO" |
-
-                                       (booking_type == "DRUG COURT" & sentence_status == "PRETRIAL") ~ 1,
+                                       # sentence_status == "PRETRIAL DRUG COURT SATCO" | # SATCO not a drug court but treatment related
+                                       # sentence_status == "PRE TRIAL ROCK SATCO" |
+                                       # sentence_status == "PRETRIAL GRAFTON SATCO" |
+                                       # sentence_status == "PRETRIAL SATCO"
+                                       (booking_type == "DRUG COURT" & sentence_status == "PRETRIAL")
+                                       ~ 1,
                                        TRUE ~ 0),
          drug_court_sentenced = case_when(sentence_status == "SENTENCED-HSC NORTH DRUG COURT SANCTION" |
                                        sentence_status == "SENTENCED-HSC SOUTH DRUG COURT SANCTION" |
-                                       sentence_status == "SENTENCED ROCK SATCO" |
-                                       sentence_status == "SENTENCED SATCO" |
-                                       sentence_status == "SENTENCED W/HOLD SATCO" |
+                                       # sentence_status == "SENTENCED ROCK SATCO" | # SATCO not a drug court but treatment related
+                                       # sentence_status == "SENTENCED SATCO" |
+                                       # sentence_status == "SENTENCED W/HOLD SATCO" |
 
                                        (booking_type == "DRUG COURT" & sentence_status == "SENTENCED") |
                                        (booking_type == "DRUG COURT" & sentence_status == "SENTENCED WALK IN") ~ 1,
