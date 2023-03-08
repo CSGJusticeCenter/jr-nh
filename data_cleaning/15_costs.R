@@ -27,6 +27,7 @@ df1 <- adm_all %>% select(id, county, booking_id, booking_date, release_date) %>
 
 # Unpack the start_date and end_date to individual dates
 # Takes 10-15 minutes to run
+# Each date is listed for each person
 df2 <- data.frame()
 for (i in 1:nrow(df1)){
   expand  <-  data.frame(county = df1$county[i],
@@ -35,17 +36,29 @@ for (i in 1:nrow(df1)){
   df2 <- rbind(df2, expand)
 }
 
-# Calculate the number of other individuals present in each county in each day
-# Remove dates after the study time frame (July 1, 2018 to June 30, 2021)
-daily_pop_costs <- df2 %>% group_by(county, Dates) %>%
+# Calculate the number of individuals present in each county in each day
+# Filter to dates in 2019
+daily_pop_costs_2019 <- df2 %>% group_by(county, Dates) %>%
   dplyr::summarise(individuals = n()) %>%
-  filter(Dates > "2020-06-30" & Dates < "2021-07-01") %>%
+  filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
   group_by(county) %>%
-  dplyr::summarise(avg_pop_fy21 = mean(individuals, na.rm=TRUE)) %>%
+  dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE)) %>%
   left_join(county_budgets, by = "county") %>%
-  mutate(cost_pp_per_year = doc_budget/avg_pop_fy21) %>%
+  mutate(cost_pp_per_year = doc_budget/avg_pop_fy19) %>%
   mutate(cost_pp_per_day = cost_pp_per_year/365)
 
+# Calculate the number of individuals present in each county in each day
+# Filter to dates in 2020
+daily_pop_costs_2020 <- df2 %>% group_by(county, Dates) %>%
+  dplyr::summarise(individuals = n()) %>%
+  filter(Dates > "2019-06-30" & Dates < "2020-07-01") %>%
+  group_by(county) %>%
+  dplyr::summarise(avg_pop_fy20 = mean(individuals, na.rm=TRUE)) %>%
+  left_join(county_budgets, by = "county") %>%
+  mutate(cost_pp_per_year = doc_budget/avg_pop_fy20) %>%
+  mutate(cost_pp_per_day = cost_pp_per_year/365)
+
+
 # Save out to external hard drive
-write_rds(daily_pop_costs,
+write_rds(daily_pop_costs_2020,
           "D:/Analytic/daily_pop_costs.rds")
