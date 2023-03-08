@@ -565,7 +565,7 @@ PRES_gg_diverge_race <- medicaid_jail_homelessness_hu_county_statewide_data %>%
    geom_text(aes(label = ifelse(pct > .02 | pct < 0, pct_label, "")),
             size = 7.5, family = "Franklin Gothic Book",
             hjust = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", -.1, 1.1),
-            color = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", jri_orange, jri_gray),
+            color = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", jri_orange, "black"),
             fontface = "bold"
               ) +
   scale_y_continuous(limits = c(-.55, .65)) +
@@ -704,7 +704,7 @@ PRES_gg_diverge_age <- medicaid_jail_homelessness_hu_county_statewide_data %>%
    geom_text(aes(label = ifelse(pct > .02 | pct < 0, pct_label, "")),
             size = 7.5, family = "Franklin Gothic Book",
             hjust = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", -.1, 1.1),
-            color = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", jri_orange, jri_gray),
+            color = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", jri_orange, "black"),
             fontface = "bold"
               ) +
   scale_y_continuous(limits = c(-.55, .65)) +
