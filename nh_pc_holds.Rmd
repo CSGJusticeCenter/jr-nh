@@ -67,7 +67,7 @@ data1 <- df_pch %>%
 PRES_gg_pch_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = pc_hold_in_booking)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
-  scale_fill_manual(values=c("gray",jri_light_blue), labels = c("Non-PC      ","PC")) +
+  scale_fill_manual(values=c("gray",jri_light_blue), labels = c("Non-PC Entrance","PC Entrance")) +
   geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
             size = 7.5, family = "Franklin Gothic Book",
             color = ifelse(data1$pc_hold_in_booking == "Non-PC Hold", "black", "white")) +
@@ -97,9 +97,12 @@ df_pch %>% filter(pc_hold_in_booking == "PC Hold") %>%
            month_year_text = as.factor(month_year_text)) %>%
     hchart('line', hcaes(x = month_year_text, y = total), color = jri_light_blue) %>%
     hc_setup() %>%
+    # hc_add_theme(hc_theme(colors = c("#D25E2D", "#EDB799", "#C7E8F5", "#236ca7", "#D6C246", "#000000"),
+    #                     chart = list(style = list(fontFamily = "Graphik", color = "#000000")),
+    #                     title = list(align = "center", style = list(fontFamily = "Graphik", fontWeight = "bold", fontSize = "24px")))) %>%
     hc_xAxis(
       title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px")),
-      plotLines = list(list(label = list(text = "COVID-19 Start"), fontSize = "26px", color = "gray", width = 2, value = 20, zIndex = 1))
+      plotLines = list(list(label = list(text = "COVID-19 Start"), fontSize = "26px", color = "#000000", width = 2, value = 20, zIndex = 1))
     ) %>%
     hc_yAxis(title = list(text = "Number of PC Holds", style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px"))) 
 ```

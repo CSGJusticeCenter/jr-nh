@@ -725,3 +725,60 @@ reactable(hu_pct,
 ```
 
 <br><br>
+
+## High Utilizers Entering Jails by Month/Year
+
+```{r}
+entrances_dhhs %>% 
+  mutate(month_year_text = format(as.Date(booking_date, "%d/%m/%Y"), "%b %Y"),
+         month_year      = as.Date(as.yearmon(month_year_text))) %>% 
+  filter(hu_group_overall == "High Utilizer") %>%
+  dplyr::group_by(month_year, month_year_text) %>%
+  dplyr::summarise(total = n()) %>%
+  mutate(tooltip = paste0("<b>", month_year_text, "</b><br>","Total: ", total, "<br>"),
+         month_year_text = as.factor(month_year_text)) %>%
+  hchart('line', hcaes(x = month_year_text, y = total), color = jri_orange) %>%
+  hc_setup() %>%
+  hc_add_theme(hc_theme(colors = c(jri_orange),
+                      chart = list(style = list(fontFamily = "Graphik", color = "#000000")),
+                      title = list(align = "center", style = list(fontFamily = "Graphik", fontWeight = "bold", fontSize = "24px")))) %>%
+  hc_xAxis(
+    title = list(text = "Month and Year", style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px")),
+    plotLines = list(list(label = list(text = "COVID-19 Start"), fontSize = "26px", color = "#000000", width = 2, value = 20, zIndex = 1))
+  ) %>%
+  hc_yAxis(title = list(text = "Number of HU Entrances", style = list(color =  "#000000", fontWeight = "bold", fontSize = "16px"))) 
+```
+
+<br>
+
+```{r}
+# Count number and proportion of HU entrances by FY
+data1 <- entrances_dhhs %>%
+  group_by(fy, hu_group_overall) %>% 
+  summarise(total = n()) %>% 
+  filter(!is.na(hu_group_overall)) %>% 
+  group_by(fy) %>% mutate(pct = total/sum(total)*100) %>%
+  mutate(pct = round(pct, 0),
+         pct = paste0(pct, "%")) %>% 
+  mutate(hu_group_overall = factor(hu_group_overall, levels = c("Non-High Utilizer", "High Utilizer")))
+
+# Grouped bar chart showing the proportion of HU entrances by FY
+PRES_gg_hu_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = hu_group_overall)) +
+  geom_col(colour = NA, position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  scale_fill_manual(values=c("gray",jri_orange), labels = c("Non-HU Entrances","HU Entrances")) +
+  geom_text(aes(label = pct, fontface = 'bold'), position = position_fill(vjust = 0.5),
+            size = 7.5, family = "Franklin Gothic Book",
+            color = ifelse(data1$hu_group_overall == "Non-High Utilizer", "black", "white")) +
+  theme_no_grid_no_labels +
+  theme(legend.position = "right",
+        legend.justification = c(1, 0.5),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank())
+```
+
+```{r, out.width="50%", echo=FALSE, layout = "l-body"}
+ggsave(PRES_gg_hu_pct_barchart, file="img/PRES_gg_hu_pct_barchart.png", width = 7,  height = 4, dpi = 100)
+knitr::include_graphics("img/PRES_gg_hu_pct_barchart.png")
+```
+

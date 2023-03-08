@@ -602,3 +602,4 @@ fnc_reactable_county_fy <- function(df, row_num){
 fnc_addline_format <- function(x,...){
   gsub('\\s','\n',x)
 }
+
