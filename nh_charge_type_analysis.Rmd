@@ -1554,7 +1554,7 @@ nh_state_shape <- nh_county_shape %>%
 ```{r include=FALSE,message=FALSE,warning=FALSE}
 ### set constants for mapping
 default_font_color <- "#4e4d47"
-default_font_family <- "Arial"
+default_font_family <- "Franklin Gothic Book"
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
@@ -1616,7 +1616,7 @@ df_county_level_charge_type_summary_geo <- left_join(nh_county_shape,
                                                      by = c("county"="County"))
 
 ### create quantiles object
-no_classes <- 4
+no_classes <- 3
 
 ### extract quantiles from var we're mapping
 quantiles <- df_county_level_charge_type_summary_geo %>%
@@ -1625,7 +1625,7 @@ quantiles <- df_county_level_charge_type_summary_geo %>%
   as.vector() 
 
 ### make labels for map's legend
-label_drug_alcohol_percent <- c("28% and Greater","20% to 28%","14% to 20%","14% and Lower")
+label_drug_alcohol_percent <- c("30% and Greater","15% to 30%","15% and Lower")
 
 ### create a new variable with the specified quantiles
 df_county_level_charge_type_summary_geo_to_map <- df_county_level_charge_type_summary_geo %>%
@@ -1661,7 +1661,7 @@ ggplot(
   ### use jr palette here
     # scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
  scale_fill_manual(
-    values = c("#1F4A58","#2F7084","#87C2D4","#AFD6E2"),
+    values = c("#1F4A58","#2F7084","#87C2D4"),
     name = "% Bookings with Drug/Alcohol\n Charges",
     na.value = "grey50",
     guide = guide_legend(

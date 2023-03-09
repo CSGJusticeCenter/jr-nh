@@ -49,7 +49,7 @@ theme_set(theme_minimal())
 ```{r include=FALSE,message=FALSE,warning=FALSE}
 ### set constants for mapping
 default_font_color <- "#4e4d47"
-default_font_family <- "Arial"
+default_font_family <- "Franklin Gothic Book"
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
@@ -155,7 +155,6 @@ nh_resource_location_county_level <- nh_resource_location_geo_full %>%
 
 ```
 
-
 ```{r include=FALSE,message=FALSE,warning=FALSE}
 ### pull census/acs data via tidycensus package
 
@@ -163,14 +162,17 @@ nh_resource_location_county_level <- nh_resource_location_geo_full %>%
 ### this allows us to pull census/acs data via the tidycensus package
 readRenviron("~/.Renviron")
 
-### overall population by county from 2020 census
-nh_county_pop_2020 <- tidycensus::get_decennial(geography = "County", 
+### pull list of acs vars that are availabe to pull
+acs_2021_vars <- tidycensus::load_variables(2021, "acs5", cache = TRUE)
+
+### adult (18+) population by county from 2021 acs
+nh_county_adult_pop_2021 <- tidycensus::get_acs(geography = "County", 
                                            state = "NH",
-                                           variables = "P1_001N",
-                                           year = 2020,
+                                           variables = "S0101_C01_026",
+                                           year = 2021,
                                             geometry = FALSE) %>% 
   clean_names() %>%
-  dplyr::select(geoid,name,county_total_pop = value) 
+  dplyr::select(geoid,name,county_total_pop = estimate) 
 
 ### weighted estimate of percentage of county residents living below federal poverty threshold
 nh_poverty_status <- tidycensus::get_acs(geography = "County", 
@@ -219,7 +221,7 @@ nh_race_2020 <- tidycensus::get_decennial(geography = "County",
 ### join all acs variables together in one file
 nh_acs_census_county <- left_join(nh_poverty_status, nh_median_income, by="geoid")
 
-nh_acs_census_county <- left_join(nh_acs_census_county, nh_county_pop_2020, by="geoid")
+nh_acs_census_county <- left_join(nh_acs_census_county, nh_county_adult_pop_2021, by="geoid")
 
 nh_acs_census_county <- left_join(nh_acs_census_county, nh_race_2020, by="geoid") %>% 
   mutate(county = stringr::word(name, 1))
@@ -452,7 +454,7 @@ ggplot(
     scale_fill_distiller(
     labels = scales::number_format(accuracy=1),
     direction = 1,
-    name = "Overall Behavioral Health and Housing\nResources per 100k Residents"
+    name = "Overall Behavioral Health and Housing\nResources per 100k Adults"
   ) +
   ### use jr palette here
     scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
@@ -482,14 +484,23 @@ ggplot(
  geom_label(
      data = nh_acs_census_county_geo_to_map, 
      aes(geometry = geometry, 
-         label = county),
-    vjust = ifelse((nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Hillsborough")] | 
-                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Merrimack")] | 
-                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Carroll")]), 1.15, 0),
-    # hjust = ifelse(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"], 1, .5),
+         label = paste0(county,"\n",round(overall_resources_rate,digits=0)," per 100k")),
+    vjust = case_when(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"] ~ 1.15,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Merrimack"] ~ .75,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Carroll"] ~ .6,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Rockingham"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Cheshire"] ~ .25,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Strafford"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Belknap"] ~ .15,
+                      TRUE ~ 0),
+    hjust = case_when(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Carroll"] ~ .4,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Strafford"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Grafton"] ~ .61,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"] ~ .4,
+                      TRUE ~ .5),
     family = "Franklin Gothic Demi",
     color = "gray25",
-    size = 4.25,
+    size = 2.8,
     fontface = "bold",
     stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
@@ -581,7 +592,7 @@ ggplot(
     scale_fill_distiller(
     labels = scales::number_format(accuracy=1),
     direction = 1,
-    name = "CMHC Resources\nper 100k Residents"
+    name = "CMHC Resources\nper 100k Adults"
   ) +
   ### use jr palette here
     scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
@@ -611,14 +622,23 @@ ggplot(
  geom_label(
      data = nh_acs_census_county_geo_to_map, 
      aes(geometry = geometry, 
-         label = county),
-    vjust = ifelse((nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Hillsborough")] | 
-                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Merrimack")] | 
-                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Carroll")]), 1.15, 0),
-    # hjust = ifelse(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"], 1, .5),
+         label = paste0(county,"\n",round(cmhc_resource_rate,digits=0)," per 100k")),
+    vjust = case_when(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"] ~ 1.15,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Merrimack"] ~ .75,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Carroll"] ~ .6,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Rockingham"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Cheshire"] ~ .25,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Strafford"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Belknap"] ~ .15,
+                      TRUE ~ 0),
+    hjust = case_when(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Carroll"] ~ .4,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Strafford"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Grafton"] ~ .61,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"] ~ .4,
+                      TRUE ~ .5),
     family = "Franklin Gothic Demi",
     color = "gray25",
-    size = 4.25,
+    size = 2.8,
     fontface = "bold",
     stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
@@ -710,7 +730,7 @@ ggplot(
     scale_fill_distiller(
     labels = scales::number_format(accuracy=1),
     direction = 1,
-    name = "SUD Resources\nper 100k Residents"
+    name = "SUD Resources\nper 100k Adults"
   ) +
   ### use jr palette here
     scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
@@ -740,14 +760,23 @@ ggplot(
  geom_label(
      data = nh_acs_census_county_geo_to_map, 
      aes(geometry = geometry, 
-         label = county),
-    vjust = ifelse((nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Hillsborough")] | 
-                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Merrimack")] | 
-                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Carroll")]), 1.15, 0),
-    # hjust = ifelse(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"], 1, .5),
+         label = paste0(county,"\n",round(sud_treatment_resource_rate,digits=0)," per 100k")),
+    vjust = case_when(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"] ~ 1.15,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Merrimack"] ~ .75,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Carroll"] ~ .6,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Rockingham"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Cheshire"] ~ .25,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Strafford"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Belknap"] ~ .15,
+                      TRUE ~ 0),
+    hjust = case_when(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Carroll"] ~ .4,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Strafford"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Grafton"] ~ .61,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"] ~ .4,
+                      TRUE ~ .5),
     family = "Franklin Gothic Demi",
     color = "gray25",
-    size = 4.25,
+    size = 2.8,
     fontface = "bold",
     stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
@@ -817,7 +846,7 @@ ggplot(
     scale_fill_distiller(
     labels = scales::number_format(accuracy=1),
     direction = 1,
-    name = "RCO Resources\nper 100k Residents"
+    name = "RCO Resources\nper 100k Adults"
   ) +
   ### use jr palette here
     scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
@@ -847,14 +876,23 @@ ggplot(
  geom_label(
      data = nh_acs_census_county_geo_to_map, 
      aes(geometry = geometry, 
-         label = county),
-    vjust = ifelse((nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Hillsborough")] | 
-                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Merrimack")] | 
-                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county %in% c("Carroll")]), 1.15, 0),
-    # hjust = ifelse(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"], 1, .5),
+         label = paste0(county,"\n",round(rco_resource_rate,digits=0)," per 100k")),
+    vjust = case_when(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"] ~ 1.15,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Merrimack"] ~ .75,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Carroll"] ~ .6,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Rockingham"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Cheshire"] ~ .25,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Strafford"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Belknap"] ~ .15,
+                      TRUE ~ 0),
+    hjust = case_when(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Carroll"] ~ .4,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Strafford"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Grafton"] ~ .61,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"] ~ .4,
+                      TRUE ~ .5),
     family = "Franklin Gothic Demi",
     color = "gray25",
-    size = 4.25,
+    size = 2.8,
     fontface = "bold",
     stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
@@ -925,7 +963,7 @@ ggplot(
     scale_fill_distiller(
     labels = scales::number_format(accuracy=1),
     direction = 1,
-    name = "NHCORR-Certified Locations\nper 100k Residents"
+    name = "NHCORR-Certified Locations\nper 100k Adults"
   ) +
   ### use jr palette here
     scale_colour_gradientn(colours = c("#D7EBF1","#AFD6E2","#87C2D4","#2F7084","#1F4A58")) +
@@ -952,17 +990,28 @@ ggplot(
     color = "grey40",
     size = .05
   )  +
-  # geom_label(
-  #    data = nh_acs_census_county_geo, 
-  #    aes(geometry = geometry, 
-  #        label = county),
-  #    # vjust = ifelse(df_county_level_charge_type_summary_geo_to_map$geometry==df_county_level_charge_type_summary_geo_to_map$geometry[df_county_level_charge_type_summary_geo_to_map$county %in% c("Merrimack","Hillsborough","Carroll")], 1, 0),
-  #   # hjust = ifelse(iowa_offense_change_census_district_geo$geometry==iowa_offense_change_census_district_geo$geometry[iowa_offense_change_census_district_geo$judicial_district %in% c("District 7")], 1, .5),
-  #   family = "Franklin Gothic Demi",
-  #   color = "gray25",
-  #   size = 3,
-  #   fontface = "bold",
-  #   stat = "sf_coordinates") +
+ geom_label(
+     data = nh_acs_census_county_geo_to_map, 
+     aes(geometry = geometry, 
+         label = paste0(county,"\n",round(nhcorr_recovery_resource_rate,digits=0)," per 100k")),
+    vjust = case_when(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"] ~ 1.15,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Merrimack"] ~ .75,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Carroll"] ~ .6,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Rockingham"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Cheshire"] ~ .25,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Strafford"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Belknap"] ~ .15,
+                      TRUE ~ 0),
+    hjust = case_when(nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Carroll"] ~ .4,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Strafford"] ~ .35,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Grafton"] ~ .61,
+                      nh_acs_census_county_geo_to_map$geometry==nh_acs_census_county_geo_to_map$geometry[nh_acs_census_county_geo_to_map$county=="Hillsborough"] ~ .4,
+                      TRUE ~ .5),
+    family = "Franklin Gothic Demi",
+    color = "gray25",
+    size = 2.8,
+    fontface = "bold",
+    stat = "sf_coordinates") +
   guides(fill = guide_colorbar(barwidth = 8),
            direction = "horizontal",
       barheight = unit(2, units = "mm"),

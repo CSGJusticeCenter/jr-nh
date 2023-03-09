@@ -514,7 +514,7 @@ acs_2020_vars <- tidycensus::load_variables(2020, "acs5/subject", cache = TRUE)
 ### pull census/acs data via tidycensus package
 readRenviron("~/.Renviron")
 
-### weighted estimate of percentage of race from 2020 census
+### weighted estimate of percentage of race from 2020 census (18+)
 ### pulled estimated counts and construct percent estimate
 ### these are the ids of race variables that we want to pull 
 race_vars <- c(estimate_white = "P3_003N",
@@ -1125,7 +1125,8 @@ df_nh_race_eth_rri_overall_to_plot <- df_nh_race_eth_rri_analytic_table_without_
     mutate(rri_measure = factor(rri_measure,
                                 levels = c("Overall Jail Population","High Utilizer Population"))) %>% 
   dplyr::filter(`Race/Ethnicity`!="White") %>% 
-  mutate(state = "NH")
+  mutate(state = "NH",
+         reference = 1)
 
 ### plot
 ggplot(data = df_nh_race_eth_rri_overall_to_plot, 
@@ -1133,8 +1134,19 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
            x = `Race/Ethnicity`, 
            fill = forcats::fct_rev(`Race/Ethnicity`))) + 
   geom_bar(stat = "identity", 
-           position = "dodge", 
-           color = "gray80") +
+           position = "dodge"
+           # ,color = "gray80"
+             ) +
+    # geom_bar(aes(y=reference),
+    #          stat = "identity", 
+    #        position = "dodge", 
+    #        fill = "gray80") +
+    geom_col_pattern(aes(y=reference),
+                   pattern_color = NA,
+                   pattern_fill = "gray80",
+                   pattern = "stripe"
+                   # ,color = "gray80"
+                     ) +
   geom_abline(slope=0, 
               intercept=1,  
               col = "#000000", 
@@ -1195,7 +1207,7 @@ ggplot(data = df_nh_race_eth_rri_overall_to_plot,
 
 ### write out
 ggsave(
-    filename = file.path(sp_viz_output_path, "race_eth_overall_supervision_rri_option_3.png"),
+    filename = file.path(sp_viz_output_path, "race_eth_overall_supervision_rri_option_stripe.png"),
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 300,
