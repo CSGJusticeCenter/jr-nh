@@ -938,18 +938,18 @@ reactable(crime_los_summary,
 
 ```{r}
 PRES_gg_crime_los <- crime_los_summary %>%
-  ggplot(aes(x = reorder(crime_type_lookup, mean), 
-             y = mean, fill=factor(ifelse(crime_type_lookup=="Violent","Highlighted","Normal")))) +
+  ggplot(aes(x = reorder(crime_type_lookup, median), 
+             y = median, fill=factor(ifelse(crime_type_lookup=="Probation/Parole Violation","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
   scale_fill_manual(name = "area", values=c(jri_orange,"gray")) +
-      geom_text(aes(label = paste0(round(mean, 0), " Days"), fontface = 'bold'
+      geom_text(aes(label = paste0(round(median, 0), " Days"), fontface = 'bold'
                     ), 
-                color = ifelse(crime_los_summary$crime_type_lookup=="Violent", jri_orange, "black"), 
+                color = ifelse(crime_los_summary$crime_type_lookup=="Probation/Parole Violation", jri_orange, "black"), 
                 hjust = -.1, size = 7.5, family = "Franklin Gothic Book") +
-  xlab("") + ylab("\nAverage LOS (Days)") +
+  xlab("") + ylab("\nMedian LOS (Days)") +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0,0),
-                     limits = c(0,86)) +
+                     limits = c(0,7)) +
   coord_flip() +
   theme_no_grid_with_labels +
   theme(legend.position = "none",
