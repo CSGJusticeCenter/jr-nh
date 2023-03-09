@@ -23,8 +23,9 @@ knitr::opts_chunk$set(
 source("data_cleaning/00_library.R")
 source("data_cleaning/01_functions.R")
 source("data_cleaning/rdas.R")
-medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
-daily_pop_costs   <- read_rds("D:/Analytic/daily_pop_costs.rds") 
+medicaid_jail_all    <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
+daily_pop_costs      <- read_rds("D:/Analytic/daily_pop_costs.rds") 
+daily_pop_costs_hu   <- read_rds("D:/Analytic/daily_pop_costs_hu.rds") 
 
 # DHHS data
 # create temporary id for function and create fy variable
@@ -83,9 +84,8 @@ df_entrances <- df_entrances_events %>%
 
 # Count number of entrances for three years
 amt_entrances <- df_entrances$total
-amt_entrances <- format(round(as.numeric(amt_entrances), 0), nsmall=0, big.mark=",")
 
-cat("**There were ", amt_entrances, " entrances across New Hampshire from FY2019 to FY2021 and an overall decrease of 39.5% since FY2019.**\n\n", sep = "")
+cat("**There were ", format(round(as.numeric(amt_entrances), 0), nsmall=0, big.mark=","), " entrances across New Hampshire from FY2019 to FY2021 and an overall decrease of 39.5% since FY2019.**\n\n", sep = "")
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
@@ -345,11 +345,11 @@ knitr::include_graphics("img/PRES_gg_num_entrances.png")
 
 # Costs
 
-The average cost per person per year was calculated by dividing each county department of correction's 2021 budget by the average daily jail population in that county.  
+The average cost per person per year was calculated by dividing each county department of correction's 2021 budget by the average daily jail population in that county. This method was used when a cost wasn't provided by the jail. All jails submitted costs except for Belknap, Carroll, and Hillsborough (as of 3/9/23).  
 
 ```{r}
 # Reactable table shoing the cost per person per year and per day
-df1 <- daily_pop_costs %>% mutate(avg_pop_fy21 = round(avg_pop_fy21, digits = 0))
+df1 <- daily_pop_costs %>% mutate(avg_pop_fy19 = round(avg_pop_fy19, digits = 0))
 reactable(df1,
           pagination = FALSE,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
@@ -368,9 +368,7 @@ reactable(df1,
           fullWidth = FALSE,
           columns = list(
             `county`           = colDef(align = "left", minWidth = 120, name = "County", style = list(fontWeight = "bold")),
-            avg_pop_fy21       = colDef(minWidth = 120,  name = "Average Daily Population (FY21)"),
-            doc_budget         = colDef(minWidth = 150,  name = "DOC Budget (FY21)",
-                                        format = colFormat(currency = "USD", separators = TRUE, locales = "en-US")),
+            avg_pop_fy19       = colDef(minWidth = 120,  name = "Average Daily Population (FY21)"),
             cost_pp_per_year   = colDef(minWidth = 120,  name = "Cost Per Person Per Year (FY21)",
                                         format = colFormat(currency = "USD", separators = TRUE, locales = "en-US")),
             cost_pp_per_day    = colDef(minWidth = 120,  name = "Cost Per Person Per Day (FY21)",
@@ -378,6 +376,46 @@ reactable(df1,
           ))     
 ```
 
+```{r, results='asis'}
+# average cost per person per day in NH
+avg_cost_pp_per_day <- mean(df1$cost_pp_per_day)
+
+cat("It cost an average of $", round(as.numeric(avg_cost_pp_per_day), 2), " per person per day and $", format(round(as.numeric(avg_cost_pp_per_day*365), 2), nsmall=0, big.mark=","), " in New Hampshire jails.\n\n", sep = "")
+```
+<br>
+
+```{r}
+df1 <- daily_pop_costs_hu %>% mutate(avg_pop_fy19 = round(avg_pop_fy19, digits = 0))
+reactable(df1,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center"
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu_group_exclusive = colDef(align = "left", minWidth = 120, name = "Population", style = list(fontWeight = "bold")),
+            avg_pop_fy19       = colDef(minWidth = 120,  name = "Average Daily Population (FY19)"),
+            cost_pp_per_day    = colDef(minWidth = 120,  name = "Avg Cost Per Person Per Day (FY19)",
+                                        format = colFormat(currency = "USD", separators = TRUE, locales = "en-US")),
+            cost_per_year      = colDef(minWidth = 160,  name = "Total Cost Per Year (FY19)",
+                                        format = colFormat(currency = "USD", separators = TRUE, locales = "en-US"))
+          )) 
+```
+
+
+
+
+<br><br>
 
 County Budget Websites:  
 
