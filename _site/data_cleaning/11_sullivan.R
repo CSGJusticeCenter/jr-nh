@@ -28,7 +28,7 @@ sullivan_adm_all <- sullivan_adm.xlsx %>%
          release_date_time = format(release_date_time, "%m/%d/%Y")) %>%
   mutate(booking_date_time = as.Date(booking_date_time, format = "%m/%d/%Y"),
          release_date_time = as.Date(release_date_time, format = "%m/%d/%Y")) %>%
-  mutate(release_type = NA,
+  mutate(release_type = NA, # they didn't provide release type so make NA to rbind with other counties
          race_label = case_when(
            race == "A"  ~ "Asian/Pacific Islander",
            race == "B"  ~ "Black",
@@ -61,7 +61,7 @@ sullivan_adm_all <- sullivan_adm.xlsx %>%
                               TRUE           ~ "Housed")) %>%
   distinct()
 
-sum# Create fy, age, los, recode race, and order variables
+# Create fy, age, los, recode race, and order variables
 sullivan_adm <- fnc_data_setup(sullivan_adm_all)
 
 # Add booking id using id and booking date

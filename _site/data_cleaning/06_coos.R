@@ -22,7 +22,7 @@
 # Add county label
 coos_adm_all <- coos_adm.xlsx %>%
   clean_names() %>%
-  mutate(booking_type = NA,
+  mutate(booking_type = NA, # doesn't have the same variables as the other counties so make NA to be able to rbind
          release_type = NA,
          race_label = case_when(race == "A"  ~ "Asian/Pacific Islander",
                                 race == "B"  ~ "Black",

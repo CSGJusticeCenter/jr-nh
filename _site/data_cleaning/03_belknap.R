@@ -22,7 +22,7 @@
 # Add county label
 belknap_adm_all <- belknap_adm.xlsx %>%
   clean_names() %>%
-  mutate(charge_code = NA,
+  mutate(charge_code = NA, # charge code is not present so make NA to rbind with other counties
          # Comments show what the jail indicated the letter stands for
          race_label = case_when(race == "A"  ~ "Asian/Pacific Islander",
                                 race == "B"  ~ "Black",

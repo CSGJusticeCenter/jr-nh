@@ -1370,7 +1370,7 @@ PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, total_claims), 
              y = total_claims, fill=factor(ifelse(dx_prmry_clinical_classification_new=="Opioid-related disorders","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(name = "area", values=c(jri_green,"grey50")) +
+  scale_fill_manual(name = "area", values=c(jri_green,"gray")) +
       geom_text(aes(label = comma(total_claims), fontface = 'bold'
                     ), 
                 color = ifelse(top_primary_diagnoses_grouped$dx_prmry_clinical_classification_new=="Opioid-related disorders", jri_green, "black"), 
@@ -1439,7 +1439,7 @@ PRES_gg_medicaid_smi_primary_diagnoses <- smi_primary_diagnoses %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification, total_claims), 
              y = total_claims, fill=factor(ifelse(dx_prmry_clinical_classification=="Schizophrenia spectrum and other psychotic disorders","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(name = "area", values=c(jri_orange,"grey50")) +
+  scale_fill_manual(name = "area", values=c(jri_orange,"gray")) +
       geom_text(aes(label = comma(total_claims), fontface = 'bold'
                     ), 
                 color = ifelse(smi_primary_diagnoses$dx_prmry_clinical_classification=="Schizophrenia spectrum and other psychotic disorders", jri_orange, "black"), 
@@ -1559,7 +1559,7 @@ PRES_gg_smi_primary_diagnoses_hu <- smi_primary_diagnoses_hu %>%
             fontface = "bold"
               ) +
   scale_y_continuous(limits = c(-100, 100)) +
-  scale_fill_manual(values=c(jri_orange, "gray50")) +
+  scale_fill_manual(values=c(jri_orange, "gray")) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
@@ -1669,7 +1669,7 @@ PRES_gg_smi_primary_diagnoses_tier1hu <- smi_primary_diagnoses_hu %>%
             fontface = "bold"
               ) +
   scale_y_continuous(limits = c(-100, 100)) +
-  scale_fill_manual(values=c(jri_light_blue, "gray50")) +
+  scale_fill_manual(values=c(jri_light_blue, jri_gray)) +
   theme_no_grid_no_labels +
   coord_flip() +
   guides(fill = guide_legend(reverse = TRUE)) +
