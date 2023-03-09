@@ -111,7 +111,7 @@ mutate(dx_prmry_clinical_classification_new = case_when(
   dx_prmry_clinical_classification == "Inhalant-related disorders"                  ~ "Other substance-related disorders",
   dx_prmry_clinical_classification == "Other specified substance-related disorders" ~ "Other substance-related disorders",
   dx_prmry_clinical_classification == "Stimulant-related disorders"                 ~ "Other substance-related disorders",
-  dx_prmry_clinical_classification == "Alcohol-related disorders"                   ~ "Other substance-related disorders",
+  # dx_prmry_clinical_classification == "Alcohol-related disorders"                   ~ "Other substance-related disorders",
 
   # Other mh-related disorders
   dx_prmry_clinical_classification == "Adjustment disorders"                                     ~ "Other BH-related disorders",

@@ -5,9 +5,8 @@
 # Last updated: March 9, 2023
 # Author: Mari Roberts
 
-# Calculate the daily average population
+# Calculate the daily average population and costs
 # https://stackoverflow.com/questions/52304623/calculate-average-number-of-individuals-present-on-each-date-in-r
-# Check for movement between jails
 ############################################
 
 # Get Medicaid jail data
