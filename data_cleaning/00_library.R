@@ -44,6 +44,7 @@ library(reactablefmtr)
 library(ggtext)
 library(openxlsx)
 library(svDialogs)
+library(ggrepel)
 
 
 ###################

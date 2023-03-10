@@ -53,7 +53,7 @@ default_font_family <- "Franklin Gothic Book"
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
-# Save path
+# set path
 sp_data_path <- csg_get_project_path("NH")
 
 ### set path for viz output

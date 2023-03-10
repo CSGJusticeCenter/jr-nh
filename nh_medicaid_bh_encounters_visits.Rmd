@@ -526,28 +526,28 @@ ggsave(
 ### Figure 2. SMI- and Opioid-related ED Visits by HU Grouping
 
 ```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
-medicaid_enrollment_categories_encounters_individual_jail_all <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level_pre_study_only.rds") %>% 
-   ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
-  mutate(hu_group_exclusive = case_when(
-    high_utilizer_10_pct=="No" ~ 4,
-    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
-    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
-    high_utilizer_1_pct=="Yes" ~ 1,
-    TRUE ~ as.numeric(NA)),
-    hu_group_exclusive = factor(hu_group_exclusive,
-         levels = c(1,2,3,4),
-         labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>% 
-  ### now create overall hu grouping -- either yes or no
-  mutate(hu_group_overall = case_when(
-    high_utilizer_10_pct=="No" ~ 2,
-    high_utilizer_10_pct=="Yes" ~ 1,
-    TRUE ~ as.numeric(NA)),
-    hu_group_overall = factor(hu_group_overall,
-         levels = c(1,2),
-         labels = c("High Utilizer", "Non-High Utilizer")))
+# medicaid_enrollment_categories_encounters_individual_jail_all <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level_pre_study_only.rds") %>% 
+#    ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+#   mutate(hu_group_exclusive = case_when(
+#     high_utilizer_10_pct=="No" ~ 4,
+#     high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+#     high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+#     high_utilizer_1_pct=="Yes" ~ 1,
+#     TRUE ~ as.numeric(NA)),
+#     hu_group_exclusive = factor(hu_group_exclusive,
+#          levels = c(1,2,3,4),
+#          labels = c("Tier 1 HU", "Tier 2 HU", "Tier 3 HU", "Non-HU"))) %>% 
+#   ### now create overall hu grouping -- either yes or no
+#   mutate(hu_group_overall = case_when(
+#     high_utilizer_10_pct=="No" ~ 2,
+#     high_utilizer_10_pct=="Yes" ~ 1,
+#     TRUE ~ as.numeric(NA)),
+#     hu_group_overall = factor(hu_group_overall,
+#          levels = c(1,2),
+#          labels = c("High Utilizer", "Non-High Utilizer")))
 
 # by hu_group_exclusive
-medicaid_jail_ed_smi_opioid_visits_hu_table <- medicaid_enrollment_categories_encounters_individual_jail_all %>% 
+medicaid_jail_ed_smi_opioid_visits_hu_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>%
   dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
                    `ED and SMI Visits (N)` = n_distinct(unique_person_id[pre_or_study_ed_visit_or_service_related_to_smi_flag==1]),
