@@ -9,9 +9,12 @@ output:
 
 ```{r include=FALSE}
 # Load packages, functions, and data
-# source("data_cleaning/00_library.R")
-# source("data_cleaning/01_functions.R")
-# source("data_cleaning/rdas.R")
+source("data_cleaning/00_library.R")
+source("data_cleaning/01_functions.R")
+source("data_cleaning/rdas.R")
+
+### set path for viz output (andrew's viz folder)
+sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
 
 ### set chunk output 
 knitr::opts_chunk$set(
