@@ -31,6 +31,7 @@ NOTE: NHCORR Certified Recovery Residences are often gender-specific
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
 ### call libraries
+### NOTE: for now, I'm just calling packages separately b/c there are a few that I need specifically for mapping and don't want to update the library R file just for this purpose
 library(easypackages)
 libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","highcharter","censusr")
 ```
