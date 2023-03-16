@@ -103,14 +103,32 @@ df_entrances_county <- entrances_dhhs %>%
 # Average entrances per person by county
 ##########
 
+
+### AB NOTE: I may be over-complicating things, but I wonder if calculating the average number of entrances per person
+### by county is a little trickier with the DHHS data. If one individual has 10 entrances and appears in two different jails
+### during the study window, then they'll show up with 10 entrances for both counties in this analysis even if they were booked 5 times in one and 5 times in the other. When calculating the average, both counties in this example would have a 10 even if the individual was only booked 5 times. so I wonder if we should calculate a separate county-level 'num_entrances' measure (where we group by id and county) for when we calculate means? i guess the alternative interpretation is just that we're saying an individual booked in x county had 10 bookings, even if not all 10 occurred in that county? let me know what you think!
+
+### here's some possible code to create a separate measure of the number of entrances per person per county
+### i think we could use this measure for all county-level averages of entrances 
+### and then use num_entrances for all individual-level analysis 
+entrances_dhhs_per_person_county <- entrances_dhhs %>% 
+  group_by(id,county) %>% 
+  mutate(num_entrances_per_county = n_distinct(booking_id, na.rm=TRUE)) %>% 
+  ungroup()
+
+### AB NOTE: as an example, i went ahead and swapped out the dataframes and variables for the following county-level calculation
+
 # Average number of entrances/fy by county
-df_avg_entrances_county <- entrances_dhhs %>%
+df_avg_entrances_county <- entrances_dhhs_per_person_county %>%
   ungroup() %>%
-  select(county, id, num_entrances) %>%
+  select(county, id, num_entrances_per_county) %>%
   distinct() %>%
   group_by(county) %>%
-  dplyr::summarize(avg_entrances = mean(num_entrances, na.rm=TRUE)) %>%
+  dplyr::summarize(avg_entrances = mean(num_entrances_per_county, na.rm=TRUE)) %>%
   mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)", TRUE ~ county))
+
+### AB NOTE: I think it's okay to leave this measure as individual-level, not county-level, but we
+### might want to note that the state average will be higher as it counts entrances across all jails
 
 # Average number of entrances/fy by state
 df_avg_entrances_total <- entrances_dhhs %>%
@@ -119,7 +137,8 @@ df_avg_entrances_total <- entrances_dhhs %>%
   distinct() %>%
   group_by() %>%
   dplyr::summarize(avg_entrances = mean(num_entrances, na.rm=TRUE)) %>%
-  mutate(county = "State")
+  mutate(county = "State") 
+
 
 # Add county and state info together
 df_avg_entrances_county <- rbind(df_avg_entrances_county, df_avg_entrances_total)
@@ -168,6 +187,10 @@ hu_entrances <- rbind(hu_entrances_county, hu_entrances_state)
 ########################################
 # HU min median mean max range
 ########################################
+
+### AB NOTE: if we change our calculation of averages above to be per person per county for the county-level analysis,
+### we may want to swap out the dataframe and num_entrances variable here, too (just for the county-level calculation of min, median, mean, and max i think). so i don't think this would change anyway statewide takeaways like "Tier 1 high utilizers had an average of 16.5 entrances per person from 2019 to 2021"
+### in the tables you create below, we could even just add an extra column of mean/median number of entrances per person per county (in addition to the per person measure that we currently have)
 
 # Summary of hu entrances by county
 hu_summary_county <- entrances_dhhs %>%
