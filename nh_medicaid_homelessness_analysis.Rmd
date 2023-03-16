@@ -183,37 +183,6 @@ arrange(df_homeless_by_county, county)
 **From 2019 to 2021, 26% of people who were matched to Medicaid had experienced homelessness.**    
 
 ```{r}
-# # Vertical ggplot showing the proportion of people who experienced homelessness
-# ggplot(df_homeless_by_county, aes(fill=forcats::fct_rev(type), 
-#                                   y=pct, x=county)) + 
-#     geom_bar(position="fill", stat="identity") +
-#     scale_x_discrete(limits = rev) +
-#     scale_y_continuous(labels = scales::percent) +
-#     scale_fill_manual(values=c("gray", jri_dark_blue),
-#                       na.value = "white",
-#                       guide=guide_legend(reverse=T)) +
-#     geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
-#                   fontface = 'bold'),
-#               position = position_fill(vjust = 0.5),
-#               vjust = 0.8,
-#               size = 10, family = "Franklin Gothic Book",
-#               color = case_when(df_homeless_by_county$type == "Homeless" ~ "white",
-#                                 TRUE ~ "black")) +
-#     coord_flip() +
-#     theme_minimal() +
-#     theme(panel.grid.minor.y = element_blank(),
-#           panel.grid.major.y = element_blank(),
-#           panel.grid.major.x = element_blank(),
-#           panel.grid.minor.x = element_blank(),
-#           axis.title.y = element_blank(),
-#           axis.title.x = element_blank(),
-#           axis.text.x = element_text(size = 28, color = "black"),
-#           axis.text.y = element_text(size = 28, color = "black"),
-#           legend.position = "top",
-#           # legend.justification = c(1, 0.5),
-#           legend.title=element_blank(),
-#           legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
-
 # Horizontal ggplot showing the proportion of people who experienced homelessness
 ggplot(df_homeless_by_county, aes(x = county, y = pct, fill=forcats::fct_rev(type))) +
   geom_col(colour = "white", position = "fill") +
@@ -437,7 +406,8 @@ kable(medicaid_jail_homelessness_hu_county_statewide_study_period_table,
 <br><br>
 
 ```{r}
-
+# prepare data to analyze homelessness by race
+# remove Carroll, Hillsborough, and Stafford bc of missing ethnicity data
 nh_eight_county_medicaid_match_final_race_two_counties_excluded <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   # filter(medicaid_match_flag==1) %>% 
   mutate(race = ifelse(jail_race=="Black Hispanic",
@@ -508,7 +478,8 @@ nh_eight_county_medicaid_match_final_race <- nh_eight_county_medicaid_match_fina
 ```
 
 ```{r}
-# by county
+# Homelessness by race
+# by hu_group_overall
 medicaid_jail_homelessness_hu_county_table <- nh_eight_county_medicaid_match_final_race %>% 
   dplyr::group_by(race, hu_group_overall) %>% 
   dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -552,6 +523,7 @@ reactable(medicaid_jail_homelessness_hu_county_statewide_table,
 ```
 
 ```{r}
+# homelessness by state
 medicaid_jail_homelessness_hu_county_statewide_data <- medicaid_jail_homelessness_hu_county_statewide_table %>% 
   mutate(pct = `Individuals w/ any experience of homelessness (%)`) %>%
   mutate(pct = round(pct, 2),
@@ -563,8 +535,7 @@ medicaid_jail_homelessness_hu_county_statewide_data <- medicaid_jail_homelessnes
                                               "Black",
                                               "Other")))
 
-
-
+# ggplot showing homelessness by hu_group_overall
 medicaid_jail_homelessness_hu_county_statewide_data %>%
   mutate(pct = ifelse(hu_group_overall == "High Utilizer", pct, -1*pct)) %>% 
   ggplot(aes(x = `Race/Ethnicity`, y = pct, fill = hu_group_overall))+
@@ -609,7 +580,8 @@ ggsave(
 <br><br>
 
 ```{r}
-# by county
+# homelessness by gender
+# by hu_group_overall
 medicaid_jail_homelessness_hu_county_table <- nh_eight_county_medicaid_match_final_race %>% 
   filter(!is.na(gender)) %>% 
   dplyr::group_by(gender, hu_group_overall) %>% 
