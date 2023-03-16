@@ -19,7 +19,7 @@ knitr::opts_chunk$set(
   cache = FALSE
   )
 
-# Load functions, packages, and data
+# load functions, packages, and data
 source("code/00_library.R")
 source("code/01_functions.R")
 source("code/rdas.R")
@@ -44,13 +44,13 @@ entrances_dhhs <- medicaid_jail_all %>%
 ### People Entered  
 
 ```{r, results='asis'}
-# Total number of people entered (no duplicates for counting by FY)
+# total number of people entered (no duplicates for counting by FY)
 amt_people_entered <- entrances_dhhs %>%
   dplyr::summarise(total = n_distinct(id)) %>%
   dplyr::mutate(label = formatC(total, format="d", big.mark=","))
 amt_people_entered <- amt_people_entered$total
 
-# Count number of people entered for all three years / accounts for double counting by FY-accurate
+# count number of people entered for all three years / accounts for double counting by FY-accurate
 amt_people_entered <- format(round(as.numeric(amt_people_entered), 0), nsmall=0, big.mark=",")
 
 # print header for pc hold section
@@ -63,13 +63,13 @@ cat("**There were ", amt_people_entered, " people who entered NH jails between F
 Please Note: This section reflects the number of entrances per fiscal year, not the number of people.    
 
 ```{r, results='asis'}
-# Calculate number of entrances events per fy
+# calculate number of entrances events per fy
 df_entrances_events <- entrances_dhhs %>%
   group_by(fy) %>%
   dplyr::summarise(total = n_distinct(booking_id)) %>%
   mutate(label = formatC(total, format="d", big.mark=","))
 
-# Df showing number of entrances by FY
+# df showing number of entrances by FY
 df_entrances <- df_entrances_events %>%
   select(-label) %>%
   t %>% as.data.frame() %>%
@@ -82,7 +82,7 @@ df_entrances <- df_entrances_events %>%
   df_entrances <- df_entrances %>%
   mutate(variable_name = ifelse(variable_name == "total", "# of entrances", ""))
 
-# Count number of entrances for three years
+# count number of entrances for three years
 amt_entrances <- df_entrances$total
 
 cat("**There were ", format(round(as.numeric(amt_entrances), 0), nsmall=0, big.mark=","), " entrances across New Hampshire from FY2019 to FY2021 and an overall decrease of 39.5% since FY2019.**\n\n", sep = "")
@@ -105,10 +105,6 @@ ggplot(data=data1, aes(x=fy, y=total)) +
                      limits = c(0,24000)) +
   theme_no_grid_no_labels
 
-# Save and output graph
-# ggsave(PRES_gg_dhhs_entrances, file= paste0(sp_data_path, "/analysis/img/PRES_gg_dhhs_entrances.png"), width = 6, height = 5, dpi = 100)
-# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_dhhs_entrances.png"))
-
 ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_dhhs_entrances.png"),
     plot = last_plot(),
@@ -124,12 +120,12 @@ ggsave(
 Counties saw variations in the number of entrances but they all saw a decrease in entrances from FY2019 to FY2021.  
 
 ```{r}
-# Number of entrances by county for all three years
+# number of entrances by county for all three years
 amt_entrances_county <- entrances_dhhs %>%
   dplyr::group_by(county) %>%
   dplyr::summarise(total = n_distinct(booking_id))
 
-# Df of total number of entrances by FY
+# df of total number of entrances by FY
 df_entrances_county <- entrances_dhhs %>%
   dplyr::ungroup() %>%
   dplyr::select(booking_id, fy, county) %>%
@@ -149,13 +145,13 @@ df_entrances_county <- df_entrances_county %>%
                             county == "Total" ~ "State",
                             TRUE ~ county))
 
-# Table showing the number of people entered by FY by county
+# table showing the number of people entered by FY by county
 table_entrances_fy_county <- fnc_reactable_county_fy(df_entrances_county, row_num = 10)
 table_entrances_fy_county
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-# Prep data for graphic
+# prep data for graphic showing decrease in jail entrances by county from 2019 to 2021
 data1 <- df_entrances_county %>%
   mutate(county = ifelse(county == "Coos (bookings only)", "Coos", county),
          change_19_21 = round(change_19_21, 3)) %>%
@@ -200,7 +196,7 @@ ggsave(
 **On average, people entered jails 1.8 times from 2019 to 2021.**
 
 ```{r}
-# Average number of entrances/fy by county
+# average number of entrances/fy by county
 df_avg_entrances_county <- entrances_dhhs %>%
   ungroup() %>%
   select(county, id, num_entrances) %>%
@@ -209,7 +205,7 @@ df_avg_entrances_county <- entrances_dhhs %>%
   dplyr::summarize(avg_entrances = mean(num_entrances, na.rm=TRUE)) %>%
   mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)", TRUE ~ county))
 
-# Average number of entrances/fy by state
+# average number of entrances/fy by state
 df_avg_entrances_total <- entrances_dhhs %>%
   ungroup() %>%
   select(id, num_entrances) %>%
@@ -218,15 +214,15 @@ df_avg_entrances_total <- entrances_dhhs %>%
   dplyr::summarize(avg_entrances = mean(num_entrances, na.rm=TRUE)) %>%
   mutate(county = "State")
 
-# Add county and state info together
+# add county and state info together
 df_avg_entrances_county <- rbind(df_avg_entrances_county, df_avg_entrances_total)
 
-# Number of people entered by county for all three years
+# Nnumber of people entered by county for all three years
 amt_people_entered_county <- entrances_dhhs %>%
   dplyr::group_by(county) %>%
   dplyr::summarise(total = n_distinct(id))
 
-# Df of total number of people entered by FY by county
+# df of total number of people entered by FY by county
 df_people_entered_county <- entrances_dhhs %>%
   dplyr::group_by(fy, county) %>%
   dplyr::summarise(total = n_distinct(id)) %>%
@@ -241,13 +237,13 @@ df_people_entered_county <- entrances_dhhs %>%
                             county == "Total" ~ "State",
                             TRUE ~ county))
 
-# Rename variables and add data together
+# rename variables and add data together
 df_entrances_county <- df_entrances_county %>% rename_with(~paste0("entrances_", .), -c("county"))
 df_entrances_people_county <- df_people_entered_county %>% rename_with(~paste0("people_entered_", .), -c("county"))
 df_entrances_table <- merge(df_entrances_county, df_entrances_people_county, by = "county", all.x = TRUE, all.y = TRUE)
 df_entrances_table <- merge(df_entrances_table, df_avg_entrances_county, by = "county", all.x = TRUE, all.y = TRUE)
 
-# Remove variables to condense table
+# remove variables to condense table
 data1 <- df_entrances_table %>% select(county,
                                        people_entered_total,
                                        people_entered_change_19_21,
@@ -258,7 +254,7 @@ data1 <- df_entrances_table %>% select(county,
   mutate(avg_entrances = round(avg_entrances, 1)) %>%
   arrange(county %in% "State")
 
-# Table showing the number of entrances and number of people by county
+# table showing the number of entrances and number of people by county
 PRES_table_entrances_people_county <-
   reactable(data1,
             pagination = FALSE,
@@ -289,7 +285,7 @@ PRES_table_entrances_people_county
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# Subset data and create categories for number of entrances
+# subset data and create categories for number of entrances
 data1 <- entrances_dhhs %>%
   ungroup() %>%
   select(id, num_entrances) %>%
@@ -353,10 +349,6 @@ ggplot(data1, aes(x = num_entrances_category, y = total)) +
         axis.title.x = element_text(size = 28, color = jri_gray),
         axis.text.x  = element_text(size = 28, color = jri_gray))
 
-# Save and output graph
-# ggsave(PRES_gg_num_entrances, file= paste0(sp_data_path, "/analysis/img/PRES_gg_num_entrances.png"), width = 19, height = 9, dpi = 100)
-# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_num_entrances.png"))
-
 ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_num_entrances.png"),
     plot = last_plot(),
@@ -378,7 +370,7 @@ ggsave(
 The average cost per person per year was calculated by dividing each county department of correction's 2021 budget by the average daily jail population in that county. This method was used when a cost wasn't provided by the jail. All jails submitted costs except for Belknap, Carroll, and Hillsborough (as of 3/9/23).  
 
 ```{r}
-# Reactable table shoing the cost per person per year and per day
+# Reactable table showing the cost per person per year and per day
 df1 <- daily_pop_costs %>% mutate(avg_pop_fy19 = round(avg_pop_fy19, digits = 0))
 reactable(df1,
           pagination = FALSE,
