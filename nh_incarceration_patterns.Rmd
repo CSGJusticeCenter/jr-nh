@@ -107,8 +107,8 @@ PRES_gg_dhhs_entrances <-
   theme_no_grid_no_labels
 
 # Save and output graph
-ggsave(PRES_gg_dhhs_entrances, file= paste0(sp_data_path, "analysis/img/PRES_gg_dhhs_entrances.png"), width = 6, height = 5, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_dhhs_entrances.png"))
+ggsave(PRES_gg_dhhs_entrances, file= paste0(sp_data_path, "/analysis/img/PRES_gg_dhhs_entrances.png"), width = 6, height = 5, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_dhhs_entrances.png"))
 ```
 
 Counties saw variations in the number of entrances but they all saw a decrease in entrances from FY2019 to FY2021.  
@@ -172,8 +172,8 @@ PRES_gg_entrances_change_county <-
                      labels = percent_format())
 
 # Save and output graph
-ggsave(PRES_gg_entrances_change_county, file= paste0(sp_data_path, "analysis/img/PRES_gg_entrances_change_county.png"), width = 9, height = 5, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_entrances_change_county.png"))
+ggsave(PRES_gg_entrances_change_county, file= paste0(sp_data_path, "/analysis/img/PRES_gg_entrances_change_county.png"), width = 9, height = 5, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_entrances_change_county.png"))
 ```
 
 
@@ -335,8 +335,8 @@ PRES_gg_num_entrances <-
         axis.text.x  = element_text(size = 28, color = jri_gray))
 
 # Save and output graph
-ggsave(PRES_gg_num_entrances, file= paste0(sp_data_path, "analysis/img/PRES_gg_num_entrances.png"), width = 19, height = 9, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_num_entrances.png"))
+ggsave(PRES_gg_num_entrances, file= paste0(sp_data_path, "/analysis/img/PRES_gg_num_entrances.png"), width = 19, height = 9, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_num_entrances.png"))
 ```
 
 <br>

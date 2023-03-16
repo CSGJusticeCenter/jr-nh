@@ -88,27 +88,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>JRI New Hampshire Project: Protective Custody Holds</title>
+  <title>JRI New Hampshire Project: Sentence Statuses Analysis</title>
 
 
   <link rel="icon" type="image/png" href="img/favicon.png"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="JRI New Hampshire Project: Protective Custody Holds"/>
+  <meta property="og:title" content="JRI New Hampshire Project: Sentence Statuses Analysis"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="JRI New Hampshire Project"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="JRI New Hampshire Project: Protective Custody Holds"/>
+  <meta property="twitter:title" content="JRI New Hampshire Project: Sentence Statuses Analysis"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Protective Custody Holds"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Sentence Statuses Analysis"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","theme","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"character","attributes":{},"value":["theme.css"]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2404,57 +2404,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
-  <script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
-  <script src="site_libs/jquery-3.5.1/jquery.min.js"></script>
-  <script src="site_libs/proj4js-2.3.15/proj4.js"></script>
-  <link href="site_libs/highcharts-9.3.1/css/motion.css" rel="stylesheet" />
-  <script src="site_libs/highcharts-9.3.1/highcharts.js"></script>
-  <script src="site_libs/highcharts-9.3.1/highcharts-3d.js"></script>
-  <script src="site_libs/highcharts-9.3.1/highcharts-more.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/stock.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/map.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/data.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/exporting.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/offline-exporting.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/drilldown.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/item-series.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/overlapping-datalabels.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/annotations.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/export-data.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/funnel.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/heatmap.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/treemap.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/sankey.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/dependency-wheel.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/organization.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/solid-gauge.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/streamgraph.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/sunburst.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/vector.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/wordcloud.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/xrange.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/tilemap.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/venn.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/gantt.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/timeline.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/parallel-coordinates.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/bullet.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/coloraxis.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/dumbbell.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/lollipop.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/series-label.js"></script>
-  <script src="site_libs/highcharts-9.3.1/plugins/motion.js"></script>
-  <script src="site_libs/highcharts-9.3.1/custom/reset.js"></script>
-  <script src="site_libs/highcharts-9.3.1/modules/boost.js"></script>
-  <script src="site_libs/highchart-binding-0.9.4/highchart.js"></script>
-  <script src="site_libs/series-label.js-9.3.1/series-label.js"></script>
-  <script src="site_libs/accessibility.js-9.3.1/accessibility.js"></script>
-  <script src="site_libs/exporting.js-9.3.1/exporting.js"></script>
-  <script src="site_libs/export-data.js-9.3.1/export-data.js"></script>
+  <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
   <script src="site_libs/react-17.0.0/react.min.js"></script>
   <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
   <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
+  <script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
   <link href="site_libs/reactable-0.4.3/reactable.css" rel="stylesheet" />
   <script src="site_libs/reactable-binding-0.4.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
@@ -2476,7 +2432,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Protective Custody Holds","authors":[]}
+{"title":"Sentence Statuses Analysis","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2566,7 +2522,7 @@ Research
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Protective Custody Holds</h1>
+<h1>Sentence Statuses Analysis</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2578,76 +2534,652 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#protective-custody-holds" id="toc-protective-custody-holds">Protective Custody Holds</a>
+<li><a href="#sentence-statuses" id="toc-sentence-statuses">Sentence Statuses</a>
 <ul>
-<li><a href="#by-state" id="toc-by-state">By State</a></li>
-<li><a href="#by-county" id="toc-by-county">By County</a></li>
+<li><a href="#sentence-statuses-state-wide" id="toc-sentence-statuses-state-wide">Sentence Statuses State-wide</a></li>
+<li><a href="#sentence-statuses-by-county-n" id="toc-sentence-statuses-by-county-n">Sentence Statuses by County (N)</a></li>
+<li><a href="#sentence-statuses-by-county" id="toc-sentence-statuses-by-county">Sentence Statuses by County (%)</a></li>
+</ul></li>
+<li><a href="#sentence-statuses-and-charge-types" id="toc-sentence-statuses-and-charge-types">Sentence Statuses and Charge Types</a>
+<ul>
+<li><a href="#charge-type-by-sentence-status-row-sum" id="toc-charge-type-by-sentence-status-row-sum">Charge Type by Sentence Status (Row sum)</a></li>
+<li><a href="#charge-type-by-sentence-status-column-sum" id="toc-charge-type-by-sentence-status-column-sum">Charge Type by Sentence Status (Column sum)</a></li>
+<li><a href="#high-utilizers-and-sentence-statuses-row-sum" id="toc-high-utilizers-and-sentence-statuses-row-sum">High Utilizers and Sentence Statuses (Row sum)</a></li>
+<li><a href="#high-utilizers-and-sentence-statuses-column-sum" id="toc-high-utilizers-and-sentence-statuses-column-sum">High Utilizers and Sentence Statuses (Column sum)</a></li>
+</ul></li>
+<li><a href="#drug-courts" id="toc-drug-courts">Drug Courts</a>
+<ul>
+<li><a href="#drug-court-related-bookings-by-county" id="toc-drug-court-related-bookings-by-county">Drug court-related bookings by county</a></li>
+<li><a href="#drug-court-related-bookings-by-high-utilizers-row-sum" id="toc-drug-court-related-bookings-by-high-utilizers-row-sum">Drug court-related bookings by high utilizers (Row sum)</a></li>
+<li><a href="#drug-court-related-bookings-by-high-utilizers-column-sum" id="toc-drug-court-related-bookings-by-high-utilizers-column-sum">Drug court-related bookings by high utilizers (Column sum)</a></li>
 </ul></li>
 </ul>
 </nav>
 </div>
-<p>The following incarceration patterns were found using jail administrative data submitted directly to CSG.</p>
-<h1 id="protective-custody-holds">Protective Custody Holds</h1>
-<h3 id="by-state">By State</h3>
+<h2 id="sentence-statuses">Sentence Statuses</h2>
+<p>The following booking patterns were found using jail administrative data submitted directly to CSG. DHHS matched-to-Medicaid data does not have information on sentence statuses. The “other” category includes federal holds, holds for other agencies, 24 hour and 72 hour holds, other holds, dual status, bail set, bond denied, dismissed, and sentence suspended.</p>
+<h3 id="sentence-statuses-state-wide">Sentence Statuses State-wide</h3>
+<p>The majority of bookings result in a pretrial sentence status, followed by protective custody.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><strong>Protective custody holds accounted for 19.4% of bookings from 2019 to 2021.</strong> Coos and Strafford are not included in this calculation due to missing data.</p>
-</div>
-<p><strong>Although the number of entrances has been decreasing, the proportion of PC holds has remained the same.</strong></p>
-<div class="layout-chunk" data-layout="l-body">
-
+<p><img src="nh_booking_types_analysis_files/figure-html5/unnamed-chunk-1-1.png" width="624" /></p>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="../../Users/mroberts/The Council of State Governments/JC Research - JR_NH/analysis/img/PRES_gg_pch_pct_barchart.png" width="50%" /></p>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Sentence Status
+</th>
+<th style="text-align:left;">
+Unique Bookings (N)
+</th>
+<th style="text-align:left;">
+Proportion of Bookings (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+PRETRIAL
+</td>
+<td style="text-align:left;">
+21,924
+</td>
+<td style="text-align:left;">
+57.9%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+PROTECTIVE CUSTODY
+</td>
+<td style="text-align:left;">
+7,278
+</td>
+<td style="text-align:left;">
+19.2%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+SENTENCED
+</td>
+<td style="text-align:left;">
+6,329
+</td>
+<td style="text-align:left;">
+16.7%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+OTHER
+</td>
+<td style="text-align:left;">
+2,307
+</td>
+<td style="text-align:left;">
+6.1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;">
+&lt;NA&gt;
+</td>
+<td style="text-align:left;">
+12,612
+</td>
+<td style="text-align:left;">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;font-weight: bold;font-weight: bold;">
+Total
+</td>
+<td style="text-align:left;font-weight: bold;">
+50,450
+</td>
+<td style="text-align:left;font-weight: bold;">
+100.0%
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="sentence-statuses-by-county-n">Sentence Statuses by County (N)</h3>
+<p>The number of sentence statuses by county from 2019 to 2021.</p>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+County
+</th>
+<th style="text-align:left;">
+Pretrial (N)
+</th>
+<th style="text-align:left;">
+Protective Custody (N)
+</th>
+<th style="text-align:left;">
+Sentenced (N)
+</th>
+<th style="text-align:left;">
+Other (N)
+</th>
+<th style="text-align:left;">
+Unknown (N)
+</th>
+<th style="text-align:left;">
+Total Entrances (N)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Belknap
+</td>
+<td style="text-align:left;width: 8em; ">
+2,102
+</td>
+<td style="text-align:left;width: 8em; ">
+1,463
+</td>
+<td style="text-align:left;width: 8em; ">
+472
+</td>
+<td style="text-align:left;width: 8em; ">
+97
+</td>
+<td style="text-align:left;width: 8em; ">
+10
+</td>
+<td style="text-align:left;width: 8em; ">
+4,144
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Carroll
+</td>
+<td style="text-align:left;width: 8em; ">
+1,932
+</td>
+<td style="text-align:left;width: 8em; ">
+322
+</td>
+<td style="text-align:left;width: 8em; ">
+359
+</td>
+<td style="text-align:left;width: 8em; ">
+38
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+2,651
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Cheshire
+</td>
+<td style="text-align:left;width: 8em; ">
+1,313
+</td>
+<td style="text-align:left;width: 8em; ">
+1,085
+</td>
+<td style="text-align:left;width: 8em; ">
+787
+</td>
+<td style="text-align:left;width: 8em; ">
+843
+</td>
+<td style="text-align:left;width: 8em; ">
+41
+</td>
+<td style="text-align:left;width: 8em; ">
+4,069
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Coos
+</td>
+<td style="text-align:left;width: 8em; ">
+429
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+203
+</td>
+<td style="text-align:left;width: 8em; ">
+7
+</td>
+<td style="text-align:left;width: 8em; ">
+32
+</td>
+<td style="text-align:left;width: 8em; ">
+671
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Hillsborough
+</td>
+<td style="text-align:left;width: 8em; ">
+8,685
+</td>
+<td style="text-align:left;width: 8em; ">
+389
+</td>
+<td style="text-align:left;width: 8em; ">
+1,511
+</td>
+<td style="text-align:left;width: 8em; ">
+19
+</td>
+<td style="text-align:left;width: 8em; ">
+23
+</td>
+<td style="text-align:left;width: 8em; ">
+10,627
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Merrimack
+</td>
+<td style="text-align:left;width: 8em; ">
+2,388
+</td>
+<td style="text-align:left;width: 8em; ">
+1,477
+</td>
+<td style="text-align:left;width: 8em; ">
+923
+</td>
+<td style="text-align:left;width: 8em; ">
+1,192
+</td>
+<td style="text-align:left;width: 8em; ">
+6
+</td>
+<td style="text-align:left;width: 8em; ">
+5,986
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Rockingham
+</td>
+<td style="text-align:left;width: 8em; ">
+4,238
+</td>
+<td style="text-align:left;width: 8em; ">
+2,178
+</td>
+<td style="text-align:left;width: 8em; ">
+1,645
+</td>
+<td style="text-align:left;width: 8em; ">
+101
+</td>
+<td style="text-align:left;width: 8em; ">
+90
+</td>
+<td style="text-align:left;width: 8em; ">
+8,252
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Strafford
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+12,233
+</td>
+<td style="text-align:left;width: 8em; ">
+12,233
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Sullivan
+</td>
+<td style="text-align:left;width: 8em; ">
+837
+</td>
+<td style="text-align:left;width: 8em; ">
+364
+</td>
+<td style="text-align:left;width: 8em; ">
+429
+</td>
+<td style="text-align:left;width: 8em; ">
+10
+</td>
+<td style="text-align:left;width: 8em; ">
+177
+</td>
+<td style="text-align:left;width: 8em; ">
+1,817
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <p><br></p>
-<p><strong>Protective custody holds tend to occur most frequently during summer months. There was a decline in protective custody holds at the start of the pandemic but they began climbing again shortly after.</strong></p>
+<h3 id="sentence-statuses-by-county">Sentence Statuses by County (%)</h3>
+<p>The proportion of sentence statuses by county from 2019 to 2021.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div class="highchart html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-c0535b2214db2e3d7acc" style="width:624px;height:384px;"></div>
-<script type="application/json" data-for="htmlwidget-c0535b2214db2e3d7acc">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Number of PC Holds","style":{"color":"#000000","fontWeight":"bold","fontSize":"16px"}},"type":"linear"},"credits":{"enabled":false},"exporting":{"enabled":true},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0,"showInLegend":false},"treemap":{"layoutAlgorithm":"squarified"},"scatter":{"marker":{"symbol":"circle"}}},"series":[{"group":"group","data":[{"month_year":"2018-07-01","month_year_text":"Jul 2018","total":344,"tooltip":"<b>Jul 2018<\/b><br>Total: 344<br>","y":344,"name":"Jul 2018"},{"month_year":"2018-08-01","month_year_text":"Aug 2018","total":396,"tooltip":"<b>Aug 2018<\/b><br>Total: 396<br>","y":396,"name":"Aug 2018"},{"month_year":"2018-09-01","month_year_text":"Sep 2018","total":245,"tooltip":"<b>Sep 2018<\/b><br>Total: 245<br>","y":245,"name":"Sep 2018"},{"month_year":"2018-10-01","month_year_text":"Oct 2018","total":182,"tooltip":"<b>Oct 2018<\/b><br>Total: 182<br>","y":182,"name":"Oct 2018"},{"month_year":"2018-11-01","month_year_text":"Nov 2018","total":175,"tooltip":"<b>Nov 2018<\/b><br>Total: 175<br>","y":175,"name":"Nov 2018"},{"month_year":"2018-12-01","month_year_text":"Dec 2018","total":184,"tooltip":"<b>Dec 2018<\/b><br>Total: 184<br>","y":184,"name":"Dec 2018"},{"month_year":"2019-01-01","month_year_text":"Jan 2019","total":172,"tooltip":"<b>Jan 2019<\/b><br>Total: 172<br>","y":172,"name":"Jan 2019"},{"month_year":"2019-02-01","month_year_text":"Feb 2019","total":187,"tooltip":"<b>Feb 2019<\/b><br>Total: 187<br>","y":187,"name":"Feb 2019"},{"month_year":"2019-03-01","month_year_text":"Mar 2019","total":203,"tooltip":"<b>Mar 2019<\/b><br>Total: 203<br>","y":203,"name":"Mar 2019"},{"month_year":"2019-04-01","month_year_text":"Apr 2019","total":163,"tooltip":"<b>Apr 2019<\/b><br>Total: 163<br>","y":163,"name":"Apr 2019"},{"month_year":"2019-05-01","month_year_text":"May 2019","total":252,"tooltip":"<b>May 2019<\/b><br>Total: 252<br>","y":252,"name":"May 2019"},{"month_year":"2019-06-01","month_year_text":"Jun 2019","total":289,"tooltip":"<b>Jun 2019<\/b><br>Total: 289<br>","y":289,"name":"Jun 2019"},{"month_year":"2019-07-01","month_year_text":"Jul 2019","total":358,"tooltip":"<b>Jul 2019<\/b><br>Total: 358<br>","y":358,"name":"Jul 2019"},{"month_year":"2019-08-01","month_year_text":"Aug 2019","total":337,"tooltip":"<b>Aug 2019<\/b><br>Total: 337<br>","y":337,"name":"Aug 2019"},{"month_year":"2019-09-01","month_year_text":"Sep 2019","total":250,"tooltip":"<b>Sep 2019<\/b><br>Total: 250<br>","y":250,"name":"Sep 2019"},{"month_year":"2019-10-01","month_year_text":"Oct 2019","total":183,"tooltip":"<b>Oct 2019<\/b><br>Total: 183<br>","y":183,"name":"Oct 2019"},{"month_year":"2019-11-01","month_year_text":"Nov 2019","total":175,"tooltip":"<b>Nov 2019<\/b><br>Total: 175<br>","y":175,"name":"Nov 2019"},{"month_year":"2019-12-01","month_year_text":"Dec 2019","total":197,"tooltip":"<b>Dec 2019<\/b><br>Total: 197<br>","y":197,"name":"Dec 2019"},{"month_year":"2020-01-01","month_year_text":"Jan 2020","total":168,"tooltip":"<b>Jan 2020<\/b><br>Total: 168<br>","y":168,"name":"Jan 2020"},{"month_year":"2020-02-01","month_year_text":"Feb 2020","total":169,"tooltip":"<b>Feb 2020<\/b><br>Total: 169<br>","y":169,"name":"Feb 2020"},{"month_year":"2020-03-01","month_year_text":"Mar 2020","total":164,"tooltip":"<b>Mar 2020<\/b><br>Total: 164<br>","y":164,"name":"Mar 2020"},{"month_year":"2020-04-01","month_year_text":"Apr 2020","total":111,"tooltip":"<b>Apr 2020<\/b><br>Total: 111<br>","y":111,"name":"Apr 2020"},{"month_year":"2020-05-01","month_year_text":"May 2020","total":160,"tooltip":"<b>May 2020<\/b><br>Total: 160<br>","y":160,"name":"May 2020"},{"month_year":"2020-06-01","month_year_text":"Jun 2020","total":189,"tooltip":"<b>Jun 2020<\/b><br>Total: 189<br>","y":189,"name":"Jun 2020"},{"month_year":"2020-07-01","month_year_text":"Jul 2020","total":223,"tooltip":"<b>Jul 2020<\/b><br>Total: 223<br>","y":223,"name":"Jul 2020"},{"month_year":"2020-08-01","month_year_text":"Aug 2020","total":241,"tooltip":"<b>Aug 2020<\/b><br>Total: 241<br>","y":241,"name":"Aug 2020"},{"month_year":"2020-09-01","month_year_text":"Sep 2020","total":191,"tooltip":"<b>Sep 2020<\/b><br>Total: 191<br>","y":191,"name":"Sep 2020"},{"month_year":"2020-10-01","month_year_text":"Oct 2020","total":154,"tooltip":"<b>Oct 2020<\/b><br>Total: 154<br>","y":154,"name":"Oct 2020"},{"month_year":"2020-11-01","month_year_text":"Nov 2020","total":150,"tooltip":"<b>Nov 2020<\/b><br>Total: 150<br>","y":150,"name":"Nov 2020"},{"month_year":"2020-12-01","month_year_text":"Dec 2020","total":129,"tooltip":"<b>Dec 2020<\/b><br>Total: 129<br>","y":129,"name":"Dec 2020"},{"month_year":"2021-01-01","month_year_text":"Jan 2021","total":148,"tooltip":"<b>Jan 2021<\/b><br>Total: 148<br>","y":148,"name":"Jan 2021"},{"month_year":"2021-02-01","month_year_text":"Feb 2021","total":130,"tooltip":"<b>Feb 2021<\/b><br>Total: 130<br>","y":130,"name":"Feb 2021"},{"month_year":"2021-03-01","month_year_text":"Mar 2021","total":134,"tooltip":"<b>Mar 2021<\/b><br>Total: 134<br>","y":134,"name":"Mar 2021"},{"month_year":"2021-04-01","month_year_text":"Apr 2021","total":146,"tooltip":"<b>Apr 2021<\/b><br>Total: 146<br>","y":146,"name":"Apr 2021"},{"month_year":"2021-05-01","month_year_text":"May 2021","total":161,"tooltip":"<b>May 2021<\/b><br>Total: 161<br>","y":161,"name":"May 2021"},{"month_year":"2021-06-01","month_year_text":"Jun 2021","total":218,"tooltip":"<b>Jun 2021<\/b><br>Total: 218<br>","y":218,"name":"Jun 2021"}],"type":"line","color":"#167a9c"}],"xAxis":{"type":"category","title":{"text":"Month and Year","style":{"color":"#000000","fontWeight":"bold","fontSize":"16px"}},"plotLines":[{"label":{"text":"COVID-19 Start"},"fontSize":"26px","color":"#000000","width":2,"value":20,"zIndex":1}]},"tooltip":{"formatter":"function(){return(this.point.tooltip)}"}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadCSV":"Download CSV","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","downloadXLS":"Download XLS","drillUpText":"◁ Back to {series.name}","exitFullscreen":"Exit from full screen","exportData":{"annotationHeader":"Annotations","categoryDatetimeHeader":"DateTime","categoryHeader":"Category"},"hideData":"Hide data table","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbolMagnitude":1000,"numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"shortWeekdays":["Sat","Sun","Mon","Tue","Wed","Thu","Fri"],"thousandsSep":" ","viewData":"View data table","viewFullscreen":"View in full screen","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":["hc_opts.tooltip.formatter"],"jsHooks":[]}</script>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;">
+County
+</th>
+<th style="text-align:left;">
+Pretrial %
+</th>
+<th style="text-align:left;">
+Protective Custody (%)
+</th>
+<th style="text-align:left;">
+Sentenced (%)
+</th>
+<th style="text-align:left;">
+Other (%)
+</th>
+<th style="text-align:left;">
+Unknown (%)
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Belknap
+</td>
+<td style="text-align:left;width: 8em; ">
+51%
+</td>
+<td style="text-align:left;width: 8em; ">
+35%
+</td>
+<td style="text-align:left;width: 8em; ">
+11%
+</td>
+<td style="text-align:left;width: 8em; ">
+2%
+</td>
+<td style="text-align:left;width: 8em; ">
+0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Carroll
+</td>
+<td style="text-align:left;width: 8em; ">
+73%
+</td>
+<td style="text-align:left;width: 8em; ">
+12%
+</td>
+<td style="text-align:left;width: 8em; ">
+14%
+</td>
+<td style="text-align:left;width: 8em; ">
+1%
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Cheshire
+</td>
+<td style="text-align:left;width: 8em; ">
+32%
+</td>
+<td style="text-align:left;width: 8em; ">
+27%
+</td>
+<td style="text-align:left;width: 8em; ">
+19%
+</td>
+<td style="text-align:left;width: 8em; ">
+21%
+</td>
+<td style="text-align:left;width: 8em; ">
+1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Coos
+</td>
+<td style="text-align:left;width: 8em; ">
+64%
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+30%
+</td>
+<td style="text-align:left;width: 8em; ">
+1%
+</td>
+<td style="text-align:left;width: 8em; ">
+5%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Hillsborough
+</td>
+<td style="text-align:left;width: 8em; ">
+82%
+</td>
+<td style="text-align:left;width: 8em; ">
+4%
+</td>
+<td style="text-align:left;width: 8em; ">
+14%
+</td>
+<td style="text-align:left;width: 8em; ">
+0%
+</td>
+<td style="text-align:left;width: 8em; ">
+0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Merrimack
+</td>
+<td style="text-align:left;width: 8em; ">
+40%
+</td>
+<td style="text-align:left;width: 8em; ">
+25%
+</td>
+<td style="text-align:left;width: 8em; ">
+15%
+</td>
+<td style="text-align:left;width: 8em; ">
+20%
+</td>
+<td style="text-align:left;width: 8em; ">
+0%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Rockingham
+</td>
+<td style="text-align:left;width: 8em; ">
+51%
+</td>
+<td style="text-align:left;width: 8em; ">
+26%
+</td>
+<td style="text-align:left;width: 8em; ">
+20%
+</td>
+<td style="text-align:left;width: 8em; ">
+1%
+</td>
+<td style="text-align:left;width: 8em; ">
+1%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Strafford
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+NA
+</td>
+<td style="text-align:left;width: 8em; ">
+100%
+</td>
+</tr>
+<tr>
+<td style="text-align:left;width: 12em; font-weight: bold;">
+Sullivan
+</td>
+<td style="text-align:left;width: 8em; ">
+46%
+</td>
+<td style="text-align:left;width: 8em; ">
+20%
+</td>
+<td style="text-align:left;width: 8em; ">
+24%
+</td>
+<td style="text-align:left;width: 8em; ">
+1%
+</td>
+<td style="text-align:left;width: 8em; ">
+10%
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <p><br></p>
-<h3 id="by-county">By County</h3>
-<p>The proportion of entrances that were protective custody holds varied greatly by county. The table below shows the number of and proportion of entrances that included a protective custody hold charge. Belknap had the highest proportion of bookings that were protective custody holds.</p>
+<p><strong>Proportion of jail bookings that are pretrial by county</strong></p>
+<p>There was substantial variation among counties for the proportion of bookings that were pretrial. Hillsborough had the highest proportion of bookings that were pretrial.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-4060b643d03eb5fc0260" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-4060b643d03eb5fc0260">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Carroll","Cheshire","Coos (bookings only)","Hillsborough","Merrimack","Rockingham","Strafford","Sullivan","State"],"total_entrances":[4144,2651,4069,671,10627,5986,8252,12233,1817,50450],"total_pc_holds":[1463,322,1085,"NA",389,1477,2178,"NA",364,7278],"total_people":[1078,294,858,"NA",357,1026,1844,"NA",280,5737],"freq":[0.353040540540541,0.121463598642022,0.266650282624724,"NA",0.0366048743765879,0.246742398930839,0.263936015511391,"NA",0.200330214639516,0.193842220209876]},"columns":[{"id":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"left","minWidth":180,"style":{"fontWeight":"bold"}},{"id":"total_entrances","name":"Total Entrances","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"id":"total_pc_holds","name":"PC Holds (Entrances)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"id":"total_people","name":"PC Holds (People)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"align":"center","minWidth":100},{"id":"freq","name":"% PC Hold Entrances","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","minWidth":100,"style":{"fontWeight":"bold"}}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"c7e7cb5a33f3e00fee68e0d082af3551"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
-</div>
-<div class="layout-chunk" data-layout="l-body">
-
-</div>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="../../Users/mroberts/The Council of State Governments/JC Research - JR_NH/analysis/img/PRES_gg_pchold_prop.png" width="100%" /></p>
+<p><img src="nh_booking_types_analysis_files/figure-html5/unnamed-chunk-5-1.png" width="624" /></p>
 </div>
 <p><br></p>
-<p><strong>Some counties saw decreases in PC holds while others saw increases.</strong></p>
+<h2 id="sentence-statuses-and-charge-types">Sentence Statuses and Charge Types</h2>
+<h3 id="charge-type-by-sentence-status-row-sum">Charge Type by Sentence Status (Row sum)</h3>
+<p>The number and proportion of charge types by sentence statuses from 2019 to 2021. This table shows column sum. For example, of all sentence statuses that were pretrial, 31% of bookings had a violent charge type.</p>
 <div class="layout-chunk" data-layout="l-body">
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-bd94f9bac0b5c0769d37" style="width:auto;height:auto;"></div>
-<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px">Coos removes entrances that are PC holds so Coos's administrative data is not included in this table. Strafford's data cannot differentiate between bookings and PC holds so their administrative data is also excluded.</p>
-<script type="application/json" data-for="htmlwidget-bd94f9bac0b5c0769d37">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"new_variable_name":["Belknap","Carroll","Cheshire","Hillsborough","Merrimack","Rockingham","Sullivan"],"count_19":[623,120,439,162,596,714,138],"pct_19":[0.362209302325581,0.126315789473684,0.262874251497006,0.0353095030514385,0.253941201533873,0.220438406915715,0.184245660881175],"count_20":[500,118,361,132,468,760,122],"pct_20":[0.364431486880466,0.132286995515695,0.265246142542248,0.0405405405405405,0.241112828438949,0.278082693011343,0.211805555555556],"count_21":[340,84,285,95,413,704,104],"pct_21":[0.32319391634981,0.103831891223733,0.274566473988439,0.0341358246496586,0.243227326266196,0.308771929824561,0.211382113821138],"total":[1463,322,1085,389,1477,2178,364],"freq":[0.353040540540541,0.121463598642022,0.266650282624724,0.0366048743765879,0.246742398930839,0.263936015511391,0.200330214639516]},"columns":[{"id":"new_variable_name","name":" ","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":"Total","align":"left","footerStyle":{"fontWeight":"bold"},"minWidth":150,"style":{"fontWeight":"bold"}},{"id":"count_19","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,792"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"id":"pct_19","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"id":"count_20","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,461"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"id":"pct_20","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"id":"count_21","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,025"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80},{"id":"pct_21","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":80,"style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"total","name":"Count","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["7,278"]},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":100},{"id":"freq","name":"%","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"align":"center","footerStyle":{"fontWeight":"bold"},"minWidth":90}],"columnGroups":[{"name":"2019","columns":["count_19","pct_19"]},{"name":"2020","columns":["count_20","pct_20"]},{"name":"2021","columns":["count_21","pct_21"]},{"name":"3 Years","columns":["total","freq"]}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"d77084b64f3ed34c6eab57b3aca797d7"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-0a320156a086b23a7c68" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-0a320156a086b23a7c68">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"Other (N)":[199,51,113,196,161,801,592],"Pretrial (N)":[3978,2541,2248,2402,2059,832,6165],"Protective Custody (N)":[6,2,0,0,1,3206,3],"Sentenced (N)":[1214,462,1501,589,358,11,1364],"Unknown (N)":[56,36,34,29,40,55,68]},"columns":[{"id":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"id":"Other (N)","name":"Other (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,113"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Pretrial (N)","name":"Pretrial (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["20,225"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Protective Custody (N)","name":"Protective Custody (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["3,218"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Sentenced (N)","name":"Sentenced (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["5,499"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Unknown (N)","name":"Unknown (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["318"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"4890046ca546846da0e93e64d348dd5a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-4b6deb79f648cae3582c" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-4b6deb79f648cae3582c">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"Other (%)":[0.094178892569806,0.0241362991008045,0.0534784666351159,0.0927591102697586,0.0761949834358732,0.379081874112636,0.280170373876006],"Pretrial (%)":[0.196687268232386,0.125636588380717,0.11114956736712,0.11876390605686,0.101804697156984,0.0411372064276885,0.304820766378245],"Protective Custody (%)":[0.00186451211932878,0.000621504039776259,0,0,0.000310752019888129,0.996270975761342,0.000932256059664388],"Sentenced (%)":[0.220767412256774,0.0840152755046372,0.27295871976723,0.107110383706128,0.0651027459538098,0.00200036370249136,0.248045099108929],"Unknown (%)":[0.176100628930818,0.113207547169811,0.106918238993711,0.0911949685534591,0.125786163522013,0.172955974842767,0.213836477987421]},"columns":[{"id":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"id":"Other (%)","name":"Other (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Pretrial (%)","name":"Pretrial (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Protective Custody (%)","name":"Protective Custody (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Sentenced (%)","name":"Sentenced (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Unknown (%)","name":"Unknown (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"3af27297181e10cd34e7f70d3b9c5e55"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <p><br></p>
+<h3 id="charge-type-by-sentence-status-column-sum">Charge Type by Sentence Status (Column sum)</h3>
+<p>The number and proportion of charge types by sentence statuses from 2019 to 2021. This table shows row sum. For example, of all charge types that were drug/alcohol, 73% resulted in a pretrial sentence status.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-df1e6a401af5f60319c2" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-df1e6a401af5f60319c2">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"Other (N)":[199,51,113,196,161,801,592],"Pretrial (N)":[3978,2541,2248,2402,2059,832,6165],"Protective Custody (N)":[6,2,0,0,1,3206,3],"Sentenced (N)":[1214,462,1501,589,358,11,1364],"Unknown (N)":[56,36,34,29,40,55,68]},"columns":[{"id":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"id":"Other (N)","name":"Other (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["2,113"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Pretrial (N)","name":"Pretrial (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["20,225"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Protective Custody (N)","name":"Protective Custody (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["3,218"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Sentenced (N)","name":"Sentenced (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["5,499"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Unknown (N)","name":"Unknown (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["318"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"4890046ca546846da0e93e64d348dd5a"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-0ae71160b61e40edeb4a" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-0ae71160b61e40edeb4a">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Charge Type":["Drug/Alcohol","FTA/Bail","Probation/Parole Violation","Property","Public Order","Temporary Hold","Violent"],"Other (%)":[0.0364936732074088,0.0164941785252264,0.0290041067761807,0.0609452736318408,0.0614738449789996,0.163302752293578,0.072265625],"Pretrial (%)":[0.729506693563176,0.821798188874515,0.57700205338809,0.746890547263682,0.786177930507827,0.169622833843017,0.7525634765625],"Protective Custody (%)":[0.00110031175499725,0.000646830530401035,0,0,0.000381825124093165,0.65361875637105,0.0003662109375],"Sentenced (%)":[0.222629745094443,0.149417852522639,0.385266940451745,0.183146766169154,0.136693394425353,0.00224260958205912,0.16650390625],"Unknown (%)":[0.0102695763799743,0.0116429495472186,0.00872689938398357,0.00901741293532338,0.0152730049637266,0.0112130479102956,0.00830078125]},"columns":[{"id":"Charge Type","name":"Charge Type","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"id":"Other (%)","name":"Other (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Pretrial (%)","name":"Pretrial (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Protective Custody (%)","name":"Protective Custody (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Sentenced (%)","name":"Sentenced (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Unknown (%)","name":"Unknown (%)","type":"numeric","format":{"cell":{"digits":1,"percent":true},"aggregated":{"digits":1,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"956c77bb7745c51db42f53e9144b5b2b"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p><br></p>
+<h3 id="high-utilizers-and-sentence-statuses-row-sum">High Utilizers and Sentence Statuses (Row sum)</h3>
+<p>This table shows row sum. For example, of the bookings by tier 1 high utilizers, 40% were pretrial and 27% were protective custody.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-2ea5efdafb03ec5b8728" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-2ea5efdafb03ec5b8728">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Entrance Type":["OTHER","PRETRIAL","PROTECTIVE CUSTODY","SENTENCED"],"Tier 1 HU":[55,985,654,740],"Tier 2 HU":[137,3023,615,1033],"Tier 3 HU":[175,2886,421,655],"Non-HU":[1940,15030,5588,3901],"Tier 1 HU.1":[0.0225965488907149,0.40468364831553,0.268693508627773,0.304026294165982],"Tier 2 HU.1":[0.0284941763727121,0.628743760399334,0.127911813643927,0.214850249584027],"Tier 3 HU.1":[0.0423011844331641,0.697606961566352,0.101764563693498,0.158327290306986],"Non-HU.1":[0.0733209871877244,0.568048679088401,0.21119467855928,0.147435655164594]},"columns":[{"id":"Entrance Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"id":"Tier 1 HU","name":"Tier 1 HU (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Tier 2 HU","name":"Tier 2 HU (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Tier 3 HU","name":"Tier 3 HU (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Non-HU","name":"Non-HU","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Tier 1 HU.1","name":"Tier 1 HU (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Tier 2 HU.1","name":"Tier 2 HU (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Tier 3 HU.1","name":"Tier 3 HU (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Non-HU.1","name":"Non-HU (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"eab1b81bc33931420b9d8dffcbab6a6b"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p><br></p>
+<h3 id="high-utilizers-and-sentence-statuses-column-sum">High Utilizers and Sentence Statuses (Column sum)</h3>
+<p>This table shows column sum. For example, of the bookings that resulted in a pretrial sentence status, 4% were by tier 1 high utilizers.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-5476f0b40b3b83c12fdc" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-5476f0b40b3b83c12fdc">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Entrance Type":["OTHER","PRETRIAL","PROTECTIVE CUSTODY","SENTENCED"],"Tier 1 HU":[55,985,654,740],"Tier 2 HU":[137,3023,615,1033],"Tier 3 HU":[175,2886,421,655],"Non-HU":[1940,15030,5588,3901],"Tier 1 HU.1":[0.023840485478977,0.0449279328589673,0.0898598516075845,0.116922104597883],"Tier 2 HU.1":[0.05938448201127,0.137885422368181,0.0845012366034625,0.163216937904882],"Tier 3 HU.1":[0.0758560901603814,0.131636562671045,0.0578455619675735,0.103491862853531],"Non-HU.1":[0.840918942349371,0.685550082101806,0.767793349821379,0.616369094643704]},"columns":[{"id":"Entrance Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"id":"Tier 1 HU","name":"Tier 1 HU (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Tier 2 HU","name":"Tier 2 HU (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Tier 3 HU","name":"Tier 3 HU (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Non-HU","name":"Non-HU","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Tier 1 HU.1","name":"Tier 1 HU (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Tier 2 HU.1","name":"Tier 2 HU (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Tier 3 HU.1","name":"Tier 3 HU (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Non-HU.1","name":"Non-HU (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"69a7d8b9bc82fe221c79585bb8085995"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p><br></p>
+<h2 id="drug-courts">Drug Courts</h2>
+<p>Only Cheshire, Hillsborough, and Rockingham County collect booking information related to <a href="https://www.courts.nh.gov/our-courts/drug-mental-health-courts">drug courts</a>.</p>
+<p>Specialty court programs for people involved in the criminal jusice system with substance abuse or mental health diagnoses are available in various Superior and Circuit Court District Division locations in New Hampshire. These treatment courts combine community based treatment programs with strict court supervision and progressive incentives and sanctions. By linking people to treatment services, the program aims to address offender’s substance abuse and mental health diagnoses that led to criminal behavior, thereby reducing recidivism, and protecting public safety. These treatment court programs are designed to promote compliance with treatment programs as an alternative to jail time.</p>
+<p>Felony drug court programs for adult offenders are available in Belknap, Carroll, Cheshire, Coos, Grafton, Hillsborough (North and South), Merrimack, Rockingham, and Strafford Counties. A defendant who enters those drug court programs must reside in the County where drug court is offered, in addition to having committed the crime in that county.</p>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p><strong>Between 2019 and 2021, people who were high jail utilizers also accounted for nearly a quarter of PC holds.</strong></p>
+<h3 id="drug-court-related-bookings-by-county">Drug court-related bookings by county</h3>
+<p>Drug-court related bookings accounted for 5% of all jail bookings in Cheshire, Hillsborough, and Rockingham County jails.</p>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="../../Users/mroberts/The Council of State Governments/JC Research - JR_NH/analysis/img/PRES_gg_pie_hu_pc_holds.png" width="50%" /></p>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-ae229396c24de7acbb22" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-ae229396c24de7acbb22">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"County":["Cheshire","Hillsborough","Rockingham"],"Drug court-related booking":[125,491,273],"Not a drug court-related booking":[2859,9747,5801],"Drug court-related booking.1":[0.0418900804289544,0.047958585661262,0.0449456700691472],"Not a drug court-related booking.1":[0.958109919571046,0.952041414338738,0.955054329930853]},"columns":[{"id":"County","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["889"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,407"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"ed6747146f49ce931df5165ba52c29b7"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<p><br></p>
+<h3 id="drug-court-related-bookings-by-high-utilizers-row-sum">Drug court-related bookings by high utilizers (Row sum)</h3>
+<p>High utilizers accounted for 85% of drug court-related bookings in Cheshire, Hillsborough, and Rockingham County jails.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-b02135814e6ce13c3162" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-b02135814e6ce13c3162">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"HU Type":["Tier 1 HU","Tier 2 HU","Tier 3 HU","Non-HU"],"Drug court-related booking":[419,303,98,69],"Not a drug court-related booking":[830,2238,2342,12997],"Drug court-related booking.1":[0.471316085489314,0.340832395950506,0.110236220472441,0.077615298087739],"Not a drug court-related booking.1":[0.0450915412614766,0.121584179931548,0.127234204378769,0.706090074428207]},"columns":[{"id":"HU Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"id":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["889"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,407"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"a4fa02d1cd266f35931e505ead7ad9b8"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="nh_booking_types_analysis_files/figure-html5/unnamed-chunk-13-1.png" width="624" /></p>
+</div>
+<h3 id="drug-court-related-bookings-by-high-utilizers-column-sum">Drug court-related bookings by high utilizers (Column sum)</h3>
+<p>This table shows column sum. For example, of all tier 1 hu bookings, 34% were drug court-related.</p>
+<div class="layout-chunk" data-layout="l-body">
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-d495633445372af89383" style="width:auto;height:auto;"></div>
+<p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
+<script type="application/json" data-for="htmlwidget-d495633445372af89383">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"HU Type":["Tier 1 HU","Tier 2 HU","Tier 3 HU","Non-HU"],"Drug court-related booking":[419,303,98,69],"Not a drug court-related booking":[830,2238,2342,12997],"Drug court-related booking.1":[0.33546837469976,0.119244391971665,0.0401639344262295,0.00528088167763661],"Not a drug court-related booking.1":[0.66453162530024,0.880755608028335,0.959836065573771,0.994719118322363]},"columns":[{"id":"HU Type","name":"","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","footerStyle":{"fontWeight":"bold"},"style":{"fontWeight":"bold"}},{"id":"Drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["889"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Not a drug court-related booking","name":"N","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"footer":{"name":"div","attribs":{},"children":["18,407"]},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}},{"id":"Not a drug court-related booking.1","name":"%","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left","footerStyle":{"fontWeight":"bold"}}],"columnGroups":[{"name":"Drug court-related booking","columns":["Drug court-related booking","Drug court-related booking.1"]},{"name":"Not a drug court-related booking","columns":["Not a drug court-related booking","Not a drug court-related booking.1"]}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"1962242009b97b2a4049e7eed8784497"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <div class="layout-chunk" data-layout="l-body">
 
 </div>
-<p><strong>Belknap and Merrimack County had the most Tier 1 high utilizers who entered jail on a PC hold.</strong></p>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="../../Users/mroberts/The Council of State Governments/JC Research - JR_NH/analysis/img/PRES_gg_pchold_hu_prop.png" width="75%" /></p>
-</div>
-<div class="layout-chunk" data-layout="l-body">
-
-</div>
-<p><strong>Belknap and Merrimack County had the most high utilizers who entered jail on a PC hold.</strong></p>
-<div class="layout-chunk" data-layout="l-body">
-<p><img src="../../Users/mroberts/The Council of State Governments/JC Research - JR_NH/analysis/img/PRES_gg_pchold_hu_prop_overall.png" width="75%" /></p>
-</div>
-<p><br><br></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

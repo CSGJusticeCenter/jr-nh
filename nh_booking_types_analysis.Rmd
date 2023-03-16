@@ -46,7 +46,7 @@ data1 <- bookings_entrances %>%
   mutate(sentence_status_standard = factor(sentence_status_standard, levels = c("Pretrial", "Protective Custody","Sentenced", "Other")))
 
 # Pie chart for all three years
-PRES_gg_pie_pretrial <- ggplot(data1, aes(x = state, y = total, fill = sentence_status_standard)) +
+ggplot(data1, aes(x = state, y = total, fill = sentence_status_standard)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c(jri_orange, jri_light_blue, jri_green, "gray")) +
@@ -66,11 +66,20 @@ PRES_gg_pie_pretrial <- ggplot(data1, aes(x = state, y = total, fill = sentence_
   theme(axis.ticks = element_blank(),
         axis.text.x=element_blank(),
         axis.text.y=element_blank())
-```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_pretrial, file=paste0(sp_data_path, "analysis/img/PRES_gg_pie_pretrial.png"), width = 8,  height = 8, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_pie_pretrial.png"))
+# ggsave(PRES_gg_pie_pretrial, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pie_pretrial.png"), width = 8,  height = 8, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pie_pretrial.png"))
+### write out
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_pie_pretrial.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    height = 8,
+    width = 8,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 ```{r}
@@ -215,7 +224,7 @@ data1 <- bookings_entrances %>%
   mutate(pct = round(total/sum(total)*100, 0))
 
 # ggplot for proportion of pretrial by county
-PRES_gg_pretrial_prop <- ggplot(data1, aes(x = county, y = total, fill = sentence_status_standard)) +
+ggplot(data1, aes(x = county, y = total, fill = sentence_status_standard)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_orange),
@@ -233,11 +242,19 @@ PRES_gg_pretrial_prop <- ggplot(data1, aes(x = county, y = total, fill = sentenc
   theme(axis.title.y = element_blank(),
         axis.title.x = element_blank(),
         axis.text.x = element_text(angle = 45, hjust = 0.85, color = "black"))
-```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pretrial_prop, file=paste0(sp_data_path, "analysis/img/PRES_gg_pretrial_prop.png"), width = 13,  height = 8, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_pretrial_prop.png"))
+# ggsave(PRES_gg_pretrial_prop, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pretrial_prop.png"), width = 13,  height = 8, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pretrial_prop.png"))
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_pretrial_prop.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 13,
+    height = 8,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 
@@ -725,7 +742,7 @@ data1 <- data1 %>% mutate(pct = paste0(pct, "%")) %>%
   mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")))
 
 # one stacked barplot for all three years and then make it a pie chart
-PRES_gg_pie_drug_court_bookings <- ggplot(data1, aes(x = drug_court, y = total, fill = hu_group_exclusive )) +
+ggplot(data1, aes(x = drug_court, y = total, fill = hu_group_exclusive )) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray", jri_orange, jri_green, jri_light_blue), labels = c("Non-HU", "Tier 3 HU","Tier 2 HU", "Tier 1 HU")) +
@@ -740,11 +757,19 @@ PRES_gg_pie_drug_court_bookings <- ggplot(data1, aes(x = drug_court, y = total, 
         axis.text.x=element_blank(),
         axis.text.y=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", size = 18, color = "black"))
-```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_drug_court_bookings, file=paste0(sp_data_path, "analysis/img/PRES_gg_pie_drug_court_bookings.png"), width = 6,  height = 6, dpi = 100, bg='transparent')
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_pie_drug_court_bookings.png"))
+# ggsave(PRES_gg_pie_drug_court_bookings, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pie_drug_court_bookings.png"), width = 6,  height = 6, dpi = 100, bg='transparent')
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pie_drug_court_bookings.png"))
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_pie_drug_court_bookings.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 6,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 ### Drug court-related bookings by high utilizers (Column sum)

@@ -283,8 +283,8 @@ PRES_gg_pie_beddays <-
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_beddays, file=paste0(sp_data_path, "analysis/img/PRES_gg_pie_beddays.png"), width = 5,  height = 5, dpi = 100, bg='transparent')
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_pie_beddays.png"))
+ggsave(PRES_gg_pie_beddays, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pie_beddays.png"), width = 5,  height = 5, dpi = 100, bg='transparent')
+knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pie_beddays.png"))
 ```
 
 <br>
@@ -355,8 +355,8 @@ PRES_gg_pie_daily_encounters <-
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_daily_encounters, file=paste0(sp_data_path, "analysis/img/PRES_gg_pie_daily_encounters.png"), width = 5,  height = 5, dpi = 100, bg='transparent')
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_pie_daily_encounters.png"))
+ggsave(PRES_gg_pie_daily_encounters, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pie_daily_encounters.png"), width = 5,  height = 5, dpi = 100, bg='transparent')
+knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pie_daily_encounters.png"))
 ```
 
 <br><br>
@@ -561,8 +561,8 @@ PRES_gg_hu_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_entrances,
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_hu_pct_piechart, file=paste0(sp_data_path, "analysis/img/PRES_gg_hu_pct_piechart.png"), width = 6,  height = 5, dpi = 100, bg='transparent')
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_hu_pct_piechart.png"))
+ggsave(PRES_gg_hu_pct_piechart, file=paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_piechart.png"), width = 6,  height = 5, dpi = 100, bg='transparent')
+knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_piechart.png"))
 ```
 
 <br>
@@ -597,8 +597,8 @@ PRES_gg_hu_people_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_peo
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_hu_people_pct_piechart, file=paste0(sp_data_path, "analysis/img/PRES_gg_hu_people_pct_piechart.png"), width = 6,  height = 5, dpi = 100, bg='transparent')
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_hu_people_pct_piechart.png"))
+ggsave(PRES_gg_hu_people_pct_piechart, file=paste0(sp_data_path, "/analysis/img/PRES_gg_hu_people_pct_piechart.png"), width = 6,  height = 5, dpi = 100, bg='transparent')
+knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_hu_people_pct_piechart.png"))
 ```
 
 ## High Utilizers (Overall)
@@ -779,8 +779,8 @@ PRES_gg_hu_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = hu_group_
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_hu_pct_barchart, file=paste0(sp_data_path, "analysis/img/PRES_gg_hu_pct_barchart.png"), width = 7,  height = 4, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_hu_pct_barchart.png"))
+ggsave(PRES_gg_hu_pct_barchart, file=paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_barchart.png"), width = 7,  height = 4, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_barchart.png"))
 ```
 
 <br><br>
