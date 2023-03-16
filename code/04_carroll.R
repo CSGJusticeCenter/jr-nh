@@ -302,4 +302,4 @@ carroll_medicaid <- carroll_medicaid %>%
 
 ################################################################################
 
-save(carroll_adm1, file=paste0(sp_data_path, "/Data/r_data/carroll_adm.Rda", sep = ""))
+save(carroll_adm1, file=paste0(sp_data_path, "/Data/analysis/r_data/carroll_adm.Rda", sep = ""))

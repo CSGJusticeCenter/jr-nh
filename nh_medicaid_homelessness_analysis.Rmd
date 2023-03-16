@@ -18,9 +18,9 @@ knitr::opts_chunk$set(
   )
 
 # Load functions, packages, and data
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/rdas.R")
+source("code/00_library.R")
+source("code/01_functions.R")
+source("code/rdas.R")
 ```
 
 ```{r include=FALSE}
@@ -29,7 +29,7 @@ source("data_cleaning/rdas.R")
 ######################
 
 ### import adm_all -- jail administrative that we'll compare to the numbers from the medicaid match files
-load(paste0(sp_data_path, "/Data/r_data/adm_all.Rda", 
+load(paste0(sp_data_path, "/Data/analysis/r_data/adm_all.Rda", 
             sep = "")) 
 
 ### de-dup by individual and booking -- these are the two units of analysis for comparisons to the medicaid data
@@ -244,8 +244,8 @@ PRES_gg_homeless_county <- ggplot(df_homeless_by_county, aes(x = county, y = pct
 **From 2019 to 2021, 26% of people who were matched to Medicaid had experienced homelessness.**    
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_homeless_county, file="img/PRES_gg_homeless_county.png", width = 12,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_homeless_county.png")
+ggsave(PRES_gg_homeless_county, file=paste0(sp_data_path, "analysis/img/PRES_gg_homeless_county.png"), width = 12,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_homeless_county.png"))
 ```
 
 <br><br>
@@ -584,8 +584,8 @@ PRES_gg_diverge_race <- medicaid_jail_homelessness_hu_county_statewide_data %>%
         legend.title=element_blank())
 ```
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diverge_race, file="img/PRES_gg_diverge_race.png", width = 8,  height = 4, dpi = 100)
-knitr::include_graphics("img/PRES_gg_diverge_race.png")
+ggsave(PRES_gg_diverge_race, file=paste0(sp_data_path, "analysis/img/PRES_gg_diverge_race.png"), width = 8,  height = 4, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_diverge_race.png"))
 ```
 
 <br><br>
@@ -723,8 +723,8 @@ PRES_gg_diverge_age <- medicaid_jail_homelessness_hu_county_statewide_data %>%
         legend.title=element_blank())
 ```
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diverge_age, file="img/PRES_gg_diverge_age.png", width = 8,  height = 4, dpi = 100)
-knitr::include_graphics("img/PRES_gg_diverge_age.png")
+ggsave(PRES_gg_diverge_age, file=paste0(sp_data_path, "analysis/img/PRES_gg_diverge_age.png"), width = 8,  height = 4, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_diverge_age.png"))
 ```
 
 

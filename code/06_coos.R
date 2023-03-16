@@ -231,4 +231,4 @@ coos_medicaid <- coos_medicaid %>%
 
 ################################################################################
 
-save(coos_adm1, file=paste0(sp_data_path, "/Data/r_data/coos_adm.Rda", sep = ""))
+save(coos_adm1, file=paste0(sp_data_path, "/Data/analysis/r_data/coos_adm.Rda", sep = ""))

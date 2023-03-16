@@ -32,10 +32,10 @@ libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer"
 ### set sp_data_path
 # sp_data_path <- csg_sp_path(file.path("JR_NH"))
 
-# Load packages, functions, and data
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/rdas.R")
+# Load functions, packages, and data
+source("code/00_library.R")
+source("code/01_functions.R")
+source("code/rdas.R")
 ```
 
 ```{r setup, include=FALSE}
@@ -53,7 +53,7 @@ knitr::opts_chunk$set(
   )
 
 ### import cleaned charge analytic file (for all eight counties with charge data)
-load(paste0(sp_data_path, "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda", sep = ""))
+load(paste0(sp_data_path, "/Data/analysis/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda", sep = ""))
 
 ### import and clean raw charge codes look-up table
 charge_codes_crime_type_lookup_for_table <- read_excel(paste0(sp_data_path, "/Data/Offense Information/CPI_DMV_COURT_crime_type_clean.xls"), 

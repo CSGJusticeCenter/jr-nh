@@ -8,10 +8,10 @@ output:
 ---
 
 ```{r include=FALSE}
-# Load packages, functions, and data
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/rdas.R")
+# Load functions, packages, and data
+source("code/00_library.R")
+source("code/01_functions.R")
+source("code/rdas.R")
 
 ### set path for viz output (andrew's viz folder)
 sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
@@ -28,7 +28,7 @@ knitr::opts_chunk$set(
 
 ```{r include=FALSE}
 ### import adm_all -- jail administrative that we'll compare to the numbers from the medicaid match files
-load(paste0(sp_data_path, "/Data/r_data/adm_all.Rda", 
+load(paste0(sp_data_path, "/Data/analysis/r_data/adm_all.Rda", 
             sep = "")) 
 
 ### de-dup by individual and booking -- these are the two units of analysis for comparisons to the medicaid data

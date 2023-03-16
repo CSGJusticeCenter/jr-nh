@@ -7,19 +7,19 @@
 # Combine county data and create dataframes used in analyses and visualizations
 ############################################
 
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/02_import.R")
-source("data_cleaning/03_belknap.R")
-source("data_cleaning/04_carroll.R")
-source("data_cleaning/05_cheshire.R")
-source("data_cleaning/06_coos.R")
-source("data_cleaning/07_hillsborough.R")
-source("data_cleaning/08_merrimack.R")
-source("data_cleaning/09_rockingham.R")
-source("data_cleaning/10_strafford.R")
-source("data_cleaning/11_sullivan.R")
-source("data_cleaning/12_charges.R")
+source("code/00_library.R")
+source("code/01_functions.R")
+source("code/02_import.R")
+source("code/03_belknap.R")
+source("code/04_carroll.R")
+source("code/05_cheshire.R")
+source("code/06_coos.R")
+source("code/07_hillsborough.R")
+source("code/08_merrimack.R")
+source("code/09_rockingham.R")
+source("code/10_strafford.R")
+source("code/11_sullivan.R")
+source("code/12_charges.R")
 
 # Combine jail data
 adm_all <- plyr::rbind.fill(belknap_adm_charge_clean_final,
@@ -118,6 +118,6 @@ df_pch <- bookings_entrances %>%
 bookings_entrances <- fnc_hu_group_exclusive(bookings_entrances)
 adm_all <- fnc_hu_group_exclusive(adm_all)
 
-save(adm_all,            file=paste0(sp_data_path, "/Data/r_data/adm_all.Rda",            sep = ""))
-save(bookings_entrances, file=paste0(sp_data_path, "/Data/r_data/bookings_entrances.Rda", sep = ""))
-save(df_pch,             file=paste0(sp_data_path, "/Data/r_data/df_pch.Rda",             sep = ""))
+save(adm_all,            file=paste0(sp_data_path, "/Data/analysis/r_data/adm_all.Rda",            sep = ""))
+save(bookings_entrances, file=paste0(sp_data_path, "/Data/analysis/r_data/bookings_entrances.Rda", sep = ""))
+save(df_pch,             file=paste0(sp_data_path, "/Data/analysis/r_data/df_pch.Rda",             sep = ""))

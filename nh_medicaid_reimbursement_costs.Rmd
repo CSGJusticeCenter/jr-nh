@@ -18,9 +18,9 @@ knitr::opts_chunk$set(
   )
 
 # Load functions, packages, and data
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/rdas.R")
+source("code/00_library.R")
+source("code/01_functions.R")
+source("code/rdas.R")
 
 # Import medicaid encounters with costs and individual diagnoses created in `14_medicaid.R`
 medicaid_encounters_costs_all <- read_rds("D:/Analytic/medicaid_enrollment_categories_encounters.rds") 
@@ -326,8 +326,8 @@ PRES_gg_costs_hu <- ggplot(cost_data, aes(fill=finding, y=amt, x=hu_group_exclus
           legend.title=element_blank()) 
 ```
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_costs_hu, file="img/PRES_gg_costs_hu.png", width = 9,  height = 5, dpi = 100, bg = 'transparent')
-knitr::include_graphics("img/PRES_gg_costs_hu.png")
+ggsave(PRES_gg_costs_hu, file=paste0(sp_data_path, "analysis/img/PRES_gg_costs_hu.png"), width = 9,  height = 5, dpi = 100, bg = 'transparent')
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_costs_hu.png"))
 ```
 
 <br><br>
@@ -421,8 +421,8 @@ PRES_gg_primary_diagnosis_cost <- cost_data %>%
 ```
 
 ```{r, out.width="150%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_primary_diagnosis_cost, file="img/PRES_gg_primary_diagnosis_cost.png", width = 15,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_primary_diagnosis_cost.png")
+ggsave(PRES_gg_primary_diagnosis_cost, file=paste0(sp_data_path, "analysis/img/PRES_gg_primary_diagnosis_cost.png"), width = 15,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_primary_diagnosis_cost.png"))
 ```
 
 <br>
@@ -476,8 +476,8 @@ PRES_gg_diagnosis_costs <- ggplot(cost_data, aes(fill=finding, y=amt, x = reorde
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_diagnosis_costs, file="img/PRES_gg_diagnosis_costs.png", width = 20,  height = 5, dpi = 100, bg = 'transparent')
-# knitr::include_graphics("img/PRES_gg_diagnosis_costs.png")
+# ggsave(PRES_gg_diagnosis_costs, file=paste0(sp_data_path, "analysis/img/PRES_gg_diagnosis_costs.png"), width = 20,  height = 5, dpi = 100, bg = 'transparent')
+# knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_diagnosis_costs.png"))
 ```
 
 ```{r}
@@ -529,8 +529,8 @@ PRES_gg_diagnosis_costs1 <-
         axis.text.x  = element_text(size = 22, color = "black"))
 ```
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_diagnosis_costs1, file="img/PRES_gg_diagnosis_costs1.png", width = 12,  height = 8, dpi = 100, bg = 'transparent')
-# knitr::include_graphics("img/PRES_gg_diagnosis_costs1.png")
+# ggsave(PRES_gg_diagnosis_costs1, file=paste0(sp_data_path, "analysis/img/PRES_gg_diagnosis_costs1.png"), width = 12,  height = 8, dpi = 100, bg = 'transparent')
+# knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_diagnosis_costs1.png"))
 ```
 <br>
 
@@ -568,8 +568,8 @@ PRES_gg_diagnosis_costs2 <- cost_data %>%
         legend.title=element_blank())
 ```
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diagnosis_costs2, file="img/PRES_gg_diagnosis_costs2.png", width = 14,  height = 7, dpi = 100, bg = 'transparent')
-knitr::include_graphics("img/PRES_gg_diagnosis_costs2.png")
+ggsave(PRES_gg_diagnosis_costs2, file=paste0(sp_data_path, "analysis/img/PRES_gg_diagnosis_costs2.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_diagnosis_costs2.png"))
 ```
 
 <br><br>

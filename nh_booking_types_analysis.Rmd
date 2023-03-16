@@ -17,10 +17,10 @@ knitr::opts_chunk$set(
   cache = FALSE
   )
 
-# Load packages, functions, and data
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/rdas.R")
+# Load functions, packages, and data
+source("code/00_library.R")
+source("code/01_functions.R")
+source("code/rdas.R")
 ```
 
 ## Sentence Statuses
@@ -69,8 +69,8 @@ PRES_gg_pie_pretrial <- ggplot(data1, aes(x = state, y = total, fill = sentence_
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_pretrial, file="img/PRES_gg_pie_pretrial.png", width = 8,  height = 8, dpi = 100)
-knitr::include_graphics("img/PRES_gg_pie_pretrial.png")
+ggsave(PRES_gg_pie_pretrial, file=paste0(sp_data_path, "analysis/img/PRES_gg_pie_pretrial.png"), width = 8,  height = 8, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_pie_pretrial.png"))
 ```
 
 ```{r}
@@ -236,8 +236,8 @@ PRES_gg_pretrial_prop <- ggplot(data1, aes(x = county, y = total, fill = sentenc
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pretrial_prop, file="img/PRES_gg_pretrial_prop.png", width = 13,  height = 8, dpi = 100)
-knitr::include_graphics("img/PRES_gg_pretrial_prop.png")
+ggsave(PRES_gg_pretrial_prop, file=paste0(sp_data_path, "analysis/img/PRES_gg_pretrial_prop.png"), width = 13,  height = 8, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_pretrial_prop.png"))
 ```
 
 
@@ -743,8 +743,8 @@ PRES_gg_pie_drug_court_bookings <- ggplot(data1, aes(x = drug_court, y = total, 
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_drug_court_bookings, file="img/PRES_gg_pie_drug_court_bookings.png", width = 6,  height = 6, dpi = 100, bg='transparent')
-knitr::include_graphics("img/PRES_gg_pie_drug_court_bookings.png")
+ggsave(PRES_gg_pie_drug_court_bookings, file=paste0(sp_data_path, "analysis/img/PRES_gg_pie_drug_court_bookings.png"), width = 6,  height = 6, dpi = 100, bg='transparent')
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_pie_drug_court_bookings.png"))
 ```
 
 ### Drug court-related bookings by high utilizers (Column sum)

@@ -303,4 +303,4 @@ hillsborough_medicaid <- hillsborough_medicaid %>%
 
 ################################################################################
 
-save(hillsborough_adm1, file=paste0(sp_data_path, "/Data/r_data/hillsborough_adm.Rda", sep = ""))
+save(hillsborough_adm1, file=paste0(sp_data_path, "/Data/analysis/r_data/hillsborough_adm.Rda", sep = ""))

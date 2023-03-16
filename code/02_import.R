@@ -9,7 +9,7 @@
 ############################################
 
 # load packages
-source("data_cleaning/00_library.R")
+source("code/00_library.R")
 
 # data availability by county
 raw_adm_data_availability.xlsx <- read_excel(paste0(sp_data_path, "/Data/Raw_data_dictionaries_09_12_22.xlsx"), sheet = "Overall")

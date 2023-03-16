@@ -8,10 +8,10 @@ output:
 ---
 
 ```{r include=FALSE}
-# Load packages, functions, and data
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/rdas.R")
+# Load functions, packages, and data
+source("code/00_library.R")
+source("code/01_functions.R")
+source("code/rdas.R")
 
 # Set chunk output 
 knitr::opts_chunk$set(
@@ -333,8 +333,8 @@ PRES_gg_medicaid_mh <- ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_ov
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_mh, file="img/PRES_gg_medicaid_mh.png", width = 10,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_medicaid_mh.png")
+ggsave(PRES_gg_medicaid_mh, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_mh.png"), width = 10,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_mh.png"))
 ```
 
 <br>
@@ -413,8 +413,8 @@ PRES_gg_medicaid_sud <- ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_
 ```
 
 ```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_sud, file="img/PRES_gg_medicaid_sud.png", width = 10,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_medicaid_sud.png")
+ggsave(PRES_gg_medicaid_sud, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_sud.png"), width = 10,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_sud.png"))
 ```
 
 <br><br>
@@ -559,8 +559,8 @@ PRES_gg_medicaid_match_bh <- ggplot(medicaid_match_bh, aes(x = reorder(hu_group_
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match_bh, file="img/PRES_gg_medicaid_match_bh.png", width = 10,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_medicaid_match_bh.png")
+ggsave(PRES_gg_medicaid_match_bh, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_match_bh.png"), width = 10,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_match_bh.png"))
 ```
 <br>
 
@@ -630,8 +630,8 @@ PRES_gg_medicaid_match_cooccurring <- ggplot(medicaid_match_cooccurring, aes(x =
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match_cooccurring, file="img/PRES_gg_medicaid_match_cooccurring.png", width = 10,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_medicaid_match_cooccurring.png")
+ggsave(PRES_gg_medicaid_match_cooccurring, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_match_cooccurring.png"), width = 10,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_match_cooccurring.png"))
 ```
 
 <br><br>
@@ -899,8 +899,8 @@ kable(medicaid_jail_smi_opioid_hu_grouping_statewide_table,
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_smi_hu_grouping, file="img/PRES_gg_medicaid_jail_smi_hu_grouping.png", width = 7,  height = 6, dpi = 100)
-# knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_hu_grouping.png")
+# ggsave(PRES_gg_medicaid_jail_smi_hu_grouping, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping.png"), width = 7,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping.png"))
 ```
 
 ```{r}
@@ -942,12 +942,12 @@ kable(medicaid_jail_smi_opioid_hu_grouping_statewide_table,
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_smi_nonhu, file="img/PRES_gg_medicaid_jail_smi_nonhu.png", width = 4,  height = 6, dpi = 100)
-#knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_nonhu.png")
+# ggsave(PRES_gg_medicaid_jail_smi_nonhu, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_smi_nonhu.png"), width = 4,  height = 6, dpi = 100)
+#knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_smi_nonhu.png"))
 ```
 
 ```{r, echo=FALSE, fig.align='center'}
-# knitr::include_graphics(c("img/PRES_gg_medicaid_jail_smi_hu_grouping.png","img/PRES_gg_medicaid_jail_smi_nonhu.png"))
+# knitr::include_graphics(c(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping.png",paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_smi_nonhu.png"))
 ```
 
 ```{r}
@@ -1022,8 +1022,8 @@ PRES_gg_medicaid_jail_smi_hu_grouping1 <-
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_smi_hu_grouping1, file="img/PRES_gg_medicaid_jail_smi_hu_grouping1.png", width = 10,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_hu_grouping1.png")
+ggsave(PRES_gg_medicaid_jail_smi_hu_grouping1, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping1.png"), width = 10,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping1.png"))
 ```
 
 <br>
@@ -1095,8 +1095,8 @@ PRES_gg_medicaid_jail_smi_county <- ggplot(medicaid_jail_smi_county, aes(x = cou
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_smi_county, file="img/PRES_gg_medicaid_jail_smi_county.png", width = 9,  height = 7, dpi = 100)
-knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_county.png")
+ggsave(PRES_gg_medicaid_jail_smi_county, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_smi_county.png"), width = 9,  height = 7, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_smi_county.png"))
 ```
 
 <br><br>
@@ -1145,8 +1145,8 @@ knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_county.png")
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_opioid_hu_grouping, file="img/PRES_gg_medicaid_jail_opioid_hu_grouping.png", width = 7,  height = 6, dpi = 100)
-# knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid_hu_grouping.png")
+# ggsave(PRES_gg_medicaid_jail_opioid_hu_grouping, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_opioid_hu_grouping.png"), width = 7,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_opioid_hu_grouping.png"))
 ```
 
 ```{r}
@@ -1188,12 +1188,12 @@ knitr::include_graphics("img/PRES_gg_medicaid_jail_smi_county.png")
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_opioid_nonhu, file="img/PRES_gg_medicaid_jail_opioid_nonhu.png", width = 4,  height = 6, dpi = 100)
-# knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid_nonhu.png")
+# ggsave(PRES_gg_medicaid_jail_opioid_nonhu, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_opioid_nonhu.png"), width = 4,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_opioid_nonhu.png"))
 ```
 
 ```{r, echo=FALSE, fig.align='center'}
-# knitr::include_graphics(c("img/PRES_gg_medicaid_jail_opioid_hu_grouping.png","img/PRES_gg_medicaid_jail_opioid_nonhu.png"))
+# knitr::include_graphics(c(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_opioid_hu_grouping.png"),paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_opioid_nonhu.png")))
 ```
 
 ```{r}
@@ -1268,8 +1268,8 @@ PRES_gg_medicaid_jail_opioid1 <-
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_opioid1, file="img/PRES_gg_medicaid_jail_opioid1.png", width = 10,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid1.png")
+ggsave(PRES_gg_medicaid_jail_opioid1, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_opioid1.png"), width = 10,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_opioid1.png"))
 ```
 
 <br>
@@ -1341,8 +1341,8 @@ PRES_gg_medicaid_jail_opioid_county <- ggplot(medicaid_jail_opioid_county, aes(x
 ```
 
 ```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_opioid_county, file="img/PRES_gg_medicaid_jail_opioid_county.png", width = 9,  height = 7, dpi = 100)
-knitr::include_graphics("img/PRES_gg_medicaid_jail_opioid_county.png")
+ggsave(PRES_gg_medicaid_jail_opioid_county, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_opioid_county.png"), width = 9,  height = 7, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_jail_opioid_county.png"))
 ```
 
 
@@ -1398,8 +1398,8 @@ PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
 ```
 
 ```{r, out.width="150%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_top_diagnoses, file="img/PRES_gg_medicaid_top_diagnoses.png", width = 12,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_medicaid_top_diagnoses.png")
+ggsave(PRES_gg_medicaid_top_diagnoses, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_top_diagnoses.png"), width = 12,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_top_diagnoses.png"))
 ```
 
 
@@ -1466,8 +1466,8 @@ PRES_gg_medicaid_smi_primary_diagnoses <- smi_primary_diagnoses %>%
 
 ```
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_smi_primary_diagnoses, file="img/PRES_gg_medicaid_smi_primary_diagnoses.png", width = 12,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_medicaid_smi_primary_diagnoses.png")
+ggsave(PRES_gg_medicaid_smi_primary_diagnoses, file=paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_smi_primary_diagnoses.png"), width = 12,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_medicaid_smi_primary_diagnoses.png"))
 ```
 
 <br>
@@ -1577,8 +1577,8 @@ PRES_gg_smi_primary_diagnoses_hu <- smi_primary_diagnoses_hu %>%
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_smi_primary_diagnoses_hu, file="img/PRES_gg_smi_primary_diagnoses_hu.png", width = 14,  height = 7, dpi = 100, bg = 'transparent')
-knitr::include_graphics("img/PRES_gg_smi_primary_diagnoses_hu.png")
+ggsave(PRES_gg_smi_primary_diagnoses_hu, file=paste0(sp_data_path, "analysis/img/PRES_gg_smi_primary_diagnoses_hu.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_smi_primary_diagnoses_hu.png"))
 ```
 
 ```{r}
@@ -1687,8 +1687,8 @@ PRES_gg_smi_primary_diagnoses_tier1hu <- smi_primary_diagnoses_hu %>%
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_smi_primary_diagnoses_tier1hu, file="img/PRES_gg_smi_primary_diagnoses_tier1hu.png", width = 14,  height = 7, dpi = 100, bg = 'transparent')
-knitr::include_graphics("img/PRES_gg_smi_primary_diagnoses_tier1hu.png")
+ggsave(PRES_gg_smi_primary_diagnoses_tier1hu, file=paste0(sp_data_path, "analysis/img/PRES_gg_smi_primary_diagnoses_tier1hu.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_smi_primary_diagnoses_tier1hu.png"))
 ```
 <br><br>
 
@@ -1770,8 +1770,8 @@ PRES_gg_smi_suicide_related_hu <-
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_smi_suicide_related_hu, file="img/PRES_gg_smi_suicide_related_hu.png", width = 10,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_smi_suicide_related_hu.png")
+ggsave(PRES_gg_smi_suicide_related_hu, file=paste0(sp_data_path, "analysis/img/PRES_gg_smi_suicide_related_hu.png"), width = 10,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_smi_suicide_related_hu.png"))
 ```
 
 <br><br>
@@ -1846,8 +1846,8 @@ PRES_gg_alcohol_related_hu <-
 ```
 
 ```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_alcohol_related_hu, file="img/PRES_gg_alcohol_related_hu.png", width = 10,  height = 6, dpi = 100)
-knitr::include_graphics("img/PRES_gg_alcohol_related_hu.png")
+ggsave(PRES_gg_alcohol_related_hu, file=paste0(sp_data_path, "analysis/img/PRES_gg_alcohol_related_hu.png"), width = 10,  height = 6, dpi = 100)
+knitr::include_graphics(paste0(sp_data_path, "analysis/img/PRES_gg_alcohol_related_hu.png"))
 ```
 
 

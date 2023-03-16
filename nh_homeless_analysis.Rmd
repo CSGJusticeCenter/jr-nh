@@ -18,9 +18,9 @@ knitr::opts_chunk$set(
   )
 
 # Load functions, packages, and data
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/rdas.R")
+source("code/00_library.R")
+source("code/01_functions.R")
+source("code/rdas.R")
 
 # Save dataframe for this analysis
 # See if someone was Homeless at any booking
