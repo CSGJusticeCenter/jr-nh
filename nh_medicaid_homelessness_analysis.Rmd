@@ -155,6 +155,8 @@ kable(medicaid_jail_homelessness_county_statewide_table,
 
 <br>
 
+**From 2019 to 2021, 26% of people who were matched to Medicaid had experienced homelessness.**    
+
 ```{r include = FALSE}
 # Create homeless and not homeless dataframes for ggplot
 homeless_by_county <- medicaid_jail_homelessness_county_statewide_table %>% 
@@ -178,11 +180,7 @@ not_homeless_by_county <- homeless_by_county %>%
 # Add data togerther and arrange for display
 df_homeless_by_county <- rbind(homeless_by_county, not_homeless_by_county)
 arrange(df_homeless_by_county, county)
-```
 
-**From 2019 to 2021, 26% of people who were matched to Medicaid had experienced homelessness.**    
-
-```{r}
 # Horizontal ggplot showing the proportion of people who experienced homelessness
 ggplot(df_homeless_by_county, aes(x = county, y = pct, fill=forcats::fct_rev(type))) +
   geom_col(colour = "white", position = "fill") +
@@ -306,7 +304,7 @@ Note: Since we only have homelessness data for individuals who matched to Medica
 ### create table of highlighting the percentage of the medicaid sample that experienced homelessness at the beginning of any medicaid enrollment period in DHHS pull
 
 # by county
-medicaid_jail_homelessness_hu_county_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+medicaid_jail_homelessness_hu_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   dplyr::group_by(hu_group_exclusive) %>% 
   dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
                    `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
@@ -328,11 +326,11 @@ medicaid_jail_homelessness_hu_overall_table <- jail_medicaid_analytic_individual
   dplyr::mutate(`High Utilizer Percentiles` = "Statewide") 
 
 # rbind county and statewide files 
-medicaid_jail_homelessness_hu_county_statewide_table <- rbind(medicaid_jail_homelessness_hu_county_table,
+medicaid_jail_homelessness_hu_statewide_table <- rbind(medicaid_jail_homelessness_hu_table,
                                                               medicaid_jail_homelessness_hu_overall_table)
 
 ### print table via kableextra
-kable(medicaid_jail_homelessness_hu_county_statewide_table, 
+kable(medicaid_jail_homelessness_hu_statewide_table, 
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
   kable_styling(bootstrap_options = c("striped", 
@@ -523,7 +521,7 @@ reactable(medicaid_jail_homelessness_hu_county_statewide_table,
 ```
 
 ```{r}
-# homelessness by state
+# prepare data to see homelessness by gender and hu group overall
 medicaid_jail_homelessness_hu_county_statewide_data <- medicaid_jail_homelessness_hu_county_statewide_table %>% 
   mutate(pct = `Individuals w/ any experience of homelessness (%)`) %>%
   mutate(pct = round(pct, 2),
@@ -582,7 +580,7 @@ ggsave(
 ```{r}
 # homelessness by gender
 # by hu_group_overall
-medicaid_jail_homelessness_hu_county_table <- nh_eight_county_medicaid_match_final_race %>% 
+medicaid_jail_homelessness_hu_table <- nh_eight_county_medicaid_match_final_race %>% 
   filter(!is.na(gender)) %>% 
   dplyr::group_by(gender, hu_group_overall) %>% 
   dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -601,11 +599,11 @@ medicaid_jail_homelessness_hu_overall_table <- nh_eight_county_medicaid_match_fi
                 hu_group_overall = "Statewide") 
 
 # rbind county and statewide files 
-medicaid_jail_homelessness_hu_county_statewide_table <- rbind(medicaid_jail_homelessness_hu_county_table,
+medicaid_jail_homelessness_hu_statewide_table <- rbind(medicaid_jail_homelessness_hu_table,
                                                               medicaid_jail_homelessness_hu_overall_table)
 
 # reactable table
-reactable(medicaid_jail_homelessness_hu_county_statewide_table,
+reactable(medicaid_jail_homelessness_hu_statewide_table,
           pagination = FALSE,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
@@ -630,7 +628,7 @@ reactable(medicaid_jail_homelessness_hu_county_statewide_table,
 
 ```{r}
 # by county
-medicaid_jail_homelessness_hu_county_table <- nh_eight_county_medicaid_match_final_race %>% 
+medicaid_jail_homelessness_hu_table <- nh_eight_county_medicaid_match_final_race %>% 
   filter(!is.na(age_at_booking_bin)) %>% 
   dplyr::group_by(age_at_booking_bin, hu_group_overall) %>% 
   dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
@@ -649,11 +647,11 @@ medicaid_jail_homelessness_hu_overall_table <- nh_eight_county_medicaid_match_fi
                 hu_group_overall = "Statewide") 
 
 # rbind county and statewide files 
-medicaid_jail_homelessness_hu_county_statewide_table <- rbind(medicaid_jail_homelessness_hu_county_table,
+medicaid_jail_homelessness_hu_statewide_table <- rbind(medicaid_jail_homelessness_hu_table,
                                                               medicaid_jail_homelessness_hu_overall_table)
 
 # reactable table
-reactable(medicaid_jail_homelessness_hu_county_statewide_table,
+reactable(medicaid_jail_homelessness_hu_statewide_table,
           pagination = FALSE,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
           theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
@@ -675,7 +673,7 @@ reactable(medicaid_jail_homelessness_hu_county_statewide_table,
 ```
 
 ```{r}
-medicaid_jail_homelessness_hu_county_statewide_data <- medicaid_jail_homelessness_hu_county_statewide_table %>% 
+medicaid_jail_homelessness_hu_statewide_data <- medicaid_jail_homelessness_hu_statewide_table %>% 
   mutate(pct = `Individuals w/ any experience of homelessness (%)`) %>%
   mutate(pct = round(pct, 2),
          pct_label = paste0(round(pct*100,0), "%")) %>% 
@@ -686,15 +684,15 @@ medicaid_jail_homelessness_hu_county_statewide_data <- medicaid_jail_homelessnes
                                           "25 to 34",
                                           "18 to 24")))
 
-medicaid_jail_homelessness_hu_county_statewide_data %>%
+medicaid_jail_homelessness_hu_statewide_data %>%
   mutate(pct = ifelse(hu_group_overall == "High Utilizer", pct, -1*pct)) %>% 
   ggplot(aes(x = `Age Category`, y = pct, fill = hu_group_overall))+
   geom_bar(stat = "identity") +
   labs(x = "Age (Years)\n", y = "Proportion of Individuals\n") +
    geom_text(aes(label = ifelse(pct > .02 | pct < 0, pct_label, "")),
             size = 7.5, family = "Franklin Gothic Book",
-            hjust = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", -.1, 1.1),
-            color = ifelse(medicaid_jail_homelessness_hu_county_statewide_data$hu_group_overall == "High Utilizer", jri_orange, "black"),
+            hjust = ifelse(medicaid_jail_homelessness_hu_statewide_data$hu_group_overall == "High Utilizer", -.1, 1.1),
+            color = ifelse(medicaid_jail_homelessness_hu_statewide_data$hu_group_overall == "High Utilizer", jri_orange, "black"),
             fontface = "bold"
               ) +
   scale_y_continuous(limits = c(-.55, .65)) +
