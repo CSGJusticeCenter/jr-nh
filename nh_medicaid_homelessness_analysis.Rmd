@@ -180,41 +180,42 @@ df_homeless_by_county <- rbind(homeless_by_county, not_homeless_by_county)
 arrange(df_homeless_by_county, county)
 ```
 
+**From 2019 to 2021, 26% of people who were matched to Medicaid had experienced homelessness.**    
 
 ```{r}
-# Vertical ggplot showing the proportion of people who experienced homelessness
-PRES_gg_homeless_county <- ggplot(df_homeless_by_county, aes(fill=forcats::fct_rev(type), 
-                                  y=pct, x=county)) + 
-    geom_bar(position="fill", stat="identity") +
-    scale_x_discrete(limits = rev) +
-    scale_y_continuous(labels = scales::percent) +
-    scale_fill_manual(values=c("gray", jri_dark_blue),
-                      na.value = "white",
-                      guide=guide_legend(reverse=T)) +
-    geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
-                  fontface = 'bold'),
-              position = position_fill(vjust = 0.5),
-              vjust = 0.8,
-              size = 10, family = "Franklin Gothic Book",
-              color = case_when(df_homeless_by_county$type == "Homeless" ~ "white",
-                                TRUE ~ "black")) +
-    coord_flip() +
-    theme_minimal() +
-    theme(panel.grid.minor.y = element_blank(),
-          panel.grid.major.y = element_blank(),
-          panel.grid.major.x = element_blank(),
-          panel.grid.minor.x = element_blank(),
-          axis.title.y = element_blank(),
-          axis.title.x = element_blank(),
-          axis.text.x = element_text(size = 28, color = "black"),
-          axis.text.y = element_text(size = 28, color = "black"),
-          legend.position = "top",
-          # legend.justification = c(1, 0.5),
-          legend.title=element_blank(),
-          legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
+# # Vertical ggplot showing the proportion of people who experienced homelessness
+# ggplot(df_homeless_by_county, aes(fill=forcats::fct_rev(type), 
+#                                   y=pct, x=county)) + 
+#     geom_bar(position="fill", stat="identity") +
+#     scale_x_discrete(limits = rev) +
+#     scale_y_continuous(labels = scales::percent) +
+#     scale_fill_manual(values=c("gray", jri_dark_blue),
+#                       na.value = "white",
+#                       guide=guide_legend(reverse=T)) +
+#     geom_text(aes(label = paste(round(pct*100, 0), "%", sep = ""), 
+#                   fontface = 'bold'),
+#               position = position_fill(vjust = 0.5),
+#               vjust = 0.8,
+#               size = 10, family = "Franklin Gothic Book",
+#               color = case_when(df_homeless_by_county$type == "Homeless" ~ "white",
+#                                 TRUE ~ "black")) +
+#     coord_flip() +
+#     theme_minimal() +
+#     theme(panel.grid.minor.y = element_blank(),
+#           panel.grid.major.y = element_blank(),
+#           panel.grid.major.x = element_blank(),
+#           panel.grid.minor.x = element_blank(),
+#           axis.title.y = element_blank(),
+#           axis.title.x = element_blank(),
+#           axis.text.x = element_text(size = 28, color = "black"),
+#           axis.text.y = element_text(size = 28, color = "black"),
+#           legend.position = "top",
+#           # legend.justification = c(1, 0.5),
+#           legend.title=element_blank(),
+#           legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
 
 # Horizontal ggplot showing the proportion of people who experienced homelessness
-PRES_gg_homeless_county <- ggplot(df_homeless_by_county, aes(x = county, y = pct, fill=forcats::fct_rev(type))) +
+ggplot(df_homeless_by_county, aes(x = county, y = pct, fill=forcats::fct_rev(type))) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_dark_blue),
@@ -239,13 +240,20 @@ PRES_gg_homeless_county <- ggplot(df_homeless_by_county, aes(x = county, y = pct
         legend.justification = c(1, 0.5),
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
-```
 
-**From 2019 to 2021, 26% of people who were matched to Medicaid had experienced homelessness.**    
+# ggsave(PRES_gg_homeless_county, file=paste0(sp_data_path, "/analysis/img/PRES_gg_homeless_county.png"), width = 12,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_homeless_county.png"))
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_homeless_county, file=paste0(sp_data_path, "/analysis/img/PRES_gg_homeless_county.png"), width = 12,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_homeless_county.png"))
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_homeless_county.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 12,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -557,7 +565,7 @@ medicaid_jail_homelessness_hu_county_statewide_data <- medicaid_jail_homelessnes
 
 
 
-PRES_gg_diverge_race <- medicaid_jail_homelessness_hu_county_statewide_data %>%
+medicaid_jail_homelessness_hu_county_statewide_data %>%
   mutate(pct = ifelse(hu_group_overall == "High Utilizer", pct, -1*pct)) %>% 
   ggplot(aes(x = `Race/Ethnicity`, y = pct, fill = hu_group_overall))+
   geom_bar(stat = "identity") +
@@ -582,10 +590,20 @@ PRES_gg_diverge_race <- medicaid_jail_homelessness_hu_county_statewide_data %>%
         legend.position = "top",
         legend.justification = c(.5, 0),
         legend.title=element_blank())
-```
-```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diverge_race, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_race.png"), width = 8,  height = 4, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_race.png"))
+
+# ggsave(PRES_gg_diverge_race, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_race.png"), width = 8,  height = 4, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_race.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_race.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 8,
+    height = 4,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -696,7 +714,7 @@ medicaid_jail_homelessness_hu_county_statewide_data <- medicaid_jail_homelessnes
                                           "25 to 34",
                                           "18 to 24")))
 
-PRES_gg_diverge_age <- medicaid_jail_homelessness_hu_county_statewide_data %>%
+medicaid_jail_homelessness_hu_county_statewide_data %>%
   mutate(pct = ifelse(hu_group_overall == "High Utilizer", pct, -1*pct)) %>% 
   ggplot(aes(x = `Age Category`, y = pct, fill = hu_group_overall))+
   geom_bar(stat = "identity") +
@@ -721,10 +739,20 @@ PRES_gg_diverge_age <- medicaid_jail_homelessness_hu_county_statewide_data %>%
         legend.position = "top",
         legend.justification = c(.5, 0),
         legend.title=element_blank())
-```
-```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diverge_age, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_age.png"), width = 8,  height = 4, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_age.png"))
+
+# ggsave(PRES_gg_diverge_age, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_age.png"), width = 8,  height = 4, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_age.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_age.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 8,
+    height = 4,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 

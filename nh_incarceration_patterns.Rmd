@@ -96,8 +96,7 @@ data1 <- gather(data1, fy, total, `2019`:`2021`, factor_key=TRUE) %>%
   mutate(fy = case_when(fy == 1 ~ "2019", fy == 2 ~ "2020", fy == 3 ~ "2021"))
 
 # ggplot bar showing the number of entrances by FY
-PRES_gg_dhhs_entrances <-
-  ggplot(data=data1, aes(x=fy, y=total)) +
+ggplot(data=data1, aes(x=fy, y=total)) +
   geom_bar(stat="identity", width = 0.74, fill = jri_green) +
   xlab("") + ylab("Number of Entrances") +
   geom_text(aes(label = comma(total)), color = jri_gray, vjust = -1, size = 7.5, family = "Franklin Gothic Book") +
@@ -107,8 +106,19 @@ PRES_gg_dhhs_entrances <-
   theme_no_grid_no_labels
 
 # Save and output graph
-ggsave(PRES_gg_dhhs_entrances, file= paste0(sp_data_path, "/analysis/img/PRES_gg_dhhs_entrances.png"), width = 6, height = 5, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_dhhs_entrances.png"))
+# ggsave(PRES_gg_dhhs_entrances, file= paste0(sp_data_path, "/analysis/img/PRES_gg_dhhs_entrances.png"), width = 6, height = 5, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_dhhs_entrances.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_dhhs_entrances.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 6,
+    height = 5,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 Counties saw variations in the number of entrances but they all saw a decrease in entrances from FY2019 to FY2021.  
@@ -152,8 +162,7 @@ data1 <- df_entrances_county %>%
   filter(county != "State")
 
 # ggplot bar showing decrease in jail entrances by county from 2019 to 2021
-PRES_gg_entrances_change_county <-
-  ggplot(data1, aes(reorder(county, change_19_21), change_19_21, fill = jri_green)) +
+ggplot(data1, aes(reorder(county, change_19_21), change_19_21, fill = jri_green)) +
   geom_bar(stat = "identity", fill=jri_green) +
   coord_flip() +
   geom_text(data = data1, aes(label = paste("-", (round(change_19_21*100, 0)), "%", sep = ""), fontface = 'bold'),
@@ -172,8 +181,19 @@ PRES_gg_entrances_change_county <-
                      labels = percent_format())
 
 # Save and output graph
-ggsave(PRES_gg_entrances_change_county, file= paste0(sp_data_path, "/analysis/img/PRES_gg_entrances_change_county.png"), width = 9, height = 5, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_entrances_change_county.png"))
+# ggsave(PRES_gg_entrances_change_county, file= paste0(sp_data_path, "/analysis/img/PRES_gg_entrances_change_county.png"), width = 9, height = 5, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_entrances_change_county.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_entrances_change_county.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 9,
+    height = 5,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 
@@ -319,8 +339,7 @@ data1 <- entrances_dhhs %>%
   summarise(total = n())
 
 # ggplot bar showing the frequency of the number of entrances per person
-PRES_gg_num_entrances <-
-  ggplot(data1, aes(x = num_entrances_category, y = total)) +
+ggplot(data1, aes(x = num_entrances_category, y = total)) +
   geom_bar(stat = "identity", width = 0.74, fill = jri_green) +
   scale_y_continuous(labels = label_number(suffix = "k", scale = 1e-3, big.mark = ","),
                      expand = c(0.05,0),
@@ -335,8 +354,19 @@ PRES_gg_num_entrances <-
         axis.text.x  = element_text(size = 28, color = jri_gray))
 
 # Save and output graph
-ggsave(PRES_gg_num_entrances, file= paste0(sp_data_path, "/analysis/img/PRES_gg_num_entrances.png"), width = 19, height = 9, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_num_entrances.png"))
+# ggsave(PRES_gg_num_entrances, file= paste0(sp_data_path, "/analysis/img/PRES_gg_num_entrances.png"), width = 19, height = 9, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_num_entrances.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_num_entrances.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 19,
+    height = 9,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>

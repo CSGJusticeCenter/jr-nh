@@ -305,7 +305,7 @@ cost_data <- cost_table %>%
          ))
 
 # Grouped barplot
-PRES_gg_costs_hu <- ggplot(cost_data, aes(fill=finding, y=amt, x=hu_group_exclusive)) + 
+ggplot(cost_data, aes(fill=finding, y=amt, x=hu_group_exclusive)) + 
   geom_bar(position="dodge", stat="identity") +
   theme_with_grid_with_labels +
   labs(x = "", y = "Reimbursement Cost Per Claim\n") +
@@ -324,10 +324,20 @@ PRES_gg_costs_hu <- ggplot(cost_data, aes(fill=finding, y=amt, x=hu_group_exclus
           legend.position = "top",
           legend.justification = c(0.3, 0),
           legend.title=element_blank()) 
-```
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_costs_hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_costs_hu.png"), width = 9,  height = 5, dpi = 100, bg = 'transparent')
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_costs_hu.png"))
+
+# ggsave(PRES_gg_costs_hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_costs_hu.png"), width = 9,  height = 5, dpi = 100, bg = 'transparent')
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_costs_hu.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_costs_hu.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 9,
+    height = 5,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -391,8 +401,8 @@ color.labels <- cost_data %>%
   mutate(color = ifelse(dx_prmry_clinical_classification_new == "Opioid-related disorders", yes = jri_green, no = "black"))
 color.labels <- color.labels$color
 
-# Ggplot showing the total cost by primary diagnosis
-PRES_gg_primary_diagnosis_cost <- cost_data %>%
+# ggplot showing the total cost by primary diagnosis
+cost_data %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, total_cost), 
              y = total_cost, fill=factor(ifelse(dx_prmry_clinical_classification_new=="Opioid-related disorders","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
@@ -418,11 +428,19 @@ PRES_gg_primary_diagnosis_cost <- cost_data %>%
         # axis.text.y  = element_text(size = 22, color = "black"),
         axis.text.x  = element_text(size = 22, color = "black"))
 
-```
+# ggsave(PRES_gg_primary_diagnosis_cost, file=paste0(sp_data_path, "/analysis/img/PRES_gg_primary_diagnosis_cost.png"), width = 15,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_primary_diagnosis_cost.png"))
 
-```{r, out.width="150%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_primary_diagnosis_cost, file=paste0(sp_data_path, "/analysis/img/PRES_gg_primary_diagnosis_cost.png"), width = 15,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_primary_diagnosis_cost.png"))
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_primary_diagnosis_cost.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 15,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>
@@ -436,8 +454,8 @@ cost_data <- cost_table %>%
   gather("Median", "Average", key = finding, value = amt) %>% 
   mutate(amt = round(as.numeric(amt), 0))
 
-# GGplot grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
-PRES_gg_diagnosis_costs <- ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
+# ggplot grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
+ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
   geom_bar(position="dodge", stat="identity") +
   theme_with_grid_with_labels +
   labs(x = "", y = "Reimbursement Cost Per Diagnosis/Service\n") +
@@ -475,15 +493,9 @@ PRES_gg_diagnosis_costs <- ggplot(cost_data, aes(fill=finding, y=amt, x = reorde
           legend.title=element_blank())
 ```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_diagnosis_costs, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs.png"), width = 20,  height = 5, dpi = 100, bg = 'transparent')
-# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs.png"))
-```
-
 ```{r}
-# GGplot grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
-PRES_gg_diagnosis_costs1 <- 
-  ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
+# grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
+ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
   geom_bar(position="dodge", stat="identity") +
   theme_with_grid_with_labels +
   labs(x = "", y = "\nReimbursement Cost Per Diagnosis/Service") +
@@ -528,10 +540,7 @@ PRES_gg_diagnosis_costs1 <-
                                     ),
         axis.text.x  = element_text(size = 22, color = "black"))
 ```
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_diagnosis_costs1, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs1.png"), width = 12,  height = 8, dpi = 100, bg = 'transparent')
-# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs1.png"))
-```
+
 <br>
 
 ```{r}
@@ -540,8 +549,8 @@ bold.labels <- cost_data %>% filter(finding == "Median") %>%
   mutate(bold = ifelse(dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm", yes = "bold", no = "plain"))
 bold.labels <- bold.labels$bold
 
-# GGplot diverging barchart showing the average and media cost of reimbursement for the diagnosis categories
-PRES_gg_diagnosis_costs2 <- cost_data %>%
+# ggplot diverging barchart showing the average and media cost of reimbursement for the diagnosis categories
+cost_data %>%
   mutate(amt = ifelse(finding == "Average", amt, -1*amt)) %>% 
   ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, amt), y = amt, fill = finding))+
   geom_bar(stat = "identity") +
@@ -566,10 +575,20 @@ PRES_gg_diagnosis_costs2 <- cost_data %>%
         legend.position = "top",
         legend.justification = c(0.5, 0),
         legend.title=element_blank())
-```
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diagnosis_costs2, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"))
+
+# ggsave(PRES_gg_diagnosis_costs2, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 14,
+    height = 7,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>

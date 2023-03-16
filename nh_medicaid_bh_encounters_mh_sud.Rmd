@@ -299,7 +299,7 @@ medicaid_match_mh_all <- medicaid_match_mh_all %>%
                                         "Individuals w/ MH Service Encounter"))) %>% 
   mutate(pct1 = round(pct*100, 0))
 
-PRES_gg_medicaid_mh <- ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
+ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent,
                      limits = c(0,1.3)) +
@@ -330,11 +330,20 @@ PRES_gg_medicaid_mh <- ggplot(medicaid_match_mh_all, aes(x = reorder(hu_group_ov
         legend.position = "bottom",
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
-```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_mh, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_mh.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_mh.png"))
+# ggsave(PRES_gg_medicaid_mh, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_mh.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_mh.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_mh.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>
@@ -379,7 +388,7 @@ medicaid_match_sud_all <- medicaid_match_sud_all %>%
                                         "Individuals w/ SUD Service Encounter"))) %>% 
   mutate(pct1 = round(pct*100, 0))
 
-PRES_gg_medicaid_sud <- ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
+ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_overall, desc(hu_group_overall)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent,
                      limits = c(0,1.3)) +
@@ -410,11 +419,20 @@ PRES_gg_medicaid_sud <- ggplot(medicaid_match_sud_all, aes(x = reorder(hu_group_
         legend.position = "bottom",
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
-```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_sud, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_sud.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_sud.png"))
+# ggsave(PRES_gg_medicaid_sud, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_sud.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_sud.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_sud.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -525,7 +543,7 @@ medicaid_match_bh <- medicaid_match_bh %>%
                                         "Individuals w/ BH Encounter")))
   
 # Stacked bar chart showing the proportion of people matched to Medicaid by hu_group_exclusive
-PRES_gg_medicaid_match_bh <- ggplot(medicaid_match_bh, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
+ggplot(medicaid_match_bh, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent,
                      limits = c(0,1.3)) +
@@ -556,11 +574,20 @@ PRES_gg_medicaid_match_bh <- ggplot(medicaid_match_bh, aes(x = reorder(hu_group_
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", color = "black")) 
   #geom_hline(yintercept = mean(medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
-```
 
-```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match_bh, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_bh.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_bh.png"))
+# ggsave(PRES_gg_medicaid_match_bh, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_bh.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_bh.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_bh.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 <br>
 
@@ -596,7 +623,7 @@ medicaid_match_cooccurring <- medicaid_match_cooccurring %>%
                                         "Individuals w/ Co-Occurring Disorders")))
 
 # Stacked bar chart showing the proportion of people matched to Medicaid by hu_group_exclusive
-PRES_gg_medicaid_match_cooccurring <- ggplot(medicaid_match_cooccurring, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
+ggplot(medicaid_match_cooccurring, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent,
                      limits = c(0, 1.3)) +
@@ -627,11 +654,20 @@ PRES_gg_medicaid_match_cooccurring <- ggplot(medicaid_match_cooccurring, aes(x =
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book",
                                    color = "black"))
-```
 
-```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match_cooccurring, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_cooccurring.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_cooccurring.png"))
+# ggsave(PRES_gg_medicaid_match_cooccurring, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_cooccurring.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_cooccurring.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_cooccurring.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -986,9 +1022,7 @@ medicaid_jail_smi_hu_grouping <- medicaid_jail_smi_hu_grouping %>%
                              labels = c("Individuals w/out SMI Primary Diagnosis",
                                         "Individuals w/ SMI Primary Diagnosis")))
 
-
-PRES_gg_medicaid_jail_smi_hu_grouping1 <- 
-  ggplot(medicaid_jail_smi_hu_grouping,
+ggplot(medicaid_jail_smi_hu_grouping,
          aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_bar(stat = "identity") +
   scale_y_continuous(labels = scales::percent,
@@ -1019,11 +1053,20 @@ PRES_gg_medicaid_jail_smi_hu_grouping1 <-
         legend.position = "bottom",
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", color = "black"))
-```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_smi_hu_grouping1, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping1.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping1.png"))
+# ggsave(PRES_gg_medicaid_jail_smi_hu_grouping1, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping1.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping1.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping1.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>
@@ -1065,7 +1108,7 @@ medicaid_jail_smi_county <- medicaid_jail_smi_county %>%
                                         "Individuals w/ SMI Primary Diagnosis")))
 
 # Stacked bar chart showing the proportion of people with SMI by county
-PRES_gg_medicaid_jail_smi_county <- ggplot(medicaid_jail_smi_county, aes(x = county, y = pct, fill = population)) +
+ggplot(medicaid_jail_smi_county, aes(x = county, y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_orange),
@@ -1092,11 +1135,20 @@ PRES_gg_medicaid_jail_smi_county <- ggplot(medicaid_jail_smi_county, aes(x = cou
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
-```
 
-```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_smi_county, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_county.png"), width = 9,  height = 7, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_county.png"))
+# ggsave(PRES_gg_medicaid_jail_smi_county, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_county.png"), width = 9,  height = 7, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_county.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_county.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 9,
+    height = 7,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -1232,8 +1284,7 @@ medicaid_jail_opioid_hu_grouping <- medicaid_jail_opioid_hu_grouping %>%
                              labels = c("Individuals w/out Opioid-related Primary Diagnosis",
                                         "Individuals w/ Opioid-related Primary Diagnosis")))
 
-PRES_gg_medicaid_jail_opioid1 <- 
-  ggplot(medicaid_jail_opioid_hu_grouping,
+ggplot(medicaid_jail_opioid_hu_grouping,
          aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_bar(stat = "identity") +
   scale_y_continuous(labels = scales::percent,
@@ -1265,11 +1316,20 @@ PRES_gg_medicaid_jail_opioid1 <-
         legend.position = "bottom",
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", color = "black"))
-```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_opioid1, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid1.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid1.png"))
+# ggsave(PRES_gg_medicaid_jail_opioid1, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid1.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid1.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid1.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>
@@ -1311,7 +1371,7 @@ medicaid_jail_opioid_county <- medicaid_jail_opioid_county %>%
                                         "Individuals w/ Opioid-related Primary Diagnosis")))
 
 # Stacked bar chart showing the proportion of people with opioid by county
-PRES_gg_medicaid_jail_opioid_county <- ggplot(medicaid_jail_opioid_county, aes(x = county, y = pct, fill = population)) +
+ggplot(medicaid_jail_opioid_county, aes(x = county, y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_green),
@@ -1338,11 +1398,20 @@ PRES_gg_medicaid_jail_opioid_county <- ggplot(medicaid_jail_opioid_county, aes(x
         legend.box = "horizontal",
         legend.position = "bottom",
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
-```
 
-```{r, out.width="75%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_jail_opioid_county, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_county.png"), width = 9,  height = 7, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_county.png"))
+# ggsave(PRES_gg_medicaid_jail_opioid_county, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_county.png"), width = 9,  height = 7, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_county.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_county.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 9,
+    height = 7,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 
@@ -1366,7 +1435,7 @@ top_primary_diagnoses_grouped <- medicaid_encounters_cleaned_2018_2021 %>%
          pct_claims = case_when(pct_claims == "0%" ~ "<0%", TRUE ~ pct_claims)) %>% 
   arrange(pct_claims)
 
-PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
+top_primary_diagnoses_grouped %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, total_claims), 
              y = total_claims, fill=factor(ifelse(dx_prmry_clinical_classification_new=="Opioid-related disorders","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
@@ -1395,11 +1464,20 @@ PRES_gg_medicaid_top_diagnoses <- top_primary_diagnoses_grouped %>%
         axis.title.x = element_text(size = 22, color = "black"),
         # axis.text.y  = element_text(size = 22, color = "black"),
         axis.text.x  = element_text(size = 22, color = "black"))
-```
 
-```{r, out.width="150%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_top_diagnoses, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_top_diagnoses.png"), width = 12,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_top_diagnoses.png"))
+# ggsave(PRES_gg_medicaid_top_diagnoses, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_top_diagnoses.png"), width = 12,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_top_diagnoses.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_top_diagnoses.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 12,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 
@@ -1435,7 +1513,7 @@ color.labels <- smi_primary_diagnoses %>%
   mutate(color = ifelse(dx_prmry_clinical_classification == "Schizophrenia spectrum and other psychotic disorders", yes = jri_orange, no = "black"))
 color.labels <- color.labels$color
 
-PRES_gg_medicaid_smi_primary_diagnoses <- smi_primary_diagnoses %>%
+smi_primary_diagnoses %>%
   ggplot(aes(x = reorder(dx_prmry_clinical_classification, total_claims), 
              y = total_claims, fill=factor(ifelse(dx_prmry_clinical_classification=="Schizophrenia spectrum and other psychotic disorders","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
@@ -1464,10 +1542,19 @@ PRES_gg_medicaid_smi_primary_diagnoses <- smi_primary_diagnoses %>%
         # axis.text.y  = element_text(size = 22, color = "black"),
         axis.text.x  = element_text(size = 22, color = "black"))
 
-```
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_smi_primary_diagnoses, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_smi_primary_diagnoses.png"), width = 12,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_smi_primary_diagnoses.png"))
+# ggsave(PRES_gg_medicaid_smi_primary_diagnoses, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_smi_primary_diagnoses.png"), width = 12,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_smi_primary_diagnoses.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_smi_primary_diagnoses.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 12,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>
@@ -1547,7 +1634,7 @@ bold.labels <- smi_primary_diagnoses_hu %>% filter(hu_group_overall == "High Uti
 bold.labels <- bold.labels$bold
 
 # ggplot diverging barchart showing the average and media cost of reimbursement for the diagnosis categories
-PRES_gg_smi_primary_diagnoses_hu <- smi_primary_diagnoses_hu %>%
+smi_primary_diagnoses_hu %>%
   mutate(pct = ifelse(hu_group_overall == "High Utilizer", pct, -1*pct)) %>% 
   ggplot(aes(x = diagnosis, y = pct, fill = hu_group_overall))+
   geom_bar(stat = "identity") +
@@ -1574,11 +1661,19 @@ PRES_gg_smi_primary_diagnoses_hu <- smi_primary_diagnoses_hu %>%
         legend.justification = c(0.5, 0),
         legend.title=element_blank())
 
-```
+# ggsave(PRES_gg_smi_primary_diagnoses_hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_hu.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_hu.png"))
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_smi_primary_diagnoses_hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_hu.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_hu.png"))
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_hu.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 14,
+    height = 7,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 ```{r}
@@ -1655,7 +1750,7 @@ bold.labels <- smi_primary_diagnoses_hu %>% filter(hu_group_exclusive == "Tier 1
 bold.labels <- bold.labels$bold
 
 # ggplot diverging barchart showing the average and media cost of reimbursement for the diagnosis categories
-PRES_gg_smi_primary_diagnoses_tier1hu <- smi_primary_diagnoses_hu %>%
+smi_primary_diagnoses_hu %>%
   mutate(pct = ifelse(hu_group_exclusive == "Tier 1 HU", pct, -1*pct),
          hu_group_exclusive = factor(hu_group_exclusive, levels = c("Tier 1 HU","Non-HU"
                                                                   ))) %>% 
@@ -1684,11 +1779,19 @@ PRES_gg_smi_primary_diagnoses_tier1hu <- smi_primary_diagnoses_hu %>%
         legend.justification = c(0.5, 0),
         legend.title=element_blank())
 
-```
+# ggsave(PRES_gg_smi_primary_diagnoses_tier1hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_tier1hu.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_tier1hu.png"))
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_smi_primary_diagnoses_tier1hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_tier1hu.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_tier1hu.png"))
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_tier1hu.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 14,
+    height = 7,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 <br><br>
 
@@ -1734,8 +1837,7 @@ smi_suicide_related_hu <- smi_suicide_related_hu %>%
                              labels = c("Individuals w/out suicidal ideation/attempt/intentional self-harm",
                                         "Individuals w/ suicidal ideation/attempt/intentional self-harm")))
 
-PRES_gg_smi_suicide_related_hu <- 
-  ggplot(smi_suicide_related_hu,
+ggplot(smi_suicide_related_hu,
          aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_bar(stat = "identity") +
   scale_y_continuous(labels = scales::percent,
@@ -1767,11 +1869,20 @@ PRES_gg_smi_suicide_related_hu <-
         legend.position = "bottom",
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", color = "black"))
-```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_smi_suicide_related_hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_smi_suicide_related_hu.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_smi_suicide_related_hu.png"))
+# ggsave(PRES_gg_smi_suicide_related_hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_smi_suicide_related_hu.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_smi_suicide_related_hu.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_smi_suicide_related_hu.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -1810,8 +1921,7 @@ alcohol_related_hu <- alcohol_related_hu %>%
                              labels = c("Individuals w/out alcohol-related disorders",
                                         "Individuals w/ alcohol-related disorders")))
 
-PRES_gg_alcohol_related_hu <- 
-  ggplot(alcohol_related_hu,
+ggplot(alcohol_related_hu,
          aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_bar(stat = "identity") +
   scale_y_continuous(labels = scales::percent,
@@ -1843,11 +1953,20 @@ PRES_gg_alcohol_related_hu <-
         legend.position = "bottom",
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", color = "black"))
-```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_alcohol_related_hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_alcohol_related_hu.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_alcohol_related_hu.png"))
+# ggsave(PRES_gg_alcohol_related_hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_alcohol_related_hu.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_alcohol_related_hu.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_alcohol_related_hu.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 

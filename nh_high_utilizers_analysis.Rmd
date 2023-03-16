@@ -262,8 +262,7 @@ reactable(bed_days,
 
 ```{r}
 # One stacked barplot for all three years and then make it a pie chart
-PRES_gg_pie_beddays <- 
-  ggplot(bed_days, aes(x = state, y = total_bed_days, fill = hu_group_exclusive )) +
+ggplot(bed_days, aes(x = state, y = total_bed_days, fill = hu_group_exclusive )) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray")) +
@@ -280,11 +279,19 @@ PRES_gg_pie_beddays <-
     axis.ticks = element_blank(),
     axis.text.x=element_blank(),
     axis.text.y=element_blank())
-```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_beddays, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pie_beddays.png"), width = 5,  height = 5, dpi = 100, bg='transparent')
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pie_beddays.png"))
+# ggsave(PRES_gg_pie_beddays, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pie_beddays.png"), width = 5,  height = 5, dpi = 100, bg='transparent')
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pie_beddays.png"))
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_pie_beddays.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 5,
+    height = 5,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>
@@ -334,8 +341,7 @@ reactable(daily_encounters,
 
 ```{r}
 # One stacked barplot for all three years and then make it a pie chart
-PRES_gg_pie_daily_encounters <- 
-  ggplot(daily_encounters, aes(x = state, y = encounter_days, fill = hu_group_exclusive )) +
+ggplot(daily_encounters, aes(x = state, y = encounter_days, fill = hu_group_exclusive )) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray")) +
@@ -352,11 +358,19 @@ PRES_gg_pie_daily_encounters <-
     axis.ticks = element_blank(),
     axis.text.x=element_blank(),
     axis.text.y=element_blank())
-```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_daily_encounters, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pie_daily_encounters.png"), width = 5,  height = 5, dpi = 100, bg='transparent')
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pie_daily_encounters.png"))
+# ggsave(PRES_gg_pie_daily_encounters, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pie_daily_encounters.png"), width = 5,  height = 5, dpi = 100, bg='transparent')
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pie_daily_encounters.png"))
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_pie_daily_encounters.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 5,
+    height = 5,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -539,7 +553,7 @@ data1 <- hu_table %>%
     mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")))
 
 # One stacked barplot for all three years then create a pie chart
-PRES_gg_hu_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_entrances, fill = hu_group_exclusive)) +
+ggplot(data1, aes(x = county, y = total_hu_entrances, fill = hu_group_exclusive)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray"), labels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")) +
@@ -558,11 +572,20 @@ PRES_gg_hu_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_entrances,
         # legend.direction = "vertical",
         # legend.box = "horizontal",
         legend.position = "right")
-```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_hu_pct_piechart, file=paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_piechart.png"), width = 6,  height = 5, dpi = 100, bg='transparent')
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_piechart.png"))
+# ggsave(PRES_gg_hu_pct_piechart, file=paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_piechart.png"), width = 6,  height = 5, dpi = 100, bg='transparent')
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_piechart.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_piechart.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 6,
+    height = 5,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>
@@ -578,7 +601,7 @@ data1 <- hu_people_state %>%
     mutate(hu_group_exclusive = factor(hu_group_exclusive, levels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")))
 
 # One stacked barplot for all three years then create a pie chart
-PRES_gg_hu_people_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_people, fill = hu_group_exclusive)) +
+ggplot(data1, aes(x = county, y = total_hu_people, fill = hu_group_exclusive)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c(jri_light_blue, jri_green, jri_orange, "gray"), labels = c("Tier 1 HU","Tier 2 HU", "Tier 3 HU", "Non-HU")) +
@@ -594,11 +617,20 @@ PRES_gg_hu_people_pct_piechart <- ggplot(data1, aes(x = county, y = total_hu_peo
   theme(axis.text.x=element_blank(),
         axis.text.y=element_blank(),
         legend.position = "right")
-```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_hu_people_pct_piechart, file=paste0(sp_data_path, "/analysis/img/PRES_gg_hu_people_pct_piechart.png"), width = 6,  height = 5, dpi = 100, bg='transparent')
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_hu_people_pct_piechart.png"))
+# ggsave(PRES_gg_hu_people_pct_piechart, file=paste0(sp_data_path, "/analysis/img/PRES_gg_hu_people_pct_piechart.png"), width = 6,  height = 5, dpi = 100, bg='transparent')
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_hu_people_pct_piechart.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_hu_people_pct_piechart.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 6,
+    height = 5,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 ## High Utilizers (Overall)
@@ -764,7 +796,7 @@ data1 <- entrances_dhhs %>%
   mutate(hu_group_overall = factor(hu_group_overall, levels = c("Non-High Utilizer", "High Utilizer")))
 
 # Grouped bar chart showing the proportion of HU entrances by FY
-PRES_gg_hu_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = hu_group_overall)) +
+ggplot(data1, aes(x = fy, y = total, fill = hu_group_overall)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_orange), labels = c("Non-HU Entrances","HU Entrances")) +
@@ -776,11 +808,20 @@ PRES_gg_hu_pct_barchart <- ggplot(data1, aes(x = fy, y = total, fill = hu_group_
         legend.justification = c(1, 0.5),
         axis.title.y = element_blank(),
         axis.title.x = element_blank())
-```
 
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_hu_pct_barchart, file=paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_barchart.png"), width = 7,  height = 4, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_barchart.png"))
+# ggsave(PRES_gg_hu_pct_barchart, file=paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_barchart.png"), width = 7,  height = 4, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_barchart.png"))
+### write out
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_hu_pct_barchart.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 7,
+    height = 4,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>

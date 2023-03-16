@@ -133,6 +133,8 @@ reactable(hu_los_summary,
             max    = colDef(minWidth = 90, name = "Maximum")))
 ```
 
+**Nearly half of jail entrances (DHHS data) had LOS between 0-1 days.**
+
 ```{r}
 # Create new LOS categories for graph
 data1 <- dhhs_jail_los_entrances %>% 
@@ -173,7 +175,7 @@ data1 <- dhhs_jail_los_entrances %>%
                               "601-1,317"))) 
 
 # Ggplot highlighting that almost half of entrances are between 0-1 days  
-PRES_gg_los_category <- data1 %>%
+data1 %>%
   ggplot(aes(x = los_category, y = pct, fill=factor(ifelse(los_category=="0" | los_category=="1","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
   labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
@@ -196,15 +198,21 @@ PRES_gg_los_category <- data1 %>%
     panel.grid.minor.x = element_blank(),
     legend.position = "none"
   )
+
+# ggsave(PRES_gg_los_category, file=paste0(sp_data_path, "/analysis/img/PRES_gg_los_category.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_los_category.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_los_category.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 9,
+    units = "in",
+    bg = "transparent"
+  )
 ```
-
-**Nearly half of jail entrances (DHHS data) had LOS between 0-1 days.**
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_los_category, file=paste0(sp_data_path, "/analysis/img/PRES_gg_los_category.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_los_category.png"))
-```
-
 
 <br><br>
 
@@ -347,7 +355,7 @@ non_hu_los_prop <- jail_booking_los_overall %>%
 
 hu_overall_los_prop <- rbind(non_hu_los_prop, hu_overall_los_prop)
 
-PRES_gg_diverge_hu_overall_los_prop1 <- hu_overall_los_prop %>%
+hu_overall_los_prop %>%
   mutate(pct = ifelse(hu_group_overall == "High Utilizer", pct, -1*pct)) %>% 
   ggplot(aes(x = los_category, y = pct, fill = hu_group_overall))+
   geom_bar(stat = "identity") +
@@ -372,11 +380,20 @@ PRES_gg_diverge_hu_overall_los_prop1 <- hu_overall_los_prop %>%
         legend.position = "top",
         legend.justification = c(0.3, 0),
         legend.title=element_blank())
-```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diverge_hu_overall_los_prop1, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_hu_overall_los_prop1.png"), width = 8,  height = 8, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_hu_overall_los_prop1.png"))
+# ggsave(PRES_gg_diverge_hu_overall_los_prop1, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_hu_overall_los_prop1.png"), width = 8,  height = 8, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_hu_overall_los_prop1.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_hu_overall_los_prop1.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 8,
+    height = 8,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 ```{r}
@@ -402,7 +419,7 @@ non_hu_los_prop <- jail_booking_los_overall %>%
 
 hu_overall_los_prop <- rbind(non_hu_los_prop, hu_overall_los_prop)
 
-PRES_gg_diverge_hu_overall_los_prop2 <- hu_overall_los_prop %>%
+hu_overall_los_prop %>%
   mutate(pct = ifelse(hu_group_exclusive == "Tier 1 HU", pct, -1*pct)) %>% 
   ggplot(aes(x = los_category, y = pct, fill = hu_group_exclusive))+
   geom_bar(stat = "identity") +
@@ -426,11 +443,20 @@ PRES_gg_diverge_hu_overall_los_prop2 <- hu_overall_los_prop %>%
         legend.position = "top",
         legend.justification = c(0.3, 0),
         legend.title=element_blank())
-```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_diverge_hu_overall_los_prop2, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_hu_overall_los_prop2.png"), width = 8,  height = 8, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_hu_overall_los_prop2.png"))
+# ggsave(PRES_gg_diverge_hu_overall_los_prop2, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_hu_overall_los_prop2.png"), width = 8,  height = 8, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_hu_overall_los_prop2.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_hu_overall_los_prop2.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 8,
+    height = 8,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 
@@ -540,6 +566,7 @@ jail_booking_los_0_2_day <- jail_booking_los_0_2_day %>%
   mutate(sentence_status_standard = factor(sentence_status_standard, levels = c("Pretrial", "Protective Custody","Sentenced", "Other")))
 ```
 
+50% of jail bookings (non-PC holds) had lengths of stay between 0-2 days. 38% of jail bookings had lengths of stay between 0-1 days. 
 
 ```{r}
 # Calculate LOS
@@ -593,8 +620,8 @@ jail_booking_los <- adm_all %>%
                                             "101-180",
                                             "Over 180"))) 
 
-# Ggplot highlighting that almost half of entrances are between 0-1 days  
-PRES_gg_jail_los_category <- jail_booking_los %>%
+# ggplot highlighting that almost half of entrances are between 0-1 days  
+jail_booking_los %>%
   ggplot(aes(x = los_category, y = pct, fill=factor(ifelse(los_category=="0" | los_category=="1","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
   labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
@@ -617,13 +644,20 @@ PRES_gg_jail_los_category <- jail_booking_los %>%
     panel.grid.minor.x = element_blank(),
     legend.position = "none"
   )
-```
 
-50% of jail bookings (non-PC holds) had lengths of stay between 0-2 days. 38% of jail bookings had lengths of stay between 0-1 days. 
+# ggsave(PRES_gg_jail_los_category, file=paste0(sp_data_path, "/analysis/img/PRES_gg_jail_los_category.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_jail_los_category.png"))
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_jail_los_category, file=paste0(sp_data_path, "/analysis/img/PRES_gg_jail_los_category.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_jail_los_category.png"))
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_jail_los_category.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 
@@ -633,7 +667,7 @@ knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_jail_los_cat
 The majority of sentence statuses for people entering jail for 0-1 days were pretrial.  
 
 ```{r}
-PRES_gg_pie_0_1_los_bookings <- ggplot(jail_booking_los_0_1_day, aes(x = state, y = total, fill = sentence_status_standard)) +
+ggplot(jail_booking_los_0_1_day, aes(x = state, y = total, fill = sentence_status_standard)) +
   geom_col(colour = NA, position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c(jri_green, jri_light_blue, jri_orange, "gray")) +
@@ -659,15 +693,27 @@ PRES_gg_pie_0_1_los_bookings <- ggplot(jail_booking_los_0_1_day, aes(x = state, 
     axis.text.y=element_blank(),
     legend.title = element_blank(),
     legend.text = element_text(family = "Franklin Gothic Book", size = 20, color = "black"))
-```
-```{r, out.width="50%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_pie_0_1_los_bookings, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pie_0_1_los_bookings.png"), width = 8,  height = 8, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pie_0_1_los_bookings.png"))
+
+# ggsave(PRES_gg_pie_0_1_los_bookings, file=paste0(sp_data_path, "/analysis/img/PRES_gg_pie_0_1_los_bookings.png"), width = 8,  height = 8, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_pie_0_1_los_bookings.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_pie_0_1_los_bookings.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 8,
+    height = 8,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>
 
 **Charge Types for LOS of 0-1 Days (For All Bookings/Non-PC Holds)**
+
+For those with LOS between 0-1 days, tier 1 high utilizers were more likely to be booked for probation and parole violations compared to non-high utilizers.     
 
 ```{r}
 # Calculate los
@@ -727,8 +773,8 @@ nonhu <- jail_booking_los_0_1_day_crime %>%
 # Add data together
 los_0_1_day_crime_tier1hu_nonhu <- rbind(tier1hu, nonhu)
 
-# Ggplot grouped to show the differences in crime types by Tier 1 HU vs non-HU
-PRES_gg_los_0_1_crime_type <- ggplot(los_0_1_day_crime_tier1hu_nonhu, aes(fill=group, y=pct, x=crime_type_lookup)) + 
+# ggplot grouped to show the differences in crime types by Tier 1 HU vs non-HU
+ggplot(los_0_1_day_crime_tier1hu_nonhu, aes(fill=group, y=pct, x=crime_type_lookup)) + 
   geom_bar(position="dodge", stat="identity") +
   labs(x = "Length of Stay (Days)", y = "Proportion of Entrances\n") +
   geom_text(aes(#label = ifelse(pct > .02 | pct < 0, pct_label, "")),
@@ -764,13 +810,20 @@ PRES_gg_los_0_1_crime_type <- ggplot(los_0_1_day_crime_tier1hu_nonhu, aes(fill=g
     axis.text.y = element_blank()
     # axis.text.x = element_blank()
   )
-```
 
-For those with LOS between 0-1 days, tier 1 high utilizers were more likely to be booked for probation and parole violations compared to non-high utilizers.     
+# ggsave(PRES_gg_los_0_1_crime_type, file=paste0(sp_data_path, "/analysis/img/PRES_gg_los_0_1_crime_type.png"), width = 13,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_los_0_1_crime_type.png"))
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_los_0_1_crime_type, file=paste0(sp_data_path, "/analysis/img/PRES_gg_los_0_1_crime_type.png"), width = 13,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_los_0_1_crime_type.png"))
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_los_0_1_crime_type.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 13,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -937,7 +990,7 @@ reactable(crime_los_summary,
 ```
 
 ```{r}
-PRES_gg_crime_los <- crime_los_summary %>%
+crime_los_summary %>%
   ggplot(aes(x = reorder(crime_type_lookup, median), 
              y = median, fill=factor(ifelse(crime_type_lookup=="Probation/Parole Violation","Highlighted","Normal")))) +
   geom_bar(stat = "identity") +
@@ -962,10 +1015,19 @@ PRES_gg_crime_los <- crime_los_summary %>%
         axis.title.y = element_text(size = 22, color = "black"),
         axis.text.x = element_blank())
 
-```
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_crime_los, file=paste0(sp_data_path, "/analysis/img/PRES_gg_crime_los.png"), width = 10,  height = 5, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_crime_los.png"))
+# ggsave(PRES_gg_crime_los, file=paste0(sp_data_path, "/analysis/img/PRES_gg_crime_los.png"), width = 10,  height = 5, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_crime_los.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_crime_los.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 5,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 # Remove 4,705 bookings that are outliers (out of 28,023 bookings)

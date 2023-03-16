@@ -407,7 +407,7 @@ df_medicaid_match <- df_medicaid_match %>%
   mutate(pct1 = round(pct*100, 0))
   
 # Stacked bar chart showing the proportion of people matched to Medicaid by county
-PRES_gg_medicaid_match <- ggplot(df_medicaid_match, aes(x = county, y = pct, fill = population)) +
+ggplot(df_medicaid_match, aes(x = county, y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_green),
@@ -432,12 +432,20 @@ PRES_gg_medicaid_match <- ggplot(df_medicaid_match, aes(x = county, y = pct, fil
         legend.justification = c(1, 0.5),
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black")) 
-  #geom_hline(yintercept = mean(df_medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
-```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match.png"), width = 16,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match.png"))
+# ggsave(PRES_gg_medicaid_match, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match.png"), width = 16,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 16,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br>
@@ -470,7 +478,7 @@ df_bh_match <- df_bh_match %>%
   mutate(pct1 = round(pct*100, 0))
 
 # Stacked bar chart showing the proportion of people matched to BH encounter by county
-PRES_gg_bh_match <- ggplot(df_bh_match, aes(x = county, y = pct, fill = population)) +
+ggplot(df_bh_match, aes(x = county, y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent) +
   scale_fill_manual(values=c("gray",jri_orange),
@@ -495,11 +503,20 @@ PRES_gg_bh_match <- ggplot(df_bh_match, aes(x = county, y = pct, fill = populati
         legend.justification = c(1, 0.5),
         legend.title=element_blank(),
         legend.text = element_text(family = "Franklin Gothic Book", size = 28, color = "black"))
-```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_bh_match, file=paste0(sp_data_path, "/analysis/img/PRES_gg_bh_match.png"), width = 16,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_bh_match.png"))
+# ggsave(PRES_gg_bh_match, file=paste0(sp_data_path, "/analysis/img/PRES_gg_bh_match.png"), width = 16,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_bh_match.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_bh_match.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 16,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
@@ -602,7 +619,7 @@ df_medicaid_match <- df_medicaid_match %>%
   mutate(pct1 = round(pct*100, 0))
   
 # Stacked bar chart showing the proportion of people matched to Medicaid by hu_group_exclusive
-PRES_gg_medicaid_match_hu <- ggplot(df_medicaid_match, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
+ggplot(df_medicaid_match, aes(x = reorder(hu_group_exclusive, desc(hu_group_exclusive)), y = pct, fill = population)) +
   geom_col(colour = "white", position = "fill") +
   scale_y_continuous(labels = scales::percent,
                       limits = c(0,1.3)) +
@@ -630,12 +647,20 @@ PRES_gg_medicaid_match_hu <- ggplot(df_medicaid_match, aes(x = reorder(hu_group_
         legend.direction = "vertical",
         legend.box = "horizontal",
         legend.position = "bottom")
-  #geom_hline(yintercept = mean(df_medicaid_match$pct), color="black", linetype='dotted', lwd=1.5)
-```
 
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-ggsave(PRES_gg_medicaid_match_hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_hu.png"), width = 10,  height = 6, dpi = 100)
-knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_hu.png"))
+# ggsave(PRES_gg_medicaid_match_hu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_hu.png"), width = 10,  height = 6, dpi = 100)
+# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_hu.png"))
+
+ggsave(
+    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_hu.png"),
+    plot = last_plot(),
+    device = ragg::agg_png,
+    dpi = 300,
+    width = 10,
+    height = 6,
+    units = "in",
+    bg = "transparent"
+  )
 ```
 
 <br><br>
