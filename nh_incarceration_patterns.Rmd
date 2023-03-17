@@ -217,15 +217,6 @@ df_avg_entrances_county <- entrances_dhhs_per_person_county %>%
   dplyr::summarize(avg_entrances = mean(num_entrances_per_county, na.rm=TRUE)) %>%
   mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)", TRUE ~ county))
 
-# # average number of entrances/fy by county
-# df_avg_entrances_county <- entrances_dhhs %>%
-#   ungroup() %>%
-#   select(county, id, num_entrances) %>%
-#   distinct() %>%
-#   group_by(county) %>%
-#   dplyr::summarize(avg_entrances = mean(num_entrances, na.rm=TRUE)) %>%
-#   mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)", TRUE ~ county))
-
 ### AB NOTE: I think it's okay to leave this measure as individual-level, not county-level, but we
 ### might want to note that the state average will be higher as it counts entrances across all jails
 

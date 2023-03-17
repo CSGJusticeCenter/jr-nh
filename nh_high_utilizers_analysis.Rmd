@@ -193,9 +193,9 @@ hu_entrances <- rbind(hu_entrances_county, hu_entrances_state)
 ### in the tables you create below, we could even just add an extra column of mean/median number of entrances per person per county (in addition to the per person measure that we currently have)
 
 # Summary of hu entrances by county
-hu_summary_county <- entrances_dhhs %>%
+hu_summary_county <- entrances_dhhs_per_person_county %>%
   ungroup() %>%
-  select(county, id, num_entrances, hu_group_exclusive) %>%
+  select(county, id, num_entrances_per_county, hu_group_exclusive) %>%
   distinct() %>%
   group_by(county, hu_group_exclusive) %>%
   summarise(min    = min(num_entrances, na.rm = T),
