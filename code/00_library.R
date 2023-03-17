@@ -66,6 +66,7 @@ library(csgjcr)
 
 # Save path
 sp_data_path <- csg_get_project_path("NH")
+sp_viz_output_path <- paste(sp_data_path, "/Output/r_output_presentation")
 
 ###################
 # Fonts
