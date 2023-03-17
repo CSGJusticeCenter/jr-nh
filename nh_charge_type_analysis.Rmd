@@ -1536,19 +1536,42 @@ ggsave(
 Note: This analysis of the % of bookings with drug/alcohol charges (regardless of most serious charge) are presented by county of booking. This map highlights county-level variation by grouping counties into four equally sized groups or quartiles.
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
-### read in nh county-level shape file    
-nh_county_shape <- read_sf("C:\\Users\\abyrum\\OneDrive - The Council of State Governments\\Geospatial_Mapping\\US County Geo Data\\tl_2019_us_county\\tl_2019_us_county.shp") %>%
+# ### read in county-level nh data to create county,state, geoid crosswalk with acs/census data 
+# ### this is the official nh county shapefile, obtained here: https://www.census.gov/geographies/mapping-files/time-series/geo/tiger-line-file.html 
+# ### this is not used for mapping, however, hence we remove geography below; it's just a crosswalk across county name, geoid, and county fip code
+# 
+# ### read in nh county-level shape file    
+# nh_county_shape <- read_sf("C:\\Users\\abyrum\\OneDrive - The Council of State Governments\\Geospatial_Mapping\\US County Geo Data\\tl_2019_us_county\\tl_2019_us_county.shp") %>%
+#   clean_names() %>% 
+#   filter(statefp=="33") %>% ### filter by state fip code 
+#   dplyr::rename(county=name, 
+#                 county_fip=countyfp)
+
+### read in nh county-level shape file and keep geometry for mapping
+### from kyle walker/tidycensus: specify cb = TRUE which defaults to the Census Bureau’s cartographic boundary shapefiles. Cartographic boundary shapefiles are preferred to the core TIGER/Line shapefiles in tidycensus as their smaller size speeds up processing and because they are pre-clipped to the US coastline.
+nh_county_shape <- get_acs(
+  geography = "county",
+  variables = "B19013_001",
+  state = "NH",
+  year = 2020,
+  geometry = TRUE,
+  cb = TRUE
+  ) %>%
+  mutate(county = word(NAME, 1)) %>% 
+  group_by(county) %>% 
+  summarize(geometry = st_union(geometry)) %>% 
+  ungroup() %>% 
   clean_names() %>% 
-  filter(statefp=="33") %>% ### filter by state fip code 
-  dplyr::rename(county=name, 
-                county_fip=countyfp)
+  mutate(state = "NH")
+
 
 ### use group_by and st_union to create statewide polygon using the county-level geography
 ### we'll use this shapefile for a state border when mapping
 nh_state_shape <- nh_county_shape %>%
-  group_by(statefp) %>% 
-  summarize(geometry = st_union(geometry)) %>% 
+  group_by(state) %>%
+  summarize(geometry = st_union(geometry)) %>%
   ungroup()
+
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
