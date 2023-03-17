@@ -55,7 +55,7 @@ theme_set(theme_minimal())
 * What is the exact date cut-off for ICD-9 versus ICD-10?
 
 ```{r layout="l-page",echo=FALSE,message=FALSE,warning=FALSE}
-knitr::include_graphics("img/nh_medicaid_data_diagram.png")
+# knitr::include_graphics("img/nh_medicaid_data_diagram.png")
 ```
 
 <br><br>
@@ -65,9 +65,6 @@ knitr::include_graphics("img/nh_medicaid_data_diagram.png")
 **For all missing data plots**, here are the % missingness categories: "Good" <= 5% missing, "OK" <= 40% missing, "Bad" <= 80% missing, and "Remove" = 100% missing
 
 ```{r include=FALSE}
-### set path using csg_sp_path for data folder
-sp_data_path <- csg_sp_path(file.path("JR_NH"))
-
 ### pull in medicaid data from external hard drive
 
 # medicaid events

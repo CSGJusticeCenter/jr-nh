@@ -47,6 +47,7 @@ library(svDialogs)
 library(ggrepel)
 library(tidycensus)
 library(ggpattern)
+library(DataExplorer)
 
 ###################
 # Local and research sharepoint
