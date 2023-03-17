@@ -259,7 +259,8 @@ nh_resource_location_geo_full_acs_census <- left_join(nh_resource_location_count
 
 ### read in nh county-level shape file and keep geometry for mapping
 ### from kyle walker/tidycensus: specify cb = TRUE which defaults to the Census Bureau’s cartographic boundary shapefiles. Cartographic boundary shapefiles are preferred to the core TIGER/Line shapefiles in tidycensus as their smaller size speeds up processing and because they are pre-clipped to the US coastline.
-library(tidycensus)
+
+library(tidycensus) 
 
 nh_county_shape <- get_acs(
   geography = "county",

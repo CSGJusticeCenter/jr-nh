@@ -196,14 +196,29 @@ ggsave(
 **On average, people entered jails 1.8 times from 2019 to 2021.**
 
 ```{r}
-# average number of entrances/fy by county
-df_avg_entrances_county <- entrances_dhhs %>%
+### AB NOTE: similar to the averages calculated in the 'nh_high_utilizers_analysis' file, I wonder if we should calculate a separate county-level 'num_entrances' measure (where we group by id and county) for when we calculate means? similarly, though, i guess the alternative interpretation is just that we're saying an individual booked in x county had 10 bookings, even if not all 10 occurred in that county? let me know what you think!
+
+### here's some possible code to create a separate measure of the number of entrances per person per county
+### i think we could use this measure for all county-level averages of entrances 
+### and then use num_entrances for all individual-level analysis 
+entrances_dhhs_per_person_county <- entrances_dhhs %>% 
+  group_by(id,county) %>% 
+  mutate(num_entrances_per_county = n_distinct(booking_id, na.rm=TRUE)) %>% 
+  ungroup()
+
+### AB NOTE: as an example, i went ahead and swapped out the dataframes and variables for the following county-level calculation
+
+# Average number of entrances/fy by county
+df_avg_entrances_county <- entrances_dhhs_per_person_county %>%
   ungroup() %>%
-  select(county, id, num_entrances) %>%
+  select(county, id, num_entrances_per_county) %>%
   distinct() %>%
   group_by(county) %>%
-  dplyr::summarize(avg_entrances = mean(num_entrances, na.rm=TRUE)) %>%
+  dplyr::summarize(avg_entrances = mean(num_entrances_per_county, na.rm=TRUE)) %>%
   mutate(county = case_when(county == "Coos" ~ "Coos (bookings only)", TRUE ~ county))
+
+### AB NOTE: I think it's okay to leave this measure as individual-level, not county-level, but we
+### might want to note that the state average will be higher as it counts entrances across all jails
 
 # average number of entrances/fy by state
 df_avg_entrances_total <- entrances_dhhs %>%

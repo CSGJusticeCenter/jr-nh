@@ -61,6 +61,9 @@ unique_ids_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
 # Create unique booking id using id and dose date
 medicaid_encounters_costs <- medicaid_encounters_costs_all
 medicaid_encounters_costs$claim_id <- medicaid_encounters_costs %>% 
+
+  ### AB NOTE: creating the claim ID from individual and dos_date makes sense to me, but I guess we would potentially be grouping multiple encounters into one reimbursement sum if they occurred on the same day. I think this is just a limitation to keep in mind. I can't really think of a different option that doesn't also have limitations (like incorporating diagnosis or something -- which would then potentially separate two claims for the same encounter that have slightly different diagnoses entered, etc.) 
+  
   dplyr::group_indices(unique_person_id, first_dos_dt) 
 
 # Reorganize variables
@@ -132,6 +135,8 @@ mutate(dx_prmry_clinical_classification_new = case_when(
 # Merge with person info created from jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
 medicaid_encounters_cleaned_2018_2021 <- unique_ids_hu %>% 
   left_join(medicaid_encounters_cleaned_2018_2021, "unique_person_id") %>% 
+  
+  ### AB NOTE: this approach makes sense to me, but I suppose it would drop the hypothetical case where one individual had two separate claims for the exact same amount from two providers for the same encounter -- this would drop one of the two. I can't think of a better way since we don't have a DHHS-provided claim/encounter ID so I think this is just a limitation of our data.
   distinct() %>% 
 
   # remove people who aren't in unique_ids_hu - dont have an HU variable
