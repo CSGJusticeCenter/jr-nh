@@ -29,9 +29,6 @@ It appears that the best option, at this point, is to categorize the charges int
 library(easypackages)
 libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","gtsummary")
 
-### set sp_data_path
-# sp_data_path <- csg_sp_path(file.path("JR_NH"))
-
 # Load functions, packages, and data
 source("code/00_library.R")
 source("code/01_functions.R")
@@ -39,12 +36,6 @@ source("code/rdas.R")
 ```
 
 ```{r setup, include=FALSE}
-### set path for viz output
-sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
-
-### set theme
-# theme_set(theme_minimal())
-
 ### set chunk output
 knitr::opts_chunk$set(
   echo = TRUE,
@@ -1549,6 +1540,9 @@ Note: This analysis of the % of bookings with drug/alcohol charges (regardless o
 
 ### read in nh county-level shape file and keep geometry for mapping
 ### from kyle walker/tidycensus: specify cb = TRUE which defaults to the Census Bureau’s cartographic boundary shapefiles. Cartographic boundary shapefiles are preferred to the core TIGER/Line shapefiles in tidycensus as their smaller size speeds up processing and because they are pre-clipped to the US coastline.
+
+library(tidycensus)
+
 nh_county_shape <- get_acs(
   geography = "county",
   variables = "B19013_001",

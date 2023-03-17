@@ -24,14 +24,6 @@ source("code/01_functions.R")
 source("code/rdas.R")
 ```
 
-# Jail Data Availability 
-
-NH is not on a unified system so data availability varied by county.  
-
-```{r}
-raw_adm_data_availability_table
-```
-
 # Data Dictionaries
 
 ## Belknap  

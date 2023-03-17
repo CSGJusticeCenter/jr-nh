@@ -88,27 +88,27 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>JRI New Hampshire Project: Data Availability</title>
+  <title>JRI New Hampshire Project: New Hampshire DHHS Medicaid Data Diagram and Codebook</title>
 
 
   <link rel="icon" type="image/png" href="img/favicon.png"/>
 
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="JRI New Hampshire Project: Data Availability"/>
+  <meta property="og:title" content="JRI New Hampshire Project: New Hampshire DHHS Medicaid Data Diagram and Codebook"/>
   <meta property="og:type" content="article"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="JRI New Hampshire Project"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="JRI New Hampshire Project: Data Availability"/>
+  <meta property="twitter:title" content="JRI New Hampshire Project: New Hampshire DHHS Medicaid Data Diagram and Codebook"/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["Data Availability"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","output"]}},"value":[{"type":"character","attributes":{},"value":["New Hampshire DHHS Medicaid Data Diagram and Codebook"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["toc","toc_depth","self_contained"]}},"value":[{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[3]},{"type":"logical","attributes":{},"value":[false]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -2404,6 +2404,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   }</style>
   <!--/radix_placeholder_distill-->
   <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+  <script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
+  <link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2423,7 +2425,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Data Availability","authors":[]}
+{"title":"New Hampshire DHHS Medicaid Data Diagram and Codebook","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -2513,7 +2515,7 @@ Research
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Data Availability</h1>
+<h1>New Hampshire DHHS Medicaid Data Diagram and Codebook</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 
@@ -2525,425 +2527,1089 @@ Research
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#jail-data-availability" id="toc-jail-data-availability">Jail Data Availability</a></li>
+<li><a href="#data-diagram" id="toc-data-diagram">Data Diagram</a></li>
+<li><a href="#data-codebooks" id="toc-data-codebooks">Data Codebooks</a>
+<ul>
+<li><a href="#medicaid-enrollment" id="toc-medicaid-enrollment">Medicaid Enrollment</a>
+<ul>
+<li><a href="#medicaid-enrollment-data-overview" id="toc-medicaid-enrollment-data-overview">Medicaid Enrollment, Data Overview</a></li>
+<li><a href="#medicaid-enrollment-fields-included" id="toc-medicaid-enrollment-fields-included">Medicaid Enrollment, Fields Included</a></li>
+<li><a href="#medicaid-enrollment-missing-data" id="toc-medicaid-enrollment-missing-data">Medicaid Enrollment, Missing Data</a></li>
+</ul></li>
+<li><a href="#medicaid-categories-file" id="toc-medicaid-categories-file">Medicaid Categories File</a>
+<ul>
+<li><a href="#medicaid-categories-data-overview" id="toc-medicaid-categories-data-overview">Medicaid Categories, Data Overview</a></li>
+<li><a href="#medicaid-categories-fields-included" id="toc-medicaid-categories-fields-included">Medicaid Categories, Fields Included</a></li>
+<li><a href="#medicaid-categories-missing-data" id="toc-medicaid-categories-missing-data">Medicaid Categories, Missing Data</a></li>
+</ul></li>
+<li><a href="#medicaid-encounters-file" id="toc-medicaid-encounters-file">Medicaid Encounters File</a>
+<ul>
+<li><a href="#medicaid-encounters-data-overview" id="toc-medicaid-encounters-data-overview">Medicaid Encounters, Data Overview</a></li>
+<li><a href="#medicaid-encounters-fields-included" id="toc-medicaid-encounters-fields-included">Medicaid Encounters, Fields Included</a></li>
+<li><a href="#medicaid-encounters-missing-data" id="toc-medicaid-encounters-missing-data">Medicaid Encounters, Missing Data</a></li>
+</ul></li>
+<li><a href="#medicaid-dictionary-file" id="toc-medicaid-dictionary-file">Medicaid Dictionary File</a>
+<ul>
+<li><a href="#medicaid-dictionary-data-overview" id="toc-medicaid-dictionary-data-overview">Medicaid Dictionary, Data Overview</a></li>
+<li><a href="#medicaid-dictionary-fields-included" id="toc-medicaid-dictionary-fields-included">Medicaid Dictionary, Fields Included</a></li>
+<li><a href="#medicaid-dictionary-missing-data" id="toc-medicaid-dictionary-missing-data">Medicaid Dictionary, Missing Data</a></li>
+</ul></li>
+<li><a href="#medicaid-dictionary-file-1" id="toc-medicaid-dictionary-file-1">Medicaid Dictionary File</a>
+<ul>
+<li><a href="#medicaid-dictionary-data-overview-1" id="toc-medicaid-dictionary-data-overview-1">Medicaid Dictionary, Data Overview</a></li>
+<li><a href="#medicaid-dictionary-fields-included-1" id="toc-medicaid-dictionary-fields-included-1">Medicaid Dictionary, Fields Included</a></li>
+<li><a href="#medicaid-dictionary-missing-data-1" id="toc-medicaid-dictionary-missing-data-1">Medicaid Dictionary, Missing Data</a></li>
+</ul></li>
+<li><a href="#medicaid-jail-data-file-this-is-the-analytic-file-we-created-from-the-9-separate-jail-files-provided-by-dhhs" id="toc-medicaid-jail-data-file-this-is-the-analytic-file-we-created-from-the-9-separate-jail-files-provided-by-dhhs">Medicaid Jail Data File (this is the analytic file we created from the 9 separate jail files provided by DHHS)</a>
+<ul>
+<li><a href="#medicaid-jail-file-data-overview" id="toc-medicaid-jail-file-data-overview">Medicaid Jail File, Data Overview</a></li>
+<li><a href="#medicaid-jail-file-fields-included" id="toc-medicaid-jail-file-fields-included">Medicaid Jail File, Fields Included</a></li>
+<li><a href="#medicaid-jail-file-missing-data" id="toc-medicaid-jail-file-missing-data">Medicaid Jail File, Missing Data</a></li>
+</ul></li>
+</ul></li>
 </ul>
 </nav>
 </div>
-<div class="layout-chunk" data-layout="l-body">
+<h1 id="data-diagram">Data Diagram</h1>
+<p><strong>Notes:</strong></p>
+<ul>
+<li><p>In addition to the diagnosis classification values provided in <code>data_dictionary</code>, which uses ICD-10 lookup values for diagnoses after 2015, we need to use ICD-9 lookup values for diagnoses prior to 2015. I downloaded and incorporated it into ‘14_medicaid’ cleaning syntax. ICD-9 data was downloaded from <a href="https://www.cms.gov/medicare/coordination-benefits-recovery-overview/icd-code-lists" class="uri">https://www.cms.gov/medicare/coordination-benefits-recovery-overview/icd-code-lists</a> and currently lives here: JR_NHData</p>
+<ul>
+<li><p>For ICD-9 data, there aren’t CCSR category descriptions that come with the data, but I’ve downloaded “CCS” category descriptions (CCS category descriptions seem to be the predecessor to CCSR categories: CCS stands for clinical classification software and CCSR is clinical classification software refined). I downloaded additional lookup values from ‘Single Level CSS’ link here: <a href="http://healthydatascience.com/ahrq_ccs_icd.html" class="uri">http://healthydatascience.com/ahrq_ccs_icd.html</a></p></li>
+<li><p>If we’re hoping to use the CCS/CCSR fields for analysis, we may have to do additional manual cleaning to standardize them.</p></li>
+</ul></li>
+<li><p>To create <code>booking_id</code> from the data provided by DHHS, we combine <code>unique_person_id</code> and <code>booking_date</code>.</p></li>
+<li><p>To join <code>medicaid_encounters</code> to <code>medicaid_enrollment</code>, the <code>medicaid_encounters$first_dos_dt</code> must be &gt;= <code>medicaid_enrollment$eligiblity_begin_date</code> and &lt;= <code>medicaid_enrollment$eligiblity_end_date</code></p></li>
+<li><p>Similarly, to join <code>medicaid_jail_all_counties</code> to <code>medicaid_enrollment</code>, <code>medicaid_jail_all_counties$booking_date</code> must be &gt;= <code>medicaid_enrollment$eligibility_begin_date</code> and &lt;= <code>medicaid_enrollment$eligibility_end_date</code></p></li>
+</ul>
+<p><strong>To confirm:</strong></p>
+<ul>
+<li><p>There are pure duplicates in the <code>medicaid_encounters</code>file – how do we ensure these are okay? Double check with Uma?</p></li>
+<li><p>What is the exact date cut-off for ICD-9 versus ICD-10?</p></li>
+</ul>
+<div class="layout-chunk" data-layout="l-page">
 
 </div>
-<h1 id="jail-data-availability">Jail Data Availability</h1>
-<p>NH is not on a unified system so data availability varied by county.</p>
+<p><br><br></p>
+<h1 id="data-codebooks">Data Codebooks</h1>
+<p><strong>For all missing data plots</strong>, here are the % missingness categories: “Good” &lt;= 5% missing, “OK” &lt;= 40% missing, “Bad” &lt;= 80% missing, and “Remove” = 100% missing</p>
+<p><br></p>
+<h2 id="medicaid-enrollment">Medicaid Enrollment</h2>
+<h3 id="medicaid-enrollment-data-overview">Medicaid Enrollment, Data Overview</h3>
 <div class="layout-chunk" data-layout="l-body">
-<table class="table table-condensed">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
-<th style="text-align:left;">
-County
+<th style="text-align:center;">
+Measure
 </th>
-<th style="text-align:left;">
-Booking Type
-</th>
-<th style="text-align:left;">
-Booking Date
-</th>
-<th style="text-align:left;">
-Charge Description
-</th>
-<th style="text-align:left;">
-Charge Code
-</th>
-<th style="text-align:left;">
-Release Type
-</th>
-<th style="text-align:left;">
-Release Date
-</th>
-<th style="text-align:left;">
-Sentence Status
+<th style="text-align:center;">
+Count
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
-<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Belknap </span>
+<td style="text-align:center;">
+rows
 </td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
+<td style="text-align:center;">
+61,738
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Carroll </span>
+<td style="text-align:center;">
+columns
 </td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
+<td style="text-align:center;">
+5
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Coos </span>
+<td style="text-align:center;">
+discrete_columns
 </td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
+<td style="text-align:center;">
+3
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Hillsborough</span>
+<td style="text-align:center;">
+continuous_columns
 </td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
+<td style="text-align:center;">
+2
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Merrimack </span>
+<td style="text-align:center;">
+all_missing_columns
 </td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
+<td style="text-align:center;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Rockingham </span>
+<td style="text-align:center;">
+total_missing_values
 </td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
+<td style="text-align:center;">
+0
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Strafford </span>
+<td style="text-align:center;">
+complete_rows
 </td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
+<td style="text-align:center;">
+61,738
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
-<span style="font-weight: bold; font-family: Franklin Gothic Book; display: inline-block; width: 120px">Sullivan </span>
+<td style="text-align:center;">
+total_observations
 </td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
+<td style="text-align:center;">
+308,690
 </td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
+</tr>
+<tr>
+<td style="text-align:center;">
+memory_usage
 </td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: red">
-<i class="glyphicon glyphicon-glyphicon glyphicon-remove"></i>
-No
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
-</td>
-<td style="text-align:left;">
-<span style="display: inline-block; direction: rtl; border-radius: 4px; padding-right: 2px; background-color: white; width: 80px; color: green">
-<i class="glyphicon glyphicon-glyphicon glyphicon-ok"></i>
-Yes
-</span>
+<td style="text-align:center;">
+2,474,728
 </td>
 </tr>
 </tbody>
 </table>
 </div>
+<p><br></p>
+<h3 id="medicaid-enrollment-fields-included">Medicaid Enrollment, Fields Included</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Columns
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+unique_person_id
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+eligibility_category
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+eligibility_begin_date
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+eligibility_end_date
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+homeless_on_eligbility_begin_date
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-enrollment-missing-data">Medicaid Enrollment, Missing Data</h3>
+<div class="layout-chunk" data-layout="l-page">
+<p><img src="nh_medicaid_diagram_codebook_files/figure-html5/unnamed-chunk-8-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h2 id="medicaid-categories-file">Medicaid Categories File</h2>
+<h3 id="medicaid-categories-data-overview">Medicaid Categories, Data Overview</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Measure
+</th>
+<th style="text-align:center;">
+Count
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+rows
+</td>
+<td style="text-align:center;">
+88
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+columns
+</td>
+<td style="text-align:center;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+discrete_columns
+</td>
+<td style="text-align:center;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+continuous_columns
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+all_missing_columns
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+total_missing_values
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+complete_rows
+</td>
+<td style="text-align:center;">
+88
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+total_observations
+</td>
+<td style="text-align:center;">
+264
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+memory_usage
+</td>
+<td style="text-align:center;">
+22,384
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-categories-fields-included">Medicaid Categories, Fields Included</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Columns
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+eligibility_code
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+short_desc
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+long_desc
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-categories-missing-data">Medicaid Categories, Missing Data</h3>
+<div class="layout-chunk" data-layout="l-page">
+<p><img src="nh_medicaid_diagram_codebook_files/figure-html5/unnamed-chunk-11-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h2 id="medicaid-encounters-file">Medicaid Encounters File</h2>
+<h3 id="medicaid-encounters-data-overview">Medicaid Encounters, Data Overview</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Measure
+</th>
+<th style="text-align:center;">
+Count
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+rows
+</td>
+<td style="text-align:center;">
+1,363,617
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+columns
+</td>
+<td style="text-align:center;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+discrete_columns
+</td>
+<td style="text-align:center;">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+continuous_columns
+</td>
+<td style="text-align:center;">
+9
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+all_missing_columns
+</td>
+<td style="text-align:center;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+total_missing_values
+</td>
+<td style="text-align:center;">
+18,692,321
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+complete_rows
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+total_observations
+</td>
+<td style="text-align:center;">
+32,726,808
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+memory_usage
+</td>
+<td style="text-align:center;">
+256,673,304
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-encounters-fields-included">Medicaid Encounters, Fields Included</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Columns
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+unique_person_id
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+first_dos_dt
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+last_dos_dt
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_prmry_cd_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_prmry_clinical_classification
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_admtng_cd_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_scndry_cd1_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_scndry_cd2_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_scndry_cd3_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_scndry_cd4_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_scndry_cd5_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_scndry_cd6_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_scndry_cd7_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_scndry_cd8_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_scndry_cd9_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+dx_scndry_cd10_fnl
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+medicaid_reimb_amt
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+service_provided_by_cmhc_provider
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+ed_visit_or_service
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+mh_service_categorized_using_primary_dx_code
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+sud_service_categorized_using_primary_dx_code
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+mental_health_pharmacy_service
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+sud_pharmacy_service
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+other_service
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-encounters-missing-data">Medicaid Encounters, Missing Data</h3>
+<div class="layout-chunk" data-layout="l-page">
+<p><img src="nh_medicaid_diagram_codebook_files/figure-html5/unnamed-chunk-14-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h2 id="medicaid-dictionary-file">Medicaid Dictionary File</h2>
+<h3 id="medicaid-dictionary-data-overview">Medicaid Dictionary, Data Overview</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Measure
+</th>
+<th style="text-align:center;">
+Count
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+rows
+</td>
+<td style="text-align:center;">
+83,789
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+columns
+</td>
+<td style="text-align:center;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+discrete_columns
+</td>
+<td style="text-align:center;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+continuous_columns
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+all_missing_columns
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+total_missing_values
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+complete_rows
+</td>
+<td style="text-align:center;">
+83,789
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+total_observations
+</td>
+<td style="text-align:center;">
+586,523
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+memory_usage
+</td>
+<td style="text-align:center;">
+19,629,392
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-dictionary-fields-included">Medicaid Dictionary, Fields Included</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Columns
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+icd_10_cm_code
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+icd_10_cm_code_description
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+ccsr_category
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+ccsr_category_description
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+inpatient_default_ccsr_y_n_x
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+outpatient_default_ccsr_y_n_x
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+rationale
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-dictionary-missing-data">Medicaid Dictionary, Missing Data</h3>
+<div class="layout-chunk" data-layout="l-page">
+<p><img src="nh_medicaid_diagram_codebook_files/figure-html5/unnamed-chunk-17-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h2 id="medicaid-dictionary-file-1">Medicaid Dictionary File</h2>
+<h3 id="medicaid-dictionary-data-overview-1">Medicaid Dictionary, Data Overview</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Measure
+</th>
+<th style="text-align:center;">
+Count
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+rows
+</td>
+<td style="text-align:center;">
+83,789
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+columns
+</td>
+<td style="text-align:center;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+discrete_columns
+</td>
+<td style="text-align:center;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+continuous_columns
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+all_missing_columns
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+total_missing_values
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+complete_rows
+</td>
+<td style="text-align:center;">
+83,789
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+total_observations
+</td>
+<td style="text-align:center;">
+586,523
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+memory_usage
+</td>
+<td style="text-align:center;">
+19,629,392
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-dictionary-fields-included-1">Medicaid Dictionary, Fields Included</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Columns
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+icd_10_cm_code
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+icd_10_cm_code_description
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+ccsr_category
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+ccsr_category_description
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+inpatient_default_ccsr_y_n_x
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+outpatient_default_ccsr_y_n_x
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+rationale
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-dictionary-missing-data-1">Medicaid Dictionary, Missing Data</h3>
+<div class="layout-chunk" data-layout="l-page">
+<p><img src="nh_medicaid_diagram_codebook_files/figure-html5/unnamed-chunk-20-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
+<h2 id="medicaid-jail-data-file-this-is-the-analytic-file-we-created-from-the-9-separate-jail-files-provided-by-dhhs">Medicaid Jail Data File (this is the analytic file we created from the 9 separate jail files provided by DHHS)</h2>
+<h3 id="medicaid-jail-file-data-overview">Medicaid Jail File, Data Overview</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Measure
+</th>
+<th style="text-align:center;">
+Count
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+rows
+</td>
+<td style="text-align:center;">
+50,178
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+columns
+</td>
+<td style="text-align:center;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+discrete_columns
+</td>
+<td style="text-align:center;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+continuous_columns
+</td>
+<td style="text-align:center;">
+4
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+all_missing_columns
+</td>
+<td style="text-align:center;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+total_missing_values
+</td>
+<td style="text-align:center;">
+164,319
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+complete_rows
+</td>
+<td style="text-align:center;">
+31,835
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+total_observations
+</td>
+<td style="text-align:center;">
+1,204,272
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+memory_usage
+</td>
+<td style="text-align:center;">
+19,642,152
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-jail-file-fields-included">Medicaid Jail File, Fields Included</h3>
+<div class="layout-chunk" data-layout="l-body">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:center;">
+Columns
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center;">
+unique_person_id
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+booking_id
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+county
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+jail_dob_year
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+jail_sex
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+jail_race
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+release_date
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+booking_date
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+medicaid_match_flag
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+birth_year
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+gender
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+hispanic_ind
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+white_ind
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+african_amer_ind
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+asian_ind
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+alaska_amer_indian_ind
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+hawaii_pacific_is_ind
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+other_race_ind
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+num_entrances
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+high_utilizer_4_times
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+high_utilizer_1_pct
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+high_utilizer_5_pct
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+high_utilizer_10_pct
+</td>
+</tr>
+<tr>
+<td style="text-align:center;">
+unique_person_booking_id
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><br></p>
+<h3 id="medicaid-jail-file-missing-data">Medicaid Jail File, Missing Data</h3>
+<div class="layout-chunk" data-layout="l-page">
+<p><img src="nh_medicaid_diagram_codebook_files/figure-html5/unnamed-chunk-23-1.png" width="624" /></p>
+</div>
+<p><br><br></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

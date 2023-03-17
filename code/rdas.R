@@ -8,7 +8,7 @@
 ############################################
 
 # Data Availability
-# load(paste0(sp_data_path, "/Data/analysis/r_data//raw_adm_data_availability_table.Rda", sep = ""))
+load(paste0(sp_data_path, "/Data/r_data/raw_adm_data_availability_table.Rda", sep = ""))
 
 # Jail administrative data
 load(paste0(sp_data_path, "/Data/r_data/adm_all.Rda",               sep = ""))
