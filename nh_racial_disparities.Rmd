@@ -16,9 +16,9 @@ output:
 
 
 # ## Load packages, functions, and data
-source("data_cleaning/00_library.R")
-source("data_cleaning/01_functions.R")
-source("data_cleaning/rdas.R")
+source("code/00_library.R")
+source("code/01_functions.R")
+source("code/rdas.R")
 
 # Load medicaid data
 jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
@@ -99,20 +99,12 @@ knitr::opts_chunk$set(
   dev = "ragg_png",
   cache = FALSE
   )
-
-### set sp_viz_output_path for viz output
-sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
-
-### import cleaned charge analytic file (for all eight counties with charge data)
-# load(paste0(sp_data_path,
-#             "/Data/r_data/offenses_clean/nh_eight_county_charge_clean_final.Rda",
-#             sep = ""))
 ```
 
 Here is a visualization, developed by Sara Bastomski, breaking down the calculation of an unadjusted relative rate index (unadjusted means that we have not run any regression models to account for additional individual-level factors such as gender, age, offense, or criminal history). The numbers will look a little different than what is presented later because we have rounded in this example. 
 
 ```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
-knitr::include_graphics("img/nh_rri_example_viz.png")
+# knitr::include_graphics("img/nh_rri_example_viz.png")
 ```
 
 <br><br>

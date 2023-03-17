@@ -1,7 +1,7 @@
 ############################################
 # Project: JRI New Hampshire
-# File: misc.R
-# Last updated: September 12, 2022
+# File: data_availability.R
+# Last updated: March 17, 2023
 # Author: Mari Roberts
 
 # Format tables and graphics for misc website pages
@@ -33,19 +33,19 @@ yes_no <- formatter("span", style = function(x) style(display = "inline-block",
                                                       color = ifelse(x == "No" , "red", "green")), x ~ icontext(ifelse(x == "No", "glyphicon glyphicon-remove", "glyphicon glyphicon-ok"), x))
 
 raw_adm_data_availability_table <- formattable(raw_adm_data_availability,
-            align = c("l","l","l","l","l","l","l","l","l","l"),
-            list(County = #formatter("span", style = x ~ style("font-weight" = "bold"), width = "200px"),
-                   formatter(.tag = "span", style = function(x) style("font-weight" = "bold", "font-family" = "Franklin Gothic Book",display = "inline-block", width = "120px")),
-                 YOB = yes_no,
-                 Race = yes_no,
-                 Gender = yes_no,
-                `Booking Type` = yes_no,
-                `Booking Date` = yes_no,
-                `Charge Description` = yes_no,
-                `Charge Code` = yes_no,
-                `Release Type` = yes_no,
-                `Release Date` = yes_no,
-                `Sentence Status` = yes_no))
+                                               align = c("l","l","l","l","l","l","l","l","l","l"),
+                                               list(County = #formatter("span", style = x ~ style("font-weight" = "bold"), width = "200px"),
+                                                      formatter(.tag = "span", style = function(x) style("font-weight" = "bold", "font-family" = "Franklin Gothic Book",display = "inline-block", width = "120px")),
+                                                    YOB = yes_no,
+                                                    Race = yes_no,
+                                                    Gender = yes_no,
+                                                    `Booking Type` = yes_no,
+                                                    `Booking Date` = yes_no,
+                                                    `Charge Description` = yes_no,
+                                                    `Charge Code` = yes_no,
+                                                    `Release Type` = yes_no,
+                                                    `Release Date` = yes_no,
+                                                    `Sentence Status` = yes_no))
 
 ############
 # save to SP

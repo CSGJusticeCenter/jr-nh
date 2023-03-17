@@ -13,10 +13,6 @@ source("code/00_library.R")
 source("code/01_functions.R")
 source("code/rdas.R")
 
-### set path for viz output (andrew's viz folder)
-# sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
-sp_viz_output_path <- "C:/Users/mroberts/The Council of State Governments/JC Research - JR_NH/Output/r_output_presentation"
-
 ### set chunk output 
 knitr::opts_chunk$set(
   echo=FALSE, 

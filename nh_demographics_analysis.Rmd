@@ -21,8 +21,6 @@ source("code/00_library.R")
 source("code/01_functions.R")
 source("code/rdas.R")
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
-
-
 ```
 
 The following demographic trends were found using jail administrative data from DHHS, which has unique ids to account for people booked at more than one jail.
@@ -74,11 +72,6 @@ reactable(table1,
 ```
 
 ```{r include=FALSE}
-# ### set sp_data_path
-# sp_data_path <- csg_sp_path(file.path("JR_NH"))
-# 
-sp_viz_output_path <- csg_sp_path(file.path("JR_NH/Output/r_output_presentation"))
-
 # Load medicaid data
 jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
 
@@ -123,9 +116,6 @@ knitr::opts_chunk$set(
   dev = "ragg_png",
   cache = FALSE
   )
-
-
-
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
