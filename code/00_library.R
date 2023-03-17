@@ -45,7 +45,8 @@ library(ggtext)
 library(openxlsx)
 library(svDialogs)
 library(ggrepel)
-
+library(tidycensus)
+library(ggpattern)
 
 ###################
 # Local and research sharepoint
