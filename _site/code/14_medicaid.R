@@ -451,7 +451,11 @@ medicaid_enrollment_categories_encounters <- left_join(medicaid_enrollment,
                                                                 "Other specified and unspecified mood disorders"),
                           1,0),
          opioid_related_flag = ifelse(dx_prmry_clinical_classification=="Opioid-related disorders",
-                                    1,0))
+                                    1,0),
+         alcohol_related_flag = ifelse(dx_prmry_clinical_classification=="Alcohol-related disorders",
+                                       1,0),
+         suicide_related_flag = ifelse(dx_prmry_clinical_classification=="Suicidal ideation/attempt/intentional self-harm",
+                                       1,0))
 
 ### de-dup dataframe by individual to see how many individuals are in which group (1,2,3)
 ### looks like all but about ... of all individuals in medicaid enrollment file have
@@ -475,7 +479,7 @@ table(medicaid_enrollment_categories_encounters_dedup$overall_bh_no_merge_flag,
 
 
 ###############################################################################
-### save medicaid_enrollment_categories_encounters to external hard drive - needed for reimbursement analysis???
+### save medicaid_enrollment_categories_encounters to external hard drive - needed for reimbursement analysis
 ###############################################################################
 write_rds(medicaid_enrollment_categories_encounters,
           "D:/Analytic/medicaid_enrollment_categories_encounters.rds")
@@ -624,38 +628,43 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                        na.rm=TRUE)) %>%
 
   ### then pre or study window flags
-  mutate(pre_or_study_bh_flag = max(overall_bh_flag[pre_or_study_window_medicaid_match_flag==1],
-                            na.rm=TRUE),
-         pre_or_study_mh_service_primary_dx_flag = max(mh_service_categorized_using_primary_dx_code[pre_or_study_window_medicaid_match_flag==1],
-                                               na.rm=TRUE),
-         pre_or_study_sud_service_primary_dx_flag = max(sud_service_categorized_using_primary_dx_code[pre_or_study_window_medicaid_match_flag==1],
-                                                na.rm=TRUE),
-         pre_or_study_bh_mh_or_sud_service_primary_dx_flag = pmax(pre_or_study_mh_service_primary_dx_flag,pre_or_study_sud_service_primary_dx_flag,
-                                                          na.rm=TRUE),
-         pre_or_study_bh_mh_or_sud_service_secondary_dx_flag = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[pre_or_study_window_medicaid_match_flag==1],
-                                                           na.rm=TRUE),
-         pre_or_study_homeless_on_eligibility_begin_flag = max(homeless_on_eligbility_begin_date[pre_or_study_window_medicaid_match_flag==1],
-                                                       na.rm=TRUE),
-         pre_or_study_service_provided_by_cmhc_provider_flag = max(service_provided_by_cmhc_provider[pre_or_study_window_medicaid_match_flag==1],
-                                                           na.rm=TRUE),
-         pre_or_study_ed_visit_or_service_flag = max(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1],
-                                             na.rm=TRUE),
-         pre_or_study_ed_visit_or_service_related_to_smi_flag = max(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1 & smi_flag==1],
-                                                     na.rm=TRUE),
+  mutate(pre_or_study_bh_flag                                    = max(overall_bh_flag[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_mh_service_primary_dx_flag                 = max(mh_service_categorized_using_primary_dx_code[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_sud_service_primary_dx_flag                = max(sud_service_categorized_using_primary_dx_code[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_bh_mh_or_sud_service_primary_dx_flag       = max(pre_or_study_mh_service_primary_dx_flag,pre_or_study_sud_service_primary_dx_flag,
+                                                                       na.rm=TRUE),
+         pre_or_study_bh_mh_or_sud_service_secondary_dx_flag     = max(bh_mh_or_sud_service_secondary_dx_encounter_flag[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_homeless_on_eligibility_begin_flag         = max(homeless_on_eligbility_begin_date[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_service_provided_by_cmhc_provider_flag     = max(service_provided_by_cmhc_provider[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_ed_visit_or_service_flag                   = max(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_ed_visit_or_service_related_to_smi_flag    = max(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1 & smi_flag==1],
+                                                                       na.rm=TRUE),
          pre_or_study_ed_visit_or_service_related_to_opioid_flag = max(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1 & opioid_related_flag==1],
-                                                                    na.rm=TRUE),
-         pre_or_study_ed_visit_or_service_encounter_count = sum(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1],
-                                                        na.rm=TRUE),
-         pre_or_study_mental_health_pharmacy_service_flag = max(mental_health_pharmacy_service[pre_or_study_window_medicaid_match_flag==1],
-                                                        na.rm=TRUE),
-         pre_or_study_sud_pharmacy_service_flag = max(sud_pharmacy_service[pre_or_study_window_medicaid_match_flag==1],
-                                              na.rm=TRUE),
-         pre_or_study_other_service_flag = max(other_service[pre_or_study_window_medicaid_match_flag==1],
-                                       na.rm=TRUE),
-         pre_or_study_smi_flag = max(smi_flag[pre_or_study_window_medicaid_match_flag==1],
-                             na.rm=TRUE),
-         pre_or_study_opioid_related_flag = max(opioid_related_flag[pre_or_study_window_medicaid_match_flag==1],
-                                        na.rm=TRUE)) %>%
+                                                                       na.rm=TRUE),
+         pre_or_study_ed_visit_or_service_encounter_count        = sum(ed_visit_or_service[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_mental_health_pharmacy_service_flag        = max(mental_health_pharmacy_service[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_sud_pharmacy_service_flag                  = max(sud_pharmacy_service[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_other_service_flag                         = max(other_service[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_smi_flag                                   = max(smi_flag[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_opioid_related_flag                        = max(opioid_related_flag[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_alcohol_related_flag                       = max(alcohol_related_flag[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE),
+         pre_or_study_suicide_related_flag                       = max(suicide_related_flag[pre_or_study_window_medicaid_match_flag==1],
+                                                                       na.rm=TRUE)
+         ) %>%
 
   ### now create flags for study window -- all prefixed with 'study_'
   mutate(study_bh_flag = max(overall_bh_flag[study_window_medicaid_match_flag==1],
@@ -688,7 +697,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
                                         na.rm=TRUE)) %>%
   ungroup() %>%
   ### for new flags, recode -inf as 0; this happened when we took the max of columns where the only value was NA
-  mutate(across(.cols = pre_or_study_mh_service_primary_dx_flag:pre_or_study_opioid_related_flag,
+  mutate(across(.cols = pre_or_study_mh_service_primary_dx_flag:pre_or_study_suicide_related_flag,
                 ~ ifelse(is.infinite(.x),
                          0, .x))) %>%
   ### now de-dup by individual
@@ -699,7 +708,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
 
 
 ###############################################################################
-### save medicaid_enrollment_categories_encounters_2018_2021_individual_level to external hard drive - needed for reimbursement analysis????
+### save medicaid_enrollment_categories_encounters_2018_2021_individual_level to external hard drive
 ###############################################################################
 write_rds(medicaid_enrollment_categories_encounters_2018_2021_individual_level,
           "D:/Analytic/medicaid_enrollment_categories_encounters_2018_2021_individual_level_details.rds")
@@ -716,7 +725,7 @@ medicaid_enrollment_categories_encounters_2018_2021_individual_level <- medicaid
     dplyr::select(unique_person_id,
                   overall_bh_flag = overall_bh_flag_max,
                   study_window_medicaid_match_flag_overall:post_study_window_medicaid_match_flag_overall,
-                  pre_or_study_bh_flag:pre_or_study_opioid_related_flag,
+                  pre_or_study_bh_flag:pre_or_study_suicide_related_flag,
                   study_bh_flag:study_opioid_related_flag,
                   pre_bh_flag:pre_opioid_related_flag
                   ) %>%

@@ -82,7 +82,7 @@ unique_ids_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode
 
 
 #####
-# medicaid encounters with cost and diagnoses information ############################ Andrew, please check this!
+# medicaid encounters with cost and diagnoses information 
 # create unique case id using id and dose date
 medicaid_encounters_costs <- medicaid_encounters_costs_all
 medicaid_encounters_costs$claim_id <- medicaid_encounters_costs %>% 
@@ -340,7 +340,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_mh.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 10,
     height = 6,
     units = "in",
@@ -431,7 +431,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_sud.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 10,
     height = 6,
     units = "in",
@@ -587,7 +587,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_bh.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 10,
     height = 6,
     units = "in",
@@ -668,7 +668,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_match_cooccurring.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 10,
     height = 6,
     units = "in",
@@ -904,99 +904,6 @@ kable(medicaid_jail_smi_opioid_hu_grouping_statewide_table,
 **High utilizers were more likely to have a serious mental illness (SMI) than non-high utilizers.**
 
 ```{r}
-# # by hu_group_exclusive
-# medicaid_jail_smi_hu_grouping <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-#   dplyr::group_by(hu_group_exclusive) %>% 
-#   dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-#                    `Individuals w/ SMI Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
-#                    `Individuals w/out SMI Primary Diagnosis` = `Individuals w/ any Medicaid Match`-`Individuals w/ SMI Primary Diagnosis`,
-#                    pct = `Individuals w/ SMI Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
-#   ungroup() %>% 
-#   select(-`Individuals w/ any Medicaid Match`) %>% 
-#   filter(hu_group_exclusive != "Non-HU")
-# 
-# # change from wide to long format
-# medicaid_jail_smi_hu_grouping <- gather(medicaid_jail_smi_hu_grouping, population, total, `Individuals w/ SMI Primary Diagnosis`:`Individuals w/out SMI Primary Diagnosis`, factor_key=TRUE) 
-# medicaid_jail_smi_hu_grouping <- medicaid_jail_smi_hu_grouping %>% 
-#   mutate(population = factor(population, 
-#                              levels = c("Individuals w/out SMI Primary Diagnosis",
-#                                         "Individuals w/ SMI Primary Diagnosis"),
-#                              labels = c("Individuals w/out SMI Primary Diagnosis",
-#                                         "Individuals w/ SMI Primary Diagnosis")))
-# 
-# PRES_gg_medicaid_jail_smi_hu_grouping <- ggplot(medicaid_jail_smi_hu_grouping, aes(fill=population, y=total, x=hu_group_exclusive)) + 
-#     geom_bar(position="stack", stat="identity") +
-#     geom_text(aes(label = ifelse(medicaid_jail_smi_hu_grouping$population == "Individuals w/ SMI Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
-#               position = position_stack(vjust = .5),
-#               size = 7.5, family = "Franklin Gothic Book",
-#               color = "white",
-#               fontface = "bold") + 
-#     scale_fill_manual(values=c("gray",jri_orange),
-#                     na.value = "white") +
-#     scale_y_continuous(labels = label_number(big.mark = ",")) +
-#     xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
-#     theme_with_grid_with_labels +
-#     theme(legend.justification = c(0.5, 0.5),
-#           legend.direction = "vertical",
-#           legend.box = "horizontal",
-#           legend.position = "bottom",
-#           legend.title=element_blank(),
-#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
-```
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_smi_hu_grouping, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping.png"), width = 7,  height = 6, dpi = 100)
-# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping.png"))
-```
-
-```{r}
-# # by non-HU
-# medicaid_jail_smi_nonhu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-#   dplyr::group_by(hu_group_exclusive) %>% 
-#   dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-#                    `Individuals w/ SMI Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_smi_flag==1]),
-#                    `Individuals w/out SMI Primary Diagnosis` = `Individuals w/ any Medicaid Match`-`Individuals w/ SMI Primary Diagnosis`,
-#                    pct = `Individuals w/ SMI Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
-#   ungroup() %>% 
-#   select(-`Individuals w/ any Medicaid Match`) %>% 
-#   filter(hu_group_exclusive == "Non-HU")
-# 
-# # change from wide to long format
-# medicaid_jail_smi_nonhu <- gather(medicaid_jail_smi_nonhu, population, total, `Individuals w/ SMI Primary Diagnosis`:`Individuals w/out SMI Primary Diagnosis`, factor_key=TRUE) 
-# medicaid_jail_smi_nonhu <- medicaid_jail_smi_nonhu %>% 
-#   mutate(population = factor(population, 
-#                              levels = c("Individuals w/out SMI Primary Diagnosis",
-#                                         "Individuals w/ SMI Primary Diagnosis"),
-#                              labels = c("Individuals w/out SMI Primary Diagnosis",
-#                                         "Individuals w/ SMI Primary Diagnosis")))
-# 
-# PRES_gg_medicaid_jail_smi_nonhu <- ggplot(medicaid_jail_smi_nonhu, aes(fill=population, y=total, x=hu_group_exclusive)) + 
-#     geom_bar(position="stack", stat="identity") +
-#     geom_text(aes(label = ifelse(medicaid_jail_smi_nonhu$population == "Individuals w/ SMI Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
-#               position = position_stack(vjust = .5),
-#               size = 7.5, family = "Franklin Gothic Book",
-#               color = "white",
-#               fontface = "bold") + 
-#     scale_fill_manual(values=c("gray",jri_orange),
-#                     na.value = "white") +
-#     scale_y_continuous(labels = label_number(big.mark = ",")) +
-#     xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
-#     theme_with_grid_with_labels +
-#     theme(legend.position = "none",
-#           legend.title=element_blank(),
-#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
-```
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_smi_nonhu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_nonhu.png"), width = 4,  height = 6, dpi = 100)
-#knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_nonhu.png"))
-```
-
-```{r, echo=FALSE, fig.align='center'}
-# knitr::include_graphics(c(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping.png",paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_nonhu.png"))
-```
-
-```{r}
 # Count number and proportion of people with SMI claims
 # by hu_group_exclusive
 medicaid_jail_smi_hu_grouping <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
@@ -1072,7 +979,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_hu_grouping1.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 10,
     height = 6,
     units = "in",
@@ -1155,7 +1062,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_smi_county.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 9,
     height = 7,
     units = "in",
@@ -1166,99 +1073,6 @@ ggsave(
 <br><br>
 
 **High utilizers were more likely to have a an opioid-related primary diagnosis than non-high utilizers.**
-
-```{r}
-# # Proportion of people with opioid-related primary diagnosis
-# # by hu_group_exclusive
-# medicaid_jail_opioid_hu_grouping <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-#   dplyr::group_by(hu_group_exclusive) %>% 
-#   dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-#                    `Individuals w/ Opioid-related Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
-#                    `Individuals w/out Opioid-related Primary Diagnosis` = `Individuals w/ any Medicaid Match` - `Individuals w/ Opioid-related Primary Diagnosis`,
-#                    `pct` = `Individuals w/ Opioid-related Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
-#   ungroup() %>% 
-#   select(-`Individuals w/ any Medicaid Match`) %>% 
-#   filter(hu_group_exclusive != "Non-HU")
-# # change from wide to long format
-# medicaid_jail_opioid_hu_grouping <- gather(medicaid_jail_opioid_hu_grouping, population, total, `Individuals w/ Opioid-related Primary Diagnosis`:`Individuals w/out Opioid-related Primary Diagnosis`, factor_key=TRUE) 
-# medicaid_jail_opioid_hu_grouping <- medicaid_jail_opioid_hu_grouping %>% 
-#   mutate(population = factor(population, 
-#                              levels = c("Individuals w/out Opioid-related Primary Diagnosis",
-#                                         "Individuals w/ Opioid-related Primary Diagnosis"),
-#                              labels = c("Individuals w/out Opioid-related Primary Diagnosis",
-#                                         "Individuals w/ Opioid-related Primary Diagnosis")))
-# PRES_gg_medicaid_jail_opioid_hu_grouping <- ggplot(medicaid_jail_opioid_hu_grouping, aes(fill=population, y=total, x=hu_group_exclusive)) + 
-#     geom_bar(position="stack", stat="identity") +
-#     geom_text(aes(label = ifelse(medicaid_jail_opioid_hu_grouping$population == "Individuals w/ Opioid-related Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
-#               position = position_stack(vjust = .5),
-#               size = 7.5, family = "Franklin Gothic Book",
-#               color = "white",
-#               fontface = "bold") + 
-#     scale_fill_manual(values=c("gray",jri_green),
-#                     na.value = "white") +
-#     # expand_limits(y = 1400) +
-#     scale_y_continuous(labels = label_number(big.mark = ",")) +
-#     xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
-#     theme_with_grid_with_labels +
-#     theme(legend.justification = c(0.85, 0.5),
-#           legend.direction = "vertical",
-#           legend.box = "horizontal",
-#           legend.position = "bottom",
-#           legend.title=element_blank(),
-#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
-```
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_opioid_hu_grouping, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_hu_grouping.png"), width = 7,  height = 6, dpi = 100)
-# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_hu_grouping.png"))
-```
-
-```{r}
-# # by hu_group_exclusive
-# medicaid_jail_opioid_nonhu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
-#   dplyr::group_by(hu_group_exclusive) %>% 
-#   dplyr::summarise(`Individuals w/ any Medicaid Match` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-#                    `Individuals w/ Opioid-related Primary Diagnosis` = n_distinct(unique_person_id[pre_or_study_opioid_related_flag==1]),
-#                    `Individuals w/out Opioid-related Primary Diagnosis` = `Individuals w/ any Medicaid Match` - `Individuals w/ Opioid-related Primary Diagnosis`,
-#                    `pct` = `Individuals w/ Opioid-related Primary Diagnosis`/`Individuals w/ any Medicaid Match`) %>% 
-#   ungroup() %>% 
-#   select(-`Individuals w/ any Medicaid Match`) %>% 
-#   filter(hu_group_exclusive == "Non-HU")
-# 
-# # change from wide to long format
-# medicaid_jail_opioid_nonhu <- gather(medicaid_jail_opioid_nonhu, population, total, `Individuals w/ Opioid-related Primary Diagnosis`:`Individuals w/out Opioid-related Primary Diagnosis`, factor_key=TRUE) 
-# medicaid_jail_opioid_nonhu <- medicaid_jail_opioid_nonhu %>% 
-#   mutate(population = factor(population, 
-#                              levels = c("Individuals w/out Opioid-related Primary Diagnosis",
-#                                         "Individuals w/ Opioid-related Primary Diagnosis"),
-#                              labels = c("Individuals w/out Opioid-related Primary Diagnosis",
-#                                         "Individuals w/ Opioid-related Primary Diagnosis")))
-# PRES_gg_medicaid_jail_opioid_nonhu <- ggplot(medicaid_jail_opioid_nonhu, aes(fill=population, y=total, x=hu_group_exclusive)) + 
-#     geom_bar(position="stack", stat="identity") +
-#     geom_text(aes(label = ifelse(medicaid_jail_opioid_nonhu$population == "Individuals w/ Opioid-related Primary Diagnosis", paste0(round(pct*100, 0), "%", sep = ""), "")),
-#               position = position_stack(vjust = .5),
-#               size = 7.5, family = "Franklin Gothic Book",
-#               color = "white",
-#               fontface = "bold") + 
-#     scale_fill_manual(values=c("gray",jri_green),
-#                     na.value = "white") +
-#     # expand_limits(y = 1400) +
-#     scale_y_continuous(labels = label_number(big.mark = ",")) +
-#     xlab("") + ylab("Number of Individuals\n Matched to Medicaid") +
-#     theme_with_grid_with_labels +
-#     theme(legend.position = "none",
-#           legend.title=element_blank(),
-#           legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"))
-```
-
-```{r, out.width="100%", echo=FALSE, layout = "l-body"}
-# ggsave(PRES_gg_medicaid_jail_opioid_nonhu, file=paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_nonhu.png"), width = 4,  height = 6, dpi = 100)
-# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_nonhu.png"))
-```
-
-```{r, echo=FALSE, fig.align='center'}
-# knitr::include_graphics(c(paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_hu_grouping.png"),paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_nonhu.png")))
-```
 
 ```{r}
 # Count number and proportion of people with opioid claims
@@ -1337,7 +1151,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid1.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 10,
     height = 6,
     units = "in",
@@ -1420,7 +1234,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_jail_opioid_county.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 9,
     height = 7,
     units = "in",
@@ -1486,7 +1300,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_top_diagnoses.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 12,
     height = 6,
     units = "in",
@@ -1563,7 +1377,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_medicaid_smi_primary_diagnoses.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 12,
     height = 6,
     units = "in",
@@ -1682,7 +1496,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_hu.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 14,
     height = 7,
     units = "in",
@@ -1800,7 +1614,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_smi_primary_diagnoses_tier1hu.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 14,
     height = 7,
     units = "in",
@@ -1890,7 +1704,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_smi_suicide_related_hu.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 10,
     height = 6,
     units = "in",
@@ -1966,7 +1780,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_smi_suicide_related_hu_overall.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 10,
     height = 6,
     units = "in",
@@ -2049,7 +1863,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_alcohol_related_hu.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 10,
     height = 6,
     units = "in",
@@ -2125,7 +1939,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_alcohol_related_hu_overall.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 10,
     height = 6,
     units = "in",
