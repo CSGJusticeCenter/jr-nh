@@ -30,7 +30,7 @@ entrances_dhhs <- medicaid_jail_all %>%
 entrances_dhhs <- fnc_hu_group_exclusive(entrances_dhhs)
 
 # Save ids and HU types
-hu_ids <- entrances_dhhs %>% select(id, hu_group_exclusive, hu_group_overall) %>% distinct()
+hu_ids <- entrances_dhhs %>% select(id, hu_group_exclusive, hu_group_overall, medicaid_match_flag) %>% distinct()
 
 # Reported costs - use these if available
 reported_costs <- county_budgets_reported.xlsx %>%
@@ -63,6 +63,9 @@ for (i in 1:nrow(entrances)){
   entrances_unpacked <- rbind(entrances_unpacked, expand)
 }
 
+##########
+# By county
+##########
 
 # Calculate the number of individuals present in each county in each day
 # Filter to dates in 2019
@@ -86,8 +89,13 @@ daily_pop_costs <- daily_pop_costs %>%
 # average cost per person per day in NH
 avg_cost_pp_per_day <- mean(daily_pop_costs$cost_pp_per_day)
 
-# By hu not county
+####################
+# By hu
+####################
+
 entrances_unpacked_hus <- entrances_unpacked %>% left_join(hu_ids, by = "id")
+
+# By hu
 daily_pop_costs_hu <- entrances_unpacked_hus %>%
   group_by(hu_group_exclusive, Dates) %>%
   dplyr::summarise(individuals = n()) %>%
@@ -108,6 +116,34 @@ daily_pop_costs_hu <- daily_pop_costs_hu %>%
   mutate(cost_pp_per_day = avg_cost_pp_per_day,
          cost_per_year = avg_pop_fy19*365*cost_pp_per_day)
 
+####################
+# By hu and only for those who matched to Medicaid
+####################
+
+# By hu and matched to Medicaid
+daily_pop_costs_medicaid_match_hu <- entrances_unpacked_hus %>%
+  filter(medicaid_match_flag == 1) %>%
+  group_by(hu_group_exclusive, Dates) %>%
+  dplyr::summarise(individuals = n()) %>%
+  filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
+  group_by(hu_group_exclusive) %>%
+  dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE))
+
+# By state and matched to Medicaid
+daily_pop_costs_medicaid_match_state <- entrances_unpacked_hus %>% group_by(Dates) %>%
+  filter(medicaid_match_flag == 1) %>%
+  dplyr::summarise(individuals = n()) %>%
+  filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
+  dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE)) %>%
+  mutate(hu_group_exclusive = "State")
+
+# Add data together
+daily_pop_costs_medicaid_match_hu <- rbind(daily_pop_costs_medicaid_match_hu, daily_pop_costs_medicaid_match_state)
+daily_pop_costs_medicaid_match_hu <- daily_pop_costs_medicaid_match_hu %>%
+  mutate(cost_pp_per_day = avg_cost_pp_per_day,
+         cost_per_year = avg_pop_fy19*365*cost_pp_per_day)
+
 # Save out to external hard drive
-write_rds(daily_pop_costs,    "D:/Analytic/daily_pop_costs.rds")
-write_rds(daily_pop_costs_hu, "D:/Analytic/daily_pop_costs_hu.rds")
+write_rds(daily_pop_costs,                   "D:/Analytic/daily_pop_costs.rds")
+write_rds(daily_pop_costs_hu,                "D:/Analytic/daily_pop_costs_hu.rds")
+write_rds(daily_pop_costs_medicaid_match_hu, "D:/Analytic/daily_pop_costs_medicaid_match_hu.rds")
