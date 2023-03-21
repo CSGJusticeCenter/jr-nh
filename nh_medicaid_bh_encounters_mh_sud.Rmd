@@ -1634,30 +1634,60 @@ ggsave(
 High utilizers were more likely to have a primary diagnosis for suicidal ideation/attempt/intentional self-harm.  
 
 ```{r}
-# Find number and proportion of people with primary diagnosis for "suicidal ideation/attempt/intentional self-harm" 
+################################################################################
+
+# Previously was using medicaid_encounters_cleaned_2018_2021 but using suicide-related flag in jail_medicaid_analytic_individual_booking_level_dedup_hu_recode is more reliable
+
+# # find number and proportion of people with primary diagnosis for "suicidal ideation/attempt/intentional self-harm" 
+# # by hu_group_exclusive
+# smi_suicide_related_hu <- medicaid_encounters_cleaned_2018_2021 %>% 
+#   group_by(hu_group_exclusive) %>% 
+#   summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+#             
+#             `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm"]),
+#             `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`= `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ Medicaid Match (N)`,
+#             `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) 
+#   
+# # by state
+# smi_suicide_related_hu_state <- medicaid_encounters_cleaned_2018_2021 %>% 
+#   summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+#             
+#             `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm"]),
+#             `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`= `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ Medicaid Match (N)`,
+#             `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) %>% 
+#   mutate(hu_group_exclusive = "State")
+################################################################################
+
+# Count number and proportion of people with SMI claims
 # by hu_group_exclusive
-smi_suicide_related_hu <- medicaid_encounters_cleaned_2018_2021 %>% 
-  group_by(hu_group_exclusive) %>% 
-  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
-            
-            `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm"]),
-            `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`= `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ Medicaid Match (N)`,
-            `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) 
-  
+smi_suicide_related_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)`                                 = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`    = n_distinct(unique_person_id[pre_or_study_suicide_related_flag==1]),
+                   `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`    = `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`))
+
+# Count number and proportion of people with suicide-related claims
 # by state
-smi_suicide_related_hu_state <- medicaid_encounters_cleaned_2018_2021 %>% 
-  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
-            
-            `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm"]),
-            `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`= `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ Medicaid Match (N)`,
-            `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) %>% 
+smi_suicide_related_hu_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)`                                 = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`    = n_distinct(unique_person_id[pre_or_study_suicide_related_flag==1]),
+                   `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`    = `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`)) %>% 
   mutate(hu_group_exclusive = "State")
 
 # combine data
 smi_suicide_related_hu <- rbind(smi_suicide_related_hu, smi_suicide_related_hu_state)
 
 # change from wide to long format
-smi_suicide_related_hu <- gather(smi_suicide_related_hu, population, pct, `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`:`Individuals w/out suicidal ideation/attempt/intentional self-harm (%)`, factor_key=TRUE) 
+smi_suicide_related_hu <- gather(smi_suicide_related_hu, population, pct, `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`:`Individuals w/out suicidal ideation/attempt/intentional self-harm (%)`, 
+                                 factor_key=TRUE) 
 smi_suicide_related_hu <- smi_suicide_related_hu %>% 
   mutate(population = factor(population, 
                              levels = c("Individuals w/out suicidal ideation/attempt/intentional self-harm (%)",
@@ -1705,7 +1735,7 @@ ggsave(
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 100,
-    width = 10,
+    width = 11,
     height = 6,
     units = "in",
     bg = "transparent"
@@ -1713,23 +1743,52 @@ ggsave(
 ```
 
 ```{r}
-# Find number and proportion of people with primary diagnosis for "suicidal ideation/attempt/intentional self-harm" 
+################################################################################
+
+# Previously was using medicaid_encounters_cleaned_2018_2021 but using suicide-related flag in jail_medicaid_analytic_individual_booking_level_dedup_hu_recode is more reliable
+
+# # Find number and proportion of people with primary diagnosis for "suicidal ideation/attempt/intentional self-harm" 
+# # by hu_group_overall
+# smi_suicide_related_hu <- medicaid_encounters_cleaned_2018_2021 %>% 
+#   group_by(hu_group_overall) %>% 
+#   summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+#             
+#             `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm"]),
+#             `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`= `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ Medicaid Match (N)`,
+#             `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) 
+#   
+# # by state
+# smi_suicide_related_hu_state <- medicaid_encounters_cleaned_2018_2021 %>% 
+#   summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+#             
+#             `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm"]),
+#             `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`= `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ Medicaid Match (N)`,
+#             `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) %>% 
+#   mutate(hu_group_overall = "State")
+################################################################################
+
+# Count number and proportion of people with suicide-related diagnoses
 # by hu_group_overall
-smi_suicide_related_hu <- medicaid_encounters_cleaned_2018_2021 %>% 
-  group_by(hu_group_overall) %>% 
-  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
-            
-            `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm"]),
-            `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`= `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ Medicaid Match (N)`,
-            `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) 
-  
+smi_suicide_related_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(hu_group_overall) %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)`                                 = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`    = n_distinct(unique_person_id[pre_or_study_suicide_related_flag==1]),
+                   `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`    = `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`))
+
+# Count number and proportion of people with suicide-related claims
 # by state
-smi_suicide_related_hu_state <- medicaid_encounters_cleaned_2018_2021 %>% 
-  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
-            
-            `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm"]),
-            `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`= `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ Medicaid Match (N)`,
-            `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) %>% 
+smi_suicide_related_hu_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)`                                 = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`    = n_distinct(unique_person_id[pre_or_study_suicide_related_flag==1]),
+                   `Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`    = `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out suicidal ideation/attempt/intentional self-harm (%)` = 1-`Individuals w/ suicidal ideation/attempt/intentional self-harm (%)`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ suicidal ideation/attempt/intentional self-harm (N)`)) %>% 
   mutate(hu_group_overall = "State")
 
 # combine data
@@ -1781,7 +1840,7 @@ ggsave(
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 100,
-    width = 10,
+    width = 11,
     height = 6,
     units = "in",
     bg = "transparent"
@@ -1793,23 +1852,51 @@ ggsave(
 ### Primary diagnosis for "alcohol-related disorders" Medicaid claims between FY2019-2021.
 
 ```{r}
-# Find number and proportion of people with primary diagnosis for "alcohol-related disorders" 
-# by hu_group_overall
-alcohol_related_hu <- medicaid_encounters_cleaned_2018_2021 %>% 
-  group_by(hu_group_exclusive) %>% 
-  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
-            
-            `Individuals w/ alcohol-related disorders (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification == "Alcohol-related disorders"]),
-            `Individuals w/ alcohol-related disorders (%)`= `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ Medicaid Match (N)`,
-            `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) 
-  
+################################################################################
+
+# Previously was using medicaid_encounters_cleaned_2018_2021 but using alcohol-related flag in jail_medicaid_analytic_individual_booking_level_dedup_hu_recode is more reliable
+
+# # Find number and proportion of people with primary diagnosis for "alcohol-related disorders" 
+# # by hu_group_overall
+# alcohol_related_hu <- medicaid_encounters_cleaned_2018_2021 %>% 
+#   group_by(hu_group_exclusive) %>% 
+#   summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+#             
+#             `Individuals w/ alcohol-related disorders (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification == "Alcohol-related disorders"]),
+#             `Individuals w/ alcohol-related disorders (%)`= `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ Medicaid Match (N)`,
+#             `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) 
+#   
+# # by state
+# alcohol_related_hu_state <- medicaid_encounters_cleaned_2018_2021 %>% 
+#   summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+#             
+#             `Individuals w/ alcohol-related disorders (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification == "Alcohol-related disorders"]),
+#             `Individuals w/ alcohol-related disorders (%)`= `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ Medicaid Match (N)`,
+#             `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) %>% 
+#   mutate(hu_group_exclusive = "State")
+
+# Count number and proportion of people with alcohol-related disorders
+# by hu_group_exclusive
+alcohol_related_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)`           = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ alcohol-related disorders (N)`    = n_distinct(unique_person_id[pre_or_study_alcohol_related_flag==1]),
+                   `Individuals w/ alcohol-related disorders (%)`    = `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ alcohol-related disorders (N)`))
+
+# Count number and proportion of people with alcohol-related disorders
 # by state
-alcohol_related_hu_state <- medicaid_encounters_cleaned_2018_2021 %>% 
-  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
-            
-            `Individuals w/ alcohol-related disorders (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification == "Alcohol-related disorders"]),
-            `Individuals w/ alcohol-related disorders (%)`= `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ Medicaid Match (N)`,
-            `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) %>% 
+alcohol_related_hu_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)`           = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ alcohol-related disorders (N)`    = n_distinct(unique_person_id[pre_or_study_alcohol_related_flag==1]),
+                   `Individuals w/ alcohol-related disorders (%)`    = `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ alcohol-related disorders (N)`)) %>% 
   mutate(hu_group_exclusive = "State")
 
 # combine data
@@ -1864,7 +1951,7 @@ ggsave(
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 100,
-    width = 10,
+    width = 11,
     height = 6,
     units = "in",
     bg = "transparent"
@@ -1872,23 +1959,47 @@ ggsave(
 ```
 
 ```{r}
-# Find number and proportion of people with primary diagnosis for "alcohol-related disorders" 
+# # Find number and proportion of people with primary diagnosis for "alcohol-related disorders" 
+# # by hu_group_overall
+# alcohol_related_hu <- medicaid_encounters_cleaned_2018_2021 %>% 
+#   group_by(hu_group_overall) %>% 
+#   summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+#             
+#             `Individuals w/ alcohol-related disorders (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification == "Alcohol-related disorders"]),
+#             `Individuals w/ alcohol-related disorders (%)`= `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ Medicaid Match (N)`,
+#             `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) 
+#   
+# # by state
+# alcohol_related_hu_state <- medicaid_encounters_cleaned_2018_2021 %>% 
+#   summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
+#             
+#             `Individuals w/ alcohol-related disorders (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification == "Alcohol-related disorders"]),
+#             `Individuals w/ alcohol-related disorders (%)`= `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ Medicaid Match (N)`,
+#             `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) %>% 
+#   mutate(hu_group_overall = "State")
+
+# Count number and proportion of people with alcohol-related disorders
 # by hu_group_overall
-alcohol_related_hu <- medicaid_encounters_cleaned_2018_2021 %>% 
-  group_by(hu_group_overall) %>% 
-  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
-            
-            `Individuals w/ alcohol-related disorders (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification == "Alcohol-related disorders"]),
-            `Individuals w/ alcohol-related disorders (%)`= `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ Medicaid Match (N)`,
-            `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) 
-  
+alcohol_related_hu <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::group_by(hu_group_overall) %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)`           = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ alcohol-related disorders (N)`    = n_distinct(unique_person_id[pre_or_study_alcohol_related_flag==1]),
+                   `Individuals w/ alcohol-related disorders (%)`    = `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ alcohol-related disorders (N)`))
+
+# Count number and proportion of people with alcohol-related disorders
 # by state
-alcohol_related_hu_state <- medicaid_encounters_cleaned_2018_2021 %>% 
-  summarise(`Individuals w/ Medicaid Match (N)` = (n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1])),
-            
-            `Individuals w/ alcohol-related disorders (N)` =  n_distinct(unique_person_id[dx_prmry_clinical_classification == "Alcohol-related disorders"]),
-            `Individuals w/ alcohol-related disorders (%)`= `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ Medicaid Match (N)`,
-            `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) %>% 
+alcohol_related_hu_state <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  dplyr::summarise(`Individuals w/ any Medicaid Match (N)`           = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ alcohol-related disorders (N)`    = n_distinct(unique_person_id[pre_or_study_alcohol_related_flag==1]),
+                   `Individuals w/ alcohol-related disorders (%)`    = `Individuals w/ alcohol-related disorders (N)`/`Individuals w/ any Medicaid Match (N)`,
+                   `Individuals w/out alcohol-related disorders (%)` = 1-`Individuals w/ alcohol-related disorders (%)`) %>% 
+  ungroup() %>% 
+  select(-c(`Individuals w/ any Medicaid Match (N)`,
+            `Individuals w/ alcohol-related disorders (N)`)) %>% 
   mutate(hu_group_overall = "State")
 
 # combine data
