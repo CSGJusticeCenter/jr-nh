@@ -265,56 +265,238 @@ kable(medicaid_enrollment_ends_average_jail_los_table,
 
 <br><br>
 
-### From Uma: were claims filed during incarceration?
+### Additional analysis for Commissioner Hanks and Medicaid Director Lipman
+
+Focus on ED/urgent care visits post-release (Hanks), time of release to time of first treatment (Lipman) 
+
+* Can we explore time from jail release to next BH treatment (from the Medicaid data)? this one is little tricky, I think, b/c we can't say if a given jail booking was definitely BH-related or not -- but maybe it's worth a quick look to see if anything stands out
+
+* By High Utilizer grouping 
+
+* Post-release == 5 days? 
+
 ```{r echo=FALSE,message=FALSE,warning=FALSE} 
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds") %>% 
-  filter(medicaid_match_flag==1)
+  filter(medicaid_match_flag==1,
+         !is.na(release_date))  %>% 
+  ### to ensure each individual/booking is in correct grouping, start with Non-HU, then 10% and move down to 1%
+  mutate(hu_group_exclusive = case_when(
+    high_utilizer_10_pct=="No" ~ 4,
+    high_utilizer_10_pct=="Yes" & high_utilizer_5_pct=="No" & high_utilizer_1_pct=="No" ~ 3,
+    high_utilizer_5_pct=="Yes" & high_utilizer_1_pct=="No" ~ 2,
+    high_utilizer_1_pct=="Yes" ~ 1,
+    TRUE ~ as.numeric(NA)),
+    hu_group_exclusive = factor(hu_group_exclusive,
+         levels = c(1,2,3,4),
+         labels = c("Tier 1", "Tier 2", "Tier 3", "Non-HU"))) %>% 
+  ### now arrange and group by individual to take the next booking begin date
+  ### following a record's release end date using dplyr::lead to take the next start date
+  ### after a given end date (https://dplyr.tidyverse.org/reference/lead-lag.html)
+  ### this will allow us to calculate the average time from release end to the next booking
+  ### NA for next_eligibility_begin_date indicates no subsequent re-enrollment
+  ### REASON: we will use this to filter out records with quick re-incarceration for analysis of 
+  ### medicaid usage within 5 and 10 days of release 
+  arrange(unique_person_id, booking_date) %>%
+  group_by(unique_person_id) %>%
+  mutate(next_booking_begin_date = dplyr::lead(booking_date,
+                                                   1,
+                                                   default=NA)) %>%
+  ungroup() %>% 
+    ### now calculate time between two dates in days 
+  mutate(jail_booking_release_next_begin_diff_days = as.numeric(difftime(next_booking_begin_date,
+                                                                    release_date,
+                                                                    units="days")),
+         ### this is generally bad practice, but i only care about filtering out records where the next booking is within 5 or 10 days so i just want to make sure the NAs stay in the analysis -- i'm not doing any other calculations with jail_booking_release_next_begin_diff_days
+         jail_booking_release_next_begin_diff_days = ifelse(is.na(jail_booking_release_next_begin_diff_days)==TRUE | jail_booking_release_next_begin_diff_days < -1,
+                                                            99,
+                                                            jail_booking_release_next_begin_diff_days)) %>% 
+  dplyr::select(unique_person_id,
+               booking_id,
+               booking_date,
+               release_date,
+               next_booking_begin_date,
+               jail_booking_release_next_begin_diff_days,
+               everything())
 
 ### pull in clean and de-duped encounter file
 medicaid_encounters_clean <- read_rds("D:/Analytic/medicaid_encounters_de_dup_clean.rds") %>% 
   mutate(unique_person_id = as.character(unique_person_id))
 
 ### create file where we can flag claims made during incarceration 
-uma_claims_question_df <- inner_join(medicaid_jail_all,
+hanks_lipman_follow_up <- inner_join(medicaid_jail_all,
                                     medicaid_encounters_clean,
                                     by = "unique_person_id") %>% 
-  mutate(claim_during_incarceration_flag = ifelse(first_dos_dt>booking_date &
-                                                           first_dos_dt<release_date,
-                                                   1,0))
-
-# statewide table
-uma_claims_question_df_table <- uma_claims_question_df %>% 
-  dplyr::summarise(`Overall Individuals (N)` = n_distinct(unique_person_id),
-                   `Individuals w/ Claims During Incarceration (N)` = n_distinct(unique_person_id[claim_during_incarceration_flag==1]),
-                   `Individuals w/ Claims During Incarceration (%)` = n_distinct(unique_person_id[claim_during_incarceration_flag==1])/`Overall Individuals (N)`*100) 
-
-### print table via kableextra
-kable(uma_claims_question_df_table, 
-      format.args = list(big.mark = ","), 
-      align=rep('c')) %>%
-  kable_styling(bootstrap_options = c("striped", 
-                                       "hover", 
-                                       "condensed", 
-                                       "responsive"), 
-                 row_label_position = "l") 
-
-# statewide table
-uma_claims_question_df_table_average <- uma_claims_question_df %>% 
-  group_by(unique_person_id) %>% 
-  dplyr::mutate(claim_count = sum(claim_during_incarceration_flag)) %>% 
+  mutate(any_claim_within_5_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=5)),
+                                                     1,0),
+         ed_claim_within_5_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=5)) & 
+                                                      ed_visit_or_service==1,
+                                                     1,0),
+          cmhc_claim_within_5_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=5)) & 
+                                                      service_provided_by_cmhc_provider==1,
+                                                     1,0),
+         any_claim_within_10_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=10)),
+                                                     1,0),
+         ed_claim_within_10_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=10)) & 
+                                                      ed_visit_or_service==1,
+                                                     1,0),
+         cmhc_claim_within_10_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=10)) & 
+                                                      service_provided_by_cmhc_provider==1,
+                                                     1,0)) %>% 
+  group_by(unique_person_id,
+               booking_id) %>% 
+   ### now create flags at booking level
+  mutate(any_claim_within_5_days_of_release = max(any_claim_within_5_days_of_release,
+                           na.rm=TRUE),
+            ed_claim_within_5_days_of_release = max(ed_claim_within_5_days_of_release,
+                           na.rm=TRUE),
+            cmhc_claim_within_5_days_of_release = max(cmhc_claim_within_5_days_of_release,
+                           na.rm=TRUE),
+            any_claim_within_10_days_of_release = max(any_claim_within_10_days_of_release,
+                           na.rm=TRUE),
+            ed_claim_within_10_days_of_release = max(ed_claim_within_10_days_of_release,
+                           na.rm=TRUE),
+            cmhc_claim_within_10_days_of_release = max(cmhc_claim_within_10_days_of_release,
+                           na.rm=TRUE)) %>% 
   ungroup() %>% 
-  summarise(`Mean Claims` = mean(claim_count,na.rm=TRUE),
-            `Median Claims` = median(claim_count,na.rm=TRUE))
+  dplyr::select(unique_person_id,
+               booking_id,
+               hu_group_exclusive,
+               any_claim_within_5_days_of_release:cmhc_claim_within_10_days_of_release,
+               jail_booking_release_next_begin_diff_days) %>% 
+  distinct(unique_person_id,
+               booking_id,
+           .keep_all = TRUE) %>% 
+  mutate(unique_person_booking_id = paste0(unique_person_id,
+               booking_id))
+
+### to explore
+### create file where we can flag claims made during incarceration 
+hanks_lipman_follow_up_huh <- inner_join(medicaid_jail_all,
+                                    medicaid_encounters_clean,
+                                    by = "unique_person_id") %>% 
+  mutate(any_claim_within_5_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=5)),
+                                                     1,0),
+         ed_claim_within_5_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=5)) & 
+                                                      ed_visit_or_service==1,
+                                                     1,0),
+          cmhc_claim_within_5_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=5)) & 
+                                                      service_provided_by_cmhc_provider==1,
+                                                     1,0),
+         any_claim_within_10_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=10)),
+                                                     1,0),
+         ed_claim_within_10_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=10)) & 
+                                                      ed_visit_or_service==1,
+                                                     1,0),
+         cmhc_claim_within_10_days_of_release = ifelse(first_dos_dt>=release_date &
+                                                       (as.numeric(difftime(first_dos_dt,
+                                                                release_date,
+                                                                units="days")<=10)) & 
+                                                      service_provided_by_cmhc_provider==1,
+                                                     1,0)) %>% 
+  filter(any_claim_within_5_days_of_release==1 | any_claim_within_10_days_of_release==1) %>% 
+  dplyr::select(unique_person_id,
+               booking_id,
+               hu_group_exclusive,
+               any_claim_within_5_days_of_release:cmhc_claim_within_10_days_of_release,
+               jail_booking_release_next_begin_diff_days,
+               service_provided_by_cmhc_provider:other_service,
+               everything())
+  # distinct(unique_person_id,
+  #              booking_id,
+  #          .keep_all = TRUE) %>% 
+
+
+# HU table
+hanks_lipman_follow_up_table_hu <- hanks_lipman_follow_up %>% 
+  group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(`Overall Bookings (N)` = n_distinct(unique_person_booking_id),
+                   `Overall Bookings, 5-day Sample (N)` = n_distinct(unique_person_booking_id[jail_booking_release_next_begin_diff_days>5]),
+                   `Overall Bookings, 10-day Sample (N)` = n_distinct(unique_person_booking_id[jail_booking_release_next_begin_diff_days>10]),
+                   # `Bookings w/ any BH Claims with 5 Days of Release (N)` = n_distinct(unique_person_booking_id[any_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5]),
+                   `Bookings w/ any BH Claims within 5 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[any_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5])/`Overall Bookings, 5-day Sample (N)`),
+                   # `Bookings w/ ED Claims with 5 Days of Release (N)` = n_distinct(unique_person_booking_id[ed_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5]),
+                   `Bookings w/ ED Claims within 5 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[ed_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5])/`Overall Bookings, 5-day Sample (N)`),
+                   # `Bookings w/ CMHC Claims with 5 Days of Release (N)` = n_distinct(unique_person_booking_id[cmhc_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5]),
+                   `Bookings w/ CMHC Claims within 5 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[cmhc_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5])/`Overall Bookings, 5-day Sample (N)`),
+                   # `Bookings w/ any BH Claims with 10 Days of Release (N)` = n_distinct(unique_person_booking_id[any_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10]),
+                   `Bookings w/ any BH Claims within 10 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[any_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10])/`Overall Bookings, 10-day Sample (N)`),
+                   # `Bookings w/ ED Claims with 10 Days of Release (N)` = n_distinct(unique_person_booking_id[ed_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10]),
+                   `Bookings w/ ED Claims within 10 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[ed_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10])/`Overall Bookings, 10-day Sample (N)`),
+                   # `Bookings w/ CMHC Claims with 10 Days of Release (N)` = n_distinct(unique_person_booking_id[cmhc_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10]),
+                   `Bookings w/ CMHC Claims within 10 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[cmhc_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10])/`Overall Bookings, 10-day Sample (N)`)) %>%   
+  ungroup() %>% 
+  dplyr::rename(`HU Tiers` = hu_group_exclusive)
+
+# statewide table
+hanks_lipman_follow_up_table_state <- hanks_lipman_follow_up %>% 
+   dplyr::summarise(`Overall Bookings (N)` = n_distinct(unique_person_booking_id),
+                   `Overall Bookings, 5-day Sample (N)` = n_distinct(unique_person_booking_id[jail_booking_release_next_begin_diff_days>5]),
+                   `Overall Bookings, 10-day Sample (N)` = n_distinct(unique_person_booking_id[jail_booking_release_next_begin_diff_days>10]),
+                   # `Bookings w/ any BH Claims with 5 Days of Release (N)` = n_distinct(unique_person_booking_id[any_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5]),
+                   `Bookings w/ any BH Claims within 5 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[any_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5])/`Overall Bookings, 5-day Sample (N)`),
+                   # `Bookings w/ ED Claims with 5 Days of Release (N)` = n_distinct(unique_person_booking_id[ed_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5]),
+                   `Bookings w/ ED Claims within 5 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[ed_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5])/`Overall Bookings, 5-day Sample (N)`),
+                   # `Bookings w/ CMHC Claims with 5 Days of Release (N)` = n_distinct(unique_person_booking_id[cmhc_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5]),
+                   `Bookings w/ CMHC Claims within 5 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[cmhc_claim_within_5_days_of_release==1 & jail_booking_release_next_begin_diff_days>5])/`Overall Bookings, 5-day Sample (N)`),
+                   # `Bookings w/ any BH Claims with 10 Days of Release (N)` = n_distinct(unique_person_booking_id[any_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10]),
+                   `Bookings w/ any BH Claims within 10 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[any_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10])/`Overall Bookings, 10-day Sample (N)`),
+                   # `Bookings w/ ED Claims with 10 Days of Release (N)` = n_distinct(unique_person_booking_id[ed_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10]),
+                   `Bookings w/ ED Claims within 10 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[ed_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10])/`Overall Bookings, 10-day Sample (N)`),
+                   # `Bookings w/ CMHC Claims with 10 Days of Release (N)` = n_distinct(unique_person_booking_id[cmhc_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10]),
+                   `Bookings w/ CMHC Claims within 10 Days of Release (%)` = scales::percent(n_distinct(unique_person_booking_id[cmhc_claim_within_10_days_of_release==1 & jail_booking_release_next_begin_diff_days>10])/`Overall Bookings, 10-day Sample (N)`)) %>% 
+  mutate(`HU Tiers` = "Overall")
+
+hanks_lipman_follow_up_table_final <- rbind(hanks_lipman_follow_up_table_hu,
+                                            hanks_lipman_follow_up_table_state)
+
+sp_viz_output_path <- paste0(sp_data_path, "/Output/r_output_presentation")
+
 
 ### print table via kableextra
-kable(uma_claims_question_df_table_average, 
+kable(hanks_lipman_follow_up_table_final, 
       format.args = list(big.mark = ","), 
       align=rep('c')) %>%
   kable_styling(bootstrap_options = c("striped", 
                                        "hover", 
                                        "condensed", 
                                        "responsive"), 
-                 row_label_position = "l")
+                 row_label_position = "l") %>%
+  save_kable(file.path(sp_viz_output_path,"booking_release_to_bh_claims_timing.png"))
+
+
 ```
 
 <br><br>
