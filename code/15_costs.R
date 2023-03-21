@@ -120,8 +120,12 @@ daily_pop_costs_hu <- daily_pop_costs_hu %>%
 # By hu and only for those who matched to Medicaid
 ####################
 
+#########
+# 2019
+#########
+
 # By hu and matched to Medicaid
-daily_pop_costs_medicaid_match_hu <- entrances_unpacked_hus %>%
+daily_pop_costs_medicaid_match_hu_19 <- entrances_unpacked_hus %>%
   filter(medicaid_match_flag == 1) %>%
   group_by(hu_group_exclusive, Dates) %>%
   dplyr::summarise(individuals = n()) %>%
@@ -130,7 +134,7 @@ daily_pop_costs_medicaid_match_hu <- entrances_unpacked_hus %>%
   dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE))
 
 # By state and matched to Medicaid
-daily_pop_costs_medicaid_match_state <- entrances_unpacked_hus %>% group_by(Dates) %>%
+daily_pop_costs_medicaid_match_state_19 <- entrances_unpacked_hus %>% group_by(Dates) %>%
   filter(medicaid_match_flag == 1) %>%
   dplyr::summarise(individuals = n()) %>%
   filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
@@ -138,12 +142,71 @@ daily_pop_costs_medicaid_match_state <- entrances_unpacked_hus %>% group_by(Date
   mutate(hu_group_exclusive = "State")
 
 # Add data together
-daily_pop_costs_medicaid_match_hu <- rbind(daily_pop_costs_medicaid_match_hu, daily_pop_costs_medicaid_match_state)
-daily_pop_costs_medicaid_match_hu <- daily_pop_costs_medicaid_match_hu %>%
+daily_pop_costs_medicaid_match_hu_19 <- rbind(daily_pop_costs_medicaid_match_hu_19, daily_pop_costs_medicaid_match_state_19)
+daily_pop_costs_medicaid_match_hu_19 <- daily_pop_costs_medicaid_match_hu_19 %>%
   mutate(cost_pp_per_day = avg_cost_pp_per_day,
          cost_per_year = avg_pop_fy19*365*cost_pp_per_day)
 
+#########
+# 2020
+#########
+
+# By hu and matched to Medicaid
+daily_pop_costs_medicaid_match_hu_20 <- entrances_unpacked_hus %>%
+  filter(medicaid_match_flag == 1) %>%
+  group_by(hu_group_exclusive, Dates) %>%
+  dplyr::summarise(individuals = n()) %>%
+  filter(Dates > "2019-06-30" & Dates < "2020-07-01") %>%
+  group_by(hu_group_exclusive) %>%
+  dplyr::summarise(avg_pop_fy20 = mean(individuals, na.rm=TRUE))
+
+# By state and matched to Medicaid
+daily_pop_costs_medicaid_match_state_20 <- entrances_unpacked_hus %>% group_by(Dates) %>%
+  filter(medicaid_match_flag == 1) %>%
+  dplyr::summarise(individuals = n()) %>%
+  filter(Dates > "2019-06-30" & Dates < "2020-07-01") %>%
+  dplyr::summarise(avg_pop_fy20 = mean(individuals, na.rm=TRUE)) %>%
+  mutate(hu_group_exclusive = "State")
+
+# Add data together
+daily_pop_costs_medicaid_match_hu_20 <- rbind(daily_pop_costs_medicaid_match_hu_20, daily_pop_costs_medicaid_match_state_20)
+daily_pop_costs_medicaid_match_hu_20 <- daily_pop_costs_medicaid_match_hu_20 %>%
+  mutate(cost_pp_per_day = avg_cost_pp_per_day,
+         cost_per_year = avg_pop_fy20*365*cost_pp_per_day)
+
+#########
+# 2021
+#########
+
+# By hu and matched to Medicaid
+daily_pop_costs_medicaid_match_hu_21 <- entrances_unpacked_hus %>%
+  filter(medicaid_match_flag == 1) %>%
+  group_by(hu_group_exclusive, Dates) %>%
+  dplyr::summarise(individuals = n()) %>%
+  filter(Dates > "2020-06-30" & Dates < "2021-07-01") %>%
+  group_by(hu_group_exclusive) %>%
+  dplyr::summarise(avg_pop_fy21 = mean(individuals, na.rm=TRUE))
+
+# By state and matched to Medicaid
+daily_pop_costs_medicaid_match_state_21 <- entrances_unpacked_hus %>% group_by(Dates) %>%
+  filter(medicaid_match_flag == 1) %>%
+  dplyr::summarise(individuals = n()) %>%
+  filter(Dates > "2020-06-30" & Dates < "2021-07-01") %>%
+  dplyr::summarise(avg_pop_fy21 = mean(individuals, na.rm=TRUE)) %>%
+  mutate(hu_group_exclusive = "State")
+
+# Add data together
+daily_pop_costs_medicaid_match_hu_21 <- rbind(daily_pop_costs_medicaid_match_hu_21, daily_pop_costs_medicaid_match_state_21)
+daily_pop_costs_medicaid_match_hu_21 <- daily_pop_costs_medicaid_match_hu_21 %>%
+  mutate(cost_pp_per_day = avg_cost_pp_per_day,
+         cost_per_year = avg_pop_fy21*365*cost_pp_per_day)
+
+#########
 # Save out to external hard drive
-write_rds(daily_pop_costs,                   "D:/Analytic/daily_pop_costs.rds")
-write_rds(daily_pop_costs_hu,                "D:/Analytic/daily_pop_costs_hu.rds")
-write_rds(daily_pop_costs_medicaid_match_hu, "D:/Analytic/daily_pop_costs_medicaid_match_hu.rds")
+#########
+
+write_rds(daily_pop_costs,                      "D:/Analytic/daily_pop_costs.rds")
+write_rds(daily_pop_costs_hu,                   "D:/Analytic/daily_pop_costs_hu.rds")
+write_rds(daily_pop_costs_medicaid_match_hu_19, "D:/Analytic/daily_pop_costs_medicaid_match_hu_19.rds")
+write_rds(daily_pop_costs_medicaid_match_hu_20, "D:/Analytic/daily_pop_costs_medicaid_match_hu_20.rds")
+write_rds(daily_pop_costs_medicaid_match_hu_21, "D:/Analytic/daily_pop_costs_medicaid_match_hu_21.rds")
