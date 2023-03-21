@@ -337,7 +337,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_costs_hu.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 9,
     height = 5,
     units = "in",
@@ -440,7 +440,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_primary_diagnosis_cost.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 15,
     height = 6,
     units = "in",
@@ -448,153 +448,6 @@ ggsave(
   )
 ```
 
-<br>
-
-```{r}
-# Get avg and median costs by by dx_prmry_clinical_classification_new
-cost_data <- cost_table %>% 
-  select(dx_prmry_clinical_classification_new,
-         Median = median,
-         Average = mean) %>% 
-  gather("Median", "Average", key = finding, value = amt) %>% 
-  mutate(amt = round(as.numeric(amt), 0))
-
-# ggplot grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
-ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
-  geom_bar(position="dodge", stat="identity") +
-  theme_with_grid_with_labels +
-  labs(x = "", y = "Reimbursement Cost Per Diagnosis/Service\n") +
-  scale_y_continuous(limits = c(0, 550), labels = scales::dollar_format()) +
-  geom_text(aes(label = paste0("$",amt)),
-           size = 7.5, family = "Franklin Gothic Book",
-           position = position_dodge(width = 1),
-           vjust = -.1,
-           color = ifelse(cost_data$finding == "Median", jri_dark_blue, jri_orange),
-           fontface = "bold") +
-    scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
-    scale_x_discrete(breaks=c("Mental and SUD's in remission", 
-                                "Anxiety and fear-related disorders", 
-                                "Opioid-related disorders",
-                                "Other BH-related disorders",
-                                "SMI-related disorders",
-                                "Other substance-related disorders",
-                                "Neurodevelopmental disorders",
-                                "Suicidal ideation/attempt/intentional self-harm"), 
-                     labels = c("Mental and\nSUD's in\nremission",
-                                "Anxiety and\nfear-related\ndisorders",
-                                "Opioid-related \ndisorders",
-                                "Other\nBH-related\ndisorders",
-                                "SMI-related\ndisorders",
-                                "Other\nsubstance-related\ndisorders",
-                                "Neurod-\ndevelopmental\ndisorders",
-                                "Suicidal ideation/\nattempt/intentional\nself-harm")
-    ) +
-    theme(axis.title.y = element_text(size = 22, color = "black"),
-          axis.title.x = element_text(size = 22, color = "black"),
-          panel.grid.major.x = element_blank(),
-          panel.grid.minor.x = element_blank(),
-          legend.position = "top",
-          legend.justification = c(0.5, 0),
-          legend.title=element_blank())
-```
-
-```{r}
-# grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
-ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
-  geom_bar(position="dodge", stat="identity") +
-  theme_with_grid_with_labels +
-  labs(x = "", y = "\nReimbursement Cost Per Diagnosis/Service") +
-  scale_y_continuous(limits = c(0, 550), labels = scales::dollar_format()) +
-  geom_text(aes(label = paste0("$",amt)),
-           size = 7.5, family = "Franklin Gothic Book",
-           position = position_dodge(width = 0.9),
-           hjust = -.1,
-           color = ifelse(cost_data$finding == "Median", jri_dark_blue, jri_orange),
-           fontface = "bold") +
-    scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
-    scale_x_discrete(breaks=c("Mental and SUD's in remission", 
-                                "Anxiety and fear-related disorders", 
-                                "Opioid-related disorders",
-                                "Other BH-related disorders",
-                                "SMI-related disorders",
-                                "Other substance-related disorders",
-                                "Neurodevelopmental disorders",
-                                "Suicidal ideation/attempt/intentional self-harm"), 
-                     labels = c("Mental and SUD's in remission", 
-                                "Anxiety and fear-related disorders", 
-                                "Opioid-related disorders",
-                                "Other BH-related disorders",
-                                "SMI-related disorders",
-                                "Other substance-related disorders",
-                                "Neurodevelopmental disorders",
-                                "Suicidal ideation/attempt/\nintentional self-harm")
-    ) +
-  coord_flip() +
-  theme_no_grid_no_labels +
-  theme(legend.position = "right",
-        legend.title=element_blank(),
-        legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
-        
-        panel.grid.major.x = element_line(linewidth = 0.5),
-
-        axis.title   = element_text(size = 22, color = "black"),
-        axis.title.y = element_text(size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
-        axis.text.y  = element_text(size = 22, color = "black" 
-                                    #face = "bold"
-                                    ),
-        axis.text.x  = element_text(size = 22, color = "black"))
-```
-
-<br>
-
-```{r}
-# Which labels to bold
-bold.labels <- cost_data %>% filter(finding == "Median") %>% 
-  mutate(bold = ifelse(dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm", yes = "bold", no = "plain"))
-bold.labels <- bold.labels$bold
-
-# ggplot diverging barchart showing the average and media cost of reimbursement for the diagnosis categories
-cost_data %>%
-  mutate(amt = ifelse(finding == "Average", amt, -1*amt)) %>% 
-  ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, amt), y = amt, fill = finding))+
-  geom_bar(stat = "identity") +
-  labs(x = "", y = "Reimbursement Cost Per Diagnosis/Service") +
- geom_text(aes(label = paste0("$", scales::comma(abs(amt)))),
-            size = 7.5, family = "Franklin Gothic Book",
-            hjust = ifelse(cost_data$finding == "Average", -.1, 1.1),
-            color = ifelse(cost_data$finding == "Average", jri_orange, jri_dark_blue),
-            fontface = "bold"
-              ) +
-  scale_y_continuous(limits = c(-400, 500)) +
-  scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
-  theme_no_grid_no_labels +
-  coord_flip() +
-  guides(fill = guide_legend(reverse = TRUE)) +
-  theme(axis.text.x = element_blank(),
-        axis.text.y = element_text(face = bold.labels),
-        axis.title.y = element_text(angle = 90, size = 22, color = "black"),
-        axis.title.x = element_text(size = 22, color = "black"),
-        panel.grid.major.x = element_blank(),
-        panel.grid.minor.x = element_blank(),
-        legend.position = "top",
-        legend.justification = c(0.5, 0),
-        legend.title=element_blank())
-
-# ggsave(PRES_gg_diagnosis_costs2, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
-# knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"))
-
-ggsave(
-    filename = paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"),
-    plot = last_plot(),
-    device = ragg::agg_png,
-    dpi = 300,
-    width = 14,
-    height = 7,
-    units = "in",
-    bg = "transparent"
-  )
-```
 
 <br><br>
 
@@ -603,7 +456,7 @@ ggsave(
 <br>
 
 ```{r}
-# Get costs for ED visits
+# Get costs for ED visits by claim ID
 cost_table <- medicaid_encounters_cleaned_2018_2021 %>% 
   dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
   distinct() %>% 
@@ -612,12 +465,13 @@ cost_table <- medicaid_encounters_cleaned_2018_2021 %>%
   group_by(claim_id) %>% 
   summarise(medicaid_reimb_amt = sum(medicaid_reimb_amt, na.rm = T))
 
+# Get costs for ED visits 
 cost_table <- cost_table %>%  
   dplyr::summarise(total_cost = sum(medicaid_reimb_amt, na.rm = T),
-                   min    = min(medicaid_reimb_amt, na.rm = T),
-                   median = median(medicaid_reimb_amt, na.rm = T),
-                   mean   = mean(medicaid_reimb_amt, na.rm = T),
-                   max    = max(medicaid_reimb_amt, na.rm = T)) 
+                   min        = min(medicaid_reimb_amt, na.rm = T),
+                   median     = median(medicaid_reimb_amt, na.rm = T),
+                   mean       = mean(medicaid_reimb_amt, na.rm = T),
+                   max        = max(medicaid_reimb_amt, na.rm = T)) 
 
 # Create reactable table
 reactable(cost_table,
@@ -643,33 +497,95 @@ reactable(cost_table,
           )
 ```
 
+```{r}
+# Get costs for ED visits by HU group and claim id
+cost_table <- medicaid_encounters_cleaned_2018_2021 %>% 
+  dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
+  distinct() %>% 
+  # combine costs by claim id - right now it is separated out by diagnosis and cost
+  filter(ed_visit_or_service == 1) %>% 
+  group_by(claim_id, hu_group_exclusive) %>% 
+  summarise(medicaid_reimb_amt = sum(medicaid_reimb_amt, na.rm = T))
 
+# Get costs for ED visits by HU group
+cost_table <- cost_table %>%  
+  group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(total_cost = sum(medicaid_reimb_amt, na.rm = T),
+                   min        = min(medicaid_reimb_amt, na.rm = T),
+                   median     = median(medicaid_reimb_amt, na.rm = T),
+                   mean       = mean(medicaid_reimb_amt, na.rm = T),
+                   max        = max(medicaid_reimb_amt, na.rm = T)) 
 
+# Create reactable table
+reactable(cost_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            width = 150, 
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu_group_exclusive = colDef(name = "Population"),
+            total_cost = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Median Reimbursed Per Claim from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Average Reimbursed Per Claim from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
+          )
+```
+<br><br>
 
-
-
-
-
-
-
-
-
-
-
-
-
+# Reimbursement costs to providers for opioid-related diagnoses
 
 ```{r}
-## Reimbursement costs to providers for claims that had at least on opioid-related disorder
+# Get costs for opioid related diagnoses by HU group and claim id
+cost_table <- medicaid_encounters_cleaned_2018_2021 %>% 
+  dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
+  distinct() %>% 
+  # combine costs by claim id - right now it is separated out by diagnosis and cost
+  filter(dx_prmry_clinical_classification_new == "Opioid-related disorders") %>% 
+  group_by(claim_id, hu_group_exclusive) %>% 
+  summarise(medicaid_reimb_amt = sum(medicaid_reimb_amt, na.rm = T))
 
-# Get costs
-# cost_table <- medicaid_encounters_cleaned_2018_2021 %>% 
-#   group_by(claim_id) %>% 
-#   filter(any(dx_prmry_clinical_classification_new == "Opioid-related disorders")) 
-  # dplyr::mutate(medicaid_reimb_amt = as.numeric(as.character(medicaid_reimb_amt))) %>% 
-  # # combine costs by claim id - right now it is separated out by diagnosis and cost
-  # group_by(claim_id, hu_group_exclusive) %>% 
-  # summarise(medicaid_reimb_amt = sum(medicaid_reimb_amt, na.rm = T))
+# Get costs for opioid related diagnoses by HU group
+cost_table <- cost_table %>%  
+  group_by(hu_group_exclusive) %>% 
+  dplyr::summarise(total_cost = sum(medicaid_reimb_amt, na.rm = T),
+                   min        = min(medicaid_reimb_amt, na.rm = T),
+                   median     = median(medicaid_reimb_amt, na.rm = T),
+                   mean       = mean(medicaid_reimb_amt, na.rm = T),
+                   max        = max(medicaid_reimb_amt, na.rm = T)) 
+
+# Create reactable table
+reactable(cost_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+           defaultColDef = reactable::colDef(
+            width = 150, 
+            format = colFormat(separators = TRUE), align = "center"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu_group_exclusive = colDef(name = "Population"),
+            total_cost = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Total Reimbursed from 2019 to 2021"),
+            min        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Minimum Reimbursed Per Claim from 2019 to 2021"),
+            median     = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Median Reimbursed Per Claim from 2019 to 2021"),
+            mean       = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Average Reimbursed Per Claim from 2019 to 2021"),
+            max        = colDef(format = colFormat(currency = "USD", separators = TRUE), name = "Maximum Reimbursed Per Claim from 2019 to 2021"))
+          )
 ```
 
 
@@ -678,5 +594,158 @@ reactable(cost_table,
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 <br><br>
+
+```{r}
+# DONT NEED ANYMORE
+# # Get avg and median costs by by dx_prmry_clinical_classification_new
+# cost_data <- cost_table %>%
+#   select(dx_prmry_clinical_classification_new,
+#          Median = median,
+#          Average = mean) %>%
+#   gather("Median", "Average", key = finding, value = amt) %>%
+#   mutate(amt = round(as.numeric(amt), 0))
+# 
+# # ggplot grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
+# ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
+#   geom_bar(position="dodge", stat="identity") +
+#   theme_with_grid_with_labels +
+#   labs(x = "", y = "Reimbursement Cost Per Diagnosis/Service\n") +
+#   scale_y_continuous(limits = c(0, 550), labels = scales::dollar_format()) +
+#   geom_text(aes(label = paste0("$",amt)),
+#            size = 7.5, family = "Franklin Gothic Book",
+#            position = position_dodge(width = 1),
+#            vjust = -.1,
+#            color = ifelse(cost_data$finding == "Median", jri_dark_blue, jri_orange),
+#            fontface = "bold") +
+#     scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
+#     scale_x_discrete(breaks=c("Mental and SUD's in remission", 
+#                                 "Anxiety and fear-related disorders", 
+#                                 "Opioid-related disorders",
+#                                 "Other BH-related disorders",
+#                                 "SMI-related disorders",
+#                                 "Other substance-related disorders",
+#                                 "Neurodevelopmental disorders",
+#                                 "Suicidal ideation/attempt/intentional self-harm"), 
+#                      labels = c("Mental and\nSUD's in\nremission",
+#                                 "Anxiety and\nfear-related\ndisorders",
+#                                 "Opioid-related \ndisorders",
+#                                 "Other\nBH-related\ndisorders",
+#                                 "SMI-related\ndisorders",
+#                                 "Other\nsubstance-related\ndisorders",
+#                                 "Neurod-\ndevelopmental\ndisorders",
+#                                 "Suicidal ideation/\nattempt/intentional\nself-harm")
+#     ) +
+#     theme(axis.title.y = element_text(size = 22, color = "black"),
+#           axis.title.x = element_text(size = 22, color = "black"),
+#           panel.grid.major.x = element_blank(),
+#           panel.grid.minor.x = element_blank(),
+#           legend.position = "top",
+#           legend.justification = c(0.5, 0),
+#           legend.title=element_blank())
+# # grouped barchart showing the average and media cost of reimbursement for the diagnosis categories
+# ggplot(cost_data, aes(fill=finding, y=amt, x = reorder(dx_prmry_clinical_classification_new, amt))) + 
+#   geom_bar(position="dodge", stat="identity") +
+#   theme_with_grid_with_labels +
+#   labs(x = "", y = "\nReimbursement Cost Per Diagnosis/Service") +
+#   scale_y_continuous(limits = c(0, 550), labels = scales::dollar_format()) +
+#   geom_text(aes(label = paste0("$",amt)),
+#            size = 7.5, family = "Franklin Gothic Book",
+#            position = position_dodge(width = 0.9),
+#            hjust = -.1,
+#            color = ifelse(cost_data$finding == "Median", jri_dark_blue, jri_orange),
+#            fontface = "bold") +
+#     scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
+#     scale_x_discrete(breaks=c("Mental and SUD's in remission", 
+#                                 "Anxiety and fear-related disorders", 
+#                                 "Opioid-related disorders",
+#                                 "Other BH-related disorders",
+#                                 "SMI-related disorders",
+#                                 "Other substance-related disorders",
+#                                 "Neurodevelopmental disorders",
+#                                 "Suicidal ideation/attempt/intentional self-harm"), 
+#                      labels = c("Mental and SUD's in remission", 
+#                                 "Anxiety and fear-related disorders", 
+#                                 "Opioid-related disorders",
+#                                 "Other BH-related disorders",
+#                                 "SMI-related disorders",
+#                                 "Other substance-related disorders",
+#                                 "Neurodevelopmental disorders",
+#                                 "Suicidal ideation/attempt/\nintentional self-harm")
+#     ) +
+#   coord_flip() +
+#   theme_no_grid_no_labels +
+#   theme(legend.position = "right",
+#         legend.title=element_blank(),
+#         legend.text = element_text(family = "Franklin Gothic Book", size = 22, color = "black"),
+#         
+#         panel.grid.major.x = element_line(linewidth = 0.5),
+# 
+#         axis.title   = element_text(size = 22, color = "black"),
+#         axis.title.y = element_text(size = 22, color = "black"),
+#         axis.title.x = element_text(size = 22, color = "black"),
+#         axis.text.y  = element_text(size = 22, color = "black" 
+#                                     #face = "bold"
+#                                     ),
+#         axis.text.x  = element_text(size = 22, color = "black"))
+# 
+# # Which labels to bold
+# bold.labels <- cost_data %>% filter(finding == "Median") %>% 
+#   mutate(bold = ifelse(dx_prmry_clinical_classification_new == "Suicidal ideation/attempt/intentional self-harm", yes = "bold", no = "plain"))
+# bold.labels <- bold.labels$bold
+# 
+# # ggplot diverging barchart showing the average and media cost of reimbursement for the diagnosis categories
+# cost_data %>%
+#   mutate(amt = ifelse(finding == "Average", amt, -1*amt)) %>% 
+#   ggplot(aes(x = reorder(dx_prmry_clinical_classification_new, amt), y = amt, fill = finding))+
+#   geom_bar(stat = "identity") +
+#   labs(x = "", y = "Reimbursement Cost Per Diagnosis/Service") +
+#  geom_text(aes(label = paste0("$", scales::comma(abs(amt)))),
+#             size = 7.5, family = "Franklin Gothic Book",
+#             hjust = ifelse(cost_data$finding == "Average", -.1, 1.1),
+#             color = ifelse(cost_data$finding == "Average", jri_orange, jri_dark_blue),
+#             fontface = "bold"
+#               ) +
+#   scale_y_continuous(limits = c(-400, 500)) +
+#   scale_fill_manual(values=c(jri_orange, jri_dark_blue)) +
+#   theme_no_grid_no_labels +
+#   coord_flip() +
+#   guides(fill = guide_legend(reverse = TRUE)) +
+#   theme(axis.text.x = element_blank(),
+#         axis.text.y = element_text(face = bold.labels),
+#         axis.title.y = element_text(angle = 90, size = 22, color = "black"),
+#         axis.title.x = element_text(size = 22, color = "black"),
+#         panel.grid.major.x = element_blank(),
+#         panel.grid.minor.x = element_blank(),
+#         legend.position = "top",
+#         legend.justification = c(0.5, 0),
+#         legend.title=element_blank())
+# 
+# # ggsave(PRES_gg_diagnosis_costs2, file=paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"), width = 14,  height = 7, dpi = 100, bg = 'transparent')
+# # knitr::include_graphics(paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"))
+# 
+# ggsave(
+#     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_diagnosis_costs2.png"),
+#     plot = last_plot(),
+#     device = ragg::agg_png,
+#     dpi = 100,
+#     width = 14,
+#     height = 7,
+#     units = "in",
+#     bg = "transparent"
+#   )
+```
 
