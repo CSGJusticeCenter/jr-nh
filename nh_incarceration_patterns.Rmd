@@ -23,9 +23,12 @@ knitr::opts_chunk$set(
 source("code/00_library.R")
 source("code/01_functions.R")
 source("code/rdas.R")
-medicaid_jail_all    <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
-daily_pop_costs      <- read_rds("D:/Analytic/daily_pop_costs.rds") 
-daily_pop_costs_hu   <- read_rds("D:/Analytic/daily_pop_costs_hu.rds") 
+medicaid_jail_all                    <- read_rds("D:/Analytic/medicaid_jail_all.rds") 
+daily_pop_costs                      <- read_rds("D:/Analytic/daily_pop_costs.rds") 
+daily_pop_costs_hu                   <- read_rds("D:/Analytic/daily_pop_costs_hu.rds") 
+daily_pop_costs_medicaid_match_hu_19 <- read_rds("D:/Analytic/daily_pop_costs_medicaid_match_hu_19.rds") 
+daily_pop_costs_medicaid_match_hu_20 <- read_rds("D:/Analytic/daily_pop_costs_medicaid_match_hu_20.rds") 
+daily_pop_costs_medicaid_match_hu_21 <- read_rds("D:/Analytic/daily_pop_costs_medicaid_match_hu_21.rds") 
 
 # DHHS data
 # create temporary id for function and create fy variable
@@ -384,7 +387,7 @@ ggsave(
 
 ## Overall Jail Costs
 
-The average cost per person per year was calculated by dividing each county department of correction's 2021 budget by the average daily jail population in that county. This method was used when a cost wasn't provided by the jail. All jails submitted costs except for Belknap, Carroll, and Hillsborough (as of 3/9/23).  
+The average cost per person per year was calculated by 1) dividing each county department of correction's 2019 budget by the average daily jail population in 2019 in that county or 2) multiplying the jail provided average cost per person per day in 2019 by the average daily population in 2019 in that county. All jails submitted costs except for Belknap, Carroll, and Hillsborough.
 
 ```{r}
 # Reactable table showing the cost per person per year and per day
@@ -453,8 +456,16 @@ reactable(df1,
 
 ## Jail Costs for HU's Who Matched to Medicaid
 
+The average cost per HU who matched to Medicaid was found by finding the average daily population of HU's who matched to Medicaid and multiplying by the average cost per person per day found in the previous section. This method was repeated for 2020 and 2021.
+
+2019 = Total annual cost = Cost per person day (2019)* daily population of HU's who matched to Medicaid (snaphot in 2019) *365  
+2020 = Total annual cost = Cost per person day (2019)* daily population of HU's who matched to Medicaid (snaphot in 2020) *365  
+2021 = Total annual cost = Cost per person day (2019)* daily population of HU's who matched to Medicaid (snaphot in 2021) *365  
+
+### 2019 
+
 ```{r}
-df1 <- daily_pop_costs_medicaid_match_hu %>% mutate(avg_pop_fy19 = round(avg_pop_fy19, digits = 0))
+df1 <- daily_pop_costs_medicaid_match_hu_19 %>% mutate(avg_pop_fy19 = round(avg_pop_fy19, digits = 0))
 reactable(df1,
           pagination = FALSE,
           style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
@@ -481,7 +492,65 @@ reactable(df1,
           )) 
 ```
 
+### 2020
 
+```{r}
+df1 <- daily_pop_costs_medicaid_match_hu_20 %>% mutate(avg_pop_fy20 = round(avg_pop_fy20, digits = 0))
+reactable(df1,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center"
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu_group_exclusive = colDef(align = "left", minWidth = 120, name = "Population", style = list(fontWeight = "bold")),
+            avg_pop_fy19       = colDef(minWidth = 120,  name = "Average Daily Population (FY20)"),
+            cost_pp_per_day    = colDef(minWidth = 120,  name = "Avg Cost Per Person Per Day (FY19)",
+                                        format = colFormat(currency = "USD", separators = TRUE, locales = "en-US")),
+            cost_per_year      = colDef(minWidth = 160,  name = "Total Cost Per Year (FY20)",
+                                        format = colFormat(currency = "USD", separators = TRUE, locales = "en-US"))
+          )) 
+```
+
+### 2021 
+
+```{r}
+df1 <- daily_pop_costs_medicaid_match_hu_21 %>% mutate(avg_pop_fy21 = round(avg_pop_fy21, digits = 0))
+reactable(df1,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          rowStyle = function(index) {
+            if (index %in% c(10)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "center"
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            hu_group_exclusive = colDef(align = "left", minWidth = 120, name = "Population", style = list(fontWeight = "bold")),
+            avg_pop_fy19       = colDef(minWidth = 120,  name = "Average Daily Population (FY21)"),
+            cost_pp_per_day    = colDef(minWidth = 120,  name = "Avg Cost Per Person Per Day (FY19)",
+                                        format = colFormat(currency = "USD", separators = TRUE, locales = "en-US")),
+            cost_per_year      = colDef(minWidth = 160,  name = "Total Cost Per Year (FY21)",
+                                        format = colFormat(currency = "USD", separators = TRUE, locales = "en-US"))
+          )) 
+```
 
 <br><br>
 
