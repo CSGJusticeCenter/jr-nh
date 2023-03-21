@@ -195,7 +195,7 @@ hu_entrances <- rbind(hu_entrances_county, hu_entrances_state)
 # Summary of hu entrances by county
 hu_summary_county <- entrances_dhhs_per_person_county %>%
   ungroup() %>%
-  select(county, id, num_entrances_per_county, hu_group_exclusive) %>%
+  select(county, id, num_entrances = num_entrances_per_county, hu_group_exclusive) %>%
   distinct() %>%
   group_by(county, hu_group_exclusive) %>%
   summarise(min    = min(num_entrances, na.rm = T),
