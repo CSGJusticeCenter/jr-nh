@@ -44,7 +44,7 @@ county_budgets <- county_budgets_calculated.xlsx %>%
 
 # remove entrances without release dates
 # remove entrances where release date is earlier than start date (one instance)
-entrances <- entrances_dhhs %>% select(id, county, booking_id, booking_date, release_date, num_entrances) %>%
+entrances <- entrances_dhhs %>% select(id, county, booking_id, booking_date, release_date, num_entrances, fy) %>%
   distinct() %>%
   mutate(booking_date = ymd(as_date(booking_date)),
          release_date = ymd(as_date(release_date)),
