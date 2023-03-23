@@ -63,7 +63,8 @@ entrances <- entrances_dhhs %>% select(id, county, booking_id, booking_date, rel
 ##########
 
 # unpack the start_date and end_date to individual dates
-# takes 10-15 minutes to run
+# takes ~30 minutes to run
+# probably a faster way to do this
 # each date is listed for each person
 entrances_unpacked <- data.frame()
 for (i in 1:nrow(entrances)){
@@ -98,7 +99,7 @@ avg_cost_pp_per_day <- mean(daily_pop_costs$cost_pp_per_day)
 
 
 ##########
-# Get Median LOS
+# Get Median LOS - IN PRESENTATION
 ##########
 
 # get min med mean max of jail entrances for all
@@ -114,7 +115,8 @@ los_summary_19 <- entrances %>%
   mutate(hu_group_exclusive = "All (HU's and non-HU's)") %>% select(hu_group_exclusive, everything())
 
 # assign median los value
-median_los_19 <- los_summary_19$median
+median_los_19 <- los_summary_19$median # IN PRESENTATION
+median_los_19
 
 ##########
 # Get Median Entrances Per Person
@@ -130,7 +132,8 @@ median_19 <- entrances %>%
   dplyr::summarize(median_entrances_19 = median(num_entrances, na.rm=TRUE))
 
 # assign median num entrances value
-median_19 <- median_19$median_entrances_19
+median_19 <- median_19$median_entrances_19 # IN PRESENTATION
+median_19
 
 ##########
 # Calculate costs
@@ -142,8 +145,8 @@ avg_cost_per_year <- entrances %>%
   filter(booking_date > "2018-06-30" & booking_date < "2019-07-01") %>%
   dplyr::summarise(num_individuals = n_distinct(id)) %>%
   mutate(cost = num_individuals*avg_cost_pp_19)
-avg_cost_per_year <- avg_cost_per_year$cost
-
+avg_cost_per_year <- avg_cost_per_year$cost # IN PRESENTATION
+avg_cost_per_year
 
 
 ################################################################################
@@ -163,7 +166,7 @@ avg_cost_per_year <- avg_cost_per_year$cost
 # add details about high utilizers
 entrances_unpacked_hus <- entrances_unpacked %>% left_join(hu_ids, by = "id")
 
-# by hu
+# get average population by hu
 daily_pop_costs_hu <- entrances_unpacked_hus %>%
   group_by(hu_group_exclusive, Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
@@ -171,18 +174,30 @@ daily_pop_costs_hu <- entrances_unpacked_hus %>%
   group_by(hu_group_exclusive) %>%
   dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE))
 
-# by state
+# get average population by state
 daily_pop_costs_state <- entrances_unpacked_hus %>% group_by(Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
   dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE)) %>%
   mutate(hu_group_exclusive = "State")
 
-# Add data together
+# add data together
 daily_pop_costs_hu <- rbind(daily_pop_costs_hu, daily_pop_costs_state)
 daily_pop_costs_hu <- daily_pop_costs_hu %>%
   mutate(cost_pp_per_day = avg_cost_pp_per_day,
          cost_per_year = avg_pop_fy19*365*cost_pp_per_day)
+
+# total HU Cost in 2019 # IN PRESENTATION
+total_hu <- daily_pop_costs_hu %>%
+  filter(hu_group_exclusive == "Tier 1 HU" |
+         hu_group_exclusive == "Tier 2 HU" |
+         hu_group_exclusive == "Tier 3 HU") %>%
+  summarise(total = sum(cost_per_year))
+
+# HU proportion of all costs # IN PRESENTATION
+total <- daily_pop_costs_hu %>%
+  filter(hu_group_exclusive == "State")
+round((total_hu/total$cost_per_year)*100, 0)
 
 ################################################################################
 
@@ -195,7 +210,7 @@ daily_pop_costs_hu <- daily_pop_costs_hu %>%
 # 2019
 #########
 
-# by hu and matched to Medicaid
+# get average population by hu and matched to Medicaid in 2019
 daily_pop_costs_medicaid_match_hu_19 <- entrances_unpacked_hus %>%
   filter(medicaid_match_flag == 1) %>%
   group_by(hu_group_exclusive, Dates) %>%
@@ -204,7 +219,7 @@ daily_pop_costs_medicaid_match_hu_19 <- entrances_unpacked_hus %>%
   group_by(hu_group_exclusive) %>%
   dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE))
 
-# by state and matched to Medicaid
+# get average population by state and matched to Medicaid in 2019
 daily_pop_costs_medicaid_match_state_19 <- entrances_unpacked_hus %>% group_by(Dates) %>%
   filter(medicaid_match_flag == 1) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
@@ -222,7 +237,7 @@ daily_pop_costs_medicaid_match_hu_19 <- daily_pop_costs_medicaid_match_hu_19 %>%
 # 2020
 #########
 
-# by hu and matched to Medicaid
+# get average population by hu and matched to Medicaid in 2020
 daily_pop_costs_medicaid_match_hu_20 <- entrances_unpacked_hus %>%
   filter(medicaid_match_flag == 1) %>%
   group_by(hu_group_exclusive, Dates) %>%
@@ -231,7 +246,7 @@ daily_pop_costs_medicaid_match_hu_20 <- entrances_unpacked_hus %>%
   group_by(hu_group_exclusive) %>%
   dplyr::summarise(avg_pop_fy20 = mean(individuals, na.rm=TRUE))
 
-# by state and matched to Medicaid
+# get average population by state and matched to Medicaid in 2020
 daily_pop_costs_medicaid_match_state_20 <- entrances_unpacked_hus %>% group_by(Dates) %>%
   filter(medicaid_match_flag == 1) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
@@ -249,7 +264,7 @@ daily_pop_costs_medicaid_match_hu_20 <- daily_pop_costs_medicaid_match_hu_20 %>%
 # 2021
 #########
 
-# by hu and matched to Medicaid
+# get average population by hu and matched to Medicaid in 2021
 daily_pop_costs_medicaid_match_hu_21 <- entrances_unpacked_hus %>%
   filter(medicaid_match_flag == 1) %>%
   group_by(hu_group_exclusive, Dates) %>%
@@ -258,7 +273,7 @@ daily_pop_costs_medicaid_match_hu_21 <- entrances_unpacked_hus %>%
   group_by(hu_group_exclusive) %>%
   dplyr::summarise(avg_pop_fy21 = mean(individuals, na.rm=TRUE))
 
-# by state and matched to Medicaid
+# get average population by state and matched to Medicaid in 2021
 daily_pop_costs_medicaid_match_state_21 <- entrances_unpacked_hus %>% group_by(Dates) %>%
   filter(medicaid_match_flag == 1) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
@@ -271,6 +286,36 @@ daily_pop_costs_medicaid_match_hu_21 <- rbind(daily_pop_costs_medicaid_match_hu_
 daily_pop_costs_medicaid_match_hu_21 <- daily_pop_costs_medicaid_match_hu_21 %>%
   mutate(cost_pp_per_day = avg_cost_pp_per_day,
          cost_per_year = avg_pop_fy21*365*cost_pp_per_day)
+
+
+
+#########
+# Total cost for HU's on Medicaid from 2019 to 2021
+#########
+
+# cost in 2019 for HU's
+cost_2019 <- daily_pop_costs_medicaid_match_hu_19 %>%
+  filter(hu_group_exclusive == "Tier 1 HU" |
+         hu_group_exclusive == "Tier 2 HU" |
+         hu_group_exclusive == "Tier 3 HU") %>%
+  summarise(total = sum(cost_per_year))
+
+# cost in 2020 for HU's
+cost_2020 <- daily_pop_costs_medicaid_match_hu_20 %>%
+  filter(hu_group_exclusive == "Tier 1 HU" |
+         hu_group_exclusive == "Tier 2 HU" |
+         hu_group_exclusive == "Tier 3 HU") %>%
+  summarise(total = sum(cost_per_year))
+
+# cost in 2021 for HU's
+cost_2021 <- daily_pop_costs_medicaid_match_hu_21 %>%
+  filter(hu_group_exclusive == "Tier 1 HU" |
+         hu_group_exclusive == "Tier 2 HU" |
+         hu_group_exclusive == "Tier 3 HU") %>%
+  summarise(total = sum(cost_per_year))
+
+# IN PRESENTATION
+total_cost <- cost_2019$total + cost_2020$total + cost_2021$total
 
 #########
 # Save out to external hard drive
