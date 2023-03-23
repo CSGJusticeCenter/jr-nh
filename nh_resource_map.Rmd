@@ -349,7 +349,6 @@ nh_resource_location_acs_census_medicaid <- left_join(nh_resource_location_geo_f
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
-source("data_cleaning/rdas.R")
 
 # Proportion of PC holds by county
 county_level_pc_holds <- df_pch %>%
