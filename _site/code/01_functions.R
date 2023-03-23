@@ -13,6 +13,120 @@ source("code/00_library.R")
 ####################################
 
 ###########
+# Charge cleaning functions
+###########
+
+fnc_clean_charge_data <- function(df){
+
+  # use three separate joins as jail charge data will join on either charge code, statute title, or descriptor
+  # join to charge_codes_lookup via charge_code_lookup
+  df_join_one <- df %>%
+    left_join(charge_codes_crime_type_lookup,
+              by = c("charge_code_clean"="charge_code_lookup")) %>%
+    distinct(id,
+             inmate_id,
+             booking_id,
+             charge_desc,
+             .keep_all = TRUE) %>%
+    # populate for eventual rbind where all three df's need same columns
+    mutate(charge_code_lookup = ifelse(!is.na(descriptor_lookup) == TRUE,
+                                       charge_code_clean, NA))
+
+  # join to charge_codes_lookup via charge_desc_clean and statute_title_lookup
+  df_join_two <- df_join_one %>%
+    filter(is.na(descriptor_lookup) == TRUE) %>%
+    # remove these columns to avoid duplicates (e.g. .x and .y) for rbind
+    dplyr::select(-c(charge_code_lookup,
+                     descriptor_lookup,
+                     statute_title_lookup,
+                     crime_type_lookup)) %>%
+    left_join(charge_codes_crime_type_lookup,
+              by = c("charge_desc_clean" = "statute_title_lookup")) %>%
+    distinct(id,
+             inmate_id,
+             booking_id,
+             charge_desc_clean,
+             .keep_all = TRUE) %>%
+
+    mutate(statute_title_lookup = ifelse(!is.na(descriptor_lookup) == TRUE,
+                                         charge_desc_clean, NA))
+
+  # join to charge_codes_lookup via charge_desc_clean and descriptor_lookup
+  df_join_three <- df_join_two %>%
+    filter(is.na(descriptor_lookup) == TRUE) %>%
+    # remove these columns to avoid duplicates (e.g. .x and .y) for rbind
+    dplyr::select(-c(charge_code_lookup,
+                     descriptor_lookup,
+                     statute_title_lookup,
+                     crime_type_lookup)) %>%
+    left_join(charge_codes_crime_type_lookup,
+              by = c("charge_desc_clean" = "descriptor_lookup")) %>%
+    distinct(id,
+             inmate_id,
+             booking_id,
+             charge_desc_clean,
+             .keep_all = TRUE) %>%
+    # populate for eventual rbind where all three df's need same columns
+    mutate(descriptor_lookup = ifelse(!is.na(statute_title_lookup) == TRUE,
+                                      charge_desc_clean, NA))
+
+  # combine df's from first, second, and third attempts to join to lookup values
+  df_final <- rbind(df_join_one,
+                    df_join_two,
+                    df_join_three) %>%
+    # create booking-level flag that indicates at least one charge was a drug/alcohol charge
+    # doing this before de-duping allows us to know this regardless of whether it was the
+    # most serious offense for a given booking
+    mutate(drug_alcohol_charge_flag = ifelse(crime_type_lookup=="Drug/Alcohol",
+                                             1, 0),
+           drug_alcohol_charge_flag = ifelse(is.na(drug_alcohol_charge_flag),
+                                             0, drug_alcohol_charge_flag)) %>%
+    group_by(id,
+             inmate_id,
+             booking_id) %>% # group by booking
+    mutate(booking_drug_alcohol_charge_present_flag = max(drug_alcohol_charge_flag,
+                                                          na.rm = TRUE)) %>%
+    ungroup() %>%
+    dplyr::select(-drug_alcohol_charge_flag) %>% # drop charge level flag, keep booking level flag
+    # de-dup once more for records that ended up duplicating across the joins
+    # use arrange to keep records with joining lookup values over identical records with missing lookup values
+    arrange(id,
+            inmate_id,
+            booking_id,
+            statute_title_lookup) %>%
+    distinct(id,
+             inmate_id,
+             booking_id,
+             charge_desc_clean,
+             .keep_all = TRUE) %>%
+    # as a check, at this point our total record should be identical to the cleaned jail file we started with -- it is
+    # now we want to de-dup by booking (one booking may have multiple charges associated)
+    # keep most serious charge by crime type (hierarchy: violent, property, drug/alcohol, public order, vop)
+    mutate(crime_type_severity_order = case_when(
+      crime_type_lookup=="Violent"                    ~ 1,
+      crime_type_lookup=="Property"                   ~ 2,
+      crime_type_lookup=="Drug/Alcohol"               ~ 3,
+      crime_type_lookup=="Public Order"               ~ 4,
+      crime_type_lookup=="Probation/Parole Violation" ~ 5,
+      crime_type_lookup=="FTA/Bail"                   ~ 6,
+      crime_type_lookup=="Temporary Hold"             ~ 7,
+      is.na(crime_type_lookup) == TRUE                ~ 8,
+      TRUE ~ as.numeric(NA))) %>%
+    arrange(id,
+            inmate_id,
+            booking_id,
+            crime_type_severity_order) %>%
+    # de-dup by booking, keeping the record with the most serious crime type
+    distinct(id,
+             inmate_id,
+             booking_id,
+             .keep_all = TRUE) %>%
+    # create missing_lookup_charge_data column to double check missingness with non-pc holds
+    mutate(missing_lookup_charge_data = ifelse(is.na(statute_title_lookup) == TRUE,
+                                               1, 0))
+}
+
+###########
 # Create fy, age, los, recode race, and order variables
 ###########
 
