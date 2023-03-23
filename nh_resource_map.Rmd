@@ -38,7 +38,8 @@ libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer"
 # Load functions, packages, and data
 source("code/00_library.R")
 source("code/01_functions.R")
-source("code/rdas.R")
+# source("code/rdas.R")
+
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
@@ -64,6 +65,10 @@ nh_resource_locations_raw <- readxl::read_xlsx(file.path(sp_data_path,"Data","nh
   clean_names() %>% 
   mutate(unique_resource_id = paste0(resource_name,row_number())) 
 
+### import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
+### file is unique by individual/booking
+### this file lives on the external hard drive (created and exported in `14_medicaid.R`)
+jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
 
 # ### pull idoc supervision level data (# of unique clients who were on supervision level 4 or 5 at some point in 2020 per 10,000 county residents/population)
 # 
@@ -288,11 +293,6 @@ nh_state_shape <- nh_county_shape %>%
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
-### import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
-### file is unique by individual/booking
-### this file lives on the external hard drive (created and exported in `14_medicaid.R`)
-jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds") 
-
 ### de-dup (there are a few duplicate bookings) and create booking id for analysis
 jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_individual_booking_level %>% 
   distinct(unique_person_id, 
@@ -540,7 +540,7 @@ ggplot(
     fill = NULL
   ) +
   # add theme
-  theme_map() +
+  # theme_map() +
   theme(
     panel.grid = element_blank(),
     axis.text.x = element_blank(),
