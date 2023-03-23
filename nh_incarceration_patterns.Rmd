@@ -422,7 +422,7 @@ reactable(df1,
 # average cost per person per day in NH
 avg_cost_pp_per_day <- mean(df1$cost_pp_per_day)
 
-cat("It cost an average of $", round(as.numeric(avg_cost_pp_per_day), 2), " per person per day and $", format(round(as.numeric(avg_cost_pp_per_day*365), 2), nsmall=0, big.mark=","), " in New Hampshire jails.\n\n", sep = "")
+cat("It cost an average of $", round(as.numeric(avg_cost_pp_per_day), 2), " per person per day.\n\n", sep = "")
 ```
 <br>
 
