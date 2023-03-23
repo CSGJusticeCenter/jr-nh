@@ -35,14 +35,19 @@ NOTE: NHCORR Certified Recovery Residences are often gender-specific
 library(easypackages)
 libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","highcharter","censusr")
 
+# set paths
+sp_data_path <- csg_get_project_path("NH")
+sp_viz_output_path <- paste(sp_data_path, "/Output/r_output_presentation")
+
 # Load functions, packages, and data
-source("code/00_library.R")
-source("code/01_functions.R")
-# source("code/rdas.R")
+# source("code/00_library.R")
+# source("code/01_functions.R")
+source("code/rdas.R")
 
 ```
 
 ```{r include=FALSE,message=FALSE,warning=FALSE}
+
 ### set chunk output specifications
 knitr::opts_chunk$set(
   echo = TRUE,
@@ -265,8 +270,6 @@ nh_resource_location_geo_full_acs_census <- left_join(nh_resource_location_count
 ### read in nh county-level shape file and keep geometry for mapping
 ### from kyle walker/tidycensus: specify cb = TRUE which defaults to the Census Bureau’s cartographic boundary shapefiles. Cartographic boundary shapefiles are preferred to the core TIGER/Line shapefiles in tidycensus as their smaller size speeds up processing and because they are pre-clipped to the US coastline.
 
-library(tidycensus) 
-
 nh_county_shape <- get_acs(
   geography = "county",
   variables = "B19013_001",
@@ -446,7 +449,6 @@ nh_acs_census_county_geo_to_map <- nh_acs_census_county_geo %>%
                                labels = label_resource_rate,
                                include.lowest = T)) 
 
-
 ### map via ggplot 
 ggplot(
   # define main data source
@@ -540,8 +542,8 @@ ggplot(
     fill = NULL
   ) +
   # add theme
-  # theme_map() +
-  theme(
+  theme_map() +
+  ggplot2::theme(
     panel.grid = element_blank(),
     axis.text.x = element_blank(),
     axis.text.y = element_blank(),
