@@ -303,7 +303,8 @@ daily_pop_costs_medicaid_match_hu_20 <- entrances_unpacked_hus %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   filter(Dates > "2019-06-30" & Dates < "2020-07-01") %>%
   group_by(hu_group_exclusive) %>%
-  dplyr::summarise(avg_pop_fy20 = mean(individuals, na.rm=TRUE))
+  dplyr::summarise(avg_pop_fy20 = mean(individuals, na.rm=TRUE))%>%
+  mutate(avg_pop_fy20 = round(avg_pop_fy20, 0))
 
 # get average population by state and matched to Medicaid in 2020
 daily_pop_costs_medicaid_match_state_20 <- entrances_unpacked_hus %>% group_by(Dates) %>%
@@ -311,7 +312,8 @@ daily_pop_costs_medicaid_match_state_20 <- entrances_unpacked_hus %>% group_by(D
   dplyr::summarise(individuals = n_distinct(id)) %>%
   filter(Dates > "2019-06-30" & Dates < "2020-07-01") %>%
   dplyr::summarise(avg_pop_fy20 = mean(individuals, na.rm=TRUE)) %>%
-  mutate(hu_group_exclusive = "State")
+  mutate(hu_group_exclusive = "State")%>%
+  mutate(avg_pop_fy20 = round(avg_pop_fy20, 0))
 
 # Add data together
 daily_pop_costs_medicaid_match_hu_20 <- rbind(daily_pop_costs_medicaid_match_hu_20, daily_pop_costs_medicaid_match_state_20)
@@ -330,7 +332,8 @@ daily_pop_costs_medicaid_match_hu_21 <- entrances_unpacked_hus %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   filter(Dates > "2020-06-30" & Dates < "2021-07-01") %>%
   group_by(hu_group_exclusive) %>%
-  dplyr::summarise(avg_pop_fy21 = mean(individuals, na.rm=TRUE))
+  dplyr::summarise(avg_pop_fy21 = mean(individuals, na.rm=TRUE))%>%
+  mutate(avg_pop_fy21 = round(avg_pop_fy21, 0))
 
 # get average population by state and matched to Medicaid in 2021
 daily_pop_costs_medicaid_match_state_21 <- entrances_unpacked_hus %>% group_by(Dates) %>%
@@ -338,7 +341,8 @@ daily_pop_costs_medicaid_match_state_21 <- entrances_unpacked_hus %>% group_by(D
   dplyr::summarise(individuals = n_distinct(id)) %>%
   filter(Dates > "2020-06-30" & Dates < "2021-07-01") %>%
   dplyr::summarise(avg_pop_fy21 = mean(individuals, na.rm=TRUE)) %>%
-  mutate(hu_group_exclusive = "State")
+  mutate(hu_group_exclusive = "State")%>%
+  mutate(avg_pop_fy21 = round(avg_pop_fy21, 0))
 
 # Add data together
 daily_pop_costs_medicaid_match_hu_21 <- rbind(daily_pop_costs_medicaid_match_hu_21, daily_pop_costs_medicaid_match_state_21)
