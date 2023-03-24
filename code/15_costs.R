@@ -75,6 +75,15 @@ for (i in 1:nrow(entrances)){
   entrances_unpacked <- rbind(entrances_unpacked, expand)
 }
 
+### AB NOTE: i know there's probably still more discussion to be had, but I wonder 
+### if it makes sense to remove the first month or so of FY 2019 since our 
+### measure of average daily population will naturally start at 0 and gradually 
+### increase over time (since we don't have the count of individuals booked pre-FY 2019 and 
+### still incarcerated in early FY 2019 -- like you've brought up before)
+### so the first couple of months look notably lower than the others and might affect our average here
+
+### just a thought! or maybe we take like 2018-12-01 through 2019-12-01? though this wouldn't 
+### neatly fit into a fiscal year
 
 
 # calculate the number of individuals present in each county in each day
@@ -213,6 +222,17 @@ avg_cost_pp_per_day <- round(avg_cost_pp_per_day, 2)
 # add details about high utilizers
 entrances_unpacked_hus <- entrances_unpacked %>% left_join(hu_ids, by = "id")
 
+
+### AB NOTE (same as above): i know there's probably still more discussion to be had, but I wonder 
+### if it makes sense to remove the first month or so of FY 2019 since our 
+### measure of average daily population will naturally start at 0 and gradually 
+### increase over time (since we don't have the count of individuals booked pre-FY 2019 and 
+### still incarcerated in early FY 2019 -- like you've brought up before)
+### so the first couple of months look notably lower than the others and might affect our average here
+
+### just a thought! or maybe we take like 2018-12-01 through 2019-12-01? though this wouldn't 
+### neatly fit into a fiscal year
+
 # get average population by hu
 daily_pop_costs_hu <- entrances_unpacked_hus %>%
   group_by(hu_group_exclusive, Dates) %>%
@@ -262,13 +282,31 @@ round((total_hu/total$cost_per_year)*100, 0)
 
 ################################################################################
 
+### AB NOTE: when breaking costs out by year and by HU, i wonder if we should
+### recalculate HU groupings for each year since individuals' bookings are not 
+### necessarily evenly distributed between years? i haven't thought this through totally
+### so this might not actually matter or make sense, but just flagging as a question for 
+### our broader cost discussion next week. 
+
 #########
 # 2019
 #########
 
+### AB NOTE (same as above): i know there's probably still more discussion to be had, but I wonder 
+### if it makes sense to remove the first month or so of FY 2019 since our 
+### measure of average daily population will naturally start at 0 and gradually 
+### increase over time (since we don't have the count of individuals booked pre-FY 2019 and 
+### still incarcerated in early FY 2019 -- like you've brought up before)
+### so the first couple of months look notably lower than the others and might affect our average here
+
+### just a thought! or maybe we take like 2018-12-01 through 2019-12-01? though this wouldn't 
+### neatly fit into a fiscal year
+
 # get average population by hu and matched to Medicaid in 2019
 daily_pop_costs_medicaid_match_hu_19 <- entrances_unpacked_hus %>%
-  filter(medicaid_match_flag == 1) %>%
+  ### AB NOTE: for consistency, would we want "pre_study_window_medicaid_match_flag_overall" as the filter? 
+  ### or do we actually just want individuals who matched to medicaid in FY 2019. what do you think? 
+  filter(medicaid_match_flag == 1) %>% 
   group_by(hu_group_exclusive, Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
@@ -279,6 +317,8 @@ daily_pop_costs_medicaid_match_hu_19 <- entrances_unpacked_hus %>%
 
 # get average population by state and matched to Medicaid in 2019
 daily_pop_costs_medicaid_match_state_19 <- entrances_unpacked_hus %>% group_by(Dates) %>%
+  ### AB NOTE: for consistency, would we want "pre_study_window_medicaid_match_flag_overall" as the filter? 
+  ### or do we actually just want individuals who matched to medicaid in FY 2019. what do you think? 
   filter(medicaid_match_flag == 1) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
@@ -298,6 +338,8 @@ daily_pop_costs_medicaid_match_hu_19 <- daily_pop_costs_medicaid_match_hu_19 %>%
 
 # get average population by hu and matched to Medicaid in 2020
 daily_pop_costs_medicaid_match_hu_20 <- entrances_unpacked_hus %>%
+  ### AB NOTE: for consistency, would we want "pre_study_window_medicaid_match_flag_overall" as the filter? 
+  ### or do we actually just want individuals who matched to medicaid in FY 2020. what do you think? 
   filter(medicaid_match_flag == 1) %>%
   group_by(hu_group_exclusive, Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
@@ -308,6 +350,8 @@ daily_pop_costs_medicaid_match_hu_20 <- entrances_unpacked_hus %>%
 
 # get average population by state and matched to Medicaid in 2020
 daily_pop_costs_medicaid_match_state_20 <- entrances_unpacked_hus %>% group_by(Dates) %>%
+  ### AB NOTE: for consistency, would we want "pre_study_window_medicaid_match_flag_overall" as the filter? 
+  ### or do we actually just want individuals who matched to medicaid in FY 2020. what do you think? 
   filter(medicaid_match_flag == 1) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   filter(Dates > "2019-06-30" & Dates < "2020-07-01") %>%
@@ -327,6 +371,8 @@ daily_pop_costs_medicaid_match_hu_20 <- daily_pop_costs_medicaid_match_hu_20 %>%
 
 # get average population by hu and matched to Medicaid in 2021
 daily_pop_costs_medicaid_match_hu_21 <- entrances_unpacked_hus %>%
+  ### AB NOTE: for consistency, would we want "pre_study_window_medicaid_match_flag_overall" as the filter? 
+  ### or do we actually just want individuals who matched to medicaid in FY 2021. what do you think? 
   filter(medicaid_match_flag == 1) %>%
   group_by(hu_group_exclusive, Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
@@ -337,6 +383,8 @@ daily_pop_costs_medicaid_match_hu_21 <- entrances_unpacked_hus %>%
 
 # get average population by state and matched to Medicaid in 2021
 daily_pop_costs_medicaid_match_state_21 <- entrances_unpacked_hus %>% group_by(Dates) %>%
+  ### AB NOTE: for consistency, would we want "pre_study_window_medicaid_match_flag_overall" as the filter? 
+  ### or do we actually just want individuals who matched to medicaid in FY 2021. what do you think? 
   filter(medicaid_match_flag == 1) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   filter(Dates > "2020-06-30" & Dates < "2021-07-01") %>%
