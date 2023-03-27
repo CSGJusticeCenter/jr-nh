@@ -84,7 +84,10 @@ for (i in 1:nrow(entrances)){
 daily_pop_costs <- entrances_unpacked %>%
   group_by(county, Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
-  filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
+
+  # filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
+  filter(Dates > "2019-01-01" & Dates < "2019-12-31") %>%
+
   group_by(county) %>%
   dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE)) %>%
   left_join(county_budgets, by = "county") %>%
@@ -217,7 +220,8 @@ entrances_unpacked_hus <- entrances_unpacked %>% left_join(hu_ids, by = "id")
 daily_pop_costs_hu <- entrances_unpacked_hus %>%
   group_by(hu_group_exclusive, Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
-  filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
+  # filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
+  filter(Dates > "2019-01-01" & Dates < "2019-12-31") %>%
   group_by(hu_group_exclusive) %>%
   dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE)) %>%
   mutate(avg_pop_fy19 = round(avg_pop_fy19, 0))
@@ -225,7 +229,8 @@ daily_pop_costs_hu <- entrances_unpacked_hus %>%
 # get average population by state
 daily_pop_costs_state <- entrances_unpacked_hus %>% group_by(Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
-  filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
+  # filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
+  filter(Dates > "2019-01-01" & Dates < "2019-12-31") %>%
   dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE)) %>%
   mutate(hu_group_exclusive = "State") %>%
   mutate(avg_pop_fy19 = round(avg_pop_fy19, 0))
