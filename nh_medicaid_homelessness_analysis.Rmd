@@ -215,7 +215,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_homeless_county.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 12,
     height = 6,
     units = "in",
@@ -428,6 +428,8 @@ nh_eight_county_medicaid_match_final_race_two_counties_excluded <- nh_eight_coun
     race == "Asian/Pacific Islander" ~ "Other",
     TRUE ~ race
   )) %>% 
+  # remove other race because of low counts
+  filter(race != "Other") %>% 
   filter(!is.na(jail_dob_year),
          !is.na(booking_date)) %>% 
   mutate(jail_dob_age_clean = as.numeric(jail_dob_year),
@@ -530,8 +532,7 @@ medicaid_jail_homelessness_hu_county_statewide_data <- medicaid_jail_homelessnes
   mutate(`Race/Ethnicity` = factor(`Race/Ethnicity`,
                                    levels = c("Hispanic",
                                               "White",
-                                              "Black",
-                                              "Other")))
+                                              "Black")))
 
 # ggplot showing homelessness by hu_group_overall
 medicaid_jail_homelessness_hu_county_statewide_data %>%
@@ -567,7 +568,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_race.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 8,
     height = 4,
     units = "in",
@@ -717,7 +718,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_diverge_age.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 8,
     height = 4,
     units = "in",
