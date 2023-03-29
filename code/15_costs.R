@@ -2,7 +2,7 @@
 ############################################
 # Project: JRI New Hampshire
 # File: costs.R
-# Last updated: March 23, 2023
+# Last updated: March 29, 2023
 # Author: Mari Roberts
 
 # Calculate the daily average population and costs
@@ -44,7 +44,11 @@ county_budgets <- county_budgets_calculated.xlsx %>%
 
 # remove entrances without release dates
 # remove entrances where release date is earlier than start date (one instance)
-entrances <- entrances_dhhs %>% select(id, county, booking_id, booking_date, release_date, num_entrances, fy) %>%
+entrances <- entrances_dhhs %>% select(id, county, booking_id,
+                                       booking_date, release_date,
+                                       num_entrances,
+                                       hu_group_exclusive, hu_group_overall, medicaid_match_flag,
+                                       fy) %>%
   distinct() %>%
   mutate(booking_date = ymd(as_date(booking_date)),
          release_date = ymd(as_date(release_date)),
@@ -57,10 +61,59 @@ entrances <- entrances_dhhs %>% select(id, county, booking_id, booking_date, rel
   select(-lessthanstart)
 
 
+################################################################################
+
+
+# BED DAYS - not using
+# Includes people there for at least one full day
+
+
+################################################################################
+
+# Get data on number of bed days (=1 day los)
+bed_days <- entrances %>%
+  select(id, booking_id, booking_date,
+         hu_group_exclusive, jail_los) %>%
+  distinct() %>%
+  filter(booking_date > "2019-01-01" & booking_date < "2019-12-31") %>%
+  group_by(hu_group_exclusive) %>%
+  summarise(total_bed_days = sum(jail_los, na.rm = TRUE)) %>%
+  mutate(total = sum(total_bed_days),
+         pct = total_bed_days/total,
+         pct_label = paste(round(pct*100, 0), "%", sep = ""),) %>%
+  select(-total)
+
+# Get data on number of bed days (=0 or 1 day los)
+# Change LOS of 0 -> 1 to see how costs compare
+bed_days_including_0 <- entrances %>%
+  select(id, booking_id, booking_date, release_date,
+         hu_group_exclusive, jail_los) %>%
+  distinct() %>%
+  filter(booking_date > "2019-01-01" & booking_date < "2019-12-31") %>%
+  mutate(jail_los_new = ifelse(jail_los == 0, jail_los + 1, jail_los)) %>%
+  group_by(hu_group_exclusive) %>%
+  summarise(total_bed_days = sum(jail_los, na.rm = TRUE)) %>%
+  mutate(total = sum(total_bed_days),
+         pct = total_bed_days/total,
+         pct_label = paste(round(pct*100, 0), "%", sep = ""),) %>%
+  select(-total)
+
+
+
+
+
+################################################################################
+
+
+# NOT BED DAYS, DAILY ENCOUNTERS
+# Includes people there for less than one day
+
+
+################################################################################
+
 
 ##########
 # Get average cost per person using jail data and DOC budgets
-# $ 199.82
 ##########
 
 # unpack the start_date and end_date to individual dates
@@ -109,102 +162,9 @@ avg_cost_pp_per_day <- round(avg_cost_pp_per_day, 2)
 ################################################################################
 
 
-# Cost Per Year
-# METHDOLOGY 1 - TO LOW??????       DONT USE
-
-# Average cost to incarcerate each person in NH jails in 2019
-    # $199.77*Median LOS(2)*Median number of Jail Entrances Per Person(1)
-# Average cost to incarcerate 13,869 individuals in NH jails in 2019.
-    # Avg Cost Per Person Per Year in 2019($399.55)* Number of People Entered Jail in 2019(13,869)
-
-
-################################################################################
-
-# ##########
-# # Get Median LOS - IN PRESENTATION
-# ##########
-#
-# # get min med mean max of jail entrances for all
-# los_summary_19 <- entrances %>%
-#   filter(booking_date > "2018-06-30" & booking_date < "2019-07-01") %>%
-#   group_by() %>%
-#   summarise(
-#     min    = min(jail_los, na.rm = T),
-#     median = median(jail_los, na.rm = T),
-#     mean   = mean(jail_los, na.rm = T),
-#     max    = max(jail_los, na.rm = T)) %>%
-#   mutate(mean = round(mean, 1)) %>%
-#   mutate(hu_group_exclusive = "All (HU's and non-HU's)") %>% select(hu_group_exclusive, everything())
-#
-# # assign median los value
-# median_los_19 <- los_summary_19$median # IN PRESENTATION
-# median_los_19
-#
-# ##########
-# # Get Median Entrances Per Person
-# ##########
-#
-# # median number of entrances/fy by state
-# median_19 <- entrances %>%
-#   filter(booking_date > "2018-06-30" & booking_date < "2019-07-01") %>%
-#   ungroup() %>%
-#   select(id, num_entrances) %>%
-#   distinct() %>%
-#   group_by() %>%
-#   dplyr::summarize(median_entrances_19 = median(num_entrances, na.rm=TRUE))
-#
-# # assign median num entrances value
-# median_19 <- median_19$median_entrances_19 # IN PRESENTATION
-# median_19
-#
-# ##########
-# # Calculate costs
-# ##########
-#
-# avg_cost_pp_19 <- round(avg_cost_pp_per_day*median_los*median, 2)
-#
-# avg_cost_per_year <- entrances %>%
-#   filter(booking_date > "2018-06-30" & booking_date < "2019-07-01") %>%
-#   dplyr::summarise(num_individuals = n_distinct(id)) %>%
-#   mutate(cost = num_individuals*avg_cost_pp_19)
-# avg_cost_per_year <- avg_cost_per_year$cost # IN PRESENTATION
-# avg_cost_per_year
-
-
-
-
-################################################################################
-
-
-# Cost Per Year
-# METHDOLOGY 2 - DONT USE
-
-# Average cost to incarcerate individuals in NH jails in 2019.
-# Avg Cost Per Person Per Day in 2019($199.77)*Average Daily Population in 2019*365
-
-
-################################################################################
-
-# avg_pop_fy19 <- entrances_unpacked %>%
-#   group_by(Dates) %>%
-#   dplyr::summarise(individuals = n_distinct(id)) %>%
-#   filter(Dates > "2018-06-30" & Dates < "2019-07-01") %>%
-#   dplyr::summarise(avg_pop_fy19 = mean(individuals, na.rm=TRUE))
-#
-# avg_pop_fy19$avg_pop_fy19*avg_cost_pp_per_day*365
-
-
-
-
-
-
-
-################################################################################
-
-
 # Overall and HU Costs
 # Regardless of Medicaid match
-# METHDOLOGY 1 - USE
+# METHDOLOGY 1
 
 
 ################################################################################
