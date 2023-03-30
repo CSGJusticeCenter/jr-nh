@@ -70,55 +70,55 @@ entrances <- entrances_dhhs %>% select(id, county, booking_id,
 
 ################################################################################
 
-# Get data on number of bed days (=1 day los)
-bed_days <- entrances %>%
-  ungroup() %>%
-  select(id, booking_id, booking_date,
-         hu_group_exclusive, jail_los) %>%
-  distinct() %>%
-  filter(booking_date > "2019-01-01" & booking_date < "2019-12-31") %>%
-  group_by(hu_group_exclusive) %>%
-  summarise(total_bed_days = sum(jail_los, na.rm = TRUE)) %>%
-  mutate(total = sum(total_bed_days),
-         pct = total_bed_days/total,
-         pct_label = paste(round(pct*100, 0), "%", sep = ""),
-         cost = total_bed_days*185.22) %>%
-  select(-total)
+# # Get data on number of bed days (=1 day los)
+# bed_days <- entrances %>%
+#   ungroup() %>%
+#   select(id, booking_id, booking_date,
+#          hu_group_exclusive, jail_los) %>%
+#   distinct() %>%
+#   filter(booking_date > "2019-01-01" & booking_date < "2019-12-31") %>%
+#   group_by(hu_group_exclusive) %>%
+#   summarise(total_bed_days = sum(jail_los, na.rm = TRUE)) %>%
+#   mutate(total = sum(total_bed_days),
+#          pct = total_bed_days/total,
+#          pct_label = paste(round(pct*100, 0), "%", sep = ""),
+#          cost = total_bed_days*185.22) %>%
+#   select(-total)
+#
+# # Get data on number of bed days (=0 or 1 day los)
+# # Change LOS of 0 -> 1 to see how costs compare
+# bed_days_including_0 <- entrances %>%
+#   ungroup() %>%
+#   select(id, booking_id, booking_date, release_date,
+#          hu_group_exclusive, jail_los) %>%
+#   distinct() %>%
+#   filter(booking_date > "2019-01-01" & booking_date < "2019-12-31") %>%
+#   mutate(jail_los = ifelse(jail_los == 0, jail_los + 1, jail_los)) %>%
+#   group_by(hu_group_exclusive) %>%
+#   summarise(total_bed_days = sum(jail_los, na.rm = TRUE)) %>%
+#   mutate(total = sum(total_bed_days),
+#          pct = total_bed_days/total,
+#          pct_label = paste(round(pct*100, 0), "%", sep = ""),
+#          cost = total_bed_days*185.22) %>%
+#   select(-total)
 
-# Get data on number of bed days (=0 or 1 day los)
-# Change LOS of 0 -> 1 to see how costs compare
-bed_days_including_0 <- entrances %>%
-  ungroup() %>%
-  select(id, booking_id, booking_date, release_date,
-         hu_group_exclusive, jail_los) %>%
-  distinct() %>%
-  filter(booking_date > "2019-01-01" & booking_date < "2019-12-31") %>%
-  mutate(jail_los = ifelse(jail_los == 0, jail_los + 1, jail_los)) %>%
-  group_by(hu_group_exclusive) %>%
-  summarise(total_bed_days = sum(jail_los, na.rm = TRUE)) %>%
-  mutate(total = sum(total_bed_days),
-         pct = total_bed_days/total,
-         pct_label = paste(round(pct*100, 0), "%", sep = ""),
-         cost = total_bed_days*185.22) %>%
-  select(-total)
 
-
-# Get data on number of bed days (=0 or 0.5 day los)
-# Change LOS of 0 -> 0.5 to see how costs compare
-bed_days_including_0_05 <- entrances %>%
-  ungroup() %>%
-  select(id, booking_id, booking_date, release_date,
-         hu_group_exclusive, jail_los) %>%
-  distinct() %>%
-  filter(booking_date > "2019-01-01" & booking_date < "2019-12-31") %>%
-  mutate(jail_los = ifelse(jail_los == 0, jail_los + 0.5, jail_los)) %>%
-  group_by(hu_group_exclusive) %>%
-  summarise(total_bed_days = sum(jail_los, na.rm = TRUE)) %>%
-  mutate(total = sum(total_bed_days),
-         pct = total_bed_days/total,
-         pct_label = paste(round(pct*100, 0), "%", sep = ""),
-         cost = total_bed_days*185.22) %>%
-  select(-total)
+# # Get data on number of bed days (=0 or 0.5 day los)
+# # Change LOS of 0 -> 0.5 to see how costs compare
+# bed_days_including_0_05 <- entrances %>%
+#   ungroup() %>%
+#   select(id, booking_id, booking_date, release_date,
+#          hu_group_exclusive, jail_los) %>%
+#   distinct() %>%
+#   filter(booking_date > "2019-01-01" & booking_date < "2019-12-31") %>%
+#   mutate(jail_los = ifelse(jail_los == 0, jail_los + 0.5, jail_los)) %>%
+#   group_by(hu_group_exclusive) %>%
+#   summarise(total_bed_days = sum(jail_los, na.rm = TRUE)) %>%
+#   mutate(total = sum(total_bed_days),
+#          pct = total_bed_days/total,
+#          pct_label = paste(round(pct*100, 0), "%", sep = ""),
+#          cost = total_bed_days*185.22) %>%
+#   select(-total)
 
 
 

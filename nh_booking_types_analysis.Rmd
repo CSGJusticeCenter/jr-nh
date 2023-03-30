@@ -74,7 +74,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_pie_pretrial.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     height = 8,
     width = 8,
     units = "in",
@@ -249,7 +249,7 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_pretrial_prop.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 13,
     height = 8,
     units = "in",
@@ -674,6 +674,44 @@ add_source(paste(""), font_style = "italic", font_size = 14)
 
 <br>
 
+```{r}
+data1 <- df_drug_courts %>% 
+  group_by(drug_court, county) %>%  
+  summarise(total_bookings = n_distinct(booking_id),
+            total_people   = n_distinct(id))
+
+# create reactable table
+reactable(data1,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          pagination = FALSE,
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left", minWidth = 100,
+            footer = function(values, name) {
+              if (name %in% c("Drug court-related booking", "Not a drug court-related booking")) {
+                htmltools::div(paste0("", formatC(
+                  x = sum(values),
+                  digits = 0,
+                  big.mark = ",",
+                  format = "f"
+                )))
+              }
+            },
+            footerStyle = list(fontWeight = "bold")
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            drug_court     = colDef(name = "Booking Type", minWidth = 275, style = list(fontWeight = "bold")),
+            county         = colDef(name = "County", minWidth = 100),
+            total_bookings = colDef(name = "Bookings", minWidth = 100),
+            total_people   = colDef(name = "People", minWidth = 100)
+            )
+          ) 
+```
+
+
 ### Drug court-related bookings by high utilizers (Row sum)
 
 High utilizers accounted for 85% of drug court-related bookings in Cheshire, Hillsborough, and Rockingham County jails.  
@@ -764,13 +802,51 @@ ggsave(
     filename = paste0(sp_data_path, "/analysis/img/PRES_gg_pie_drug_court_bookings.png"),
     plot = last_plot(),
     device = ragg::agg_png,
-    dpi = 300,
+    dpi = 100,
     width = 6,
     height = 6,
     units = "in",
     bg = "transparent"
   )
 ```
+
+```{r}
+data1 <- df_drug_courts %>% 
+  group_by(drug_court, hu_group_exclusive) %>%  
+  summarise(total_bookings = n_distinct(booking_id),
+            total_people   = n_distinct(id))
+
+# create reactable table
+reactable(data1,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          pagination = FALSE,
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center"),
+                                 headerStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(
+            format = colFormat(separators = TRUE), align = "left", minWidth = 100,
+            footer = function(values, name) {
+              if (name %in% c("Drug court-related booking", "Not a drug court-related booking")) {
+                htmltools::div(paste0("", formatC(
+                  x = sum(values),
+                  digits = 0,
+                  big.mark = ",",
+                  format = "f"
+                )))
+              }
+            },
+            footerStyle = list(fontWeight = "bold")
+          ),
+          compact = TRUE,
+          fullWidth = FALSE,
+          columns = list(
+            drug_court         = colDef(name = "Booking Type", minWidth = 275, style = list(fontWeight = "bold")),
+            hu_group_exclusive = colDef(name = "HU Group", minWidth = 100),
+            total_bookings     = colDef(name = "Bookings", minWidth = 100),
+            total_people       = colDef(name = "People", minWidth = 100)
+            )
+          ) 
+```
+
 
 ### Drug court-related bookings by high utilizers (Column sum)
 
