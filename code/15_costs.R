@@ -12,6 +12,27 @@
 # get Medicaid jail data
 medicaid_jail_all <- read_rds("D:/Analytic/medicaid_jail_all.rds")
 
+# import jail_medicaid_analytic_individual_booking_level -- the individual-level analytic file created with all DHHS files
+jail_medicaid_analytic_individual_booking_level <- read_rds("D:/Analytic/jail_medicaid_analytic_individual_booking_level.rds")
+
+# de-dup (there are a few duplicate bookings) and create booking id for analysis
+jail_medicaid_analytic_individual_booking_level_dedup <- jail_medicaid_analytic_individual_booking_level %>%
+  distinct(unique_person_id,
+           booking_id,
+           .keep_all = TRUE) %>%
+  mutate(unique_person_booking_id = paste0(unique_person_id,
+                                           booking_id))
+
+# recode high utilizer percentile grouping
+jail_medicaid_analytic_individual_booking_level_dedup_hu_recode <- fnc_hu_group_exclusive(jail_medicaid_analytic_individual_booking_level_dedup)
+
+# save ids and HU status, flags
+medicaid_match <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>%
+  select(id = unique_person_id,
+         pre_or_study_window_medicaid_match_flag_overall) %>%
+  mutate(id = as.character(id)) %>%
+  distinct()
+
 # DHHS data
 # rename variables
 # get fiscal year based on booking date
@@ -194,7 +215,9 @@ avg_cost_pp_per_day <- round(avg_cost_pp_per_day, 2)
 ####################
 
 # add details about high utilizers
-entrances_unpacked_hus <- entrances_unpacked %>% left_join(hu_ids, by = "id")
+entrances_unpacked_hus <- entrances_unpacked %>%
+  left_join(hu_ids, by = "id") %>%
+  left_join(medicaid_match, by = "id")
 
 # get average population by hu
 daily_pop_costs_hu <- entrances_unpacked_hus %>%
@@ -255,7 +278,7 @@ round((total_hu/total$cost_per_year)*100, 0)
 
 # get average population by hu and matched to Medicaid in 2019
 daily_pop_costs_medicaid_match_hu_19 <- entrances_unpacked_hus %>%
-  filter(medicaid_match_flag == 1) %>%
+  filter(pre_or_study_window_medicaid_match_flag_overall == 1) %>%
   group_by(hu_group_exclusive, Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   # filter(Dates >= "2018-06-30" & Dates <= "2019-07-01") %>%
@@ -267,7 +290,7 @@ daily_pop_costs_medicaid_match_hu_19 <- entrances_unpacked_hus %>%
 
 # get average population by state and matched to Medicaid in 2019
 daily_pop_costs_medicaid_match_state_19 <- entrances_unpacked_hus %>% group_by(Dates) %>%
-  filter(medicaid_match_flag == 1) %>%
+  filter(pre_or_study_window_medicaid_match_flag_overall == 1) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   # filter(Dates >= "2018-06-30" & Dates <= "2019-07-01") %>%
   filter(Dates >= "2019-01-01" & Dates <= "2019-12-31") %>%
@@ -287,7 +310,7 @@ daily_pop_costs_medicaid_match_hu_19 <- daily_pop_costs_medicaid_match_hu_19 %>%
 
 # get average population by hu and matched to Medicaid in 2020
 daily_pop_costs_medicaid_match_hu_20 <- entrances_unpacked_hus %>%
-  filter(medicaid_match_flag == 1) %>%
+  filter(pre_or_study_window_medicaid_match_flag_overall == 1) %>%
   group_by(hu_group_exclusive, Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   # filter(Dates >= "2019-06-30" & Dates <= "2020-07-01") %>%
@@ -298,7 +321,7 @@ daily_pop_costs_medicaid_match_hu_20 <- entrances_unpacked_hus %>%
 
 # get average population by state and matched to Medicaid in 2020
 daily_pop_costs_medicaid_match_state_20 <- entrances_unpacked_hus %>% group_by(Dates) %>%
-  filter(medicaid_match_flag == 1) %>%
+  filter(pre_or_study_window_medicaid_match_flag_overall == 1) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   filter(Dates >= "2019-06-30" & Dates <= "2020-07-01") %>%
   dplyr::summarise(avg_pop_fy20 = mean(individuals, na.rm=TRUE)) %>%
@@ -317,7 +340,7 @@ daily_pop_costs_medicaid_match_hu_20 <- daily_pop_costs_medicaid_match_hu_20 %>%
 
 # get average population by hu and matched to Medicaid in 2021
 daily_pop_costs_medicaid_match_hu_21 <- entrances_unpacked_hus %>%
-  filter(medicaid_match_flag == 1) %>%
+  filter(pre_or_study_window_medicaid_match_flag_overall == 1) %>%
   group_by(hu_group_exclusive, Dates) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   # filter(Dates >= "2020-06-30" & Dates <= "2021-07-01") %>%
@@ -328,7 +351,7 @@ daily_pop_costs_medicaid_match_hu_21 <- entrances_unpacked_hus %>%
 
 # get average population by state and matched to Medicaid in 2021
 daily_pop_costs_medicaid_match_state_21 <- entrances_unpacked_hus %>% group_by(Dates) %>%
-  filter(medicaid_match_flag == 1) %>%
+  filter(pre_or_study_window_medicaid_match_flag_overall == 1) %>%
   dplyr::summarise(individuals = n_distinct(id)) %>%
   # filter(Dates >= "2020-06-30" & Dates <= "2021-07-01") %>%
   filter(Dates >= "2021-01-01" & Dates <= "2021-12-31") %>%     # limitation is that we only have 6 months of 2021 data
@@ -376,6 +399,7 @@ total_cost <- cost_2019$total + cost_2020$total + cost_2021$total
 # Save out to external hard drive
 #########
 
+write_rds(entrances_unpacked,                   "D:/Analytic/entrances_unpacked.rds")
 write_rds(daily_pop_costs,                      "D:/Analytic/daily_pop_costs.rds")
 write_rds(daily_pop_costs_hu,                   "D:/Analytic/daily_pop_costs_hu.rds")
 write_rds(daily_pop_costs_medicaid_match_hu_19, "D:/Analytic/daily_pop_costs_medicaid_match_hu_19.rds")

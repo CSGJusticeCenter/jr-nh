@@ -456,8 +456,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
 
   <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-  <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
-  <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.2.1/css/all.min.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.2.1/css/v4-shims.min.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
   <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
   <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
@@ -2403,12 +2403,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     color: var(--hover-color, white);
   }</style>
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.20/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.21/header-attrs.js"></script>
   <script src="site_libs/core-js-2.5.3/shim.min.js"></script>
   <script src="site_libs/react-17.0.0/react.min.js"></script>
   <script src="site_libs/react-17.0.0/react-dom.min.js"></script>
   <script src="site_libs/reactwidget-1.0.0/react-tools.js"></script>
-  <script src="site_libs/htmlwidgets-1.6.1/htmlwidgets.js"></script>
+  <script src="site_libs/htmlwidgets-1.6.2/htmlwidgets.js"></script>
   <link href="site_libs/reactable-0.4.3/reactable.css" rel="stylesheet" />
   <script src="site_libs/reactable-binding-0.4.3/reactable.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
@@ -2476,17 +2476,6 @@ Medicaid Trends
 </div>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
-Archive
- 
-<span class="down-arrow">&#x25BE;</span>
-</button>
-<div class="nav-dropdown-content">
-<a href="archive_incarceration_patterns.html">Incarceration Patterns (Archive)</a>
-<a href="archive_high_utilizers_analysis.html">High Utilizers (Archive)</a>
-</div>
-</div>
-<div class="nav-dropdown">
-<button class="nav-dropbtn">
 BH Resources
  
 <span class="down-arrow">&#x25BE;</span>
@@ -2503,6 +2492,7 @@ Research
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
+<a href="nh_data_limitations.html">Data Limitations</a>
 <a href="nh_data_availability.html">Data Availability</a>
 <a href="nh_data_dictionary.html">Data Dictionaries</a>
 <a href="nh_medicaid_diagram_codebook.html">Medicaid Data Diagram and Codebook</a>
@@ -2553,17 +2543,17 @@ Research
 </ul>
 <h2 id="housing-by-county">Housing by County</h2>
 <div class="layout-chunk" data-layout="l-body">
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-f4ecd740b95fdb2f83d2" style="width:auto;height:auto;"></div>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-af828e736b4d5c785481" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
-<script type="application/json" data-for="htmlwidget-f4ecd740b95fdb2f83d2">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Coos","Hillsborough","Merrimack","Rockingham","Sullivan","Total"],"homeless":[212,46,479,150,197,55,1139],"not_homeless":[2103,421,5113,3122,5327,1026,17112],"number_of_people":[2315,467,5592,3272,5524,1081,18251],"pct_homeless":[0.0915766738660907,0.0985010706638116,0.0856580829756795,0.0458435207823961,0.0356625633598841,0.0508788159111933,0.0624075393129144],"pct_not_homeless":[0.908423326133909,0.901498929336188,0.91434191702432,0.954156479217604,0.964337436640116,0.949121184088807,0.937592460687086]},"columns":[{"id":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","style":{"fontWeight":"bold"}},{"id":"homeless","name":"Homeless (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left"},{"id":"not_homeless","name":"Not Homeless (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left"},{"id":"number_of_people","name":"Total Number of People (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"pct_homeless","name":"Homeless (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left"},{"id":"pct_not_homeless","name":"Not Homeless (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"5d302a7edba8670977b2736636b45048"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-af828e736b4d5c785481">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"county":["Belknap","Coos","Hillsborough","Merrimack","Rockingham","Sullivan","Total"],"homeless":[212,46,479,150,197,55,1139],"not_homeless":[2103,421,5113,3122,5327,1026,17112],"number_of_people":[2315,467,5592,3272,5524,1081,18251],"pct_homeless":[0.0915766738660907,0.0985010706638116,0.0856580829756795,0.0458435207823961,0.0356625633598841,0.0508788159111933,0.0624075393129144],"pct_not_homeless":[0.908423326133909,0.901498929336188,0.91434191702432,0.954156479217604,0.964337436640116,0.949121184088807,0.937592460687086]},"columns":[{"id":"county","name":"County","type":"character","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","style":{"fontWeight":"bold"}},{"id":"homeless","name":"Homeless (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left"},{"id":"not_homeless","name":"Not Homeless (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left"},{"id":"number_of_people","name":"Total Number of People (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"pct_homeless","name":"Homeless (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left"},{"id":"pct_not_homeless","name":"Not Homeless (%)","type":"numeric","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[null,null,null,null,null,null,{"border-top":"thin solid","fontWeight":"bold"}],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"5d302a7edba8670977b2736636b45048"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <p><br></p>
 <h2 id="high-utlizers-and-housing-state-wide">High utlizers and housing (State-wide)</h2>
 <p><strong>42% of Tier 1 HU high utilizers were homeless at least once when they were booked into jail.</strong></p>
 <div class="layout-chunk" data-layout="l-body">
-<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-334a834c833f1ffa97a2" style="width:auto;height:auto;"></div>
+<div class="reactable html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-eeb5b10480f3d7374091" style="width:auto;height:auto;"></div>
 <p style="color:#000;background:#FFFFFF;text-align:left;font-size:14px;font-style:italic;font-weight:normal;text-decoration:;letter-spacing:px;word-spacing:px;text-transform:;text-shadow:;margin-top:0px;margin-right:0px;margin-bottom:0px;margin-left:0px"></p>
-<script type="application/json" data-for="htmlwidget-334a834c833f1ffa97a2">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"hu_group_exclusive":["Tier 1 HU","Tier 2 HU","Tier 3 HU","Non-HU","Total"],"homeless":[6,20,62,1051,1139],"not_homeless":[87,455,706,15864,17112],"number_of_people":[93,475,768,16915,18251],"pct_homeless":["6%","4%","8%","6%","6%"],"pct_not_homeless":["94%","96%","92%","94%","94%"]},"columns":[{"id":"hu_group_exclusive","name":"","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","style":{"fontWeight":"bold"}},{"id":"homeless","name":"Homeless (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left"},{"id":"not_homeless","name":"Not Homeless (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left"},{"id":"number_of_people","name":"Total Number of People (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"pct_homeless","name":"Homeless (%)","type":"character","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left"},{"id":"pct_not_homeless","name":"Not Homeless (%)","type":"character","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[{"fontWeight":"bold","color":"#167a9c"},{"fontWeight":"bold","color":"#557e39"},{"fontWeight":"bold","color":"#b95826"},null,null],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"d78480a0b968b4675b45f809df516fae"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-eeb5b10480f3d7374091">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"hu_group_exclusive":["Tier 1 HU","Tier 2 HU","Tier 3 HU","Non-HU","Total"],"homeless":[6,20,62,1051,1139],"not_homeless":[87,455,706,15864,17112],"number_of_people":[93,475,768,16915,18251],"pct_homeless":["6%","4%","8%","6%","6%"],"pct_not_homeless":["94%","96%","92%","94%","94%"]},"columns":[{"id":"hu_group_exclusive","name":"","type":"factor","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":200,"align":"left","style":{"fontWeight":"bold"}},{"id":"homeless","name":"Homeless (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left"},{"id":"not_homeless","name":"Not Homeless (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left"},{"id":"number_of_people","name":"Total Number of People (N)","type":"numeric","format":{"cell":{"separators":true},"aggregated":{"separators":true}},"minWidth":100,"align":"left","style":{"position":"sticky","borderRight":"1px solid #d3d3d3"}},{"id":"pct_homeless","name":"Homeless (%)","type":"character","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left"},{"id":"pct_not_homeless","name":"Not Homeless (%)","type":"character","format":{"cell":{"digits":0,"percent":true},"aggregated":{"digits":0,"percent":true}},"minWidth":100,"align":"left"}],"pagination":false,"compact":true,"style":{"fontFamily":"Franklin Gothic Book","fontSize":"1.0rem"},"rowStyle":[{"fontWeight":"bold","color":"#167a9c"},{"fontWeight":"bold","color":"#557e39"},{"fontWeight":"bold","color":"#b95826"},null,null],"inline":true,"theme":{"headerStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"},"cellStyle":{"display":"flex","flexDirection":"column","justifyContent":"center"}},"dataKey":"d78480a0b968b4675b45f809df516fae"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 <p><br><br></p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>

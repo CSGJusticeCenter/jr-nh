@@ -40,12 +40,6 @@ navbar:
           href: nh_medicaid_reimbursement_costs.html
         - text: "Homelessness"
           href: nh_medicaid_homelessness_analysis.html
-    - text: "Archive"
-      menu:
-        - text: "Incarceration Patterns (Archive)"
-          href: archive_incarceration_patterns.html
-        - text: "High Utilizers (Archive)"
-          href: archive_high_utilizers_analysis.html
     - text: "BH Resources"
       menu:
         - text: "Static Maps"
@@ -54,6 +48,8 @@ navbar:
           href: nh_interactive_resource_map.html
     - text: "Research"
       menu:
+        - text: "Data Limitations"
+          href: nh_data_limitations.html
         - text: "Data Availability"
           href: nh_data_availability.html
         - text: "Data Dictionaries"
