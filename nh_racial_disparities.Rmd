@@ -8,7 +8,7 @@ output:
 ---
 
 ```{r include=FALSE}
-# ## call libraries
+## call libraries
 # library(easypackages)
 # libraries("tidyverse","foreign","lubridate","reshape2", "ggplot2","RColorBrewer","knitr","forcats","openxlsx","statar","svDialogs","xlsx", "magrittr","stringr", "data.table","janitor","kableExtra","leaflet", "readr", "rmarkdown","rowr", "gganimate", "gifski","tidycensus","sf","htmltools","acs","tigris","mapview","rgeos", "ggrepel", "censusxy","gdata","lavaan","mclust","tmap","scales", "raster","rgeos","gmapsdistance","viridis","cowplot","lintr","leaflet.extras","censusapi","data.table","gridGraphics","readxl","haven","ggridges","extrafont","extrafontdb","datamodelr","Lahman","DiagrammeR","fs","readxl","rsvg","V8","ragg","ggtext","csgjcr","distill","gtsummary")
 # 
@@ -309,7 +309,7 @@ nh_gender_male <- tidycensus::get_acs(geography = "state",
                                               geometry = FALSE,
                                       year = 2020) %>% 
   clean_names() %>% 
-  mutate(Male = round(estimate/nh_gender_total_pop$estimate_total_pop*100, digits = 2))
+  mutate(Men = round(estimate/nh_gender_total_pop$estimate_total_pop*100, digits = 2))
 
 ### weighted estimate of percentage of county residents living below federal poverty threshold
 nh_gender_female <- tidycensus::get_acs(geography = "state", 
@@ -318,17 +318,17 @@ nh_gender_female <- tidycensus::get_acs(geography = "state",
                                               geometry = FALSE,
                                       year = 2020) %>% 
   clean_names() %>% 
-  mutate(Female = round(estimate/nh_gender_total_pop$estimate_total_pop*100, digits = 2))
+  mutate(Women = round(estimate/nh_gender_total_pop$estimate_total_pop*100, digits = 2))
 
 ### combine nh_gender_male and nh_gender_female
 nh_gender_acs <- left_join(nh_gender_male,
                            nh_gender_female,
                            by = "geoid") %>% 
-  dplyr::select(name=name.x,Male,Female) %>% 
-  gather(gender, percentage, `Male`:`Female`) %>% 
+  dplyr::select(name=name.x,Men,Women) %>% 
+  gather(gender, percentage, `Men`:`Women`) %>% 
   ### switching out bjs jail survey gender numbers for NH-specific population-wide numbers
   ### using table 3 from: https://bjs.ojp.gov/sites/g/files/xyckuh236/files/media/document/ji21st_sumB.pdf
-  mutate(bjs_jail_survey_gender_percentage = ifelse(gender=="Female",
+  mutate(bjs_jail_survey_gender_percentage = ifelse(gender=="Women",
                                                     13.4,
                                                     86.6)) %>% 
   dplyr::select(-percentage) %>% 
@@ -337,8 +337,8 @@ nh_gender_acs <- left_join(nh_gender_male,
 nh_eight_county_medicaid_match_final_gender <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
   filter(!is.na(gender)) %>% 
   mutate(gender_clean = ifelse(gender=="F",
-                               "Female",
-                               "Male"))
+                               "Women",
+                               "Men"))
 
 ### create ungrouped denominators for grouped descriptives below
 all_ind_denom <- n_distinct(nh_eight_county_medicaid_match_final_gender$unique_person_id[!is.na(nh_eight_county_medicaid_match_final_gender$gender_clean)==TRUE & !is.na(nh_eight_county_medicaid_match_final_gender$unique_person_id)==TRUE])
@@ -398,7 +398,7 @@ kable(nh_eight_county_charge_clean_final_gender_table_final,
 
 ### Gender of New Hampshire Overall Adult Population, Jail Population, and High Jail Utilizer Population (top 10% threshold)
 
-```{r layout="l-body-outset",echo=FALSE,message=FALSE,warning=FALSE}
+```{r }
 ### prep both dataframes for ggplot
 nh_eight_county_charge_clean_final_gender_table_final_to_join <- nh_eight_county_charge_clean_final_gender_table_final %>% 
   dplyr::select(`Gender`,
@@ -427,7 +427,7 @@ df_nh_sample_state_gender_compare_bar <- df_nh_sample_state_gender_compare %>%
   mutate(percentage=percentage/100) ### convert percentage to decimal for ggplot
 
 ### plot
-ggplot(data = df_nh_sample_state_gender_compare_bar, aes(y = percentage, x = forcats::fct_rev(sample_state), fill = `Gender`)) + 
+ggplot(data = df_nh_sample_state_gender_compare_bar, aes(y = percentage, x = forcats::fct_rev(sample_state), fill = forcats::fct_rev(`Gender`))) + 
   geom_bar(stat = "identity", position = "dodge", color = "gray80") +
   scale_x_discrete(limits = rev) +
   scale_y_continuous(labels = scales::percent_format(accuracy=1),
@@ -461,7 +461,7 @@ ggplot(data = df_nh_sample_state_gender_compare_bar, aes(y = percentage, x = for
                              nrow = 1)) +
   geom_label_repel(aes(label = scales::percent(as.numeric(percentage),
                                                accuracy = 0.1),
-                   color = `Gender`),
+                   color = forcats::fct_rev(`Gender`)),
                    position = position_dodge(.9),
                   # direction = 'y',
                   vjust = .65,
@@ -475,9 +475,14 @@ ggplot(data = df_nh_sample_state_gender_compare_bar, aes(y = percentage, x = for
                    na.rm = TRUE,
                    show.legend = FALSE)
 
+sp_data_path <- csg_get_project_path("NH")
+sp_viz_output_path <- paste(sp_data_path, "/Output/r_output_presentation")
+
+"C:\\Users\\abyrum\\The Council of State Governments\\JC Research - Documents\\JR_NH\\Output\\r_output_presentation"
+
 ### write out
 ggsave(
-    filename = file.path(sp_viz_output_path, "gender_overall_comparison_descriptive_option_2.png"),
+    filename = file.path("C:\\Users\\abyrum\\The Council of State Governments\\JC Research - Documents\\JR_NH\\Output\\r_output_presentation\\gender_overall_comparison_descriptive_women_men.png"),
     plot = last_plot(),
     device = ragg::agg_png,
     dpi = 300,
