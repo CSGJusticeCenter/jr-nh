@@ -176,23 +176,22 @@ hillsborough_adm <- hillsborough_adm %>% distinct()
 hillsborough_adm <- hillsborough_adm %>%
   filter(booking_date >= "2018-06-30" & booking_date < "2021-07-01") %>%
   mutate(drug_court_pretrial  = case_when(sentence_status == "PRE TRIAL DRUG COURT (MANCH)" |
-                                       sentence_status == "PRE TRIAL DRUG COURT (NASHUA)" |
-                                       # sentence_status == "PRETRIAL DRUG COURT SATCO" | # SATCO not a drug court but treatment related
-                                       # sentence_status == "PRE TRIAL ROCK SATCO" |
-                                       # sentence_status == "PRETRIAL GRAFTON SATCO" |
-                                       # sentence_status == "PRETRIAL SATCO"
-                                       (booking_type == "DRUG COURT" & sentence_status == "PRETRIAL")
-                                       ~ 1,
-                                       TRUE ~ 0),
+                                          sentence_status == "PRE TRIAL DRUG COURT (NASHUA)" |
+                                         # sentence_status == "PRETRIAL DRUG COURT SATCO" | # SATCO not a drug court but treatment related
+                                         # sentence_status == "PRE TRIAL ROCK SATCO" |
+                                         # sentence_status == "PRETRIAL GRAFTON SATCO" |
+                                         # sentence_status == "PRETRIAL SATCO"
+                                         (booking_type == "DRUG COURT" & sentence_status == "PRETRIAL") ~ 1,
+                                         TRUE ~ 0),
          drug_court_sentenced = case_when(sentence_status == "SENTENCED-HSC NORTH DRUG COURT SANCTION" |
-                                       sentence_status == "SENTENCED-HSC SOUTH DRUG COURT SANCTION" |
-                                       # sentence_status == "SENTENCED ROCK SATCO" | # SATCO not a drug court but treatment related
-                                       # sentence_status == "SENTENCED SATCO" |
-                                       # sentence_status == "SENTENCED W/HOLD SATCO" |
+                                          sentence_status == "SENTENCED-HSC SOUTH DRUG COURT SANCTION" |
+                                         # sentence_status == "SENTENCED ROCK SATCO" | # SATCO not a drug court but treatment related
+                                         # sentence_status == "SENTENCED SATCO" |
+                                         # sentence_status == "SENTENCED W/HOLD SATCO" |
 
-                                       (booking_type == "DRUG COURT" & sentence_status == "SENTENCED") |
-                                       (booking_type == "DRUG COURT" & sentence_status == "SENTENCED WALK IN") ~ 1,
-                                       TRUE ~ 0))
+                                         (booking_type == "DRUG COURT" & sentence_status == "SENTENCED") |
+                                         (booking_type == "DRUG COURT" & sentence_status == "SENTENCED WALK IN") ~ 1,
+                                         TRUE ~ 0))
 
 # If race or gender are NA in some bookings but present in others, use the recorded race or gender.
 # If races or genders are different for the same person, make NA since we don't know which is correct.

@@ -477,6 +477,59 @@ nh_eight_county_medicaid_match_final_race <- nh_eight_county_medicaid_match_fina
                                    labels = c("High Utilizer", "Non-High Utilizer")))
 ```
 
+<br><br>
+
+```{r}
+# homelessness by gender
+# by hu_group_overall
+medicaid_jail_homelessness_hu_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  filter(!is.na(gender)) %>% 
+  dplyr::group_by(gender, hu_group_overall) %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (%)` = `Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`)  %>% 
+  ungroup() %>% 
+  dplyr::rename(`Gender` = gender) 
+
+# statewide
+medicaid_jail_homelessness_hu_overall_table <- jail_medicaid_analytic_individual_booking_level_dedup_hu_recode %>% 
+  filter(!is.na(gender)) %>% 
+  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
+                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
+                   `Individuals w/ any experience of homelessness (%)` = `Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`)  %>%  
+  dplyr::mutate(`Gender` = "Statewide",
+                hu_group_overall = "Statewide") 
+
+# rbind county and statewide files 
+medicaid_jail_homelessness_hu_statewide_table <- rbind(medicaid_jail_homelessness_hu_table,
+                                                              medicaid_jail_homelessness_hu_overall_table)
+
+# reactable table
+reactable(medicaid_jail_homelessness_hu_statewide_table,
+          pagination = FALSE,
+          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
+          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
+          defaultColDef = reactable::colDef(minWidth = 150,
+            format = colFormat(separators = TRUE), align = "left"),
+          compact = TRUE,
+          fullWidth = FALSE,
+          rowStyle = function(index) {
+            if (index %in% c(5)) {
+              list(`border-top` = "thin solid",
+                   fontWeight = "bold")
+            }
+          },
+          columns = list(
+            `Race/Ethnicity` = colDef(minWidth = 150, name = "", style = list(fontWeight = "bold")),
+            hu_group_overall    = colDef(minWidth = 150, name = "Population", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
+            `Individuals w/ any experience of homelessness (%)` = colDef(format = colFormat(percent = TRUE, digits = 1)
+            )))
+```
+ 
+<br><br>
+
+Carroll, Strafford, and Hillsborough are excluded because they did not provide ethincity data.  
+
 ```{r}
 # Homelessness by race
 # by hu_group_overall
@@ -579,55 +632,6 @@ ggsave(
 <br><br>
 
 ```{r}
-# homelessness by gender
-# by hu_group_overall
-medicaid_jail_homelessness_hu_table <- nh_eight_county_medicaid_match_final_race %>% 
-  filter(!is.na(gender)) %>% 
-  dplyr::group_by(gender, hu_group_overall) %>% 
-  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
-                   `Individuals w/ any experience of homelessness (%)` = `Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`)  %>% 
-  ungroup() %>% 
-  dplyr::rename(`Gender` = gender) 
-
-# statewide
-medicaid_jail_homelessness_hu_overall_table <- nh_eight_county_medicaid_match_final_race %>% 
-  filter(!is.na(gender)) %>% 
-  dplyr::summarise(`Individuals w/ Medicaid Match (N)` = n_distinct(unique_person_id[pre_or_study_window_medicaid_match_flag_overall==1]),
-                   `Individuals w/ any experience of homelessness (N)` = n_distinct(unique_person_id[pre_or_study_homeless_on_eligibility_begin_flag==1]),
-                   `Individuals w/ any experience of homelessness (%)` = `Individuals w/ any experience of homelessness (N)`/`Individuals w/ Medicaid Match (N)`)  %>%  
-  dplyr::mutate(`Gender` = "Statewide",
-                hu_group_overall = "Statewide") 
-
-# rbind county and statewide files 
-medicaid_jail_homelessness_hu_statewide_table <- rbind(medicaid_jail_homelessness_hu_table,
-                                                              medicaid_jail_homelessness_hu_overall_table)
-
-# reactable table
-reactable(medicaid_jail_homelessness_hu_statewide_table,
-          pagination = FALSE,
-          style = list(fontFamily = "Franklin Gothic Book", fontSize = "1.0rem"),
-          theme = reactableTheme(cellStyle = list(display = "flex", flexDirection = "column", justifyContent = "center")),
-          defaultColDef = reactable::colDef(minWidth = 150,
-            format = colFormat(separators = TRUE), align = "left"),
-          compact = TRUE,
-          fullWidth = FALSE,
-          rowStyle = function(index) {
-            if (index %in% c(5)) {
-              list(`border-top` = "thin solid",
-                   fontWeight = "bold")
-            }
-          },
-          columns = list(
-            `Race/Ethnicity` = colDef(minWidth = 150, name = "", style = list(fontWeight = "bold")),
-            hu_group_overall    = colDef(minWidth = 150, name = "Population", style = list(position = "sticky", borderRight = "1px solid #d3d3d3")),
-            `Individuals w/ any experience of homelessness (%)` = colDef(format = colFormat(percent = TRUE, digits = 1)
-            )))
-```
-
-<br><br>
-
-```{r}
 # by county
 medicaid_jail_homelessness_hu_table <- nh_eight_county_medicaid_match_final_race %>% 
   filter(!is.na(age_at_booking_bin)) %>% 
@@ -725,21 +729,6 @@ ggsave(
     bg = "transparent"
   )
 ```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
