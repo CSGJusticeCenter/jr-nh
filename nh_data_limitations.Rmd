@@ -8,28 +8,40 @@ output:
     self_contained: false
 ---
 
+# Introduction
 
-# Jail Administrative Data
+The New Hampshire High Utilizers project collected data from 9 out of 10 county jails which was matched to Medicaid to find trends on the people who are high utilizers of the jail system and who have frequent and complex behavioral health needs. This report aims to highlight the data limitations encountered during the project.
 
 <br>
 
-## Charge Types
+# Jail Booking Data
 
+<br>
 
+### Charge Types
 
+Comparing charge data across counties was challenging due to varying ways in which jails recorded this data. While only two counties were able to provide charge codes, the inconsistency in charge descriptions across counties required meticulous manual cleaning to identify trends in charge types.
 
-<br><br>
+<br>
 
-## Sentence Statuses
+### Sentence Statuses
 
+One of the main data limitations encountered during the project was the inconsistency in how the booking data was collected across counties. Each county had their own unique way of collecting and storing the data, making it difficult to compare and analyze the data across different counties. For example, while all counties had consistent sentence statuses of pretrial, protective custody holds, and sentenced, many sentence statuses were bucketed under "Other." The "Other category includes federal holds, holds for other agencies, 24 hour and 72 hour holds, other holds, dual status, dismissed, and sentence suspended. Furthermore, most jails were not able to collect all three requested metrics of booking type, sentence status, and release type, which limited our ability to track the outcomes of the individuals who were booked. 
 
+<br>
 
+### Drug Courts
 
+Only Cheshire, Hillsborough, and Rockingham County collect booking information related to drug courts.
 
 <br><br>
 
 # Medicaid Data
 
+Please see specific Medicaid pages for details on data cleaning.  
 
+# Costs
 
+All jails submitted costs except for Belknap, Carroll, and Hillsborough. The average cost per person per day was calculated by 1) when cost data wasn't provided, dividing each county department of correction's 2019 budget by the average daily jail population in 2019 in that county or 2) when cost data was provided, multiplying the jail provided average cost per person per day in 2019 by the average daily population in 2019 in that county.
 
+The average cost per HU who matched to Medicaid was found by finding the average daily population of HU's who matched to Medicaid and multiplying by the average cost per person per day.

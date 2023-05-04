@@ -359,7 +359,7 @@ hu_overall_los_prop %>%
   mutate(pct = ifelse(hu_group_overall == "High Utilizer", pct, -1*pct)) %>% 
   ggplot(aes(x = los_category, y = pct, fill = hu_group_overall))+
   geom_bar(stat = "identity") +
-  labs(x = "Length of Stay (Days)\n", y = "Proportion of Entrances\n") +
+  labs(x = "Length of Stay (Days)\n", y = "Proportion of Bookings\n") +
    geom_text(aes(label = pct_label),
             size = 7.5, family = "Franklin Gothic Book",
             hjust = ifelse(hu_overall_los_prop$hu_group_overall == "High Utilizer", -.1, 1.1),
